@@ -1,0 +1,32 @@
+name: BotBaseMinigames
+version: '1.0-SNAPSHOT'
+main: gruvexp.bbminigames.Main
+api-version: '1.21'
+authors: [ Gruve ]
+description: Plugin for the BotBows Minigames server
+commands:
+  menu:
+    usage: /menu
+    description: Used to access the game menu
+    aliases:
+      - /join
+      - /play
+  settings:
+    usage: /settings
+    description: Used when you want to view or change the settings of the game
+  start:
+    usage: /start
+    aliases:
+      - /startgame
+    description: Run this command to start the game
+  leave:
+    usage: /leave
+    aliases:
+      - /leavegame
+    description: Leave the game
+  stopgame:
+    usage: /stopgame
+    description: Stops the game
+  test:
+    usage: /test
+    description: Used for debugging
