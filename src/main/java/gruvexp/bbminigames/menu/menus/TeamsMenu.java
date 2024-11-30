@@ -42,7 +42,7 @@ public class TeamsMenu extends SettingsMenu {
                 BotBows.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
             case BARRIER -> clicker.closeInventory();
-            case LIGHT_BLUE_STAINED_GLASS_PANE -> {
+            case FIREWORK_STAR -> {
                 if (e.getSlot() == 21) {
                     BotBows.mapMenu.open(clicker);
                 } else if (e.getSlot() == 23) {
@@ -57,10 +57,7 @@ public class TeamsMenu extends SettingsMenu {
         super.setMenuItems(); // settings init
         init();
         setColoredGlassPanes();
-        // page stuff
-        inventory.setItem(21, LEFT);
-        inventory.setItem(22, CLOSE);
-        inventory.setItem(23, RIGHT);
+        setPageButtons(2, true, true, null);
     }
 
     public void init() {

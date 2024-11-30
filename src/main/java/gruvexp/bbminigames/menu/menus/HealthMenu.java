@@ -82,7 +82,7 @@ public class HealthMenu extends SettingsMenu {
             case BARRIER:
                 clicker.closeInventory();
                 break;
-            case LIGHT_BLUE_STAINED_GLASS_PANE:
+            case FIREWORK_STAR:
                 if (e.getSlot() == 21) {
                     BotBows.teamsMenu.open(clicker);
                 } else if (e.getSlot() == 23) {
@@ -96,11 +96,8 @@ public class HealthMenu extends SettingsMenu {
         super.setMenuItems(); // initer settings
         disableCustomHP();
         enableDynamicPoints();
-
-        // page stuff
-        inventory.setItem(21, LEFT);
-        inventory.setItem(22, CLOSE);
-        inventory.setItem(23, RIGHT);
+        setPageButtons(2, true, true, null);
+        setFillerVoid();
     }
 
     public void updateMenu() {
@@ -137,17 +134,17 @@ public class HealthMenu extends SettingsMenu {
     public void enableCustomHP() {
         customHP = true;
         inventory.setItem(6, CUSTOM_HP_ENABLED);
-        inventory.setItem(13, FILLER_GLASS);
+        inventory.setItem(13, VOID);
         updateMenu();
     }
 
     public void disableCustomHP() {
         customHP = false;
         inventory.setItem(6, CUSTOM_HP_DISABLED);
-        inventory.setItem(9, null);
-        inventory.setItem(10, FILLER_GLASS);
-        inventory.setItem(16, FILLER_GLASS);
-        inventory.setItem(17, null);
+        inventory.setItem(9, VOID);
+        inventory.setItem(10, VOID);
+        inventory.setItem(16, VOID);
+        inventory.setItem(17, VOID);
         updateMenu();
     }
 

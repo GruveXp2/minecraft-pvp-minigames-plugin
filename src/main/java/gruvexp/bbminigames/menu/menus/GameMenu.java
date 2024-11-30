@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,13 +25,17 @@ public class GameMenu extends Menu {
 
         if (e.getCurrentItem().getType() == Material.BOW) {
             BotBows.joinGame(p);
+        } else if (e.getCurrentItem().getType() == Material.STICK) {
+            p.sendMessage(Component.text("This will be added soon"));
         }
     }
 
     @Override
     public void setMenuItems() {
         ItemStack botbows = makeItem(Material.BOW, "BotBows Classic", "The classic game of BotBows");
-        inventory.setItem(1, botbows);
-        setFillerGlass();
+        ItemStack sumo = makeItem(Material.STICK, "Sumo", "The Sumo minigame");
+        inventory.setItem(3, botbows);
+        inventory.setItem(5, sumo);
+        setFillerVoid();
     }
 }

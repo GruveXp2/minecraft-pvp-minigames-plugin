@@ -86,7 +86,7 @@ public class HazardMenu extends SettingsMenu {
                 }
             }
             case BARRIER -> clicker.closeInventory();
-            case LIGHT_BLUE_STAINED_GLASS_PANE -> {
+            case FIREWORK_STAR -> {
                 if (e.getSlot() == 21) {
                     BotBows.winThresholdMenu.open(clicker);
                 }
@@ -101,14 +101,12 @@ public class HazardMenu extends SettingsMenu {
         earthquakeHazard = settings.earthquakeHazard;
         updateStormBar();
         updateEarthquakeBar();
-
-        // page stuff
-        inventory.setItem(22, LEFT);
-        inventory.setItem(23, CLOSE);
+        setPageButtons(2, true, false, null);
     }
 
     void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla
         inventory.setItem(0, getStormItem());
+        inventory.setItem(1, VOID);
         for (int i = 0; i < PERCENT.size(); i++) {
             ItemStack item;
             if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > stormHazard.getHazardChance().getPercent()) {
@@ -118,10 +116,12 @@ public class HazardMenu extends SettingsMenu {
             }
             inventory.setItem(i + 2, item);
         }
+        inventory.setItem(8, VOID);
     }
 
     void updateEarthquakeBar() { // Hvordan menu skal se ut når storm mode er enabla
         inventory.setItem(9, getEarthquakeItem());
+        inventory.setItem(10, VOID);
         for (int i = 0; i < PERCENT.size(); i++) {
             ItemStack item;
             if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > earthquakeHazard.getHazardChance().getPercent()) {
@@ -131,5 +131,6 @@ public class HazardMenu extends SettingsMenu {
             }
             inventory.setItem(i + 11, item);
         }
+        inventory.setItem(17, VOID);
     }
 }

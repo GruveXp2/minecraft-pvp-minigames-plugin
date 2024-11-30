@@ -39,7 +39,7 @@ public class WinThresholdMenu extends SettingsMenu {
             case BARRIER:
                 clicker.closeInventory();
                 break;
-            case LIGHT_BLUE_STAINED_GLASS_PANE:
+            case FIREWORK_STAR:
                 if (e.getSlot() == 12) {
                     BotBows.teamsMenu.open(clicker);
                 } else {
@@ -64,15 +64,12 @@ public class WinThresholdMenu extends SettingsMenu {
         inventory.setItem(5, add1);
         inventory.setItem(6, add10);
 
-        // page stuff
-        inventory.setItem(12, LEFT);
-        inventory.setItem(13, CLOSE);
-        inventory.setItem(14, RIGHT);
+        setPageButtons(1, true, true, null);
 
-        inventory.setItem(0, FILLER_GLASS);
-        inventory.setItem(1, FILLER_GLASS);
-        inventory.setItem(7, FILLER_GLASS);
-        inventory.setItem(8, FILLER_GLASS);
+        inventory.setItem(0, VOID);
+        inventory.setItem(1, VOID);
+        inventory.setItem(7, VOID);
+        inventory.setItem(8, VOID);
     }
     public void updateMenu() {
         ItemStack is;

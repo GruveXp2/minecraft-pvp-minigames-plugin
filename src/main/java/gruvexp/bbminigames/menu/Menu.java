@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu;
 
 import gruvexp.bbminigames.Main;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,15 +16,16 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public abstract class Menu implements InventoryHolder {
 
     //Protected values that can be accessed in the menus
     protected Inventory inventory;
-    protected final ItemStack FILLER_GLASS = makeItem(Material.GRAY_STAINED_GLASS_PANE, " ");
-    protected final ItemStack LEFT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, ChatColor.AQUA + "Prev page");
+    protected final ItemStack VOID = getVoidItem();
+    protected final ItemStack LEFT = getPrevPageItem();
     protected final ItemStack CLOSE = makeItem(Material.BARRIER, ChatColor.RED + "Close menu");
-    protected final ItemStack RIGHT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, ChatColor.AQUA + "Next page");
+    protected final ItemStack RIGHT = getNextPageItem();
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
@@ -58,10 +60,10 @@ public abstract class Menu implements InventoryHolder {
     }
 
     //Helpful utility method to fill all remaining slots with "filler glass"
-    public void setFillerGlass(){
+    public void setFillerVoid(){
         for (int i = 0; i < getSlots(); i++) {
             if (inventory.getItem(i) == null){
-                inventory.setItem(i, FILLER_GLASS);
+                inventory.setItem(i, VOID);
             }
         }
     }
@@ -77,6 +79,33 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
+    private static ItemStack getVoidItem() {
+        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text(""));
+        meta.setCustomModelData(77000); // void texture
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack getNextPageItem() {
+        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("Next page"));
+        meta.setCustomModelData(77001); // void texture
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack getPrevPageItem() {
+        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("Prev page"));
+        meta.setCustomModelData(77002); // void texture
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public ItemStack makeHeadItem(Player p, ChatColor teamColor) {
 
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
@@ -89,5 +118,16 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
+    protected void setPageButtons(int rowIndex, boolean prevMenuButton, boolean nextMenuButton, ItemStack moreSettingsButton) {
+        inventory.setItem(rowIndex*9    , VOID);
+        inventory.setItem(rowIndex*9 + 1, VOID);
+        inventory.setItem(rowIndex*9 + 2, VOID);
+        inventory.setItem(rowIndex * 9 + 3, prevMenuButton ? getPrevPageItem() : VOID);
+        inventory.setItem(rowIndex * 9 + 4, Objects.requireNonNullElse(moreSettingsButton, VOID));
+        inventory.setItem(rowIndex * 9 + 5, nextMenuButton ? getNextPageItem() : VOID);
+        inventory.setItem(rowIndex*9 + 6, VOID);
+        inventory.setItem(rowIndex*9 + 7, VOID);
+        inventory.setItem(rowIndex*9 + 8, VOID);
+    }
 }
 
