@@ -104,6 +104,18 @@ public class HazardMenu extends SettingsMenu {
                         updateGhostBar();
                     }
                 }
+            } case RED_STAINED_GLASS_PANE -> {
+                switch (e.getSlot()) {
+                    case 0 -> stormHazard.setHazardChance(HazardChance.TEN);
+                    case 9 -> earthquakeHazard.setHazardChance(HazardChance.TEN);
+                    case 18 -> ghostHazard.setHazardChance(HazardChance.TEN);
+                }
+            } case LIME_STAINED_GLASS_PANE -> {
+                switch (e.getSlot()) {
+                    case 0 -> stormHazard.setHazardChance(HazardChance.DISABLED);
+                    case 9 -> earthquakeHazard.setHazardChance(HazardChance.DISABLED);
+                    case 18 -> ghostHazard.setHazardChance(HazardChance.DISABLED);
+                }
             }
             case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> {
