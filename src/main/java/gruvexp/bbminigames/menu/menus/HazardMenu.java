@@ -98,6 +98,11 @@ public class HazardMenu extends SettingsMenu {
                         earthquakeHazard.setHazardChance(PERCENT_MAP.get(s));
                         updateEarthquakeBar();
                     }
+                } else if (e.getSlot() < 27) {
+                    if (ghostHazard.getHazardChance() != PERCENT_MAP.get(s)) {
+                        ghostHazard.setHazardChance(PERCENT_MAP.get(s));
+                        updateGhostBar();
+                    }
                 }
             }
             case BARRIER -> clicker.closeInventory();
