@@ -53,7 +53,6 @@ public class EarthquakeHazard extends Hazard {
             bossBar.setVisible(false);
             bossBar.setProgress(0d);
         }
-        hazardTimers.clear();
     }
 
     public static class PlayerEarthQuakeTimer extends BukkitRunnable {

@@ -58,7 +58,6 @@ public class StormHazard extends Hazard {
             bossBar.setVisible(false);
             bossBar.setProgress(0d);
         }
-        hazardTimers.clear();
         // resett været
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);

@@ -40,6 +40,7 @@ public abstract class Hazard {
         for (BukkitTask timer : hazardTimers.values()) { // stopp timerene
             timer.cancel();
         }
+        hazardTimers.clear();
         isActive = false;
     }; // stopper hazarden
 }
