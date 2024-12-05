@@ -6,6 +6,7 @@ import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +26,7 @@ public class BotBowsGame {
     protected final Set<BotBowsPlayer> players;
     protected final StormHazard stormHazard;
     protected final EarthquakeHazard earthquakeHazard;
+    protected final GhostHazard ghostHazard;
     public boolean canMove = true;
     protected int round = 0; // hvilken runde man er på
 
@@ -35,6 +37,7 @@ public class BotBowsGame {
         this.players = settings.getPlayers();
         this.stormHazard = settings.stormHazard;
         this.earthquakeHazard = settings.earthquakeHazard;
+        this.ghostHazard = settings.ghostHazard;
     }
 
     public void leaveGame(BotBowsPlayer p) {

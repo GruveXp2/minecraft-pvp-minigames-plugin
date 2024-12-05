@@ -4,6 +4,7 @@ import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,7 +30,8 @@ public class HazardMenu extends SettingsMenu {
         PERCENT_MAP.put("ALWAYS", HazardChance.ALWAYS);
     }
     private StormHazard stormHazard;
-    private EarthquakeHazard earthquakeHazard = BotBows.settings.earthquakeHazard;
+    private EarthquakeHazard earthquakeHazard;
+    private GhostHazard ghostHazard;
 
     private ItemStack getStormItem() {
         ItemStack item;
@@ -57,6 +59,19 @@ public class HazardMenu extends SettingsMenu {
         return item;
     }
 
+    private ItemStack getGhostItem() {
+        ItemStack item;
+        String[] loreDesc = new String[] {"When there is ghost mode, you will get haunted", "by your own ghost, and when you touch it,", "you die"};
+        if (ghostHazard.getHazardChance() == HazardChance.DISABLED) {
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Haunted Arena", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
+                    "If enabled, x% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
+        } else {
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Haunted Arena", ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
+                    earthquakeHazard.getHazardChance().getPercent() + "% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
+        }
+        return item;
+    }
+
     @Override
     public String getMenuName() {
         return "Hazards";
@@ -64,14 +79,14 @@ public class HazardMenu extends SettingsMenu {
 
     @Override
     public int getSlots() {
-        return 27;
+        return 36;
     }
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         switch (e.getCurrentItem().getType()) {
-            case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE -> {
+            case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
                 String s = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
                 if (e.getSlot() < 9) {
                     if (stormHazard.getHazardChance() != PERCENT_MAP.get(s)) {
@@ -99,6 +114,7 @@ public class HazardMenu extends SettingsMenu {
         super.setMenuItems();
         stormHazard = settings.stormHazard;
         earthquakeHazard = settings.earthquakeHazard;
+        ghostHazard = settings.ghostHazard;
         updateStormBar();
         updateEarthquakeBar();
         setPageButtons(2, true, false, null);
@@ -132,5 +148,20 @@ public class HazardMenu extends SettingsMenu {
             inventory.setItem(i + 11, item);
         }
         inventory.setItem(17, VOID);
+    }
+
+    void updateGhostBar() { // Hvordan menu skal se ut når storm mode er enabla
+        inventory.setItem(18, getGhostItem());
+        inventory.setItem(19, VOID);
+        for (int i = 0; i < PERCENT.size(); i++) {
+            ItemStack item;
+            if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > ghostHazard.getHazardChance().getPercent()) {
+                item = makeItem(Material.WHITE_STAINED_GLASS_PANE, ChatColor.WHITE + PERCENT.get(i));
+            } else {
+                item = makeItem(Material.PURPLE_STAINED_GLASS_PANE, ChatColor.GOLD + PERCENT.get(i));
+            }
+            inventory.setItem(i + 18, item);
+        }
+        inventory.setItem(26, VOID);
     }
 }

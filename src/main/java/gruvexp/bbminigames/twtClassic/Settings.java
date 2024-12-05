@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +19,7 @@ public class Settings {
     // hazards
     public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
     public EarthquakeHazard earthquakeHazard = new EarthquakeHazard(this); // holder styr på innstillinger og utførelse av storm logikk
+    public GhostHazard ghostHazard = new GhostHazard(this);
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
