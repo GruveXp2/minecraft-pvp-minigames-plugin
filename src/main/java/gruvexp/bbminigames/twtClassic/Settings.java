@@ -1,8 +1,8 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
-import gruvexp.bbminigames.twtClassic.hazard.EarthquakeHazard;
-import gruvexp.bbminigames.twtClassic.hazard.StormHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

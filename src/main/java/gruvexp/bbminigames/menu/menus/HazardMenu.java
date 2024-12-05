@@ -2,9 +2,9 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.hazard.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
-import gruvexp.bbminigames.twtClassic.hazard.StormHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

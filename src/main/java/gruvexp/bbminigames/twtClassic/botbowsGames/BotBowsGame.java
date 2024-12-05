@@ -1,25 +1,17 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.hazard.EarthquakeHazard;
-import gruvexp.bbminigames.twtClassic.hazard.StormHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.util.Vector;
 
 import java.util.Set;
 
