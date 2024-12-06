@@ -23,9 +23,8 @@ public abstract class Menu implements InventoryHolder {
     //Protected values that can be accessed in the menus
     protected Inventory inventory;
     protected final ItemStack VOID = getVoidItem();
-    protected final ItemStack LEFT = getPrevPageItem();
-    protected final ItemStack CLOSE = makeItem(Material.BARRIER, ChatColor.RED + "Close menu");
-    protected final ItemStack RIGHT = getNextPageItem();
+    protected final ItemStack PREV = getPrevPageItem();
+    protected final ItemStack NEXT = getNextPageItem();
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
@@ -92,7 +91,7 @@ public abstract class Menu implements InventoryHolder {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("Next page"));
-        meta.setCustomModelData(77001); // void texture
+        meta.setCustomModelData(77001); // next page texture
         item.setItemMeta(meta);
         return item;
     }
@@ -101,7 +100,7 @@ public abstract class Menu implements InventoryHolder {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("Prev page"));
-        meta.setCustomModelData(77002); // void texture
+        meta.setCustomModelData(77002); // prev page texture
         item.setItemMeta(meta);
         return item;
     }
@@ -122,9 +121,9 @@ public abstract class Menu implements InventoryHolder {
         inventory.setItem(rowIndex*9    , VOID);
         inventory.setItem(rowIndex*9 + 1, VOID);
         inventory.setItem(rowIndex*9 + 2, VOID);
-        inventory.setItem(rowIndex * 9 + 3, prevMenuButton ? getPrevPageItem() : VOID);
-        inventory.setItem(rowIndex * 9 + 4, Objects.requireNonNullElse(moreSettingsButton, VOID));
-        inventory.setItem(rowIndex * 9 + 5, nextMenuButton ? getNextPageItem() : VOID);
+        inventory.setItem(rowIndex*9 + 3, prevMenuButton ? PREV : VOID);
+        inventory.setItem(rowIndex*9 + 4, Objects.requireNonNullElse(moreSettingsButton, VOID));
+        inventory.setItem(rowIndex*9 + 5, nextMenuButton ? NEXT : VOID);
         inventory.setItem(rowIndex*9 + 6, VOID);
         inventory.setItem(rowIndex*9 + 7, VOID);
         inventory.setItem(rowIndex*9 + 8, VOID);
