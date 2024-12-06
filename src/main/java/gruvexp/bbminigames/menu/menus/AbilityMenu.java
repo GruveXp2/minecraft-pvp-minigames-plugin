@@ -19,7 +19,15 @@ public class AbilityMenu extends SettingsMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        Player clicker = (Player) e.getWhoClicked();
+        switch (e.getCurrentItem().getType()) {
 
+            case FIREWORK_STAR -> {
+                if (e.getSlot() == getSlots() - 6) {
+                    settings.winThresholdMenu.open(clicker);
+                }
+            }
+        }
     }
 
     @Override

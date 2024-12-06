@@ -117,10 +117,11 @@ public class HazardMenu extends SettingsMenu {
                     case 18 -> ghostHazard.setHazardChance(HazardChance.DISABLED);
                 }
             }
-            case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> {
-                if (e.getSlot() == 21) {
+                if (e.getSlot() == getSlots() - 6) {
                     settings.winThresholdMenu.open(clicker);
+                } else if (e.getSlot() == getSlots() - 4) {
+                    settings.abilityMenu.open(clicker);
                 }
             }
         }

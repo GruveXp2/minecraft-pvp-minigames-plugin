@@ -41,11 +41,10 @@ public class TeamsMenu extends SettingsMenu {
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
-            case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> {
-                if (e.getSlot() == 21) {
+                if (e.getSlot() == getSlots() - 6) {
                     settings.mapMenu.open(clicker);
-                } else if (e.getSlot() == 23) {
+                } else if (e.getSlot() == getSlots() - 4) {
                     settings.healthMenu.open(clicker);
                 }
             }

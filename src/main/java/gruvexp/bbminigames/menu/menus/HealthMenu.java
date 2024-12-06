@@ -41,25 +41,25 @@ public class HealthMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
 
         switch (e.getCurrentItem().getType()) { // stuff som skal gjøres når man trykker på et item
-            case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE:
+            case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
                 settings.setMaxHP(Integer.parseInt(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName())));
                 updateMenu();
-                break;
-            case RED_STAINED_GLASS_PANE:
+            }
+            case RED_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(DYNAMIC_POINTS_DISABLED)) {
                     enableDynamicPoints();
                 } else if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) { // clicked on custom hp setting
                     enableCustomHP();
                 }
-                break;
-            case LIME_STAINED_GLASS_PANE:
+            }
+            case LIME_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(DYNAMIC_POINTS_ENABLED)) {
                     disableDynamicPoints();
                 } else if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) { // clicked on custom hp setting
                     disableCustomHP();
                 }
-                break;
-            case PLAYER_HEAD:
+            }
+            case PLAYER_HEAD -> {
                 ItemStack head = e.getCurrentItem();
                 Player p = Bukkit.getPlayer(UUID.fromString(head.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
@@ -78,16 +78,14 @@ public class HealthMenu extends SettingsMenu {
                 head.setAmount(maxHP);
                 inventory.setItem(slot, head);
                 bp.setMaxHP(maxHP);
-                break;
-            case BARRIER:
-                clicker.closeInventory();
-                break;
-            case FIREWORK_STAR:
-                if (e.getSlot() == 21) {
+            }
+            case FIREWORK_STAR -> {
+                if (e.getSlot() == getSlots() - 6) {
                     settings.teamsMenu.open(clicker);
-                } else if (e.getSlot() == 23) {
+                } else if (e.getSlot() == getSlots() - 4) {
                     settings.winThresholdMenu.open(clicker);
                 }
+            }
         }
     }
 

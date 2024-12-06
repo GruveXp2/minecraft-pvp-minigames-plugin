@@ -23,28 +23,17 @@ public class WinThresholdMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         switch (e.getCurrentItem().getType()) {
-            case RED_STAINED_GLASS_PANE:
-                settings.changeWinThreshold(-10);
-                break;
-            case PINK_STAINED_GLASS_PANE:
-                settings.changeWinThreshold(-1);
-                break;
-            case LIME_STAINED_GLASS_PANE:
-                settings.changeWinThreshold(1);
-                updateMenu();
-                break;
-            case GREEN_STAINED_GLASS_PANE:
-                settings.changeWinThreshold(10);
-                break;
-            case BARRIER:
-                clicker.closeInventory();
-                break;
-            case FIREWORK_STAR:
-                if (e.getSlot() == 12) {
+            case RED_STAINED_GLASS_PANE -> settings.changeWinThreshold(-10);
+            case PINK_STAINED_GLASS_PANE -> settings.changeWinThreshold(-1);
+            case LIME_STAINED_GLASS_PANE -> settings.changeWinThreshold(1);
+            case GREEN_STAINED_GLASS_PANE -> settings.changeWinThreshold(10);
+            case FIREWORK_STAR -> {
+                if (e.getSlot() == getSlots() - 6) {
                     settings.teamsMenu.open(clicker);
-                } else {
+                } else if (e.getSlot() == getSlots() - 4) {
                     settings.hazardMenu.open(clicker);
                 }
+            }
         }
     }
 

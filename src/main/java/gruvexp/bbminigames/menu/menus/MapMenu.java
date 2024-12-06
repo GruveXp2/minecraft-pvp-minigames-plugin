@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,7 +34,6 @@ public class  MapMenu extends SettingsMenu {
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
-            case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> settings.teamsMenu.open(clicker);
         }
     }
