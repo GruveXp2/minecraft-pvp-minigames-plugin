@@ -36,25 +36,6 @@ public class Settings {
         team2.setOppositeTeam(team1);
     }
 
-    public void setDynamicScoring(boolean dynamicScoring) {
-        this.dynamicScoring = dynamicScoring;
-    }
-
-    public boolean dynamicScoringEnabled() {
-        return dynamicScoring;
-    }
-
-    public void setMaxHP(int maxHP) {
-        this.maxHP = maxHP;
-        for (BotBowsPlayer p : players) { // oppdaterer livene til alle playersene
-            p.setMaxHP(maxHP);
-        }
-    }
-
-    public int getMaxHP() {
-        return maxHP;
-    }
-
     public void setMap(BotBowsMap map) {
         if (map == currentMap) return;
         currentMap = map;
@@ -116,6 +97,25 @@ public class Settings {
         return Optional.ofNullable(BotBows.getBotBowsPlayer(p))
                 .map(players::contains)
                 .orElse(false);
+    }
+
+    public void setDynamicScoring(boolean dynamicScoring) {
+        this.dynamicScoring = dynamicScoring;
+    }
+
+    public boolean dynamicScoringEnabled() {
+        return dynamicScoring;
+    }
+
+    public void setMaxHP(int maxHP) {
+        this.maxHP = maxHP;
+        for (BotBowsPlayer p : players) { // oppdaterer livene til alle playersene
+            p.setMaxHP(maxHP);
+        }
+    }
+
+    public int getMaxHP() {
+        return maxHP;
     }
 
     public int getWinThreshold() {
