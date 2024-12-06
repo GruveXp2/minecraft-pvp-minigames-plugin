@@ -105,6 +105,10 @@ public class BotBowsPlayer {
         this.maxAbilities = maxAbilities;
     }
 
+    public int getMaxAbilities() {
+        return maxAbilities;
+    }
+
     public boolean isDamaged() {
         return isDamaged;
     }
