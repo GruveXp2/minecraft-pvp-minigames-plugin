@@ -27,6 +27,9 @@ public class Settings {
     private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
     private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
     private int winThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er satt til -1, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
+    // abilities
+    private int maxAbilities = 2;
+    private double abilityCooldownMultiplier = 1.0;
 
     public Settings() {
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
@@ -126,5 +129,15 @@ public class Settings {
     public void setWinThreshold(int threshold) {
         winThreshold = Math.max(threshold, -1);
         BotBows.winThresholdMenu.updateMenu();
+    }
+
+    public void setMaxAbilities(int maxAbilities) {
+        this.maxAbilities = maxAbilities;
+        players.forEach(p -> p.setMaxAbilities(maxAbilities));
+        BotBows.abilityMenu.updateMaxAbilities();
+    }
+
+    public int getMaxAbilities() {
+        return maxAbilities;
     }
 }

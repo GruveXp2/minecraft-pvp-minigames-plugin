@@ -26,10 +26,14 @@ public class BotBowsPlayer {
     private boolean isDamaged = false; // cooldown når playeren er hitta
     private static final List<List<Set<Integer>>> PLAYER_HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
 
+    private int maxAbilities;
+    private int abilityCooldownMultiplier;
+
     public BotBowsPlayer(Player player, Settings settings) {
         PLAYER = player;
         maxHP = settings.getMaxHP();
         hp = maxHP;
+        maxAbilities = settings.getMaxAbilities();
     }
 
     public BotBowsTeam getTeam() {return team;}
@@ -95,6 +99,10 @@ public class BotBowsPlayer {
             updateArmor();
         }
         Board.updatePlayerScore(this);
+    }
+
+    public void setMaxAbilities(int maxAbilities) {
+        this.maxAbilities = maxAbilities;
     }
 
     public boolean isDamaged() {
