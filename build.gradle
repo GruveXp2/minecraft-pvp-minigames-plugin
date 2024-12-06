@@ -4,10 +4,8 @@ plugins {
 
 // Build number logic
 def buildNumberFile = file("build-number.txt")
-def buildNumber = "0"
-if (buildNumberFile.exists()) {
-    buildNumber = (buildNumberFile.text.trim().toInteger() + 1).toString()
-}
+def buildNumber = buildNumber = (buildNumberFile.text.trim().toInteger() + 1).toString()
+
 buildNumberFile.text = buildNumber
 
 group = 'gruvexp'
