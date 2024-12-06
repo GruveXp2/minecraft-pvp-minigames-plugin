@@ -37,7 +37,18 @@ public class AbilityMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         switch (e.getCurrentItem().getType()) {
-
+            case LIME_STAINED_GLASS_PANE -> {
+                switch (e.getSlot()) {
+                    case 0 -> disableIndividualMaxAbilities();
+                    case 8 -> disableAbilities();
+                }
+            }
+            case RED_STAINED_GLASS_PANE -> {
+                switch (e.getSlot()) {
+                    case 0 -> enableIndividualMaxAbilities();
+                    case 8 -> enableAbilities();
+                }
+            }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
                     settings.winThresholdMenu.open(clicker);
@@ -53,6 +64,7 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void disableAbilities() {
+        inventory.setItem(8, ABILITIES_DISABLED);
         ItemStack disabled = makeItem(Material.GRAY_STAINED_GLASS_PANE, "");
         settings.setMaxAbilities(0);
         inventory.setItem(0, disabled);
@@ -65,15 +77,22 @@ public class AbilityMenu extends SettingsMenu {
         }
     }
 
+    public void enableAbilities() {
+        inventory.setItem(8, ABILITIES_ENABLED);
+        if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
+    }
+
     public void enableIndividualMaxAbilities() {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_ENABLED);
         individualMaxAbilities = true;
+        if (settings.getMaxAbilities() == 0) settings.setMaxAbilities(2);
         updateMaxAbilities();
     }
 
     public void disableIndividualMaxAbilities() {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
         individualMaxAbilities = false;
+        if (settings.getMaxAbilities() == 0) settings.setMaxAbilities(2);
         updateMaxAbilities();
         inventory.setItem(5, VOID);
         inventory.setItem(6, VOID);
