@@ -38,6 +38,7 @@ public class BotBows {
     public static TeamsMenu teamsMenu;
     public static WinThresholdMenu winThresholdMenu;
     public static HazardMenu hazardMenu;
+    public static AbilityMenu abilityMenu;
 
     public static void init() { // a
         settings = new Settings();
@@ -47,6 +48,7 @@ public class BotBows {
         teamsMenu = new TeamsMenu();
         winThresholdMenu = new WinThresholdMenu();
         hazardMenu = new HazardMenu();
+        abilityMenu = new AbilityMenu();
     }
 
     public static void joinGame(Player p) {
