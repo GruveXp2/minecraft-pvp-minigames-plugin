@@ -134,7 +134,8 @@ public class HazardMenu extends SettingsMenu {
         ghostHazard = settings.ghostHazard;
         updateStormBar();
         updateEarthquakeBar();
-        setPageButtons(2, true, false, null);
+        updateGhostBar();
+        setPageButtons(3, true, false, null);
     }
 
     void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla
