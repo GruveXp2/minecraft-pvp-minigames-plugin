@@ -28,7 +28,7 @@ public class TestCommand implements CommandExecutor {
                     BotBows.joinGame(Bukkit.getPlayer("Spionagent54"));
                     BotBows.settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
                     BotBows.settings.setWinThreshold(-1);
-                    BotBows.healthMenu.enableCustomHP();
+                    BotBows.settings.healthMenu.enableCustomHP();
                     BotBowsPlayer judith = BotBows.getBotBowsPlayer(Bukkit.getPlayer("Spionagent54"));
 
                     judith.setMaxHP(20);

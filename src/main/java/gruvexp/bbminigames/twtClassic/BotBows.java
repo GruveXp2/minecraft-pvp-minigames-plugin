@@ -33,22 +33,10 @@ public class BotBows {
     public static boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
 
     public static GameMenu gameMenu;
-    public static MapMenu mapMenu;
-    public static HealthMenu healthMenu;
-    public static TeamsMenu teamsMenu;
-    public static WinThresholdMenu winThresholdMenu;
-    public static HazardMenu hazardMenu;
-    public static AbilityMenu abilityMenu;
 
     public static void init() { // a
         settings = new Settings();
         gameMenu = new GameMenu();
-        mapMenu = new MapMenu();
-        healthMenu = new HealthMenu();
-        teamsMenu = new TeamsMenu();
-        winThresholdMenu = new WinThresholdMenu();
-        hazardMenu = new HazardMenu();
-        abilityMenu = new AbilityMenu();
     }
 
     public static void joinGame(Player p) {

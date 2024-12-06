@@ -39,14 +39,14 @@ public class TeamsMenu extends SettingsMenu {
                 BotBowsTeam team = BotBows.getBotBowsPlayer(p).getTeam();
                 team.getOppositeTeam().join(BotBows.getBotBowsPlayer(p));
                 recalculateTeam();
-                BotBows.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
+                settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
             case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> {
                 if (e.getSlot() == 21) {
-                    BotBows.mapMenu.open(clicker);
+                    settings.mapMenu.open(clicker);
                 } else if (e.getSlot() == 23) {
-                    BotBows.healthMenu.open(clicker);
+                    settings.healthMenu.open(clicker);
                 }
             }
         }

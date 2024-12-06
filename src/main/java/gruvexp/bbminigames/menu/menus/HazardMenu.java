@@ -120,7 +120,7 @@ public class HazardMenu extends SettingsMenu {
             case BARRIER -> clicker.closeInventory();
             case FIREWORK_STAR -> {
                 if (e.getSlot() == 21) {
-                    BotBows.winThresholdMenu.open(clicker);
+                    settings.winThresholdMenu.open(clicker);
                 }
             }
         }

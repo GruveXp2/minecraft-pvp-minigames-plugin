@@ -19,7 +19,7 @@ public class SettingsCommand implements CommandExecutor {
         } else if (!BotBows.settings.isPlayerJoined(p)) {
             p.sendMessage(ChatColor.RED + "You have to join to access the settings");
         } else {
-            BotBows.mapMenu.open(p);
+            BotBows.settings.mapMenu.open(p);
         }
         return true;
     }

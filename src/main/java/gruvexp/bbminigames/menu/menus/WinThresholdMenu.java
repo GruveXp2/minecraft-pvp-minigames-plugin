@@ -41,9 +41,9 @@ public class WinThresholdMenu extends SettingsMenu {
                 break;
             case FIREWORK_STAR:
                 if (e.getSlot() == 12) {
-                    BotBows.teamsMenu.open(clicker);
+                    settings.teamsMenu.open(clicker);
                 } else {
-                    BotBows.hazardMenu.open(clicker);
+                    settings.hazardMenu.open(clicker);
                 }
         }
     }

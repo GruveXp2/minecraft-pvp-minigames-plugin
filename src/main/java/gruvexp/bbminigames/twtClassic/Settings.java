@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
@@ -30,10 +31,23 @@ public class Settings {
     // abilities
     private int maxAbilities = 2;
     private double abilityCooldownMultiplier = 1.0;
+    // menus
+    public final MapMenu mapMenu;
+    public final HealthMenu healthMenu;
+    public final TeamsMenu teamsMenu;
+    public final WinThresholdMenu winThresholdMenu;
+    public final HazardMenu hazardMenu;
+    public final AbilityMenu abilityMenu;
 
     public Settings() {
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
         team2.setOppositeTeam(team1);
+        mapMenu = new MapMenu();
+        healthMenu = new HealthMenu();
+        teamsMenu = new TeamsMenu();
+        winThresholdMenu = new WinThresholdMenu();
+        hazardMenu = new HazardMenu();
+        abilityMenu = new AbilityMenu();
     }
 
     public void setMap(BotBowsMap map) {
@@ -48,9 +62,9 @@ public class Settings {
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
         team1 = newTeam1;
         team2 = newTeam2;
-        BotBows.teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
-        BotBows.teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
-        BotBows.healthMenu.updateMenu(); // update so the name colors match the new team color
+        teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
+        teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
+        healthMenu.updateMenu(); // update so the name colors match the new team color
     }
 
     public void joinGame(Player p) {
@@ -68,8 +82,8 @@ public class Settings {
         } else {
             team2.join(bp);
         }
-        BotBows.teamsMenu.recalculateTeam();
-        BotBows.healthMenu.updateMenu();
+        teamsMenu.recalculateTeam();
+        healthMenu.updateMenu();
         for (Player q : Bukkit.getOnlinePlayers()) {
             q.sendMessage(p.getPlayerListName() + " has joined BotBows Classic! (" + players.size() + ")");
         }
@@ -82,8 +96,8 @@ public class Settings {
         }
         p.leaveGame();
         players.remove(p);
-        BotBows.teamsMenu.recalculateTeam();
-        BotBows.healthMenu.updateMenu();
+        teamsMenu.recalculateTeam();
+        healthMenu.updateMenu();
 
         p.PLAYER.setGameMode(GameMode.SPECTATOR);
         BotBows.messagePlayers(ChatColor.YELLOW + p.PLAYER.getPlayerListName() + " has left the game (" + players.size() + ")");
@@ -128,13 +142,13 @@ public class Settings {
 
     public void setWinThreshold(int threshold) {
         winThreshold = Math.max(threshold, -1);
-        BotBows.winThresholdMenu.updateMenu();
+        winThresholdMenu.updateMenu();
     }
 
     public void setMaxAbilities(int maxAbilities) {
         this.maxAbilities = maxAbilities;
         players.forEach(p -> p.setMaxAbilities(maxAbilities));
-        BotBows.abilityMenu.updateMaxAbilities();
+        abilityMenu.updateMaxAbilities();
     }
 
     public int getMaxAbilities() {

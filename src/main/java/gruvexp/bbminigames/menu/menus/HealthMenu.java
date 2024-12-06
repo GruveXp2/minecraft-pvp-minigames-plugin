@@ -84,9 +84,9 @@ public class HealthMenu extends SettingsMenu {
                 break;
             case FIREWORK_STAR:
                 if (e.getSlot() == 21) {
-                    BotBows.teamsMenu.open(clicker);
+                    settings.teamsMenu.open(clicker);
                 } else if (e.getSlot() == 23) {
-                    BotBows.winThresholdMenu.open(clicker);
+                    settings.winThresholdMenu.open(clicker);
                 }
         }
     }

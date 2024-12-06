@@ -36,7 +36,7 @@ public class  MapMenu extends SettingsMenu {
             case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
             case BARRIER -> clicker.closeInventory();
-            case FIREWORK_STAR -> BotBows.teamsMenu.open(clicker);
+            case FIREWORK_STAR -> settings.teamsMenu.open(clicker);
         }
     }
 
