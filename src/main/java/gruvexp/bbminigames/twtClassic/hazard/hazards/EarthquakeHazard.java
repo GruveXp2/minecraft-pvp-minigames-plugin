@@ -110,7 +110,8 @@ public class EarthquakeHazard extends Hazard {
                     bar.setProgress(0);
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                         p.damage(1); // sånn
-                        bp.die(bp.getTeam().COLOR + p.getPlayerListName() + ChatColor.GOLD + " was squashed by a stone the size of a large boulder!");
+                        bp.die(Component.text(p.getName(), bp.getTeam().COLOR)
+                                .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
                     }, 20L);
                 }
             } else {

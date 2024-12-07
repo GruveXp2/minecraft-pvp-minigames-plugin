@@ -1,5 +1,5 @@
 name: BotBaseMinigames
-version: '1.0-SNAPSHOT'
+version: '${version}'
 main: gruvexp.bbminigames.Main
 api-version: '1.21'
 authors: [ Gruve ]

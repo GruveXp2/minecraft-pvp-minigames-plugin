@@ -3,8 +3,8 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -56,7 +56,7 @@ public class BotBowsPlayer {
 
     public void leaveGame() {
         team.leave(this);
-        PLAYER.sendMessage(ChatColor.YELLOW + "You left BotBows Classic");
+        PLAYER.sendMessage(Component.text("You left BotBows Classic", NamedTextColor.YELLOW));
         PLAYER.setGameMode(GameMode.SPECTATOR);
         PLAYER.getInventory().remove(BotBows.BOTBOW);
     }
@@ -116,9 +116,14 @@ public class BotBowsPlayer {
 
     public void handleHit(BotBowsPlayer attacker) {
         if (hp == 1) { // spilleren kommer til å daue
-            die(team.COLOR + PLAYER.getPlayerListName() + " was sniped by " + attacker.team.COLOR + attacker.PLAYER.getPlayerListName() + " and got " + ChatColor.DARK_RED + "eliminated");
+            die(PLAYER.name().color(team.COLOR)
+                    .append(Component.text(" was sniped by "))
+                    .append(attacker.PLAYER.name().color(attacker.team.COLOR))
+                    .append(Component.text(" and got"))
+                    .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
             PLAYER.setSpectatorTarget(attacker.PLAYER);
-            PLAYER.sendMessage(ChatColor.GRAY + "Now spectating " + attacker.PLAYER.getPlayerListName());
+            PLAYER.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
+                    .append(attacker.PLAYER.name().color(attacker.team.COLOR)));
             return;
         }
         setHP(hp - 1);
@@ -147,10 +152,10 @@ public class BotBowsPlayer {
         }, 40L); // 2 sekunder
     }
 
-    public void die(String deathMessage) { // gjør at spilleren dauer
+    public void die(Component deathMessage) { // gjør at spilleren dauer
         setHP(0);
         Board.updatePlayerScore(this);
-        BotBows.messagePlayers(Component.text(deathMessage));
+        BotBows.messagePlayers(deathMessage);
         PLAYER.setGameMode(GameMode.SPECTATOR);
         BotBows.check4Victory(this);
     }

@@ -117,7 +117,8 @@ public class StormHazard extends Hazard {
                     time = 0; // resetter
                     bar.setProgress(0);
                     p.damage(0.5);
-                    bp.die(bp.getTeam().COLOR + p.getPlayerListName() + ChatColor.AQUA + " was electrocuted to a crisp!");
+                    bp.die(Component.text(p.getName(), bp.getTeam().COLOR)
+                            .append(Component.text(" was electrocuted to a crisp!", NamedTextColor.AQUA)));
                 }
             } else {
                 if (time > 0) {

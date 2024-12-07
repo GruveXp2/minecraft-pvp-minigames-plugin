@@ -4,7 +4,7 @@ plugins {
 
 // Build number logic
 def buildNumberFile = file("build-number.txt")
-def buildNumber = buildNumber = (buildNumberFile.text.trim().toInteger() + 1).toString()
+def buildNumber = (buildNumberFile.text.trim().toInteger() + 1).toString()
 
 buildNumberFile.text = buildNumber
 
