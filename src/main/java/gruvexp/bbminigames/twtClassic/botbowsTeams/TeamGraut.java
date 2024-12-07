@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsTeams;
 
 import gruvexp.bbminigames.Main;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 
@@ -17,7 +17,7 @@ public class TeamGraut extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26, -318.5, 0, 10);
 
     public TeamGraut() {
-        super("Graut", ChatColor.LIGHT_PURPLE, DyeColor.PURPLE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Graut", NamedTextColor.LIGHT_PURPLE, DyeColor.PURPLE, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamGraut(BotBowsTeam otherTeam) {

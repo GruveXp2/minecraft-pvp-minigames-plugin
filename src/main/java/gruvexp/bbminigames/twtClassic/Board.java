@@ -1,10 +1,17 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
+
+import java.awt.Color;
 
 public class Board {
 
@@ -15,8 +22,9 @@ public class Board {
 
     public static void createBoard() {
         Scoreboard board = manager.getNewScoreboard();
-        objective = board.registerNewObjective("botbows", Criteria.DUMMY,
-                ChatColor.translateAlternateColorCodes('&', "&l&6BotBows &r&bClassic"));
+        Component objectiveTitle = Component.text("BotBows").style(Style.style(NamedTextColor.GOLD, TextDecoration.BOLD))
+                .append(Component.text("Classic").color(NamedTextColor.AQUA));
+        objective = board.registerNewObjective("botbows", Criteria.DUMMY, objectiveTitle);
 
         BotBowsTeam team1 = BotBows.settings.team1;
         BotBowsTeam team2 = BotBows.settings.team2;
@@ -36,8 +44,8 @@ public class Board {
         sbTeam1 = board.registerNewTeam(team1.NAME);
         sbTeam2 = board.registerNewTeam(team2.NAME);
 
-        sbTeam1.setColor(team1.COLOR);
-        sbTeam2.setColor(team2.COLOR);
+        sbTeam1.color((NamedTextColor) team1.COLOR);
+        sbTeam2.color((NamedTextColor) team2.COLOR);
 
         for (BotBowsPlayer p : team1.getPlayers()) {
             sbTeam1.addEntry(p.PLAYER.getName());
@@ -61,9 +69,9 @@ public class Board {
 
         String healthBar;
         if (maxHp > 5) {
-            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getPlayerListName();
+            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getName();
         } else {
-            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getPlayerListName();
+            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getName();
         }
 
         setScore(healthBar, playerLineIndex);
@@ -73,7 +81,7 @@ public class Board {
         Scoreboard sb = objective.getScoreboard();
         for (Objective ignored : sb.getObjectives()) {
             for (String entries : sb.getEntries()) {
-                if (entries.contains(p.PLAYER.getPlayerListName())) {
+                if (entries.contains(p.PLAYER.getName())) {
                     sb.resetScores(entries);
                 }
             }
@@ -145,14 +153,36 @@ public class Board {
         sbTeam2.unregister();
     }
 
-    private static ChatColor darkenColor(ChatColor color) {
-        String colorName = color.name();
-        if (colorName.equals("LIGHT_PURPLE")) {
-            return ChatColor.DARK_PURPLE;
-        } else if (colorName.startsWith("LIGHT_")) {
-            return ChatColor.valueOf(colorName.replace("LIGHT_", ""));
+    private static TextColor darkenColor(TextColor color) {
+        if (color instanceof NamedTextColor) {
+            String colorName = color.toString();
+            if (colorName.equals("LIGHT_PURPLE")) {
+                return NamedTextColor.DARK_PURPLE;
+            } else if (colorName.startsWith("LIGHT_")) {
+                return NamedTextColor.NAMES.value(colorName.replace("LIGHT_", "").toLowerCase());
+            } else {
+                return NamedTextColor.NAMES.value(("DARK_" + colorName).toLowerCase());
+            }
         } else {
-            return ChatColor.valueOf("DARK_" + colorName);
+            // rethrn a textcolor which is the input mutiplyed saturation with 1.5, and value with 2/3
+            // Extract RGB values
+            int rgb = color.value();
+            int red = (rgb >> 16) & 0xFF;
+            int green = (rgb >> 8) & 0xFF;
+            int blue = rgb & 0xFF;
+
+            // Convert to HSV
+            float[] hsv = Color.RGBtoHSB(red, green, blue, null);
+
+            // Adjust saturation and value
+            hsv[1] = Math.min(1.0f, hsv[1] * 1.5f); // Saturation
+            hsv[2] = hsv[2] * 2.0f / 3.0f;         // Value
+
+            // Convert back to RGB
+            int darkenedRgb = Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]);
+
+            // Create new TextColor
+            return TextColor.color(darkenedRgb);
         }
     }
 }

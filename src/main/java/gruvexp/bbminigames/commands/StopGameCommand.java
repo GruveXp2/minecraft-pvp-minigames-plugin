@@ -1,7 +1,8 @@
 package gruvexp.bbminigames.commands;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,10 +14,10 @@ public class StopGameCommand implements CommandExecutor {
         Player p = (Player) sender;
 
         if (BotBows.activeGame) {
-            BotBows.messagePlayers("The game was ended by " + p.getPlayerListName());
+            BotBows.messagePlayers(Component.text("The game was ended by " + p.getName()));
             BotBows.botBowsGame.endGame();
         } else {
-            p.sendMessage(ChatColor.RED + "The game hasn't even started!");
+            p.sendMessage(Component.text("The game hasn't even started!", NamedTextColor.RED));
         }
         return true;
     }

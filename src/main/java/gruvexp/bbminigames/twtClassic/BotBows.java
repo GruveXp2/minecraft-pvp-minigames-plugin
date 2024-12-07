@@ -1,10 +1,12 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -103,15 +105,15 @@ public class BotBows {
         botBowsGame.check4Victory(dedPlayer);
     }
 
-    public static void messagePlayers(String message) {
+    public static void messagePlayers(Component message) {
         for (BotBowsPlayer p : settings.getPlayers()) {
             p.PLAYER.sendMessage(message);
         }
     }
 
     public static void debugMessage(String message) {
-        messagePlayers(ChatColor.GRAY + "[DEBUG]: " + message);
-        Bukkit.getLogger().info(ChatColor.GRAY + "[DEBUG]: " + message);
+        messagePlayers(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY));
+        Main.getPlugin().getLogger().info(ChatColor.GRAY + "[DEBUG]: " + message);
     }
 
     public static void debugMessage(String message, boolean bool) {

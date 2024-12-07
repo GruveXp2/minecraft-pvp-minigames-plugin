@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -121,8 +122,11 @@ public class BotBowsPlayer {
             return;
         }
         setHP(hp - 1);
-
-        BotBows.messagePlayers(team.COLOR + PLAYER.getPlayerListName() + " was sniped by " + attacker.team.COLOR + attacker.PLAYER.getPlayerListName() + "; " + team.COLOR + hp + " hp left.");
+        BotBows.messagePlayers(Component.text(PLAYER.getName(), team.COLOR)
+                .append(Component.text(" was sniped by "))
+                .append(Component.text(attacker.PLAYER.getName(), attacker.team.COLOR))
+                .append(Component.text(";"))
+                .append(Component.text(hp + "hp left", team.COLOR)));
         // defender effects
         PLAYER.setGlowing(true);
         PLAYER.setInvulnerable(true);
@@ -146,7 +150,7 @@ public class BotBowsPlayer {
     public void die(String deathMessage) { // gjør at spilleren dauer
         setHP(0);
         Board.updatePlayerScore(this);
-        BotBows.messagePlayers(deathMessage);
+        BotBows.messagePlayers(Component.text(deathMessage));
         PLAYER.setGameMode(GameMode.SPECTATOR);
         BotBows.check4Victory(this);
     }

@@ -1,7 +1,9 @@
 package gruvexp.bbminigames.twtClassic.botbowsTeams;
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,7 +13,7 @@ import java.util.List;
 
 public abstract class BotBowsTeam {
     public final String NAME;
-    public final ChatColor COLOR;
+    public final TextColor COLOR;
     public final DyeColor DYECOLOR;
     public final Location[] SPAWNPOS;
     public final Location TRIBUNE_POS;
@@ -19,7 +21,7 @@ public abstract class BotBowsTeam {
     List<BotBowsPlayer> players = new ArrayList<>(4);
     private int points;
 
-    public BotBowsTeam(String name, ChatColor color, DyeColor dyeColor, Location[] spawnPos, Location tribunePos) {
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location[] spawnPos, Location tribunePos) {
         NAME = name;
         COLOR = color;
         DYECOLOR = dyeColor;
@@ -95,8 +97,7 @@ public abstract class BotBowsTeam {
         return Material.getMaterial(DYECOLOR.name() + "_STAINED_GLASS_PANE");
     }
 
-    @Override
-    public String toString() {
-        return COLOR + NAME;
+    public TextComponent toComponent() {
+        return Component.text(NAME, COLOR);
     }
 }

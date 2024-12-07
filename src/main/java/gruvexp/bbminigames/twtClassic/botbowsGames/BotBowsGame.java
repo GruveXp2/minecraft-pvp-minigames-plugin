@@ -8,12 +8,14 @@ import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scoreboard.ScoreboardManager;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import static gruvexp.bbminigames.twtClassic.Bar.sneakBarInit;
@@ -58,7 +60,8 @@ public class BotBowsGame {
 
     public void startGame(Player gameStarter) {
         BotBows.activeGame = true;
-        BotBows.messagePlayers(ChatColor.GRAY + gameStarter.getName() + ": " + ChatColor.GREEN + "The game has started!");
+        BotBows.messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
+                .append(Component.text("The game has started!", NamedTextColor.GREEN)));
         sneakBarInit();
         Cooldowns.CoolDownInit(players);
         Board.createBoard();
@@ -104,14 +107,16 @@ public class BotBowsGame {
 
         if (!isTeamEliminated(losingTeam)) return;
 
-        BotBows.messagePlayers(winningTeam.toString() + ChatColor.WHITE + " won the round!");
+        BotBows.messagePlayers(winningTeam.toComponent()
+                .append(Component.text(" won the round!")));
 
         int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
 
-        BotBows.messagePlayers(
-                team1.toString() + ": " + ChatColor.WHITE + team1.getPoints() + "\n" +
-                team2.toString() + ": " + ChatColor.WHITE + team2.getPoints());
+        BotBows.messagePlayers(team1.toComponent()
+                .append(Component.text(team1.getPoints() + "\n"))
+                .append(team2.toComponent())
+                .append(Component.text(team2.getPoints())));
 
         BotBows.titlePlayers(winningTeam.toString() + " +" + winScore, 40);
         Board.updateTeamScores();
@@ -137,13 +142,13 @@ public class BotBowsGame {
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
             HPLeft += p.getHP();
         }
-        BotBows.messagePlayers(winningTeam.COLOR + "+" + HPLeft + "p for remaining hp");
+        BotBows.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.COLOR));
 
         int enemyHPTaken = 0;
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
             enemyHPTaken += p.getMaxHP();
         }
-        BotBows.messagePlayers(winningTeam.COLOR + "+" + enemyHPTaken + "p for enemy hp lost");
+        BotBows.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.COLOR));
 
         return HPLeft + enemyHPTaken;
     }
@@ -152,23 +157,20 @@ public class BotBowsGame {
         BotBows.activeGame = false;
         canMove = true;
         if (winningTeam == null) {
-            BotBows.messagePlayers(ChatColor.LIGHT_PURPLE + "================\n" +
+            BotBows.messagePlayers(Component.text("================\n" +
                     "The game ended in a tie after " + round + " round" + (round == 1 ? "" : "s") + "\n" +
-                    "================");
+                    "================", NamedTextColor.LIGHT_PURPLE));
         } else {
-            BotBows.messagePlayers(winningTeam.COLOR + "================\n" +
+            BotBows.messagePlayers(Component.text("================\n" +
                     "TEAM " + winningTeam.toString().toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
-                    "================");
+                    "================", winningTeam.COLOR));
         }
-
         postGameTitle(winningTeam);
 
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(10000);
 
-        ScoreboardManager sm = Bukkit.getServer().getScoreboardManager();
-        assert sm != null;
         for (BotBowsPlayer p : players) {
             p.reset();
         }
@@ -188,10 +190,12 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.PLAYER.sendTitle(winningTeam.COLOR + "Victory", null, 10, 60, 20);
+            p.PLAYER.showTitle(Title.title(Component.text("Victory", winningTeam.COLOR), Component.text(""),
+                    Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.PLAYER.sendTitle(losingTeam.COLOR + "Defeat", null, 10, 60, 20);
+            p.PLAYER.showTitle(Title.title(Component.text("Defeat", losingTeam.COLOR), Component.text(""),
+                    Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
     }
 

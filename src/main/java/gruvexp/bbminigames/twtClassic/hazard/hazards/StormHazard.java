@@ -6,6 +6,8 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -39,7 +41,8 @@ public class StormHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        BotBows.messagePlayers(ChatColor.DARK_RED + "STORM INCOMING!" + ChatColor.RED + " Seek shelter immediately!");
+        BotBows.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
+                .append(Component.text(" Seek shelter immediately!", NamedTextColor.RED)));
         BotBows.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : settings.getPlayers()) {

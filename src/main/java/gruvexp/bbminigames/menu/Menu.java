@@ -2,8 +2,8 @@ package gruvexp.bbminigames.menu;
 
 import gruvexp.bbminigames.Main;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -71,7 +71,7 @@ public abstract class Menu implements InventoryHolder {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(displayName);
+        itemMeta.displayName(Component.text(displayName));
         itemMeta.setLore(Arrays.asList(lore));
 
         item.setItemMeta(itemMeta);
@@ -81,7 +81,7 @@ public abstract class Menu implements InventoryHolder {
     public static ItemStack makeItem(int customModelData, String displayName, String... lore) {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(displayName);
+        itemMeta.displayName(Component.text(displayName));
         itemMeta.setLore(Arrays.asList(lore));
         itemMeta.setCustomModelData(customModelData);
 
@@ -116,11 +116,11 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    public ItemStack makeHeadItem(Player p, ChatColor teamColor) {
+    public ItemStack makeHeadItem(Player p, TextColor teamColor) {
 
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.setDisplayName(teamColor + p.getPlayerListName());
+        itemMeta.displayName(Component.text(p.getPlayerListName(), teamColor));
         itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, p.getUniqueId().toString());
         itemMeta.setOwningPlayer(Bukkit.getPlayer(p.getName()));
 

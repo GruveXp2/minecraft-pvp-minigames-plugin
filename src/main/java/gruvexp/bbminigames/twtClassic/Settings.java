@@ -5,6 +5,8 @@ import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -100,7 +102,7 @@ public class Settings {
         healthMenu.updateMenu();
 
         p.PLAYER.setGameMode(GameMode.SPECTATOR);
-        BotBows.messagePlayers(ChatColor.YELLOW + p.PLAYER.getPlayerListName() + " has left the game (" + players.size() + ")");
+        BotBows.messagePlayers(Component.text(p.PLAYER.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
