@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -19,8 +20,6 @@ import java.util.UUID;
 
 public class HealthMenu extends SettingsMenu {
 
-    private boolean customHP;
-
     private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Dynamic points",
             ChatColor.DARK_RED + "Disabled", "If enabled, winning team gets 1", "point for each remaining hp.", "If disbabled, winning team only gets 1 point.");
     private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Dynamic points",
@@ -31,7 +30,11 @@ public class HealthMenu extends SettingsMenu {
     private static final ItemStack CUSTOM_HP_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Custom player HP",
             ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled", "By enabling this, each player", "can have a different amount of hp");
 
-    @Override    public String getMenuName() {
+    private boolean customHP;
+    private final MenuSlider healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
+
+    @Override
+    public String getMenuName() {
         return "Select player health";
     }
 
@@ -121,16 +124,7 @@ public class HealthMenu extends SettingsMenu {
                 inventory.setItem(17 - i, item);
             }
         } else { // The normal menu with a slider
-            int maxHP = settings.getMaxHP();
-
-            for (int i = 0; i < 5; i++) {
-                ItemStack is = makeItem(Material.WHITE_STAINED_GLASS_PANE, ChatColor.WHITE + String.valueOf(i + 1));
-                if (i < maxHP) {
-                    is = makeItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.RED + String.valueOf(i + 1));
-                }
-                inventory.setItem(i + 11, is);
-            }
-            settings.setMaxHP(maxHP);
+            healthSlider.setProgressSlots(settings.getMaxHP());
         }
     }
     

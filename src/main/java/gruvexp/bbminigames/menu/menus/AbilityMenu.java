@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.menu.menus;
 
+import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
@@ -10,6 +11,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class AbilityMenu extends SettingsMenu {
 
@@ -24,6 +27,8 @@ public class AbilityMenu extends SettingsMenu {
             ChatColor.DARK_RED + "Disabled", "By enabling this, each player", "can have a different max ability cap");
     private static final ItemStack INDIVIDUAL_MAX_ABILITIES_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.GREEN),
             ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have a different max ability cap");
+
+    private final MenuSlider maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
 
     @Override
     public String getMenuName() {

@@ -1,11 +1,14 @@
 package gruvexp.bbminigames.menu.menus;
 
+import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,6 +24,9 @@ public class HazardMenu extends SettingsMenu {
     private EarthquakeHazard earthquakeHazard;
     private GhostHazard ghostHazard;
 
+    private MenuSlider stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT);
+    private MenuSlider earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT);
+    private MenuSlider ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
     private ItemStack getStormItem() {
         ItemStack item;
         String[] loreDesc = new String[] {"When there is a storm, you will get hit by", "lightning if you stand in dirext exposure", "to the sky for more than 5 seconds"};
@@ -75,7 +81,9 @@ public class HazardMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
-                String s = e.getCurrentItem().getItemMeta().displayName().toString();
+                Component c = e.getCurrentItem().getItemMeta().displayName();
+                assert c != null;
+                String s = PlainTextComponentSerializer.plainText().serialize(c);
                 HazardChance chance = HazardChance.of(s);
                 if (e.getSlot() < 9) {
                     if (stormHazard.getHazardChance() != chance) {
@@ -131,45 +139,21 @@ public class HazardMenu extends SettingsMenu {
     void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla
         inventory.setItem(0, getStormItem());
         inventory.setItem(1, VOID);
-        for (int i = 0; i < PERCENT.size(); i++) {
-            ItemStack item;
-            if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > stormHazard.getHazardChance().getPercent()) {
-                item = makeItem(Material.WHITE_STAINED_GLASS_PANE, ChatColor.WHITE + PERCENT.get(i));
-            } else {
-                item = makeItem(Material.CYAN_STAINED_GLASS_PANE, ChatColor.AQUA + PERCENT.get(i));
-            }
-            inventory.setItem(i + 2, item);
-        }
+        stormSlider.setProgress(stormHazard.getHazardChance().toString());
         inventory.setItem(8, VOID);
     }
 
     void updateEarthquakeBar() { // Hvordan menu skal se ut når storm mode er enabla
         inventory.setItem(9, getEarthquakeItem());
         inventory.setItem(10, VOID);
-        for (int i = 0; i < PERCENT.size(); i++) {
-            ItemStack item;
-            if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > earthquakeHazard.getHazardChance().getPercent()) {
-                item = makeItem(Material.WHITE_STAINED_GLASS_PANE, ChatColor.WHITE + PERCENT.get(i));
-            } else {
-                item = makeItem(Material.BROWN_STAINED_GLASS_PANE, ChatColor.GOLD + PERCENT.get(i));
-            }
-            inventory.setItem(i + 11, item);
-        }
+        earthQuakeSlider.setProgress(earthquakeHazard.getHazardChance().toString());
         inventory.setItem(17, VOID);
     }
 
     void updateGhostBar() { // Hvordan menu skal se ut når storm mode er enabla
         inventory.setItem(18, getGhostItem());
         inventory.setItem(19, VOID);
-        for (int i = 0; i < PERCENT.size(); i++) {
-            ItemStack item;
-            if (PERCENT_MAP.get(PERCENT.get(i)).getPercent() > ghostHazard.getHazardChance().getPercent()) {
-                item = makeItem(Material.WHITE_STAINED_GLASS_PANE, ChatColor.WHITE + PERCENT.get(i));
-            } else {
-                item = makeItem(Material.PURPLE_STAINED_GLASS_PANE, ChatColor.GOLD + PERCENT.get(i));
-            }
-            inventory.setItem(i + 18, item);
-        }
+        ghostSlider.setProgress(ghostHazard.getHazardChance().toString());
         inventory.setItem(26, VOID);
     }
 }
