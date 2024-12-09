@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu;
 
 import gruvexp.bbminigames.Main;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

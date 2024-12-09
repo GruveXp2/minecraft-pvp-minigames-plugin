@@ -63,8 +63,14 @@ public class AbilityMenu extends SettingsMenu {
         setPageButtons(5, true, false, null);
     }
 
+    public void enableAbilities() {
+        inventory.setItem(8, ABILITIES_ENABLED);
+        if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
+    }
+
     public void disableAbilities() {
         inventory.setItem(8, ABILITIES_DISABLED);
+        // fyller med gråe glassvinduer der settings var
         ItemStack disabled = makeItem(Material.GRAY_STAINED_GLASS_PANE, "");
         settings.setMaxAbilities(0);
         inventory.setItem(0, disabled);
@@ -75,11 +81,6 @@ public class AbilityMenu extends SettingsMenu {
         for (int i = 36; i < 45; i++) {
             inventory.setItem(i, disabled);
         }
-    }
-
-    public void enableAbilities() {
-        inventory.setItem(8, ABILITIES_ENABLED);
-        if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
     }
 
     public void enableIndividualMaxAbilities() {
