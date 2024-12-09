@@ -1,34 +1,22 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HazardMenu extends SettingsMenu {
 
-    private static final Map<String, HazardChance> PERCENT_MAP = new HashMap<>();
-    private static final List<String> PERCENT = List.of("DISABLED", "5%", "10%", "25%", "50%", "ALWAYS");
-
-    static {
-        PERCENT_MAP.put("DISABLED", HazardChance.DISABLED);
-        PERCENT_MAP.put("5%", HazardChance.FIVE);
-        PERCENT_MAP.put("10%", HazardChance.TEN);
-        PERCENT_MAP.put("25%", HazardChance.TWENTY_FIVE);
-        PERCENT_MAP.put("50%", HazardChance.FIFTY);
-        PERCENT_MAP.put("ALWAYS", HazardChance.ALWAYS);
-    }
+    private static final List<String> PERCENT = HazardChance.getPercentStrings();
     private StormHazard stormHazard;
     private EarthquakeHazard earthquakeHazard;
     private GhostHazard ghostHazard;
@@ -87,20 +75,21 @@ public class HazardMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
-                String s = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
+                String s = e.getCurrentItem().getItemMeta().displayName().toString();
+                HazardChance chance = HazardChance.of(s);
                 if (e.getSlot() < 9) {
-                    if (stormHazard.getHazardChance() != PERCENT_MAP.get(s)) {
-                        stormHazard.setHazardChance(PERCENT_MAP.get(s));
+                    if (stormHazard.getHazardChance() != chance) {
+                        stormHazard.setHazardChance(chance);
                         updateStormBar();
                     }
                 } else if (e.getSlot() < 18) {
-                    if (earthquakeHazard.getHazardChance() != PERCENT_MAP.get(s)) {
-                        earthquakeHazard.setHazardChance(PERCENT_MAP.get(s));
+                    if (earthquakeHazard.getHazardChance() != chance) {
+                        earthquakeHazard.setHazardChance(chance);
                         updateEarthquakeBar();
                     }
                 } else if (e.getSlot() < 27) {
-                    if (ghostHazard.getHazardChance() != PERCENT_MAP.get(s)) {
-                        ghostHazard.setHazardChance(PERCENT_MAP.get(s));
+                    if (ghostHazard.getHazardChance() != chance) {
+                        ghostHazard.setHazardChance(chance);
                         updateGhostBar();
                     }
                 }

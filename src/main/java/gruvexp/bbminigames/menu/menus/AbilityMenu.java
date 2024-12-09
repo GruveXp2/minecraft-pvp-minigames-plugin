@@ -3,6 +3,8 @@ package gruvexp.bbminigames.menu.menus;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
