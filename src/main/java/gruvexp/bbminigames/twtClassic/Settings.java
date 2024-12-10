@@ -32,7 +32,7 @@ public class Settings {
     private int winThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er satt til -1, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
     // abilities
     private int maxAbilities = 2;
-    private double abilityCooldownMultiplier = 1.0;
+    private float abilityCooldownMultiplier = 1.0f;
     // menus
     public final MapMenu mapMenu;
     public final HealthMenu healthMenu;
@@ -155,5 +155,14 @@ public class Settings {
 
     public int getMaxAbilities() {
         return maxAbilities;
+    }
+
+    public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
+        abilityCooldownMultiplier = cooldownMultiplier;
+        abilityMenu.updateCooldownMultipliers();
+    }
+
+    public float getAbilityCooldownMultiplier() {
+        return abilityCooldownMultiplier;
     }
 }
