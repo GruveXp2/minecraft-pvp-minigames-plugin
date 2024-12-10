@@ -41,4 +41,12 @@ public class MenuSlider {
         }
         setProgressSlots(sliderSteps.indexOf(progressTick));
     }
+
+    public int size() {
+        return sliderSteps.size();
+    }
+
+    public int getStartSlot() {
+        return startSlot;
+    }
 }
