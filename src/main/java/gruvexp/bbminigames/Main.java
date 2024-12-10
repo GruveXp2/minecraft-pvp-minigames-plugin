@@ -41,6 +41,7 @@ public final class Main extends JavaPlugin {
         getCommand("leave").setExecutor(new LeaveCommand());
         getCommand("stopgame").setExecutor(new StopGameCommand());
         getCommand("test").setExecutor(new TestCommand());
+        getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
         BotBows.init();
         BotBowsPlayer.armorInit();

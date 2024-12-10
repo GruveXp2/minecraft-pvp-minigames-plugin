@@ -9,11 +9,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
     public static boolean log = false;
+    public static Inventory testInv = Bukkit.createInventory(null, 63, "Lagre-Chest");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -42,7 +44,10 @@ public class TestCommand implements CommandExecutor {
                     log = !log;
                     BotBows.debugMessage("Logging set to: " + log);
                 }
-                case "set_blazerod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);
+                case "inv" -> {
+                    p.openInventory(testInv);
+                }
+                case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);
                 case null, default -> BotBows.debugMessage("Wrong arg");
             }
             return true;
