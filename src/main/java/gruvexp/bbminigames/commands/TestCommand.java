@@ -15,7 +15,7 @@ public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
     public static boolean log = false;
-    public static Inventory testInv = Bukkit.createInventory(null, 63, "Lagre-Chest");
+    public static Inventory testInv = Bukkit.createInventory(null, 54, "Lagre-Chest");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

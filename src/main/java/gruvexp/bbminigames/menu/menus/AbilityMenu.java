@@ -79,12 +79,12 @@ public class AbilityMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        disableAbilities();
         setPageButtons(5, true, false, null);
         maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
         maxAbilitiesRow = new PaginatedMenuRow(inventory, 2, 5);
         cooldownMultiplierRow = new PaginatedMenuRow(inventory, 20, 7);
+        disableAbilities();
     }
 
     public void enableAbilities() {

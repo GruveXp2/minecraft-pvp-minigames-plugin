@@ -100,11 +100,11 @@ public class HealthMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems(); // initer settings
+        healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
         disableCustomHP();
         enableDynamicPoints();
         setPageButtons(2, true, true, null);
         setFillerVoid();
-        healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
     }
 
     public void updateMenu() {
