@@ -136,7 +136,7 @@ public class HazardMenu extends SettingsMenu {
         ghostHazard = settings.ghostHazard;
         ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
         updateGhostBar();
-        setPageButtons(3, true, false, null);
+        setPageButtons(3, true, true, null);
     }
 
     void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla
