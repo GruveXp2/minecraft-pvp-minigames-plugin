@@ -24,9 +24,9 @@ public class HazardMenu extends SettingsMenu {
     private EarthquakeHazard earthquakeHazard;
     private GhostHazard ghostHazard;
 
-    private MenuSlider stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT);
-    private MenuSlider earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT);
-    private MenuSlider ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
+    private MenuSlider stormSlider;
+    private MenuSlider earthQuakeSlider;
+    private MenuSlider ghostSlider;
     private ItemStack getStormItem() {
         ItemStack item;
         String[] loreDesc = new String[] {"When there is a storm, you will get hit by", "lightning if you stand in dirext exposure", "to the sky for more than 5 seconds"};
@@ -128,10 +128,13 @@ public class HazardMenu extends SettingsMenu {
     public void setMenuItems() {
         super.setMenuItems();
         stormHazard = settings.stormHazard;
-        earthquakeHazard = settings.earthquakeHazard;
-        ghostHazard = settings.ghostHazard;
+        stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT);
         updateStormBar();
+        earthquakeHazard = settings.earthquakeHazard;
+        earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT);
         updateEarthquakeBar();
+        ghostHazard = settings.ghostHazard;
+        ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
         updateGhostBar();
         setPageButtons(3, true, false, null);
     }
