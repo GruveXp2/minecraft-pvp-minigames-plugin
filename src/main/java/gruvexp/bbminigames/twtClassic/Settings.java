@@ -53,6 +53,7 @@ public class Settings {
         winThresholdMenu = new WinThresholdMenu();
         hazardMenu = new HazardMenu();
         abilityMenu = new AbilityMenu();
+        abilityMenu.disableAbilities();
     }
 
     public void setMap(BotBowsMap map) {
