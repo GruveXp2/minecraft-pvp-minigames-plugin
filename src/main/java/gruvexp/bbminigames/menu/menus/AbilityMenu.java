@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.MenuSlider;
+import gruvexp.bbminigames.menu.PaginatedMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
@@ -34,8 +35,11 @@ public class AbilityMenu extends SettingsMenu {
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.GREEN),
             ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have a different cooldown multiplier");
 
-    private final MenuSlider maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
-    private final MenuSlider cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
+    private MenuSlider maxAbilitiesSlider;
+    private MenuSlider cooldownMultiplierSlider;
+
+    private PaginatedMenuRow maxAbilitiesRow;
+    private PaginatedMenuRow cooldownMultiplierRow;
 
     @Override
     public String getMenuName() {
@@ -77,6 +81,10 @@ public class AbilityMenu extends SettingsMenu {
     public void setMenuItems() {
         disableAbilities();
         setPageButtons(5, true, false, null);
+        maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
+        cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
+        maxAbilitiesRow = new PaginatedMenuRow(inventory, 2, 5);
+        cooldownMultiplierRow = new PaginatedMenuRow(inventory, 20, 7);
     }
 
     public void enableAbilities() {

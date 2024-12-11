@@ -34,16 +34,19 @@ public class Settings {
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
     // menus
-    public final MapMenu mapMenu;
-    public final HealthMenu healthMenu;
-    public final TeamsMenu teamsMenu;
-    public final WinThresholdMenu winThresholdMenu;
-    public final HazardMenu hazardMenu;
-    public final AbilityMenu abilityMenu;
+    public MapMenu mapMenu;
+    public HealthMenu healthMenu;
+    public TeamsMenu teamsMenu;
+    public WinThresholdMenu winThresholdMenu;
+    public HazardMenu hazardMenu;
+    public AbilityMenu abilityMenu;
 
     public Settings() {
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
         team2.setOppositeTeam(team1);
+    }
+
+    public void initMenus() {
         mapMenu = new MapMenu();
         healthMenu = new HealthMenu();
         teamsMenu = new TeamsMenu();

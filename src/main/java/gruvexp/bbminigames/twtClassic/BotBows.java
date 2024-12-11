@@ -38,6 +38,7 @@ public class BotBows {
 
     public static void init() { // a
         settings = new Settings();
+        settings.initMenus();
         gameMenu = new GameMenu();
     }
 

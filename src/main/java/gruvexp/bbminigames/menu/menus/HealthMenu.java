@@ -31,7 +31,7 @@ public class HealthMenu extends SettingsMenu {
             ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled", "By enabling this, each player", "can have a different amount of hp");
 
     private boolean customHP;
-    private final MenuSlider healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
+    private MenuSlider healthSlider;
 
     @Override
     public String getMenuName() {
@@ -104,6 +104,7 @@ public class HealthMenu extends SettingsMenu {
         enableDynamicPoints();
         setPageButtons(2, true, true, null);
         setFillerVoid();
+        healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
     }
 
     public void updateMenu() {
