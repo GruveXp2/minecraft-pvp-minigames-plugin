@@ -71,7 +71,7 @@ public class AbilityMenu extends SettingsMenu {
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
-                    settings.winThresholdMenu.open(clicker);
+                    settings.hazardMenu.open(clicker);
                 }
             }
         }

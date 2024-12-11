@@ -29,7 +29,7 @@ public class WinThresholdMenu extends SettingsMenu {
             case GREEN_STAINED_GLASS_PANE -> settings.changeWinThreshold(10);
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
-                    settings.teamsMenu.open(clicker);
+                    settings.healthMenu.open(clicker);
                 } else if (e.getSlot() == getSlots() - 4) {
                     settings.hazardMenu.open(clicker);
                 }
