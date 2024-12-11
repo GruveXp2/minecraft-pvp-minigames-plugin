@@ -39,7 +39,7 @@ public class MenuSlider {
         if (!sliderSteps.contains(progressTick)) {
             setProgressSlots(0);
         }
-        setProgressSlots(sliderSteps.indexOf(progressTick));
+        setProgressSlots(sliderSteps.indexOf(progressTick) + 1);
     }
 
     public int size() {
