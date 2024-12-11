@@ -2,14 +2,27 @@ plugins {
     id 'java'
 }
 
-// Build number logic
-def buildNumberFile = file("build-number.txt")
-def buildNumber = (buildNumberFile.text.trim().toInteger() + 1).toString()
+def incrementBuildNumber() {
+    def buildNumberFile = file("build-number.txt")
+    def buildNumber = buildNumberFile.text.trim().toInteger() + 1
+    buildNumberFile.text = buildNumber.toString()
+    return buildNumber
+}
 
-buildNumberFile.text = buildNumber
+def buildNumber = incrementBuildNumber()
 
 group = 'gruvexp'
 version = "1.0.0-${buildNumber}"
+
+tasks.register("incrementBuildNumber") {
+    doLast {
+        incrementBuildNumber()
+    }
+}
+
+tasks.named("processResources").configure {
+    inputs.property("version", version)
+}
 
 repositories {
     mavenCentral()
@@ -51,5 +64,44 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+// This task renames the built jar to exclude the version part
+tasks.register('renameJar') {
+    println("Kjør kano nå")
+    doLast {
+        def jarFile = file("build/libs/${project.name}-${version}.jar")
+        def renamedFile = file("build/libs/${project.name}.jar")
+        println("Version: ${project.version}")
+        if (jarFile.exists()) {
+            jarFile.renameTo(renamedFile)
+        } else {
+            println("There wass... error")
+        }
+    }
+}
+
+def renameJar() {
+    println("Kjør kano nå")
+    def jarFile = file("build/libs/${project.name}-${version}.jar")
+    def renamedFile = file("build/libs/${project.name}.jar")
+    println("Version: ${project.version}")
+
+    if (renamedFile.exists()) {
+        println("Eksisterende jar funnet, sletter...")
+        renamedFile.delete() // Slett den eksisterende filen
+    }
+
+    if (jarFile.exists()) {
+        jarFile.renameTo(renamedFile)
+    } else {
+        println("There wass... error")
+    }
+}
+
+tasks.named("jar") {
+    doLast {
+        renameJar()
     }
 }
