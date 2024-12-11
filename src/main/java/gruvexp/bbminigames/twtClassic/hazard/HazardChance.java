@@ -37,11 +37,7 @@ public enum HazardChance {
     }
 
     public static List<String> getPercentStrings() {
-        List<String> percentStrings = new ArrayList<>();
-        for (HazardChance chance : HazardChance.values()) {
-            percentStrings.add(chance.toString());
-        }
-        return percentStrings;
+        return List.of("5%", "10%", "25%", "50%", "ALWAYS");
     }
 
     public static HazardChance of(String chanceString) {
