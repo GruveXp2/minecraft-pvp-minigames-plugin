@@ -23,9 +23,9 @@ public abstract class Menu implements InventoryHolder {
 
     //Protected values that can be accessed in the menus
     protected Inventory inventory;
-    protected final ItemStack VOID = getVoidItem();
-    protected final ItemStack PREV = getPrevPageItem();
-    protected final ItemStack NEXT = getNextPageItem();
+    public static final ItemStack VOID = getVoidItem();
+    public static final ItemStack PREV = getPrevPageItem();
+    public static final ItemStack NEXT = getNextPageItem();
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
