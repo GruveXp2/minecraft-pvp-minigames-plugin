@@ -55,12 +55,12 @@ public class TeamsMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems(); // settings init
-        init();
+        registerTeams();
         setColoredGlassPanes();
         setPageButtons(2, true, true, null);
     }
 
-    public void init() {
+    public void registerTeams() {
         team1 = settings.team1;
         team2 = settings.team2;
     }

@@ -71,14 +71,15 @@ public class Settings {
             case BLAUD_VS_SAUCE -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case GRAUT_VS_WACKY -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
         }
+        teamsMenu.registerTeams();
+        teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
+        teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
+        healthMenu.updateMenu(); // update so the name colors match the new team color
     }
 
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
         team1 = newTeam1;
         team2 = newTeam2;
-        teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
-        teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
-        healthMenu.updateMenu(); // update so the name colors match the new team color
     }
 
     public void joinGame(Player p) {
