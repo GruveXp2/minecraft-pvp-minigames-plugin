@@ -48,10 +48,18 @@ public class Settings {
 
     public void initMenus() {
         mapMenu = new MapMenu();
+
         healthMenu = new HealthMenu();
+        healthMenu.disableCustomHP();
+        healthMenu.enableDynamicPoints();
+        setMaxHP(3);
+
         teamsMenu = new TeamsMenu();
+
         winThresholdMenu = new WinThresholdMenu();
+
         hazardMenu = new HazardMenu();
+
         abilityMenu = new AbilityMenu();
         abilityMenu.disableAbilities();
     }
@@ -132,6 +140,7 @@ public class Settings {
         for (BotBowsPlayer p : players) { // oppdaterer livene til alle playersene
             p.setMaxHP(maxHP);
         }
+        healthMenu.updateMenu();
     }
 
     public int getMaxHP() {
