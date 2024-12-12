@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -65,8 +66,8 @@ public class TeamsMenu extends SettingsMenu {
     }
 
     public void setColoredGlassPanes() {
-        ItemStack team1Pane = makeItem(team1.getGlassPane(), team1.COLOR + "Team " + team1);
-        ItemStack team2Pane = makeItem(team2.getGlassPane(), team2.COLOR + "Team " + team2);
+        ItemStack team1Pane = makeItem(team1.getGlassPane(), Component.text("Team " + team1, team1.COLOR));
+        ItemStack team2Pane = makeItem(team2.getGlassPane(), Component.text("Team " + team2, team2.COLOR));
         inventory.setItem(0, team1Pane);
         inventory.setItem(1, team1Pane);
         inventory.setItem(7, team1Pane);
