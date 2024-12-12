@@ -77,6 +77,7 @@ public class AbilityMenu extends SettingsMenu {
                 if (e.getSlot() < 9) {
                     settings.setMaxAbilities(Integer.parseInt(s));
                 } else if (e.getSlot() <=27) {
+                    s = s.substring(0, s.length() - 1);
                     settings.setAbilityCooldownMultiplier(Float.parseFloat(s));
                 }
             }
