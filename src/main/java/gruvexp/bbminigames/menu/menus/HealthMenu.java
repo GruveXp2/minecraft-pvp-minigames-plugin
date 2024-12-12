@@ -141,7 +141,7 @@ public class HealthMenu extends SettingsMenu {
         inventory.setItem(10, VOID);
         inventory.setItem(16, VOID);
         inventory.setItem(17, VOID);
-        updateMenu();
+        settings.setMaxHP(3);
     }
 
     public void enableDynamicPoints() {
