@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -67,6 +68,16 @@ public class AbilityMenu extends SettingsMenu {
                     case 0 -> enableIndividualMaxAbilities();
                     case 8 -> enableAbilities();
                     case 18 -> enableIndividualCooldownMultiplier();
+                }
+            }
+            case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
+                Component c = e.getCurrentItem().getItemMeta().displayName();
+                assert c != null;
+                String s = PlainTextComponentSerializer.plainText().serialize(c);
+                if (e.getSlot() < 9) {
+                    settings.setMaxAbilities(Integer.parseInt(s));
+                } else if (e.getSlot() <=27) {
+                    settings.setAbilityCooldownMultiplier(Float.parseFloat(s));
                 }
             }
             case FIREWORK_STAR -> {
