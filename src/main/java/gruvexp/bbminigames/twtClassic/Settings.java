@@ -157,7 +157,7 @@ public class Settings {
     }
 
     public void setWinThreshold(int threshold) {
-        winThreshold = Math.max(threshold, -1);
+        winThreshold = Math.max(threshold, 0);
         winThresholdMenu.updateMenu();
     }
 
