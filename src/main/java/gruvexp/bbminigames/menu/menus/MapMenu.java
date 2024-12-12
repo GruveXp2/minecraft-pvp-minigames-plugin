@@ -34,7 +34,11 @@ public class  MapMenu extends SettingsMenu {
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
-            case FIREWORK_STAR -> settings.teamsMenu.open(clicker);
+            case FIREWORK_STAR -> {
+                if (e.getSlot() == getSlots() - 4) {
+                    settings.teamsMenu.open(clicker);
+                }
+            }
         }
     }
 
