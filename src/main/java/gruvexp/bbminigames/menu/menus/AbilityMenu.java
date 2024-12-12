@@ -130,8 +130,7 @@ public class AbilityMenu extends SettingsMenu {
     public void disableIndividualMaxAbilities() {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
         individualMaxAbilities = false;
-        if (settings.getMaxAbilities() == 0) settings.setMaxAbilities(2);
-        updateMaxAbilities();
+        settings.setMaxAbilities(2);
         inventory.setItem(5, VOID);
         inventory.setItem(6, VOID);
     }
@@ -145,6 +144,7 @@ public class AbilityMenu extends SettingsMenu {
     public void disableIndividualCooldownMultiplier() {
         inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
         individualCooldownMultipliers = false;
+        settings.setAbilityCooldownMultiplier(1.0f);
     }
 
     public void updateMaxAbilities() {
