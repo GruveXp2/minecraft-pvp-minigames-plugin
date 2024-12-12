@@ -54,11 +54,7 @@ public class WinThresholdMenu extends SettingsMenu {
         inventory.setItem(6, add10);
 
         setPageButtons(1, true, true, null);
-
-        inventory.setItem(0, VOID);
-        inventory.setItem(1, VOID);
-        inventory.setItem(7, VOID);
-        inventory.setItem(8, VOID);
+        setFillerVoid();
     }
     public void updateMenu() {
         ItemStack is;
