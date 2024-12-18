@@ -117,8 +117,8 @@ public class BotBows {
         Main.getPlugin().getLogger().info(ChatColor.GRAY + "[DEBUG]: " + message);
     }
 
-    public static void debugMessage(String message, boolean bool) {
-        if (bool) debugMessage(message);
+    public static void debugMessage(String message, boolean showMessage) {
+        if (showMessage) debugMessage(message);
     }
 
     public static void titlePlayers(String title, int duration) {

@@ -1,5 +1,7 @@
 package gruvexp.bbminigames.menu;
 
+import gruvexp.bbminigames.commands.TestCommand;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -38,6 +40,7 @@ public class MenuSlider {
     public void setProgress(String progressTick) {
         if (!sliderSteps.contains(progressTick)) {
             setProgressSlots(0);
+            BotBows.debugMessage(progressTick + " Doesnt exist", TestCommand.log);
         }
         setProgressSlots(sliderSteps.indexOf(progressTick) + 1);
     }
