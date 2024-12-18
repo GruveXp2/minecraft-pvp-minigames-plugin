@@ -13,6 +13,7 @@ public class PaginatedMenuRow {
     private final List<ItemStack> itemList = new ArrayList<>();
     private final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
     private int currentPage = 1; // åssen side man er på nå
+    private boolean isVisible = false;
 
 
     public PaginatedMenuRow(Inventory inventory, int startSlot, int size) {
@@ -90,7 +91,7 @@ public class PaginatedMenuRow {
 
     public void addItem(ItemStack item) {
         itemList.add(item);
-        if (currentPage == getTotalPages()) {
+        if (isVisible && currentPage == getTotalPages()) {
             goTo(currentPage);
         }
     }
@@ -98,6 +99,15 @@ public class PaginatedMenuRow {
     public void removeItem(ItemStack item) {
         itemList.remove(item);
         goTo(currentPage);
+    }
+
+    public void show() {
+        isVisible = true;
+        goTo(currentPage);
+    }
+
+    public void hide() {
+        isVisible = false;
     }
 
     // xxxxxx
