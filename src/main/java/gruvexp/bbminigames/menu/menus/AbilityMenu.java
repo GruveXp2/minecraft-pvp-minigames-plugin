@@ -192,24 +192,16 @@ public class AbilityMenu extends SettingsMenu {
         }
     }
 
-    public void updateCooldownMultipliers() {
+    public void updateCooldownMultiplier() {
+        float cooldownMultiplier = settings.getAbilityCooldownMultiplier();
         if (individualCooldownMultipliers) {
-            int sliderSize = cooldownMultiplierSlider.size();
-            int sliderStartSlot = cooldownMultiplierSlider.getStartSlot();
-            if (settings.getPlayers().size() > sliderSize) {
-                inventory.setItem(sliderStartSlot, makeItem(77011, "Set cooldown multipliers", "Click to expand"));
-                for (int i = 1; i < sliderSize; i++) {
-                    inventory.setItem(i + sliderStartSlot, VOID);
-                }
-            } else {
-                for (int i = 0; i < sliderSize; i++) { // setter av plass til playerheads
-                    inventory.setItem(i + sliderStartSlot, null);
-                }
-                placeHeads(settings.team1, sliderStartSlot);
-                placeHeads(settings.team2, sliderStartSlot + settings.team2.size());
+            for (ItemStack item : cooldownMultiplierRow.getItems()) {
+                ItemMeta meta = item.getItemMeta();
+                meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                item.setAmount(settings.getMaxAbilities());
             }
         } else {
-            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
+            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", cooldownMultiplier));
         }
     }
 
