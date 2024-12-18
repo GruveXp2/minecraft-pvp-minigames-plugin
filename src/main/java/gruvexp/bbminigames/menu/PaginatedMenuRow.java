@@ -46,6 +46,10 @@ public class PaginatedMenuRow {
         goTo(currentPage);
     }
 
+    public List<ItemStack> getItems() {
+        return itemList;
+    }
+
     private void goTo(int page) {
         int totalPages = getTotalPages();
         page = Math.min(page, totalPages);
@@ -82,6 +86,18 @@ public class PaginatedMenuRow {
 
     private void setItem(int index, ItemStack item) {
         inventory.setItem(startSlot + index, item);
+    }
+
+    public void addItem(ItemStack item) {
+        itemList.add(item);
+        if (currentPage == getTotalPages()) {
+            goTo(currentPage);
+        }
+    }
+
+    public void removeItem(ItemStack item) {
+        itemList.remove(item);
+        goTo(currentPage);
     }
 
     // xxxxxx

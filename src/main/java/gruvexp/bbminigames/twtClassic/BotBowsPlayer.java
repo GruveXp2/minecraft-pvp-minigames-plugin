@@ -110,6 +110,14 @@ public class BotBowsPlayer {
         return maxAbilities;
     }
 
+    public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
+        this.abilityCooldownMultiplier = cooldownMultiplier;
+    }
+
+    public float getAbilityCooldownMultiplier() {
+        return abilityCooldownMultiplier;
+    }
+
     public boolean isDamaged() {
         return isDamaged;
     }

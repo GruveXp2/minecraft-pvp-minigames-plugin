@@ -52,4 +52,13 @@ public class MenuSlider {
     public int getStartSlot() {
         return startSlot;
     }
+
+    public String getNext(String step) {
+        int i = sliderSteps.indexOf(step);
+        i++;
+        if (i == sliderSteps.size()) {
+            i = 0;
+        }
+        return sliderSteps.get(i);
+    }
 }

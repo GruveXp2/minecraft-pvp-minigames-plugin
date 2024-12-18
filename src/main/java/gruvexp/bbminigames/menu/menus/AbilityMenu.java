@@ -1,21 +1,29 @@
 package gruvexp.bbminigames.menu.menus;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.PaginatedMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
 
 public class AbilityMenu extends SettingsMenu {
 
@@ -80,6 +88,29 @@ public class AbilityMenu extends SettingsMenu {
                 } else if (e.getSlot() <=27) {
                     s = s.substring(0, s.length() - 1);
                     settings.setAbilityCooldownMultiplier(Float.parseFloat(s));
+                }
+            }
+            case PLAYER_HEAD -> {
+                Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                if (e.getSlot() < 9) {
+                    int maxAbilities = bp.getMaxAbilities(); // oppdaterer max abilities
+                    maxAbilities++;
+                    if (maxAbilities > 3) maxAbilities = 1;
+                    bp.setMaxAbilities(maxAbilities);
+
+                    e.getCurrentItem().setAmount(maxAbilities); // oppdaterer item count
+                } else if (e.getSlot() <=27) {
+                    float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
+                    String s = String.format("%f:.2fx", cooldownMultiplier);
+                    String next = cooldownMultiplierSlider.getNext(s);
+                    float newCooldownMultiplier = Float.parseFloat(next.substring(next.length() - 1));
+                    bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
+
+                    ItemStack item = e.getCurrentItem(); // oppdaterer loren
+                    ItemMeta meta = item.getItemMeta();
+                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                    item.setItemMeta(meta);
                 }
             }
             case FIREWORK_STAR -> {
@@ -151,20 +182,9 @@ public class AbilityMenu extends SettingsMenu {
 
     public void updateMaxAbilities() {
         if (individualMaxAbilities) {
-            int sliderStartSlot = maxAbilitiesSlider.getStartSlot();
-            if (settings.getPlayers().size() > 5) {
-                inventory.setItem(sliderStartSlot, makeItem(77011, "Set max abilities", "Click to expand"));
-                for (int i = 1; i < 5; i++) {
-                    inventory.setItem(i + sliderStartSlot, VOID);
-                }
-            } else {
-                for (int i = 0; i < 5; i++) { // setter av plass til playerheads
-                    inventory.setItem(i + sliderStartSlot, null);
-                }
-                placeHeads(settings.team1, sliderStartSlot);
-                placeHeads(settings.team2, sliderStartSlot + settings.team2.size());
+            for (ItemStack item : maxAbilitiesRow.getItems()) {
+                item.setAmount(settings.getMaxAbilities()); // oppdaterer head count
             }
-
         } else { // en slider
             maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities());
         }
@@ -189,6 +209,35 @@ public class AbilityMenu extends SettingsMenu {
         } else {
             cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
         }
+    }
+
+    public void addPlayer(BotBowsPlayer p) {
+        //max abilities
+        ItemStack abilitiesHead = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
+        abilitiesHead.setAmount(p.getMaxAbilities());
+        maxAbilitiesRow.addItem(abilitiesHead);
+        // cooldown multiplier
+        ItemStack cooldownHead = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
+        ItemMeta meta = cooldownHead.getItemMeta();
+        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        cooldownHead.setItemMeta(meta);
+        cooldownMultiplierRow.addItem(cooldownHead);
+    }
+
+    public void removePlayer(BotBowsPlayer p) {
+        removePlayerFromRow(p, maxAbilitiesRow);
+        removePlayerFromRow(p, cooldownMultiplierRow);
+    }
+
+    private void removePlayerFromRow(BotBowsPlayer p, PaginatedMenuRow row) {
+        row.getItems().stream()
+                .filter(item -> {
+                    ItemMeta meta = item.getItemMeta();
+                    return meta != null && p.PLAYER.getUniqueId().toString().equals(
+                            meta.getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)
+                    );
+                })
+                .forEach(row::removeItem);
     }
 
     private void placeHeads(BotBowsTeam team, int startSlot) {

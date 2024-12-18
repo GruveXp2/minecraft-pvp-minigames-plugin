@@ -99,6 +99,7 @@ public class Settings {
         }
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
+        abilityMenu.addPlayer(bp);
         for (Player q : Bukkit.getOnlinePlayers()) {
             q.sendMessage(p.getPlayerListName() + " has joined BotBows Classic! (" + players.size() + ")");
         }
@@ -113,6 +114,7 @@ public class Settings {
         players.remove(p);
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
+        abilityMenu.removePlayer(p);
 
         p.PLAYER.setGameMode(GameMode.SPECTATOR);
         BotBows.messagePlayers(Component.text(p.PLAYER.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
