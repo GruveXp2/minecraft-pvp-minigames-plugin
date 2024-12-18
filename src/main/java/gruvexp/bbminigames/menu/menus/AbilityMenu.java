@@ -102,14 +102,14 @@ public class AbilityMenu extends SettingsMenu {
                     e.getCurrentItem().setAmount(maxAbilities); // oppdaterer item count
                 } else if (e.getSlot() <=27) {
                     float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
-                    String s = String.format("%f:.2fx", cooldownMultiplier);
+                    String s = String.format("%.2fx", cooldownMultiplier);
                     String next = cooldownMultiplierSlider.getNext(s);
                     float newCooldownMultiplier = Float.parseFloat(next.substring(next.length() - 1));
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
 
                     ItemStack item = e.getCurrentItem(); // oppdaterer loren
                     ItemMeta meta = item.getItemMeta();
-                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
                     item.setItemMeta(meta);
                 }
             }
@@ -185,7 +185,7 @@ public class AbilityMenu extends SettingsMenu {
     public void updateMaxAbilities() {
         if (individualMaxAbilities) {
             for (ItemStack item : maxAbilitiesRow.getItems()) {
-                item.setAmount(settings.getMaxAbilities()); // oppdaterer head count
+                item.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
             }
         } else { // en slider
             maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities());
