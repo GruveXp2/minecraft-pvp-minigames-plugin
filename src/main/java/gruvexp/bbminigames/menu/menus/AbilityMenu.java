@@ -208,12 +208,12 @@ public class AbilityMenu extends SettingsMenu {
     public void addPlayer(BotBowsPlayer p) {
         //max abilities
         ItemStack abilitiesHead = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
-        abilitiesHead.setAmount(p.getMaxAbilities());
+        abilitiesHead.setAmount(Math.max(p.getMaxAbilities(), 1));
         maxAbilitiesRow.addItem(abilitiesHead);
         // cooldown multiplier
         ItemStack cooldownHead = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
         ItemMeta meta = cooldownHead.getItemMeta();
-        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         cooldownHead.setItemMeta(meta);
         cooldownMultiplierRow.addItem(cooldownHead);
     }
