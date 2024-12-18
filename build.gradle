@@ -83,13 +83,12 @@ tasks.register('renameJar') {
 }
 
 def renameJar() {
-    println("Kjør kano nå")
     def jarFile = file("build/libs/${project.name}-${version}.jar")
     def renamedFile = file("build/libs/${project.name}.jar")
-    println("Version: ${project.version}")
+    println("Versjon: ${project.version}")
 
     if (renamedFile.exists()) {
-        println("Eksisterende jar funnet, sletter...")
+        println("Eksisterans jar funnet, fjerner...")
         renamedFile.delete() // Slett den eksisterende filen
     }
 
