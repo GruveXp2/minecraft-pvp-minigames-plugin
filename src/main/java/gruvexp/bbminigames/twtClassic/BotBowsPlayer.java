@@ -28,7 +28,7 @@ public class BotBowsPlayer {
     private static final List<List<Set<Integer>>> PLAYER_HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
 
     private int maxAbilities;
-    private int abilityCooldownMultiplier;
+    private float abilityCooldownMultiplier;
 
     public BotBowsPlayer(Player player, Settings settings) {
         PLAYER = player;
