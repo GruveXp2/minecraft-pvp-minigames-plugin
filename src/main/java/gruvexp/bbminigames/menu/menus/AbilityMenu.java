@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Locale;
 
 public class AbilityMenu extends SettingsMenu {
 
@@ -186,7 +187,7 @@ public class AbilityMenu extends SettingsMenu {
                 placeHeads(settings.team2, sliderStartSlot + settings.team2.size());
             }
         } else {
-            cooldownMultiplierSlider.setProgress(String.format("%.2fx", settings.getAbilityCooldownMultiplier()));
+            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
         }
     }
 
