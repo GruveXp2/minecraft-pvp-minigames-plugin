@@ -157,13 +157,14 @@ public class AbilityMenu extends SettingsMenu {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_ENABLED);
         individualMaxAbilities = true;
         if (settings.getMaxAbilities() == 0) settings.setMaxAbilities(2);
-        updateMaxAbilities();
+        maxAbilitiesRow.show();
     }
 
     public void disableIndividualMaxAbilities() {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
         individualMaxAbilities = false;
         settings.setMaxAbilities(2);
+        maxAbilitiesRow.hide();
         inventory.setItem(5, VOID);
         inventory.setItem(6, VOID);
     }
@@ -171,13 +172,14 @@ public class AbilityMenu extends SettingsMenu {
     public void enableIndividualCooldownMultiplier() {
         inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED);
         individualCooldownMultipliers = true;
-        updateCooldownMultipliers();
+        cooldownMultiplierRow.show();
     }
 
     public void disableIndividualCooldownMultiplier() {
         inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
         individualCooldownMultipliers = false;
         settings.setAbilityCooldownMultiplier(1.0f);
+        cooldownMultiplierRow.hide();
     }
 
     public void updateMaxAbilities() {
