@@ -179,7 +179,7 @@ public class Settings {
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         abilityCooldownMultiplier = cooldownMultiplier;
-        abilityMenu.updateCooldownMultipliers();
+        abilityMenu.updateCooldownMultiplier();
     }
 
     public float getAbilityCooldownMultiplier() {
