@@ -162,6 +162,10 @@ public class Settings {
     }
 
     public void setMaxAbilities(int maxAbilities) {
+        if (this.maxAbilities == 0) {
+            this.maxAbilities = maxAbilities;
+            abilityMenu.enableAbilities();
+        }
         this.maxAbilities = maxAbilities;
         players.forEach(p -> p.setMaxAbilities(maxAbilities));
         abilityMenu.updateMaxAbilities();
