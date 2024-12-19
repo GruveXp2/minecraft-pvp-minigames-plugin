@@ -92,18 +92,18 @@ public class PaginatedMenuRow {
     public void addItem(ItemStack item) {
         itemList.add(item);
         if (isVisible && currentPage == getTotalPages()) {
-            goTo(currentPage);
+            updatePage();
         }
     }
 
     public void removeItem(ItemStack item) {
         itemList.remove(item);
-        goTo(currentPage);
+        updatePage();
     }
 
     public void show() {
         isVisible = true;
-        goTo(currentPage);
+        updatePage();
     }
 
     public void hide() {
