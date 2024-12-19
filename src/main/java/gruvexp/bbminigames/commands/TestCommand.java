@@ -48,11 +48,9 @@ public class TestCommand implements CommandExecutor {
                     log = !log;
                     BotBows.debugMessage("Logging set to: " + log);
                 }
-                case "inv" -> {
-                    p.openInventory(testInv);
-                }
+                case "inv" -> p.openInventory(testInv);
                 case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);
-                case null, default -> BotBows.debugMessage("Wrong arg");
+                default -> BotBows.debugMessage("Wrong arg");
             }
             return true;
         }
