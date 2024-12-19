@@ -18,10 +18,10 @@ public class PlayerMenuRow extends MenuRow{
         super.addItem(item);
     }
 
-    public ItemStack getItem(BotBowsPlayer bp) {
+    public ItemStack getItem(BotBowsPlayer p) {
         for (ItemStack item : itemList) {
             SkullMeta meta = (SkullMeta) item.getItemMeta();
-            if (meta.getOwningPlayer().getUniqueId().equals(bp.player.getUniqueId())) {
+            if (meta.getOwningPlayer().getUniqueId().equals(p.player.getUniqueId())) {
                 return item;
             }
         }
