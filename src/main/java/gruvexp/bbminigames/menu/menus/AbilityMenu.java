@@ -140,11 +140,12 @@ public class AbilityMenu extends SettingsMenu {
         inventory.setItem(8, ABILITIES_DISABLED);
         // fyller med gråe glassvinduer der settings var
         ItemStack disabled = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
+        disableIndividualMaxAbilities();
         settings.setMaxAbilities(0);
         inventory.setItem(0, disabled);
         inventory.setItem(18, disabled);
-            for (int i = 20; i < 27; i++) {
-                inventory.setItem(i, disabled);
+        for (int i = 20; i < 27; i++) {
+            inventory.setItem(i, disabled);
         }
         for (int i = 36; i < 45; i++) {
             inventory.setItem(i, disabled);
