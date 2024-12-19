@@ -88,6 +88,7 @@ public class Settings {
             BotBows.registerBotBowsPlayer(bp);
         } else if (players.contains(bp)) {
             p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
+            mapMenu.open(p);
             return;
         }
         players.add(bp);

@@ -55,7 +55,6 @@ public class BotBows {
         BotBowsPlayer bp = getBotBowsPlayer(p);
         if (!settings.isPlayerJoined(p)) {
             p.sendMessage("Nothing happened, you werent in the game in the first place");
-            settings.mapMenu.open(p);
             return;
         }
         if (activeGame) {
