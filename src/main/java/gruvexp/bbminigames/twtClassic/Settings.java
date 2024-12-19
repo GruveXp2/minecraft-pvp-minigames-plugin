@@ -178,6 +178,7 @@ public class Settings {
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         abilityCooldownMultiplier = cooldownMultiplier;
+        players.forEach(p -> p.setAbilityCooldownMultiplier(cooldownMultiplier));
         abilityMenu.updateCooldownMultiplier();
     }
 

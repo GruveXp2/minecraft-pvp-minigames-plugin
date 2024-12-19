@@ -6,17 +6,17 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaginatedMenuRow {
+public class MenuRow {
 
-    private final Inventory inventory;
-    private final int startSlot; // slotten i inventoriet som man begynner på
-    private final List<ItemStack> itemList = new ArrayList<>();
-    private final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
-    private int currentPage = 1; // åssen side man er på nå
-    private boolean isVisible = false;
+    protected final Inventory inventory;
+    protected final int startSlot; // slotten i inventoriet som man begynner på
+    protected final List<ItemStack> itemList = new ArrayList<>();
+    protected final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
+    protected int currentPage = 1; // åssen side man er på nå
+    protected boolean isVisible = false;
 
 
-    public PaginatedMenuRow(Inventory inventory, int startSlot, int size) {
+    public MenuRow(Inventory inventory, int startSlot, int size) {
         this.inventory = inventory;
         this.startSlot = startSlot;
         this.size = size;

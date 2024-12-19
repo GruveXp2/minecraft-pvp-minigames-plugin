@@ -105,6 +105,7 @@ public class BotBowsPlayer {
 
     public void setMaxAbilities(int maxAbilities) {
         this.maxAbilities = maxAbilities;
+        BotBows.settings.abilityMenu.updateMaxAbilities(this);
     }
 
     public int getMaxAbilities() {
@@ -112,8 +113,9 @@ public class BotBowsPlayer {
     }
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        BotBows.debugMessage(String.format("Setting cooldown of %s to %d", player.getName()));
+        BotBows.debugMessage(String.format("Setting cooldown of %s to %.2f (was %.2f)", player.getName(), cooldownMultiplier, abilityCooldownMultiplier));
         this.abilityCooldownMultiplier = cooldownMultiplier;
+        BotBows.settings.abilityMenu.updateCooldownMultiplier(this);
     }
 
     public float getAbilityCooldownMultiplier() {

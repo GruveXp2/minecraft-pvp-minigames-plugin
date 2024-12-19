@@ -2,7 +2,8 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
-import gruvexp.bbminigames.menu.PaginatedMenuRow;
+import gruvexp.bbminigames.menu.MenuRow;
+import gruvexp.bbminigames.menu.PlayerMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -47,8 +48,8 @@ public class AbilityMenu extends SettingsMenu {
     private MenuSlider maxAbilitiesSlider;
     private MenuSlider cooldownMultiplierSlider;
 
-    private PaginatedMenuRow maxAbilitiesRow;
-    private PaginatedMenuRow cooldownMultiplierRow;
+    private PlayerMenuRow maxAbilitiesRow;
+    private PlayerMenuRow cooldownMultiplierRow;
 
     @Override
     public Component getMenuName() {
@@ -130,8 +131,8 @@ public class AbilityMenu extends SettingsMenu {
         setPageButtons(5, true, false, null);
         maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
-        maxAbilitiesRow = new PaginatedMenuRow(inventory, 2, 5);
-        cooldownMultiplierRow = new PaginatedMenuRow(inventory, 20, 7);
+        maxAbilitiesRow = new PlayerMenuRow(inventory, 2, 5);
+        cooldownMultiplierRow = new PlayerMenuRow(inventory, 20, 7);
         setFillerVoid();
     }
 
@@ -189,22 +190,24 @@ public class AbilityMenu extends SettingsMenu {
         if (!individualMaxAbilities) {
             maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities()); // oppdaterer slideren
         }
-        for (ItemStack item : maxAbilitiesRow.getItems()) {
-            item.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
-        }
+    }
+
+    public void updateMaxAbilities(BotBowsPlayer p) {
+        ItemStack headItem = maxAbilitiesRow.getItem(p);
+        headItem.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
     }
 
     public void updateCooldownMultiplier() {
-        float cooldownMultiplier = settings.getAbilityCooldownMultiplier();
         if (!individualCooldownMultipliers) { // oppdaterer slideren
-            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", cooldownMultiplier));
+            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
         }
-        for (ItemStack item : cooldownMultiplierRow.getItems()) { // oppdaterer individual cooldown rada
-            ItemMeta meta = item.getItemMeta();
-            meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
-            item.setItemMeta(meta);
-            BotBows.debugMessage(String.format("String.format(Locale.US, \"p.2fx\", %f) = %s", cooldownMultiplier, String.format(Locale.US, "%.2fx", cooldownMultiplier)));
-        }
+    }
+
+    public void updateCooldownMultiplier(BotBowsPlayer p) {
+        ItemStack headItem = cooldownMultiplierRow.getItem(p);
+        ItemMeta meta = headItem.getItemMeta();
+        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        headItem.setItemMeta(meta);
     }
 
     public void addPlayer(BotBowsPlayer p) {
@@ -225,14 +228,7 @@ public class AbilityMenu extends SettingsMenu {
         removePlayerFromRow(p, cooldownMultiplierRow);
     }
 
-    private void removePlayerFromRow(BotBowsPlayer p, PaginatedMenuRow row) {
-        row.getItems().stream()
-                .filter(item -> {
-                    ItemMeta meta = item.getItemMeta();
-                    return meta != null && p.player.getUniqueId().toString().equals(
-                            meta.getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)
-                    );
-                })
-                .forEach(row::removeItem);
+    private void removePlayerFromRow(BotBowsPlayer p, PlayerMenuRow row) {
+        row.removeItem(row.getItem(p));
     }
 }
