@@ -103,13 +103,14 @@ public class AbilityMenu extends SettingsMenu {
                 } else if (e.getSlot() <=27) {
                     float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
                     String s = String.format("%.2fx", cooldownMultiplier);
+                    String s = String.format(Locale.US, "%.2fx", cooldownMultiplier);
                     String next = cooldownMultiplierSlider.getNext(s);
                     float newCooldownMultiplier = Float.parseFloat(next.substring(next.length() - 1));
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
 
                     ItemStack item = e.getCurrentItem(); // oppdaterer loren
                     ItemMeta meta = item.getItemMeta();
-                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
                     item.setItemMeta(meta);
                 }
             }
@@ -197,7 +198,7 @@ public class AbilityMenu extends SettingsMenu {
         if (individualCooldownMultipliers) {
             for (ItemStack item : cooldownMultiplierRow.getItems()) {
                 ItemMeta meta = item.getItemMeta();
-                meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%f:.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
                 item.setAmount(settings.getMaxAbilities());
             }
         } else {
@@ -213,7 +214,7 @@ public class AbilityMenu extends SettingsMenu {
         // cooldown multiplier
         ItemStack cooldownHead = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
         ItemMeta meta = cooldownHead.getItemMeta();
-        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format("%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         cooldownHead.setItemMeta(meta);
         cooldownMultiplierRow.addItem(cooldownHead);
     }
