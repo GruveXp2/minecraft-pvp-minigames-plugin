@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -22,9 +23,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class BotBows {
 
@@ -44,7 +45,7 @@ public class BotBows {
 
     public static void joinGame(Player p) {
         if (activeGame) {
-            p.sendMessage(ChatColor.RED + "A game is already ongoing, wait until it ends before you join");
+            p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
             return;
         }
         settings.joinGame(p);
@@ -65,10 +66,10 @@ public class BotBows {
 
     public static void startGame(Player gameStarter) {
         if (activeGame) {
-            gameStarter.sendMessage(ChatColor.RED + "The game has already started!");
+            gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED));
             return;
         } else if (settings.team1.isEmpty() || settings.team2.isEmpty()) {
-            gameStarter.sendMessage(ChatColor.RED + "Cant start game, both teams must have at least 1 player each");
+            gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED));
             return;
         }
         if (settings.currentMap == BotBowsMap.GRAUT_VS_WACKY) {
@@ -82,8 +83,8 @@ public class BotBows {
     private static ItemStack getBotBow() {
         ItemStack BOTBOW = new ItemStack(Material.CROSSBOW);
         CrossbowMeta meta = (CrossbowMeta) BOTBOW.getItemMeta();
-        meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "BotBow");
-        meta.setLore(Arrays.asList("The strongest bow", "ever known to man"));
+        meta.displayName(Component.text("BotBow").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
+        meta.lore(List.of(Component.text("The strongest bow"), Component.text("ever known to man")));
         meta.addEnchant(Enchantment.POWER, 10, true);
         meta.addEnchant(Enchantment.PUNCH, 10, true);
         meta.addChargedProjectile(new ItemStack(Material.ARROW));
