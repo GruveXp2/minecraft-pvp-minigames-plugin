@@ -32,8 +32,8 @@ public class GameMenu extends Menu {
 
     @Override
     public void setMenuItems() {
-        ItemStack botbows = makeItem(Material.BOW, "BotBows Classic", "The classic game of BotBows");
-        ItemStack sumo = makeItem(Material.STICK, "Sumo", "The Sumo minigame");
+        ItemStack botbows = makeItem(Material.BOW, Component.text("BotBows Classic"), "The classic game of BotBows");
+        ItemStack sumo = makeItem(Material.STICK, Component.text("Sumo"), "The Sumo minigame");
         inventory.setItem(3, botbows);
         inventory.setItem(5, sumo);
         setFillerVoid();

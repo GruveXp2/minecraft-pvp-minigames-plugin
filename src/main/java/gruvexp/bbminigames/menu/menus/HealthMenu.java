@@ -5,7 +5,9 @@ import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,14 +22,14 @@ import java.util.UUID;
 
 public class HealthMenu extends SettingsMenu {
 
-    private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Dynamic points",
+    private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
             ChatColor.DARK_RED + "Disabled", "If enabled, winning team gets 1", "point for each remaining hp.", "If disbabled, winning team only gets 1 point.");
-    private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Dynamic points",
+    private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
             ChatColor.DARK_GREEN + "Enabled", "If enabled, winning team gets 1", "point for each remaining hp.", "If disbabled, winning team only gets 1 point.");
 
-    private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Custom player HP",
+    private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
             ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled", "By enabling this, each player", "can have a different amount of hp");
-    private static final ItemStack CUSTOM_HP_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Custom player HP",
+    private static final ItemStack CUSTOM_HP_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.GREEN),
             ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled", "By enabling this, each player", "can have a different amount of hp");
 
     private boolean customHP;
@@ -50,7 +52,10 @@ public class HealthMenu extends SettingsMenu {
 
         switch (e.getCurrentItem().getType()) { // stuff som skal gjøres når man trykker på et item
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
-                settings.setMaxHP(Integer.parseInt(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName())));
+                Component c = e.getCurrentItem().getItemMeta().displayName();
+                assert c != null;
+                String s = PlainTextComponentSerializer.plainText().serialize(c);
+                settings.setMaxHP(Integer.parseInt(s));
                 updateMenu();
             }
             case RED_STAINED_GLASS_PANE -> {

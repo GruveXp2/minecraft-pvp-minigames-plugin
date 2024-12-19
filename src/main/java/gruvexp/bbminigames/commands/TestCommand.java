@@ -4,6 +4,7 @@ import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +16,7 @@ public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
     public static boolean log = false;
-    public static Inventory testInv = Bukkit.createInventory(null, 54, "Lagre-Chest");
+    public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

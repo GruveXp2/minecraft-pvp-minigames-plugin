@@ -8,7 +8,6 @@ import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -88,7 +87,7 @@ public class Settings {
             bp = new BotBowsPlayer(p, this);
             BotBows.registerBotBowsPlayer(bp);
         } else if (players.contains(bp)) {
-            p.sendMessage(ChatColor.RED + "You already joined!");
+            p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
             return;
         }
         players.add(bp);
@@ -101,13 +100,13 @@ public class Settings {
         healthMenu.updateMenu();
         abilityMenu.addPlayer(bp);
         for (Player q : Bukkit.getOnlinePlayers()) {
-            q.sendMessage(p.getPlayerListName() + " has joined BotBows Classic! (" + players.size() + ")");
+            q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")");
         }
     }
 
     public void leaveGame(BotBowsPlayer p) {
         if (!players.contains(p)) {
-            p.PLAYER.sendMessage(ChatColor.RED + "You can't leave when you're not in a game");
+            p.PLAYER.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
             return;
         }
         p.leaveGame();

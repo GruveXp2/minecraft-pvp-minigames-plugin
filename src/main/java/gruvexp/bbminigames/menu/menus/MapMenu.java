@@ -2,6 +2,8 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,11 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class  MapMenu extends SettingsMenu {
-    public static final ItemStack ROYAL_ARENA = makeItem(Material.SLIME_BALL, ChatColor.GRAY + "Royal Arena",
+    public static final ItemStack ROYAL_ARENA = makeItem(Material.SLIME_BALL, Component.text("Royal Arena", NamedTextColor.GRAY),
             ChatColor.BLUE + "Blaud" + ChatColor.WHITE + " vs " + ChatColor.RED + "Sauce",
             "A flat arena with modern royal style",
             "Has a huge cave room underground");
-    public static final ItemStack ICY_RAVINE = makeItem(Material.SPRUCE_SAPLING, ChatColor.AQUA + "Icy Ravine",
+    public static final ItemStack ICY_RAVINE = makeItem(Material.SPRUCE_SAPLING, Component.text("Icy Ravine", NamedTextColor.AQUA),
             ChatColor.LIGHT_PURPLE + "Graut" + ChatColor.WHITE + " vs " + ChatColor.GREEN + "Wacky",
             "A flat arena in a spruce forest with ice spikes and igloos",
             "Has a huge ravine in the middle and many caves underground");

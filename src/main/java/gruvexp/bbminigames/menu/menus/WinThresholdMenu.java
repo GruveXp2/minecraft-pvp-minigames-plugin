@@ -1,8 +1,8 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,11 +40,11 @@ public class WinThresholdMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems();
-        ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, "-10");
-        ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, "-1");
-        ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, "+1");
-        ItemStack add10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, "+10");
-        ItemStack is = makeItem(Material.BLUE_TERRACOTTA, ChatColor.BLUE + "Win score threshold");
+        ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"));
+        ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"));
+        ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"));
+        ItemStack add10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, Component.text("+10"));
+        ItemStack is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE));
         is.setAmount(settings.getWinThreshold());
 
         inventory.setItem(2, sub10);
@@ -59,10 +59,10 @@ public class WinThresholdMenu extends SettingsMenu {
     public void updateMenu() {
         ItemStack is;
         if (settings.getWinThreshold() > 0) {
-            is = makeItem(Material.BLUE_TERRACOTTA, ChatColor.BLUE + "Win score threshold");
+            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE));
             is.setAmount(settings.getWinThreshold());
         } else {
-            is = makeItem(Material.YELLOW_TERRACOTTA, ChatColor.YELLOW + "Infinite rounds", "Run /stopgame to stop the game");
+            is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("Infinite rounds", NamedTextColor.YELLOW), "Run /stopgame to stop the game");
         }
         inventory.setItem(4, is);
     }

@@ -2,7 +2,8 @@ package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +26,7 @@ public class SwitchSpectator implements Listener {
                 .toList();
 
         if (alivePlayers.isEmpty()) {
-            p.sendMessage(ChatColor.GRAY + "Cant spectate, " + team.NAME + " has no alive players");
+            p.sendMessage(Component.text("Cant spectate, " + team.NAME + " has no alive players", NamedTextColor.GRAY));
             return;
         }
 

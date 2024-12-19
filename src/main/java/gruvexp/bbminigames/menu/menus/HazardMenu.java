@@ -31,10 +31,10 @@ public class HazardMenu extends SettingsMenu {
         ItemStack item;
         String[] loreDesc = new String[] {"When there is a storm, you will get hit by", "lightning if you stand in dirext exposure", "to the sky for more than 5 seconds"};
         if (stormHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Storms", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
                     "If enabled, x% of rounds will have storms.", loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Storms", ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
                     stormHazard.getHazardChance().getPercent() + "% of rounds will have storms.", loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
@@ -44,10 +44,10 @@ public class HazardMenu extends SettingsMenu {
         ItemStack item;
         String[] loreDesc = new String[] {"When there is an earthwuake, you will get hit by", "stones if you go underground", "for more than 5 seconds"};
         if (earthquakeHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Earthquakes", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
                     "If enabled, x% of rounds will have earthquakes.", loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Earthquakes", ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
                     earthquakeHazard.getHazardChance().getPercent() + "% of rounds will have earthquakes.", loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
@@ -57,10 +57,10 @@ public class HazardMenu extends SettingsMenu {
         ItemStack item;
         String[] loreDesc = new String[] {"When there is ghost mode, you will get haunted", "by your own ghost, and when you touch it,", "you die"};
         if (ghostHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Haunted Arena", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
                     "If enabled, x% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Haunted Arena", ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
                     earthquakeHazard.getHazardChance().getPercent() + "% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
