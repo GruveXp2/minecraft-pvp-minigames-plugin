@@ -11,6 +11,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class TestCommand implements CommandExecutor {
 
@@ -19,7 +22,7 @@ public class TestCommand implements CommandExecutor {
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 
         Player p = (Player) sender;
         if (args.length >= 1) {
@@ -35,7 +38,7 @@ public class TestCommand implements CommandExecutor {
                     BotBowsPlayer judith = BotBows.getBotBowsPlayer(Bukkit.getPlayer("Spionagent54"));
 
                     judith.setMaxHP(20);
-                    Bukkit.dispatchCommand(Bukkit.getPlayer("GruveXp"), "botbows:start");  // tester om dungeonen funker
+                    Bukkit.dispatchCommand(Objects.requireNonNull(Bukkit.getPlayer("GruveXp")), "botbows:start");  // tester om dungeonen funker
                 }
                 case "a" -> {
                     rotation = !rotation;
