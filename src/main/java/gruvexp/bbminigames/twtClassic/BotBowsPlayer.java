@@ -35,6 +35,7 @@ public class BotBowsPlayer {
         maxHP = settings.getMaxHP();
         hp = maxHP;
         maxAbilities = settings.getMaxAbilities();
+        abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
     }
 
     public BotBowsTeam getTeam() {return team;}
