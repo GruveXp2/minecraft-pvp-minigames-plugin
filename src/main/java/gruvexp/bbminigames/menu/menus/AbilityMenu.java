@@ -202,6 +202,7 @@ public class AbilityMenu extends SettingsMenu {
         ItemMeta meta = headItem.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         headItem.setItemMeta(meta);
+        cooldownMultiplierRow.updatePage();
     }
 
     public void addPlayer(BotBowsPlayer p) {
