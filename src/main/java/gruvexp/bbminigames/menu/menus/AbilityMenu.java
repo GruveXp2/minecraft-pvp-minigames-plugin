@@ -6,7 +6,6 @@ import gruvexp.bbminigames.menu.PaginatedMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -105,13 +104,16 @@ public class AbilityMenu extends SettingsMenu {
                     String s = String.format("%.2fx", cooldownMultiplier);
                     String s = String.format(Locale.US, "%.2fx", cooldownMultiplier);
                     String next = cooldownMultiplierSlider.getNext(s);
+                    String prev = String.format(Locale.US, "%.2fx", cooldownMultiplier);
+                    String next = cooldownMultiplierSlider.getNext(prev);
                     float newCooldownMultiplier = Float.parseFloat(next.substring(next.length() - 1));
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
 
                     ItemStack item = e.getCurrentItem(); // oppdaterer loren
                     ItemMeta meta = item.getItemMeta();
-                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", newCooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(next, NamedTextColor.LIGHT_PURPLE))));
                     item.setItemMeta(meta);
+                    cooldownMultiplierRow.updatePage();
                 }
             }
             case FIREWORK_STAR -> {
@@ -184,25 +186,24 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateMaxAbilities() {
-        if (individualMaxAbilities) {
-            for (ItemStack item : maxAbilitiesRow.getItems()) {
-                item.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
-            }
-        } else { // en slider
-            maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities());
+        if (!individualMaxAbilities) {
+            maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities()); // oppdaterer slideren
+        }
+        for (ItemStack item : maxAbilitiesRow.getItems()) {
+            item.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
         }
     }
 
     public void updateCooldownMultiplier() {
         float cooldownMultiplier = settings.getAbilityCooldownMultiplier();
-        if (individualCooldownMultipliers) {
-            for (ItemStack item : cooldownMultiplierRow.getItems()) {
-                ItemMeta meta = item.getItemMeta();
-                meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
-                item.setAmount(settings.getMaxAbilities());
-            }
-        } else {
+        if (!individualCooldownMultipliers) { // oppdaterer slideren
             cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", cooldownMultiplier));
+        }
+        for (ItemStack item : cooldownMultiplierRow.getItems()) { // oppdaterer individual cooldown rada
+            ItemMeta meta = item.getItemMeta();
+            meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", cooldownMultiplier), NamedTextColor.LIGHT_PURPLE))));
+            item.setItemMeta(meta);
+            BotBows.debugMessage(String.format("String.format(Locale.US, \"p.2fx\", %f) = %s", cooldownMultiplier, String.format(Locale.US, "%.2fx", cooldownMultiplier)));
         }
     }
 
