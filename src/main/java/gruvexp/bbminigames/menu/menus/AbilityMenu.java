@@ -101,13 +101,13 @@ public class AbilityMenu extends SettingsMenu {
                     e.getCurrentItem().setAmount(maxAbilities); // oppdaterer item count
                 } else if (e.getSlot() <=27) {
                     float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
-                    BotBows.debugMessage("Cooldown:" + cooldownMultiplier);
+                    //BotBows.debugMessage("Cooldown:" + cooldownMultiplier);
                     String prev = String.format(Locale.US, "%.2fx", cooldownMultiplier);
-                    BotBows.debugMessage("Cooldown: \"" + prev + "\"");
+                    //BotBows.debugMessage("Cooldown: \"" + prev + "\"");
                     String next = cooldownMultiplierSlider.getNext(prev);
-                    BotBows.debugMessage("Next: \"" + next + "\"");
+                    //BotBows.debugMessage("Next: \"" + next + "\"");
                     float newCooldownMultiplier = Float.parseFloat(next.substring(0, next.length() - 1));
-                    BotBows.debugMessage("Next:" + newCooldownMultiplier);
+                    //BotBows.debugMessage("Next:" + newCooldownMultiplier);
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
                 }
             }

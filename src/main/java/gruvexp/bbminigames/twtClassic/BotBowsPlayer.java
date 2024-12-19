@@ -113,7 +113,6 @@ public class BotBowsPlayer {
     }
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        BotBows.debugMessage(String.format("Setting cooldown of %s to %.2f (was %.2f)", player.getName(), cooldownMultiplier, abilityCooldownMultiplier));
         this.abilityCooldownMultiplier = cooldownMultiplier;
         BotBows.settings.abilityMenu.updateCooldownMultiplier(this);
     }
