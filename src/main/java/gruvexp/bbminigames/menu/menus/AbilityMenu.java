@@ -2,7 +2,6 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
-import gruvexp.bbminigames.menu.MenuRow;
 import gruvexp.bbminigames.menu.PlayerMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
@@ -107,14 +106,9 @@ public class AbilityMenu extends SettingsMenu {
                     BotBows.debugMessage("Cooldown: \"" + prev + "\"");
                     String next = cooldownMultiplierSlider.getNext(prev);
                     BotBows.debugMessage("Next: \"" + next + "\"");
-                    float newCooldownMultiplier = Float.parseFloat(next.substring(next.length() - 1));
+                    float newCooldownMultiplier = Float.parseFloat(next.substring(0, next.length() - 1));
+                    BotBows.debugMessage("Next:" + newCooldownMultiplier);
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
-
-                    ItemStack item = e.getCurrentItem(); // oppdaterer loren
-                    ItemMeta meta = item.getItemMeta();
-                    meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(next, NamedTextColor.LIGHT_PURPLE))));
-                    item.setItemMeta(meta);
-                    cooldownMultiplierRow.updatePage();
                 }
             }
             case FIREWORK_STAR -> {
