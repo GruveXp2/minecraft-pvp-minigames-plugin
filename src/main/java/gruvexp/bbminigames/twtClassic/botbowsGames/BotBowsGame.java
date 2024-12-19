@@ -46,15 +46,15 @@ public class BotBowsGame {
         // stuff
         settings.leaveGame(p);
         Board.removePlayerScore(p);
-        if (Bar.sneakBars.containsKey(p.PLAYER)) {
-            Bar.sneakBars.get(p.PLAYER).setVisible(false);
-            Bar.sneakBars.get(p.PLAYER).removeAll();
-            Bar.sneakBars.remove(p.PLAYER);
+        if (Bar.sneakBars.containsKey(p.player)) {
+            Bar.sneakBars.get(p.player).setVisible(false);
+            Bar.sneakBars.get(p.player).removeAll();
+            Bar.sneakBars.remove(p.player);
         }
-        Cooldowns.sneakCooldowns.remove(p.PLAYER);
-        if (Cooldowns.sneakRunnables.containsKey(p.PLAYER)) {
-            Cooldowns.sneakRunnables.get(p.PLAYER).cancel();
-            Cooldowns.sneakRunnables.remove(p.PLAYER);
+        Cooldowns.sneakCooldowns.remove(p.player);
+        if (Cooldowns.sneakRunnables.containsKey(p.player)) {
+            Cooldowns.sneakRunnables.get(p.player).cancel();
+            Cooldowns.sneakRunnables.remove(p.player);
         }
     }
 
@@ -190,11 +190,11 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.PLAYER.showTitle(Title.title(Component.text("Victory", winningTeam.COLOR), Component.text(""),
+            p.player.showTitle(Title.title(Component.text("Victory", winningTeam.COLOR), Component.text(""),
                     Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.PLAYER.showTitle(Title.title(Component.text("Defeat", losingTeam.COLOR), Component.text(""),
+            p.player.showTitle(Title.title(Component.text("Defeat", losingTeam.COLOR), Component.text(""),
                     Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
     }

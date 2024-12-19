@@ -34,7 +34,7 @@ public class DungeonGhoster {
 
     public DungeonGhoster(BotBowsPlayer p) {
         BOTBOWSPLAYER = p;
-        PLAYER = p.PLAYER;
+        PLAYER = p.player;
         prevLoc = PLAYER.getLocation();
         updateArmorStandsAndSection();
     }

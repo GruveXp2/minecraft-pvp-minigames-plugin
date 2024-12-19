@@ -40,19 +40,19 @@ public abstract class BotBowsTeam {
 
     public void tpPlayersToSpawn() {
         for (int i = 0; i < players.size(); i++) {
-            players.get(i).PLAYER.teleport(SPAWNPOS[i]);
+            players.get(i).player.teleport(SPAWNPOS[i]);
         }
     }
 
     public void postTeamSwap() { // when the map is changed and the teams are swapped out
         for (BotBowsPlayer p : players) {
-            p.PLAYER.teleport(TRIBUNE_POS);
+            p.player.teleport(TRIBUNE_POS);
         }
     }
 
     public void join(BotBowsPlayer p) {
         players.add(p);
-        p.PLAYER.teleport(TRIBUNE_POS);
+        p.player.teleport(TRIBUNE_POS);
         p.joinTeam(this);
     }
 

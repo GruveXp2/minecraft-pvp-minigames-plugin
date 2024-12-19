@@ -32,7 +32,7 @@ public class StormHazard extends Hazard {
         if (getHazardChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer p : settings.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.AQUA + "Lightning timer", BarColor.BLUE, BarStyle.SEGMENTED_6);
-            bar.addPlayer(p.PLAYER);
+            bar.addPlayer(p.player);
             bar.setProgress(0d);
             bar.setVisible(false);
             bars.put(p, bar);
@@ -46,7 +46,7 @@ public class StormHazard extends Hazard {
         BotBows.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : settings.getPlayers()) {
-                hazardTimers.put(p.PLAYER, new PlayerStormTimer(p.PLAYER, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
+                hazardTimers.put(p.player, new PlayerStormTimer(p.player, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
             }
             Main.WORLD.setThundering(true);
             Main.WORLD.setStorm(true);

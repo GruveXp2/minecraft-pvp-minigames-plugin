@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class BotBowsPlayer {
 
-    public final Player PLAYER;
+    public final Player player;
     private BotBowsTeam team;
     private int hp;
     private int maxHP;
@@ -31,7 +31,7 @@ public class BotBowsPlayer {
     private float abilityCooldownMultiplier;
 
     public BotBowsPlayer(Player player, Settings settings) {
-        PLAYER = player;
+        this.player = player;
         maxHP = settings.getMaxHP();
         hp = maxHP;
         maxAbilities = settings.getMaxAbilities();
@@ -42,9 +42,9 @@ public class BotBowsPlayer {
 
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {
-            PLAYER.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHP * 2);
-            PLAYER.setHealth(maxHP * 2);
-            PLAYER.setGameMode(GameMode.ADVENTURE);
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHP * 2);
+            player.setHealth(maxHP * 2);
+            player.setGameMode(GameMode.ADVENTURE);
         } else {
             this.team.leave(this);
         }
@@ -57,27 +57,27 @@ public class BotBowsPlayer {
 
     public void leaveGame() {
         team.leave(this);
-        PLAYER.sendMessage(Component.text("You left BotBows Classic", NamedTextColor.YELLOW));
-        PLAYER.setGameMode(GameMode.SPECTATOR);
-        PLAYER.getInventory().remove(BotBows.BOTBOW);
+        player.sendMessage(Component.text("You left BotBows Classic", NamedTextColor.YELLOW));
+        player.setGameMode(GameMode.SPECTATOR);
+        player.getInventory().remove(BotBows.BOTBOW);
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
         setHP(maxHP);
         isDamaged = false;
-        PLAYER.setGameMode(GameMode.ADVENTURE);
+        player.setGameMode(GameMode.ADVENTURE);
     }
 
     public void reset() {
-        PLAYER.setScoreboard(Board.manager.getNewScoreboard());
-        PLAYER.getInventory().setArmorContents(null);
-        PLAYER.setGlowing(false);
-        PLAYER.setInvulnerable(false);
-        PLAYER.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-        PLAYER.setGameMode(GameMode.SPECTATOR);
-        Bar.sneakBars.get(PLAYER).setVisible(false);
-        if (Cooldowns.sneakRunnables.containsKey(PLAYER)) {
-            Cooldowns.sneakRunnables.get(PLAYER).cancel();
+        player.setScoreboard(Board.manager.getNewScoreboard());
+        player.getInventory().setArmorContents(null);
+        player.setGlowing(false);
+        player.setInvulnerable(false);
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        player.setGameMode(GameMode.SPECTATOR);
+        Bar.sneakBars.get(player).setVisible(false);
+        if (Cooldowns.sneakRunnables.containsKey(player)) {
+            Cooldowns.sneakRunnables.get(player).cancel();
         }
     }
 
@@ -85,8 +85,8 @@ public class BotBowsPlayer {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        PLAYER.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2 * maxHP);
-        PLAYER.setHealth(2 * maxHP);
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2 * maxHP);
+        player.setHealth(2 * maxHP);
     }
 
     public int getHP() {return hp;}
@@ -95,9 +95,9 @@ public class BotBowsPlayer {
         if (this.hp == hp) return;
         this.hp = hp;
         if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
-            PLAYER.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
+            player.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
         } else {
-            PLAYER.setHealth(hp * 2); // halve hjerter
+            player.setHealth(hp * 2); // halve hjerter
             updateArmor();
         }
         Board.updatePlayerScore(this);
@@ -112,6 +112,7 @@ public class BotBowsPlayer {
     }
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
+        BotBows.debugMessage(String.format("Setting cooldown of %s to %d", player.getName()));
         this.abilityCooldownMultiplier = cooldownMultiplier;
     }
 
@@ -125,34 +126,34 @@ public class BotBowsPlayer {
 
     public void handleHit(BotBowsPlayer attacker) {
         if (hp == 1) { // spilleren kommer til å daue
-            die(PLAYER.name().color(team.COLOR)
+            die(player.name().color(team.COLOR)
                     .append(Component.text(" was sniped by "))
-                    .append(attacker.PLAYER.name().color(attacker.team.COLOR))
+                    .append(attacker.player.name().color(attacker.team.COLOR))
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
-            PLAYER.setSpectatorTarget(attacker.PLAYER);
-            PLAYER.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                    .append(attacker.PLAYER.name().color(attacker.team.COLOR)));
+            player.setSpectatorTarget(attacker.player);
+            player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
+                    .append(attacker.player.name().color(attacker.team.COLOR)));
             return;
         }
         setHP(hp - 1);
-        BotBows.messagePlayers(Component.text(PLAYER.getName(), team.COLOR)
+        BotBows.messagePlayers(Component.text(player.getName(), team.COLOR)
                 .append(Component.text(" was sniped by "))
-                .append(Component.text(attacker.PLAYER.getName(), attacker.team.COLOR))
+                .append(Component.text(attacker.player.getName(), attacker.team.COLOR))
                 .append(Component.text(";"))
                 .append(Component.text(hp + "hp left", team.COLOR)));
         // defender effects
-        PLAYER.setGlowing(true);
-        PLAYER.setInvulnerable(true);
+        player.setGlowing(true);
+        player.setInvulnerable(true);
         isDamaged = true;
-        PlayerInventory inv = PLAYER.getInventory();
+        PlayerInventory inv = player.getInventory();
         for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
             inv.setItem(i + 27, inv.getItem(i));
             inv.setItem(i, new ItemStack(Material.BARRIER));
         }
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            PLAYER.setGlowing(false);
-            PLAYER.setInvulnerable(false);
+            player.setGlowing(false);
+            player.setInvulnerable(false);
             isDamaged = false;
             for (int i = 0; i < 9; i++) { // flytter items tilbake
                 inv.setItem(i, inv.getItem(i + 27));
@@ -165,13 +166,13 @@ public class BotBowsPlayer {
         setHP(0);
         Board.updatePlayerScore(this);
         BotBows.messagePlayers(deathMessage);
-        PLAYER.setGameMode(GameMode.SPECTATOR);
+        player.setGameMode(GameMode.SPECTATOR);
         BotBows.check4Victory(this);
     }
 
     public void updateArmor() { // updates the armor pieces of the player
         if (hp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            PLAYER.getInventory().setArmorContents(new ItemStack[] {
+            player.getInventory().setArmorContents(new ItemStack[] {
                     getArmorPiece(Material.LEATHER_BOOTS),
                     getArmorPiece(Material.LEATHER_LEGGINGS),
                     getArmorPiece(Material.LEATHER_CHESTPLATE),
@@ -189,10 +190,10 @@ public class BotBowsPlayer {
 
         for (Integer slot : slots) {
             switch (slot) {
-                case 0 -> PLAYER.getInventory().setBoots(null);
-                case 1 -> PLAYER.getInventory().setLeggings(null);
-                case 2 -> PLAYER.getInventory().setChestplate(null);
-                case 3 -> PLAYER.getInventory().setHelmet(null);
+                case 0 -> player.getInventory().setBoots(null);
+                case 1 -> player.getInventory().setLeggings(null);
+                case 2 -> player.getInventory().setChestplate(null);
+                case 3 -> player.getInventory().setHelmet(null);
             }
         }
     }

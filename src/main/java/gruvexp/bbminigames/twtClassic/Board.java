@@ -48,10 +48,10 @@ public class Board {
         sbTeam2.color((NamedTextColor) team2.COLOR);
 
         for (BotBowsPlayer p : team1.getPlayers()) {
-            sbTeam1.addEntry(p.PLAYER.getName());
+            sbTeam1.addEntry(p.player.getName());
         }
         for (BotBowsPlayer p : team2.getPlayers()) {
-            sbTeam2.addEntry(p.PLAYER.getName());
+            sbTeam2.addEntry(p.player.getName());
         }
     }
 
@@ -69,9 +69,9 @@ public class Board {
 
         String healthBar;
         if (maxHp > 5) {
-            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getName();
+            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.player.getName();
         } else {
-            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.PLAYER.getName();
+            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + p.getTeam().COLOR + " " + p.player.getName();
         }
 
         setScore(healthBar, playerLineIndex);
@@ -81,7 +81,7 @@ public class Board {
         Scoreboard sb = objective.getScoreboard();
         for (Objective ignored : sb.getObjectives()) {
             for (String entries : sb.getEntries()) {
-                if (entries.contains(p.PLAYER.getName())) {
+                if (entries.contains(p.player.getName())) {
                     sb.resetScores(entries);
                 }
             }

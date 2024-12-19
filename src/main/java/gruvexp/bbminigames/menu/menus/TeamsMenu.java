@@ -82,11 +82,11 @@ public class TeamsMenu extends SettingsMenu {
         inventory.remove(Material.PLAYER_HEAD); // Fjerner player heads sånn at det kan kalkuleres pånytt
 
         for (int i = 0; i < team1.size(); i++) { // team 1
-            ItemStack p = makeHeadItem(team1.getPlayer(i).PLAYER, team1.COLOR);
+            ItemStack p = makeHeadItem(team1.getPlayer(i).player, team1.COLOR);
             inventory.setItem(2 + i, p);
         }
         for (int i = 0; i < team2.size(); i++) { // team 2
-            ItemStack p = makeHeadItem(team2.getPlayer(i).PLAYER, team2.COLOR);
+            ItemStack p = makeHeadItem(team2.getPlayer(i).player, team2.COLOR);
             inventory.setItem(11 + i, p);
         }
     }

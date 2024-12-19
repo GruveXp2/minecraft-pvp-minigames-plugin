@@ -32,7 +32,7 @@ public class EarthquakeHazard extends Hazard {
         if (getHazardChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer p : settings.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.GOLD + "Anvil timer", BarColor.YELLOW, BarStyle.SEGMENTED_6);
-            bar.addPlayer(p.PLAYER);
+            bar.addPlayer(p.player);
             bar.setProgress(0d);
             bar.setVisible(false);
             bars.put(p, bar);
@@ -45,7 +45,7 @@ public class EarthquakeHazard extends Hazard {
         BotBows.titlePlayers(ChatColor.RED + "EARTHQUAKE INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : settings.getPlayers()) {
-                hazardTimers.put(p.PLAYER, new PlayerEarthQuakeTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
+                hazardTimers.put(p.player, new PlayerEarthQuakeTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
             }
         }, 100L); // 5 sekunder
     }
@@ -69,7 +69,7 @@ public class EarthquakeHazard extends Hazard {
         final BossBar bar;
         int time = 0;
         public PlayerEarthQuakeTimer(BotBowsPlayer bp, BossBar bar) {
-            this.p = bp.PLAYER;
+            this.p = bp.player;
             this.bp = bp;
             this.bar = bar;
         }

@@ -21,7 +21,7 @@ public class SwitchSpectator implements Listener {
             team = team.getOppositeTeam();
         }
         List<Player> alivePlayers = team.getPlayers().stream() // lager liste med alle de levende playersene
-                .map(q -> q.PLAYER)
+                .map(q -> q.player)
                 .filter(q -> q.getGameMode() == GameMode.ADVENTURE)
                 .toList();
 

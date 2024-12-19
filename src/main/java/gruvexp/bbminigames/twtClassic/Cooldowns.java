@@ -14,7 +14,7 @@ public class Cooldowns { // Inneholder shifting og storm logic
 
     public static void CoolDownInit(Collection<BotBowsPlayer> players) {
         for (BotBowsPlayer p : players) {
-            sneakCooldowns.put(p.PLAYER, 0);
+            sneakCooldowns.put(p.player, 0);
         }
     }
 

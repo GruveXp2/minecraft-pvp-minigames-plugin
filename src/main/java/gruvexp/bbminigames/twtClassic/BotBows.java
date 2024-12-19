@@ -100,8 +100,8 @@ public class BotBows {
     }
 
     public static void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (PLAYERS.containsKey(p.PLAYER)) return;
-        PLAYERS.put(p.PLAYER, p);
+        if (PLAYERS.containsKey(p.player)) return;
+        PLAYERS.put(p.player, p);
     }
 
     public static void check4Victory(BotBowsPlayer dedPlayer) {
@@ -110,7 +110,7 @@ public class BotBows {
 
     public static void messagePlayers(Component message) {
         for (BotBowsPlayer p : settings.getPlayers()) {
-            p.PLAYER.sendMessage(message);
+            p.player.sendMessage(message);
         }
     }
 
@@ -125,7 +125,7 @@ public class BotBows {
 
     public static void titlePlayers(String title, int duration) {
         for (BotBowsPlayer p : settings.getPlayers()) {
-            p.PLAYER.sendTitle(title, null, 2, duration, 5);
+            p.player.sendTitle(title, null, 2, duration, 5);
         }
     }
 

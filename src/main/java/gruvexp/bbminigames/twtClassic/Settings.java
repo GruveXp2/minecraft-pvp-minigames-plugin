@@ -106,7 +106,7 @@ public class Settings {
 
     public void leaveGame(BotBowsPlayer p) {
         if (!players.contains(p)) {
-            p.PLAYER.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
+            p.player.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
             return;
         }
         p.leaveGame();
@@ -115,8 +115,8 @@ public class Settings {
         healthMenu.updateMenu();
         abilityMenu.removePlayer(p);
 
-        p.PLAYER.setGameMode(GameMode.SPECTATOR);
-        BotBows.messagePlayers(Component.text(p.PLAYER.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
+        p.player.setGameMode(GameMode.SPECTATOR);
+        BotBows.messagePlayers(Component.text(p.player.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {

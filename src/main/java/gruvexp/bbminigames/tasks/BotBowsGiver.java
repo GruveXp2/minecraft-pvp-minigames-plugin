@@ -14,7 +14,7 @@ public class BotBowsGiver  extends BukkitRunnable {
                 return;
             }
             if (!p.isDamaged()) {
-                p.PLAYER.getInventory().setItem(0, BotBows.BOTBOW);
+                p.player.getInventory().setItem(0, BotBows.BOTBOW);
             }
         }
     }

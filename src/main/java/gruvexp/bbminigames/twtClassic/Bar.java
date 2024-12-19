@@ -16,10 +16,10 @@ public class Bar {
     public static void sneakBarInit() {
         for (BotBowsPlayer p : BotBows.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW + "Sneaking cooldown", BarColor.YELLOW, BarStyle.SEGMENTED_10);
-            bar.addPlayer(p.PLAYER);
+            bar.addPlayer(p.player);
             bar.setProgress(0d);
             bar.setVisible(false);
-            sneakBars.put(p.PLAYER, bar);
+            sneakBars.put(p.player, bar);
         }
     }
 
