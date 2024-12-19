@@ -21,8 +21,8 @@ public class TeamsMenu extends SettingsMenu {
     BotBowsTeam team2;
 
     @Override
-    public String getMenuName() {
-        return "Select teams";
+    public Component getMenuName() {
+        return Component.text("Select teams");
     }
 
     @Override

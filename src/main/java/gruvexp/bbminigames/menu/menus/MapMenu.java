@@ -21,8 +21,8 @@ public class  MapMenu extends SettingsMenu {
             "Has a huge ravine in the middle and many caves underground");
 
     @Override
-    public String getMenuName() {
-        return "Select map";
+    public Component getMenuName() {
+        return Component.text("Select map");
     }
 
     @Override

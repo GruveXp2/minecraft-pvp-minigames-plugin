@@ -52,8 +52,8 @@ public class AbilityMenu extends SettingsMenu {
     private PaginatedMenuRow cooldownMultiplierRow;
 
     @Override
-    public String getMenuName() {
-        return "Abilities";
+    public Component getMenuName() {
+        return Component.text("Abilities");
     }
 
     @Override

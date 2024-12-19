@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class GameMenu extends Menu {
     @Override
-    public String getMenuName() {
-        return "Game Menu";
+    public Component getMenuName() {
+        return Component.text("Game Menu");
     }
 
     @Override

@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class WinThresholdMenu extends SettingsMenu {
     @Override
-    public String getMenuName() {
-        return "Select win threshold";
+    public Component getMenuName() {
+        return Component.text("Select win threshold");
     }
 
     @Override

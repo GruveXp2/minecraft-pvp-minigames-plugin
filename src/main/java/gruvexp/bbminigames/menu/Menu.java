@@ -37,7 +37,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     //let each menu decide their name
-    public abstract String getMenuName();
+    public abstract Component getMenuName();
 
     //let each menu decide their slot amount
     public abstract int getSlots();
