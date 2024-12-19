@@ -122,7 +122,7 @@ public abstract class Menu implements InventoryHolder {
 
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.displayName(Component.text(p.getPlayerListName(), teamColor));
+        itemMeta.displayName(Component.text(p.getName(), teamColor));
         itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, p.getUniqueId().toString());
         itemMeta.setOwningPlayer(Bukkit.getPlayer(p.getName()));
 
