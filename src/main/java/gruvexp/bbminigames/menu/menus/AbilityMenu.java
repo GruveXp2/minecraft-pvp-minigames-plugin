@@ -235,13 +235,4 @@ public class AbilityMenu extends SettingsMenu {
                 })
                 .forEach(row::removeItem);
     }
-
-    private void placeHeads(BotBowsTeam team, int startSlot) {
-        for (int i = 0; i < team.size(); i++) {
-            BotBowsPlayer p = team.getPlayer(i);
-            ItemStack headItem = makeHeadItem(p.PLAYER, p.getTeam().COLOR);
-            headItem.setAmount(p.getMaxAbilities());
-            inventory.setItem(startSlot + i, headItem);
-        }
-    }
 }
