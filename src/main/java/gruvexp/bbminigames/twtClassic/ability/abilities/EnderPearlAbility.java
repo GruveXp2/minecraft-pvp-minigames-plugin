@@ -5,7 +5,7 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 
 public class EnderPearlAbility extends Ability {
-    protected EnderPearlAbility(BotBowsPlayer player) {
+    public EnderPearlAbility(BotBowsPlayer player) {
         super(player);
         this.type = AbilityType.ENDER_PEARL;
         this.maxCooldown = 15;

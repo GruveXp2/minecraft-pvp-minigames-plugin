@@ -7,6 +7,7 @@ import gruvexp.bbminigames.menu.PlayerMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -50,6 +51,8 @@ public class AbilityMenu extends SettingsMenu {
     "When enabled, you can toggle", "which abilities will be allowed");
     public static final ItemStack MOD_TOGGLE_DISABLED = makeItem(77008, Component.empty());
     public static final ItemStack MOD_TOGGLE_ENABLED = makeItem(77007, Component.empty());
+    public static final ItemStack ABILITY_DISABLED = makeItem(77004, Component.empty());
+    public static final ItemStack ABILITY_EQUIPPED = makeItem(77005, Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
             "Click this to randomize your abilities", "from the allowed abilities");
@@ -128,6 +131,29 @@ public class AbilityMenu extends SettingsMenu {
             }
             case MACE -> BotBows.getBotBowsPlayer(clicker).toggleAbilityToggle();
             case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
+            default -> {
+                if (e.getSlot() > 45) return;
+                AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
+                if (abilityType == null) return;
+                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                if (p.canToggleAbilities()) {
+                    settings.toggleAbility(abilityType);
+                } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
+                    if (settings.abilityAllowed(abilityType)) {
+                        if (p.isAbilityEquipped(abilityType)) {
+                            p.unequipAbility(abilityType);
+                            clicker.getInventory().setItem(abilityRow.getAbilitySlot(abilityType) + 10, ABILITY_EQUIPPED);
+                        } else {
+                            e.setCancelled(false);
+                            e.setCurrentItem(e.getCurrentItem());
+                            p.equipAbility(abilityType);
+                            clicker.getInventory().setItem(abilityRow.getAbilitySlot(abilityType) + 10, null);
+                        }
+                    } else {
+                        clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
+                    }
+                }
+            }
         }
     }
 
@@ -236,6 +262,15 @@ public class AbilityMenu extends SettingsMenu {
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         headItem.setItemMeta(meta);
         cooldownMultiplierRow.updatePage();
+    }
+
+    public void updateAbilityStatus(AbilityType type) {
+        int index = abilityRow.getAbilitySlot(type);
+        if (settings.abilityAllowed(type)) {
+            inventory.setItem(index - 9, VOID);
+        } else {
+            inventory.setItem(index - 9, ABILITY_DISABLED);
+        }
     }
 
     public void addPlayer(BotBowsPlayer p) {

@@ -2,6 +2,9 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
+import gruvexp.bbminigames.twtClassic.ability.Ability;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.EnderPearlAbility;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,10 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BotBowsPlayer {
 
@@ -30,8 +30,8 @@ public class BotBowsPlayer {
 
     private int maxAbilities;
     private float abilityCooldownMultiplier;
-
     private boolean canToggleAbilities = false;
+    private HashMap<AbilityType, Ability> abilities = new HashMap<>();
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
@@ -144,6 +144,20 @@ public class BotBowsPlayer {
 
     public boolean canToggleAbilities() {
         return canToggleAbilities;
+    }
+
+    public void equipAbility(AbilityType type) {
+        switch (type) {
+            case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this));
+        }
+    }
+
+    public void unequipAbility(AbilityType type) {
+        abilities.remove(type);
+    }
+
+    public boolean isAbilityEquipped(AbilityType type) {
+        return abilities.containsKey(type);
     }
 
     public boolean isDamaged() {

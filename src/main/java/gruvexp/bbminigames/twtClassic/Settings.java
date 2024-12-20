@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.menu.menus.*;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
@@ -30,7 +30,7 @@ public class Settings {
     // abilities
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
-    private final Map<Class<? extends Ability>, Boolean> abilityStates = new HashMap<>();
+    private final Map<AbilityType, Boolean> abilityStates = new HashMap<>();
     // menus
     public MapMenu mapMenu;
     public HealthMenu healthMenu;
@@ -186,15 +186,25 @@ public class Settings {
         return abilityCooldownMultiplier;
     }
 
-    public void enableAbility(Class<? extends Ability> abilityClass) {
-        abilityStates.put(abilityClass, true);
+    public void allowAbility(AbilityType type) {
+        abilityStates.put(type, true);
+        abilityMenu.updateAbilityStatus(type);
     }
 
-    public void disableAbility(Class<? extends Ability> abilityClass) {
-        abilityStates.put(abilityClass, false);
+    public void disableAbility(AbilityType type) {
+        abilityStates.put(type, false);
+        abilityMenu.updateAbilityStatus(type);
     }
 
-    public boolean isAbilityEnabled(Class<? extends Ability> abilityClass) {
-        return abilityStates.getOrDefault(abilityClass, true); // Default to enabled
+    public void toggleAbility(AbilityType type) {
+        if (abilityAllowed(type)) {
+            disableAbility(type);
+        } else {
+            allowAbility(type);
+        }
+    }
+
+    public boolean abilityAllowed(AbilityType type) {
+        return abilityStates.getOrDefault(type, true); // Default to enabled
     }
 }
