@@ -118,7 +118,7 @@ public class BotBowsGame {
                 .append(team2.toComponent())
                 .append(Component.text(team2.getPoints())));
 
-        BotBows.titlePlayers(winningTeam.toString() + " +" + winScore, 40);
+        BotBows.titlePlayers(winningTeam + " +" + winScore, 40);
         Board.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinThreshold() && settings.getWinThreshold() > 0) {
