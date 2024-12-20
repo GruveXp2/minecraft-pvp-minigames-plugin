@@ -160,9 +160,7 @@ public class BotBows {
             }
         }
         switch (material) { // add effekter basert på åssen blokk som er under
-            case YELLOW_CONCRETE, YELLOW_CONCRETE_POWDER, YELLOW_CARPET -> {
-                p.addPotionEffect(new PotionEffect(org.bukkit.potion.PotionEffectType.JUMP_BOOST, 1200, 6, true, false));
-            }
+            case YELLOW_CONCRETE, YELLOW_CONCRETE_POWDER, YELLOW_CARPET -> p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 1200, 6, true, false));
             case CYAN_CONCRETE, CYAN_CONCRETE_POWDER, CYAN_CARPET -> {
                 double Δy = e.getTo().getY() - e.getFrom().getY();
                 if (Δy <= 0.1) {break;} // fortsett bare viss man har hoppa (et visst antall upwards momentum)
