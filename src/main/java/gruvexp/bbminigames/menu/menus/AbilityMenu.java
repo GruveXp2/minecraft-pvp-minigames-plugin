@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.menu.AbilityMenuRow;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.PlayerMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
@@ -15,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -44,11 +46,23 @@ public class AbilityMenu extends SettingsMenu {
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.GREEN),
             ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have a different cooldown multiplier");
 
+    private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
+    "When enabled, you can toggle", "which abilities will be allowed");
+    public static final ItemStack MOD_TOGGLE_DISABLED = makeItem(77008, Component.empty());
+    public static final ItemStack MOD_TOGGLE_ENABLED = makeItem(77007, Component.empty());
+
+    private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
+            "Click this to randomize your abilities", "from the allowed abilities");
+
+    private static final ItemStack INDIVIDUAL_PLAYER_ABILITIES = makeItem(77010, Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
+            "Edit the allowed abilities", "for each individual player");
+
     private MenuSlider maxAbilitiesSlider;
     private MenuSlider cooldownMultiplierSlider;
 
     private PlayerMenuRow maxAbilitiesRow;
     private PlayerMenuRow cooldownMultiplierRow;
+    private AbilityMenuRow abilityRow;
 
     @Override
     public Component getMenuName() {
@@ -97,25 +111,23 @@ public class AbilityMenu extends SettingsMenu {
                     maxAbilities++;
                     if (maxAbilities > 3) maxAbilities = 1;
                     bp.setMaxAbilities(maxAbilities);
-
-                    e.getCurrentItem().setAmount(maxAbilities); // oppdaterer item count
                 } else if (e.getSlot() <=27) {
                     float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
-                    //BotBows.debugMessage("Cooldown:" + cooldownMultiplier);
                     String prev = String.format(Locale.US, "%.2fx", cooldownMultiplier);
-                    //BotBows.debugMessage("Cooldown: \"" + prev + "\"");
                     String next = cooldownMultiplierSlider.getNext(prev);
-                    //BotBows.debugMessage("Next: \"" + next + "\"");
                     float newCooldownMultiplier = Float.parseFloat(next.substring(0, next.length() - 1));
-                    //BotBows.debugMessage("Next:" + newCooldownMultiplier);
                     bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
                 }
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
                     settings.hazardMenu.open(clicker);
+                } else if (e.getSlot() == 49) {
+                    clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
                 }
             }
+            case MACE -> BotBows.getBotBowsPlayer(clicker).toggleAbilityToggle();
+            case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
         }
     }
 
@@ -127,16 +139,36 @@ public class AbilityMenu extends SettingsMenu {
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
         maxAbilitiesRow = new PlayerMenuRow(inventory, 2, 5);
         cooldownMultiplierRow = new PlayerMenuRow(inventory, 20, 7);
+        abilityRow = new AbilityMenuRow(inventory, 37, 8);
         setFillerVoid();
+    }
+    
+    @Override
+    public void open(Player p) {
+        super.open(p);
+        Inventory inv = p.getInventory();
+        for (int i = 9; i < 18; i++) {
+            if (inv.getItem(i) != null) {
+                Main.WORLD.dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
+                inv.setItem(i, null);
+            }
+        }
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        bp.disableAbilityToggle();
     }
 
     public void enableAbilities() {
         inventory.setItem(8, ABILITIES_ENABLED);
         if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
         if (individualCooldownMultipliers) enableIndividualCooldownMultiplier(); else disableIndividualCooldownMultiplier();
+        abilityRow.show();
+        inventory.setItem(36, MOD_TOGGLE);
+        inventory.setItem(45, RANDOMIZE_ABILITIES);
+        inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES);
     }
 
     public void disableAbilities() {
+        abilityRow.hide();
         inventory.setItem(8, ABILITIES_DISABLED);
         // fyller med gråe glassvinduer der settings var
         ItemStack disabled = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());

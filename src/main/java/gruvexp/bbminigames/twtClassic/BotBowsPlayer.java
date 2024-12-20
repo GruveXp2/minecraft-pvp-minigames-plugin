@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -29,6 +30,8 @@ public class BotBowsPlayer {
 
     private int maxAbilities;
     private float abilityCooldownMultiplier;
+
+    private boolean canToggleAbilities = false;
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
@@ -119,6 +122,28 @@ public class BotBowsPlayer {
 
     public float getAbilityCooldownMultiplier() {
         return abilityCooldownMultiplier;
+    }
+
+    public void disableAbilityToggle() {
+        player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_DISABLED);
+        canToggleAbilities = false;
+    }
+
+    public void enableAbilityToggle() {
+        player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_ENABLED);
+        canToggleAbilities = true;
+    }
+
+    public void toggleAbilityToggle() {
+        if (canToggleAbilities) {
+            disableAbilityToggle();
+        } else {
+            enableAbilityToggle();
+        }
+    }
+
+    public boolean canToggleAbilities() {
+        return canToggleAbilities;
     }
 
     public boolean isDamaged() {

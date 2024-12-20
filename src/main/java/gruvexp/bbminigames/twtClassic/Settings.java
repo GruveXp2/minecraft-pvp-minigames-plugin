@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.menu.menus.*;
+import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
@@ -11,10 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Settings {
     public BotBowsMap currentMap = BotBowsMap.BLAUD_VS_SAUCE; // default map
@@ -32,6 +30,7 @@ public class Settings {
     // abilities
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
+    private final Map<Class<? extends Ability>, Boolean> abilityStates = new HashMap<>();
     // menus
     public MapMenu mapMenu;
     public HealthMenu healthMenu;
@@ -185,5 +184,17 @@ public class Settings {
 
     public float getAbilityCooldownMultiplier() {
         return abilityCooldownMultiplier;
+    }
+
+    public void enableAbility(Class<? extends Ability> abilityClass) {
+        abilityStates.put(abilityClass, true);
+    }
+
+    public void disableAbility(Class<? extends Ability> abilityClass) {
+        abilityStates.put(abilityClass, false);
+    }
+
+    public boolean isAbilityEnabled(Class<? extends Ability> abilityClass) {
+        return abilityStates.getOrDefault(abilityClass, true); // Default to enabled
     }
 }
