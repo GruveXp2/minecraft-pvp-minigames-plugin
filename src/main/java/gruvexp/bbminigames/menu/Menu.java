@@ -80,10 +80,10 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    public static ItemStack makeItem(int customModelData, String displayName, String... lore) {
+    public static ItemStack makeItem(int customModelData, TextComponent displayName, String... lore) {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(Component.text(displayName));
+        itemMeta.displayName(displayName);
         itemMeta.setLore(Arrays.asList(lore));
         itemMeta.setCustomModelData(customModelData);
 
