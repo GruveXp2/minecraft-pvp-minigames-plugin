@@ -115,7 +115,7 @@ public class BotBows {
 
     public static void debugMessage(String message) {
         messagePlayers(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY));
-        Main.getPlugin().getLogger().info(ChatColor.GRAY + "[DEBUG]: " + message);
+        Main.getPlugin().getLogger().info("[DEBUG]: " + message);
     }
 
     public static void debugMessage(String message, boolean showMessage) {
