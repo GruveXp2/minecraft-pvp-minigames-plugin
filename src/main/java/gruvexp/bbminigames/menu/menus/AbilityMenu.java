@@ -78,9 +78,18 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     @Override
+    public boolean handlesEmptySlots() {
+        return true;
+    }
+
+    @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        switch (e.getCurrentItem().getType()) {
+        ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null) {
+            clickedItem = new ItemStack(Material.AIR);
+        }
+        switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
                 switch (e.getSlot()) {
                     case 0 -> disableIndividualMaxAbilities();
@@ -131,23 +140,60 @@ public class AbilityMenu extends SettingsMenu {
             }
             case MACE -> BotBows.getBotBowsPlayer(clicker).toggleAbilityToggle();
             case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
+            case AIR -> {
+                BotBows.debugMessage("Trykka på luft, skal vi se om det var en abilityi cursoren");
+                ItemStack cursorItem = e.getCursor();
+                if (cursorItem.getType() == Material.AIR) {
+                    BotBows.debugMessage("Ingenting i cursoren");
+                    return;
+                }
+                BotBows.debugMessage("Item i cursoren: " + cursorItem.getType().name());
+                AbilityType type = AbilityType.fromItem(cursorItem);
+                if (type == null) {
+                    BotBows.debugMessage("ingen ability item i cursoren");
+                    return;
+                }
+                BotBows.debugMessage("Ability i cursoren: " + type.name());
+                BotBows.debugMessage("Plasserer i slottet: " + e.getSlot());
+                if (e.getClickedInventory().equals(inventory)) {
+                    BotBows.debugMessage("prøvde å plassere tilbakei menuet");
+                    clicker.setItemOnCursor(null);
+                    return;
+                }
+                if (e.getSlot() > 8) {
+                    BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet");
+                    return;
+                }
+                e.setCancelled(false);
+                BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot());
+            }
             default -> {
-                if (e.getSlot() > 45) return;
                 AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
-                if (abilityType == null) return;
+                if (abilityType == null) {
+                    BotBows.debugMessage("R: No ability connected to item clicked on");
+                    return;
+                }
                 BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
                 if (p.canToggleAbilities()) {
                     settings.toggleAbility(abilityType);
                 } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
                     if (settings.abilityAllowed(abilityType)) {
+                        BotBows.debugMessage(abilityType.name() + " is allowed");
                         if (p.isAbilityEquipped(abilityType)) {
                             p.unequipAbility(abilityType);
-                            clicker.getInventory().setItem(abilityRow.getAbilitySlot(abilityType) + 10, ABILITY_EQUIPPED);
+                            if (e.getSlot() < 9) {
+                                e.setCurrentItem(null);
+                            }
                         } else {
-                            e.setCancelled(false);
-                            e.setCurrentItem(e.getCurrentItem());
+                            //e.setCancelled(false);
+                            if (e.getSlot() > 36 && e.getSlot() < 45) {
+                                //inventory.setItem(e.getSlot(), e.getCurrentItem());
+                                p.player.setItemOnCursor(clickedItem.clone());
+                                BotBows.debugMessage("Itemet ble plukka opp fra menuet");
+                            } else {
+                                BotBows.debugMessage("Itemet ble plukkaopp, fra inv? slot = " + e.getSlot());
+                            }
                             p.equipAbility(abilityType);
-                            clicker.getInventory().setItem(abilityRow.getAbilitySlot(abilityType) + 10, null);
                         }
                     } else {
                         clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
@@ -265,12 +311,16 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateAbilityStatus(AbilityType type) {
-        int index = abilityRow.getAbilitySlot(type);
+        int index = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
         if (settings.abilityAllowed(type)) {
             inventory.setItem(index - 9, VOID);
         } else {
             inventory.setItem(index - 9, ABILITY_DISABLED);
         }
+    }
+
+    public int getRelativeAbilitySlot(AbilityType type) { // åssen rad det er, 0-9
+        return abilityRow.getAbilitySlot(type) + 1;
     }
 
     public void addPlayer(BotBowsPlayer p) {

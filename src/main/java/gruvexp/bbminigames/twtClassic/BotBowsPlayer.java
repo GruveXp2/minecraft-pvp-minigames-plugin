@@ -154,6 +154,22 @@ public class BotBowsPlayer {
 
     public void unequipAbility(AbilityType type) {
         abilities.remove(type);
+        player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
+        BotBows.debugMessage("setter item på slot " + BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9);
+        if (TestCommand.test1) {
+            BotBows.debugMessage("test1 is enabled, setting redstone");
+            ItemStack redstone = new ItemStack(Material.REDSTONE);
+            redstone.setAmount(5);
+            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, redstone);
+            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 10, redstone);
+            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 11, redstone);
+            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 12, redstone);
+            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 13, redstone);
+            if (TestCommand.test2) {
+                player.getInventory().setItem(10, new ItemStack(Material.LAPIS_LAZULI));
+            }
+        }
+        BotBows.debugMessage("Unequipping: " + type.name());
     }
 
     public boolean isAbilityEquipped(AbilityType type) {

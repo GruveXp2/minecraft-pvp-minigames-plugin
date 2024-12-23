@@ -55,12 +55,12 @@ public class MenuSlider {
 
     public String getNext(String step) {
         int i = sliderSteps.indexOf(step);
-        BotBows.debugMessage(String.format("current(%d): %s", i, sliderSteps.get(i)));
+        //BotBows.debugMessage(String.format("current(%d): %s", i, sliderSteps.get(i)));
         i++;
         if (i == sliderSteps.size()) {
             i = 0;
         }
-        BotBows.debugMessage(String.format("next(%d): %s", i, sliderSteps.get(i)));
+        //BotBows.debugMessage(String.format("next(%d): %s", i, sliderSteps.get(i)));
         return sliderSteps.get(i);
     }
 }

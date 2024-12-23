@@ -22,6 +22,10 @@ public class MenuRow {
         this.size = size;
     }
 
+    public int getStartSlot() {
+        return startSlot;
+    }
+
     public int getCurrentPage() {
         return currentPage;
     }
