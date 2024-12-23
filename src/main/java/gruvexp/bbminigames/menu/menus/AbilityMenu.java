@@ -233,6 +233,7 @@ public class AbilityMenu extends SettingsMenu {
         }
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
         bp.disableAbilityToggle();
+        bp.getAbilities().forEach(ability -> inv.setItem(9 + getRelativeAbilitySlot(ability.getType()), ABILITY_EQUIPPED));
     }
 
     public void enableAbilities() {
