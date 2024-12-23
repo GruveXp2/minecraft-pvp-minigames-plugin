@@ -150,6 +150,8 @@ public class BotBowsPlayer {
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this));
         }
+        player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
+        BotBows.debugMessage("Equipping: " + type.name());
     }
 
     public void unequipAbility(AbilityType type) {
