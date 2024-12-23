@@ -19,6 +19,8 @@ public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
     public static boolean log = false;
+    public static boolean test1 = false;
+    public static boolean test2 = false;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
 
     @Override
@@ -47,6 +49,14 @@ public class TestCommand implements CommandExecutor {
                 case "b" -> {
                     log = !log;
                     BotBows.debugMessage("Logging set to: " + log);
+                }
+                case "t1" -> {
+                    test1 = !test1;
+                    BotBows.debugMessage("Test1 set to: " + test1);
+                }
+                case "t2" -> {
+                    test2 = !test2;
+                    BotBows.debugMessage("Test2 set to: " + test2);
                 }
                 case "inv" -> p.openInventory(testInv);
                 case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);
