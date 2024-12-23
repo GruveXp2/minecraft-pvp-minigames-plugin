@@ -139,9 +139,7 @@ public class Settings {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        for (BotBowsPlayer p : players) { // oppdaterer livene til alle playersene
-            p.setMaxHP(maxHP);
-        }
+        players.forEach(p -> p.setMaxHP(maxHP));
         healthMenu.updateMenu();
     }
 
@@ -194,6 +192,7 @@ public class Settings {
     public void disableAbility(AbilityType type) {
         abilityStates.put(type, false);
         abilityMenu.updateAbilityStatus(type);
+        players.forEach(p -> p.unequipAbility(type));
     }
 
     public void toggleAbility(AbilityType type) {
