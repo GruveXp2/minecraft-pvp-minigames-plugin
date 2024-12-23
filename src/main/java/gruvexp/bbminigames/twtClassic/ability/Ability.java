@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import org.bukkit.inventory.ItemStack;
 
 public abstract class Ability { // each player has some ability objects.
 
@@ -14,12 +13,16 @@ public abstract class Ability { // each player has some ability objects.
 
     protected int hotBarSlot;
 
-    protected Ability(BotBowsPlayer player) {
+    protected Ability(BotBowsPlayer player, int hotBarSlot) {
         this.player = player;
-        // find the next free hotbarslot and place it there
+        this.hotBarSlot = hotBarSlot;
     }
 
     public abstract AbilityType getType();
+
+    public int getHotBarSlot() {
+        return hotBarSlot;
+    }
 
     // everything that all abilities should have and all the methods to customize them
 

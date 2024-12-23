@@ -13,6 +13,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -146,29 +147,31 @@ public class BotBowsPlayer {
         return canToggleAbilities;
     }
 
-    public void equipAbility(AbilityType type) {
+    public void equipAbility(int slot, AbilityType type) {
         switch (type) {
-            case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this));
+            case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this, slot));
         }
         player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
         BotBows.debugMessage("Equipping: " + type.name());
     }
 
     public void unequipAbility(AbilityType type) {
-        abilities.remove(type);
-        player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
+        Inventory inv = player.getInventory();
+        inv.setItem(abilities.get(type).getHotBarSlot(), null);
+        inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         BotBows.debugMessage("setter item på slot " + BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9);
+        abilities.remove(type);
         if (TestCommand.test1) {
             BotBows.debugMessage("test1 is enabled, setting redstone");
             ItemStack redstone = new ItemStack(Material.REDSTONE);
             redstone.setAmount(5);
-            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, redstone);
-            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 10, redstone);
-            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 11, redstone);
-            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 12, redstone);
-            player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 13, redstone);
+            inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, redstone);
+            inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 10, redstone);
+            inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 11, redstone);
+            inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 12, redstone);
+            inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 13, redstone);
             if (TestCommand.test2) {
-                player.getInventory().setItem(10, new ItemStack(Material.LAPIS_LAZULI));
+                inv.setItem(10, new ItemStack(Material.LAPIS_LAZULI));
             }
         }
         BotBows.debugMessage("Unequipping: " + type.name());

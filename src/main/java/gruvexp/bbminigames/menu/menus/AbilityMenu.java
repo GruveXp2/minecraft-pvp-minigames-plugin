@@ -166,6 +166,8 @@ public class AbilityMenu extends SettingsMenu {
                 }
                 e.setCancelled(false);
                 BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot());
+                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                p.equipAbility(e.getSlot(), type);
             }
             default -> {
                 AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
@@ -181,19 +183,12 @@ public class AbilityMenu extends SettingsMenu {
                         BotBows.debugMessage(abilityType.name() + " is allowed");
                         if (p.isAbilityEquipped(abilityType)) {
                             p.unequipAbility(abilityType);
-                            if (e.getSlot() < 9) {
-                                e.setCurrentItem(null);
-                            }
                         } else {
-                            //e.setCancelled(false);
                             if (e.getSlot() > 36 && e.getSlot() < 45) {
-                                //inventory.setItem(e.getSlot(), e.getCurrentItem());
                                 p.player.setItemOnCursor(clickedItem.clone());
-                                BotBows.debugMessage("Itemet ble plukka opp fra menuet");
                             } else {
                                 BotBows.debugMessage("Itemet ble plukkaopp, fra inv? slot = " + e.getSlot());
                             }
-                            p.equipAbility(abilityType);
                         }
                     } else {
                         clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
