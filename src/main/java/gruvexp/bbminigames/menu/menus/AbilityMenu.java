@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -194,6 +195,16 @@ public class AbilityMenu extends SettingsMenu {
                         clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
                     }
                 }
+            }
+        }
+    }
+
+    public void handleMenuClose(InventoryCloseEvent e) {
+        Player p = (Player) e.getPlayer();
+        Inventory inv = p.getInventory();
+        for (int i = 9; i < 18; i++) { // fjerner menu overlay greier
+            if (inv.getItem(i) != null && inv.getItem(i).getType() == Material.FIREWORK_STAR) {
+                inv.setItem(i, null);
             }
         }
     }
