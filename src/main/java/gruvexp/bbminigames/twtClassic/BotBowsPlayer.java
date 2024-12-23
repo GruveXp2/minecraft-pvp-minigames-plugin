@@ -32,7 +32,7 @@ public class BotBowsPlayer {
     private int maxAbilities;
     private float abilityCooldownMultiplier;
     private boolean canToggleAbilities = false;
-    private HashMap<AbilityType, Ability> abilities = new HashMap<>();
+    private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
@@ -83,6 +83,10 @@ public class BotBowsPlayer {
         if (Cooldowns.sneakRunnables.containsKey(player)) {
             Cooldowns.sneakRunnables.get(player).cancel();
         }
+    }
+
+    public void readyAbilities() {
+        abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
     }
 
     public int getMaxHP() {return maxHP;}
@@ -168,6 +172,10 @@ public class BotBowsPlayer {
 
     public boolean isAbilityEquipped(AbilityType type) {
         return abilities.containsKey(type);
+    }
+
+    public Collection<Ability> getAbilities() {
+        return abilities.values();
     }
 
     public boolean isDamaged() {
