@@ -22,7 +22,9 @@ public abstract class Ability { // each player has some ability objects.
         this.hotBarSlot = hotBarSlot;
     }
 
-    public abstract AbilityType getType();
+    public AbilityType getType() {
+        return type;
+    }
 
     public int getHotBarSlot() {
         return hotBarSlot;

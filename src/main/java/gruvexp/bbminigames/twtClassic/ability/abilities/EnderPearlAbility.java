@@ -10,9 +10,4 @@ public class EnderPearlAbility extends Ability {
         this.type = AbilityType.ENDER_PEARL;
         this.maxCooldown = 15;
     }
-
-    @Override
-    public AbilityType getType() {
-        return type;
-    }
 }
