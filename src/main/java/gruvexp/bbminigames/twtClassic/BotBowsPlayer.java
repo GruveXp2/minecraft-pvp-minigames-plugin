@@ -111,6 +111,14 @@ public class BotBowsPlayer {
         Board.updatePlayerScore(this);
     }
 
+    public Collection<Ability> getAbilities() {
+        return abilities.values();
+    }
+
+    public Ability getAbility(AbilityType type) {
+        return abilities.get(type);
+    }
+
     public void setMaxAbilities(int maxAbilities) {
         this.maxAbilities = maxAbilities;
         BotBows.settings.abilityMenu.updateMaxAbilities(this);
@@ -172,10 +180,6 @@ public class BotBowsPlayer {
 
     public boolean isAbilityEquipped(AbilityType type) {
         return abilities.containsKey(type);
-    }
-
-    public Collection<Ability> getAbilities() {
-        return abilities.values();
     }
 
     public boolean isDamaged() {
