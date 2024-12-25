@@ -46,7 +46,7 @@ public class BotBowsPlayer {
 
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHP * 2);
+            player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
             player.setHealth(maxHP * 2);
             player.setGameMode(GameMode.ADVENTURE);
         } else {
@@ -77,7 +77,7 @@ public class BotBowsPlayer {
         player.getInventory().setArmorContents(null);
         player.setGlowing(false);
         player.setInvulnerable(false);
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         player.setGameMode(GameMode.SPECTATOR);
         Bar.sneakBars.get(player).setVisible(false);
         if (Cooldowns.sneakRunnables.containsKey(player)) {
@@ -93,7 +93,7 @@ public class BotBowsPlayer {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2 * maxHP);
+        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(2 * maxHP);
         player.setHealth(2 * maxHP);
     }
 
