@@ -42,6 +42,7 @@ public abstract class Ability { // each player has some ability objects.
             if (cooldown == 0) {
                 inv.setItem(hotBarSlot, type.getAbilityItem());
                 task.cancel();
+                return;
             }
             cooldownItem.setAmount(cooldown);
             inv.setItem(hotBarSlot, cooldownItem);
