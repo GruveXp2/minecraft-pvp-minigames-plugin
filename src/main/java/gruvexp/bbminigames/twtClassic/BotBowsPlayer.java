@@ -5,6 +5,9 @@ import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.EnderPearlAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.InvisPotionAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.SpeedPotionAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.WindChargeAbility;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -162,6 +165,9 @@ public class BotBowsPlayer {
     public void equipAbility(int slot, AbilityType type) {
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this, slot));
+            case WIND_CHARGE -> abilities.put(type, new WindChargeAbility(this, slot));
+            case SPEED_POTION -> abilities.put(type, new SpeedPotionAbility(this, slot));
+            case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
         }
         player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
         //BotBows.debugMessage("Equipping: " + type.name());

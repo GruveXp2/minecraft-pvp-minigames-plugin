@@ -5,7 +5,7 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 
 public class WindChargeAbility extends Ability {
-    protected WindChargeAbility(BotBowsPlayer player, int hotBarSlot) {
+    public WindChargeAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
         this.type = AbilityType.WIND_CHARGE;
         this.cooldown = 15;
