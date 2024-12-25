@@ -49,7 +49,7 @@ public class  MapMenu extends SettingsMenu {
         super.setMenuItems();
         inventory.setItem(3, ROYAL_ARENA);
         inventory.setItem(5, ICY_RAVINE);
-        setPageButtons(1, false, true, null);
+        setPageButtons(1, false, true);
         setFillerVoid();
     }
 }

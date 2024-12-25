@@ -50,15 +50,15 @@ public class AbilityMenu extends SettingsMenu {
 
     private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
     "When enabled, you can toggle", "which abilities will be allowed");
-    public static final ItemStack MOD_TOGGLE_DISABLED = makeItem(77008, Component.empty());
-    public static final ItemStack MOD_TOGGLE_ENABLED = makeItem(77007, Component.empty());
-    public static final ItemStack ABILITY_DISABLED = makeItem(77004, Component.empty());
-    public static final ItemStack ABILITY_EQUIPPED = makeItem(77005, Component.empty());
+    public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot", Component.empty());
+    public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot", Component.empty());
+    public static final ItemStack ABILITY_DISABLED = makeItem("disabled_slot_covered", Component.empty());
+    public static final ItemStack ABILITY_EQUIPPED = makeItem("active_slot", Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
             "Click this to randomize your abilities", "from the allowed abilities");
 
-    private static final ItemStack INDIVIDUAL_PLAYER_ABILITIES = makeItem(77010, Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
+    private static final ItemStack INDIVIDUAL_PLAYER_ABILITIES = makeItem("gear", Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
             "Edit the allowed abilities", "for each individual player");
 
     private MenuSlider maxAbilitiesSlider;
@@ -204,7 +204,7 @@ public class AbilityMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems(); // initer settings
-        setPageButtons(5, true, false, null);
+        setPageButtons(5, true, false);
         maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
         maxAbilitiesRow = new PlayerMenuRow(inventory, 2, 5);

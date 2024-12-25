@@ -57,7 +57,7 @@ public class TeamsMenu extends SettingsMenu {
         super.setMenuItems(); // settings init
         registerTeams();
         setColoredGlassPanes();
-        setPageButtons(2, true, true, null);
+        setPageButtons(2, true, true);
     }
 
     public void registerTeams() {

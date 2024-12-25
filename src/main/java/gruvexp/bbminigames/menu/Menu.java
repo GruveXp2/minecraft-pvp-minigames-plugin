@@ -14,19 +14,20 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 
 public abstract class Menu implements InventoryHolder {
 
     //Protected values that can be accessed in the menus
     protected Inventory inventory;
-    public static final ItemStack VOID = getVoidItem();
-    public static final ItemStack PREV = getPrevPageItem();
-    public static final ItemStack NEXT = getNextPageItem();
+    public static final ItemStack VOID = makeItem("void", Component.empty());
+    public static final ItemStack PREV = makeItem("prev", Component.text("Prev"));
+    public static final ItemStack NEXT = makeItem("next", Component.text("Next"));
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
@@ -84,41 +85,17 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    public static ItemStack makeItem(int customModelData, TextComponent displayName, String... lore) {
+    public static ItemStack makeItem(String customModelData, TextComponent displayName, String... lore) {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(displayName);
         itemMeta.setLore(Arrays.asList(lore));
-        itemMeta.setCustomModelData(customModelData);
+
+        CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
+        customModelDataComponent.setStrings(List.of(customModelData));
+        itemMeta.setCustomModelDataComponent(customModelDataComponent);
 
         item.setItemMeta(itemMeta);
-        return item;
-    }
-
-    private static ItemStack getVoidItem() {
-        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(""));
-        meta.setCustomModelData(77000); // void texture
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    private static ItemStack getNextPageItem() {
-        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Next page"));
-        meta.setCustomModelData(77001); // next page texture
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    private static ItemStack getPrevPageItem() {
-        ItemStack item = new ItemStack(Material.FIREWORK_STAR);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Prev page"));
-        meta.setCustomModelData(77002); // prev page texture
-        item.setItemMeta(meta);
         return item;
     }
 
@@ -134,12 +111,12 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    protected void setPageButtons(int rowIndex, boolean prevMenuButton, boolean nextMenuButton, ItemStack moreSettingsButton) {
+    protected void setPageButtons(int rowIndex, boolean prevMenuButton, boolean nextMenuButton) {
         inventory.setItem(rowIndex*9    , VOID);
         inventory.setItem(rowIndex*9 + 1, VOID);
         inventory.setItem(rowIndex*9 + 2, VOID);
         inventory.setItem(rowIndex*9 + 3, prevMenuButton ? PREV : VOID);
-        inventory.setItem(rowIndex*9 + 4, Objects.requireNonNullElse(moreSettingsButton, VOID));
+        inventory.setItem(rowIndex*9 + 4, VOID);
         inventory.setItem(rowIndex*9 + 5, nextMenuButton ? NEXT : VOID);
         inventory.setItem(rowIndex*9 + 6, VOID);
         inventory.setItem(rowIndex*9 + 7, VOID);
