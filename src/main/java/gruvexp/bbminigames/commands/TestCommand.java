@@ -18,7 +18,8 @@ import java.util.Objects;
 public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
-    public static boolean log = false;
+    public static boolean verboseDebugging = false;
+    public static boolean debugging = true;
     public static boolean test1 = false;
     public static boolean test2 = false;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
@@ -47,8 +48,12 @@ public class TestCommand implements CommandExecutor {
                     BotBows.debugMessage("New location logic set to: " + rotation);
                 }
                 case "b" -> {
-                    log = !log;
-                    BotBows.debugMessage("Logging set to: " + log);
+                    verboseDebugging = !verboseDebugging;
+                    BotBows.debugMessage("Verbose debugging set to: " + verboseDebugging);
+                }
+                case "toggle_debugging" -> {
+                    debugging = !debugging;
+                    BotBows.debugMessage("Debugging set to: " + debugging);
                 }
                 case "t1" -> {
                     test1 = !test1;

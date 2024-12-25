@@ -8,7 +8,6 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -114,6 +113,7 @@ public class BotBows {
     }
 
     public static void debugMessage(String message) {
+        if (!TestCommand.debugging) return;
         messagePlayers(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY));
         Main.getPlugin().getLogger().info("[DEBUG]: " + message);
     }
@@ -137,7 +137,7 @@ public class BotBows {
 
     public static void handleMovement(PlayerMoveEvent e) {
         Player p = e.getPlayer();
-        boolean b = TestCommand.log;
+        boolean b = TestCommand.verboseDebugging;
         Block block = p.getLocation().add(0, -0.05, 0).getBlock(); // sjekker rett under, bare 0.05 itilfelle det er teppe
 
         BotBows.debugMessage("1: Material: " + block.getType().name(), b);
