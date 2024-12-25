@@ -53,7 +53,7 @@ public class AbilityMenu extends SettingsMenu {
     public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot", Component.empty());
     public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot", Component.empty());
     public static final ItemStack ABILITY_DISABLED = makeItem("disabled_slot_covered", Component.empty());
-    public static final ItemStack ABILITY_EQUIPPED = makeItem("active_slot", Component.empty());
+    public static final ItemStack ABILITY_EQUIPPED = makeItem("enabled_slot", Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
             "Click this to randomize your abilities", "from the allowed abilities");
