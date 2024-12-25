@@ -35,6 +35,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RightClickListener(), this);
         getServer().getPluginManager().registerEvents(new ShiftListener(), this);
         getServer().getPluginManager().registerEvents(new SwitchSpectator(), this);
+        getServer().getPluginManager().registerEvents(new AbilityListener(), this);
 
         getCommand("menu").setExecutor(new MenuCommand());
         getCommand("settings").setExecutor(new SettingsCommand());
