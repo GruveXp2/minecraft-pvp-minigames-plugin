@@ -71,7 +71,12 @@ public class BotBows {
             gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED));
             return;
         }
-        if (settings.currentMap == BotBowsMap.GRAUT_VS_WACKY) {
+        botBowsGame = switch (settings.currentMap) {
+            case CLASSIC_ARENA -> new BotBowsGame(settings);
+            case ICY_RAVINE -> new GrautWackyGame(settings);
+            default -> new BotBowsGame(settings);
+        };
+        if (settings.currentMap == BotBowsMap.ICY_RAVINE) {
             botBowsGame = new GrautWackyGame(settings);
         } else {
             botBowsGame = new BotBowsGame(settings);

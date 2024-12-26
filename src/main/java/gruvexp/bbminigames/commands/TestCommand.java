@@ -35,7 +35,7 @@ public class TestCommand implements CommandExecutor {
                 case "w" -> {
                     BotBows.joinGame(Bukkit.getPlayer("GruveXp"));
                     BotBows.joinGame(Bukkit.getPlayer("Spionagent54"));
-                    BotBows.settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
+                    BotBows.settings.setMap(BotBowsMap.ICY_RAVINE);
                     BotBows.settings.setWinThreshold(-1);
                     BotBows.settings.healthMenu.enableCustomHP();
                     BotBowsPlayer judith = BotBows.getBotBowsPlayer(Bukkit.getPlayer("Spionagent54"));

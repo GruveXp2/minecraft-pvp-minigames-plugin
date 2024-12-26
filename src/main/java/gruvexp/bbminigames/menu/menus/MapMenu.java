@@ -49,8 +49,8 @@ public class  MapMenu extends SettingsMenu {
         if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
-            case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);
-            case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
+            case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);
+            case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.ICY_RAVINE);
             case STONE_BRICK_STAIRS, COPPER_BULB, MAGMA_BLOCK -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 4) {

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class Settings {
-    public BotBowsMap currentMap = BotBowsMap.BLAUD_VS_SAUCE; // default map
+    public BotBowsMap currentMap = BotBowsMap.CLASSIC_ARENA; // default map
     // hazards
     public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
     public EarthquakeHazard earthquakeHazard = new EarthquakeHazard(this); // holder styr på innstillinger og utførelse av storm logikk
@@ -68,8 +68,8 @@ public class Settings {
         if (map == currentMap) return;
         currentMap = map;
         switch (map) {
-            case BLAUD_VS_SAUCE -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
-            case GRAUT_VS_WACKY -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
+            case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
+            case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
         }
         teamsMenu.registerTeams();
         teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
