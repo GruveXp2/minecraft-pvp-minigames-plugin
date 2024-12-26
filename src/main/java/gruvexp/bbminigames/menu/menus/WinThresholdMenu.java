@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -22,6 +23,8 @@ public class WinThresholdMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
+        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
         switch (e.getCurrentItem().getType()) {
             case RED_STAINED_GLASS_PANE -> settings.changeWinThreshold(-10);
             case PINK_STAINED_GLASS_PANE -> settings.changeWinThreshold(-1);

@@ -3,6 +3,7 @@ package gruvexp.bbminigames.menu.menus;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -34,11 +35,13 @@ public class TeamsMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         // if you click on a player then they change teams
         Player clicker = (Player) e.getWhoClicked();
+        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {
                 Player p = Bukkit.getPlayer(UUID.fromString(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsTeam team = BotBows.getBotBowsPlayer(p).getTeam();
-                team.getOppositeTeam().join(BotBows.getBotBowsPlayer(p));
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                bp.getTeam().getOppositeTeam().join(bp);
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }

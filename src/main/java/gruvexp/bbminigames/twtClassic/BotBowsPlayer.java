@@ -188,6 +188,10 @@ public class BotBowsPlayer {
         return abilities.containsKey(type);
     }
 
+    public int getTotalAbilities() {
+        return abilities.size();
+    }
+
     public boolean isDamaged() {
         return isDamaged;
     }

@@ -39,6 +39,8 @@ public class Settings {
     public HazardMenu hazardMenu;
     public AbilityMenu abilityMenu;
 
+    private BotBowsPlayer modPlayer;
+
     public Settings() {
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
         team2.setOppositeTeam(team1);
@@ -99,8 +101,13 @@ public class Settings {
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenu.addPlayer(bp);
-        for (Player q : Bukkit.getOnlinePlayers()) {
-            q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")");
+
+        if (getPlayers().size() == 1) {
+            modPlayer = bp;
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")" +
+                    " and will be the settings moderator"));
+        } else {
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")"));
         }
     }
 
@@ -127,6 +134,12 @@ public class Settings {
         return Optional.ofNullable(BotBows.getBotBowsPlayer(p))
                 .map(players::contains)
                 .orElse(false);
+    }
+
+    public boolean playerIsntMod(BotBowsPlayer p) {
+        boolean isPlayerMod = p == modPlayer;
+        if (isPlayerMod) p.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
+        return !isPlayerMod;
     }
 
     public void setDynamicScoring(boolean dynamicScoring) {

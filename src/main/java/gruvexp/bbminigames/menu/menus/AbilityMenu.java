@@ -92,6 +92,8 @@ public class AbilityMenu extends SettingsMenu {
         }
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
+                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
                 switch (e.getSlot()) {
                     case 0 -> disableIndividualMaxAbilities();
                     case 8 -> disableAbilities();
@@ -99,6 +101,8 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
+                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
                 switch (e.getSlot()) {
                     case 0 -> enableIndividualMaxAbilities();
                     case 8 -> enableAbilities();
@@ -106,6 +110,8 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
+                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
                 String s = PlainTextComponentSerializer.plainText().serialize(c);
@@ -117,6 +123,8 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case PLAYER_HEAD -> {
+                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+
                 Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                 if (e.getSlot() < 9) {
@@ -139,7 +147,12 @@ public class AbilityMenu extends SettingsMenu {
                     clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
                 }
             }
-            case MACE -> BotBows.getBotBowsPlayer(clicker).toggleAbilityToggle();
+            case MACE -> {
+                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                if (settings.playerIsntMod(p)) return;
+
+                p.toggleAbilityToggle();
+            }
             case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
             case AIR -> {
                 ItemStack cursorItem = e.getCursor();
