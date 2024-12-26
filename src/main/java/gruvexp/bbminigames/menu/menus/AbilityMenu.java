@@ -169,7 +169,7 @@ public class AbilityMenu extends SettingsMenu {
                     clicker.setItemOnCursor(null);
                     return;
                 }
-                if (e.getSlot() > 8) {
+                if (e.getSlot() > 8 || e.getSlot() == 0) {
                     //BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet");
                     return;
                 }
