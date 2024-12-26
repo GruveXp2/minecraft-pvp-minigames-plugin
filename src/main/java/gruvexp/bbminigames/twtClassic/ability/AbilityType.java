@@ -17,7 +17,8 @@ public enum AbilityType {
     ENDER_PEARL(new ItemStack(Material.ENDER_PEARL), new ItemStack(Material.CYAN_CONCRETE)),
     WIND_CHARGE(new ItemStack(Material.WIND_CHARGE, 3), new ItemStack(Material.WHITE_WOOL)),
     SPEED_POTION(makePotion(PotionType.SWIFTNESS), new ItemStack(Material.LIGHT_BLUE_CANDLE)),
-    INVIS_POTION(makePotion(PotionType.INVISIBILITY), new ItemStack(Material.LIGHT_GRAY_CANDLE));
+    INVIS_POTION(makePotion(PotionType.INVISIBILITY), new ItemStack(Material.LIGHT_GRAY_CANDLE)),
+    SHRINK(new ItemStack(Material.REDSTONE), new ItemStack(Material.GUNPOWDER));
 
     private final ItemStack abilityItem;
     private final ItemStack cooldownItem;
