@@ -11,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -174,9 +175,8 @@ public class BotBowsGame {
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(10000);
 
-        for (BotBowsPlayer p : players) {
-            p.reset();
-        }
+        players.forEach(BotBowsPlayer::reset);
+        players.forEach(p -> p.player.getInventory().remove(Material.ARROW));
         Board.resetTeams();
         team1.reset();
         team2.reset();
