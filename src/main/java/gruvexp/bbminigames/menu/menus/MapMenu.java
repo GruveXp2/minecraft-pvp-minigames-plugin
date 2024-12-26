@@ -28,7 +28,7 @@ public class  MapMenu extends SettingsMenu {
             ChatColor.GRAY + "Unnamed 0" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 1",
             "A steampunk themed arena",
             ChatColor.YELLOW + "Work in progress");
-    public static final ItemStack VOLCANO = makeItem(Material.MAGMA_BLOCK, Component.text("Volcano", NamedTextColor.RED),
+    public static final ItemStack PIGLIN_HIDEOUT = makeItem(Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
             ChatColor.GRAY + "Unnamed 2" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 3",
             "A steampunk themed arena",
             ChatColor.YELLOW + "Work in progress");
@@ -67,7 +67,7 @@ public class  MapMenu extends SettingsMenu {
         inventory.setItem(3, ICY_RAVINE);
         inventory.setItem(4, ROYAL_CASTLE);
         inventory.setItem(5, STEAMPUNK);
-        inventory.setItem(6, VOLCANO);
+        inventory.setItem(6, PIGLIN_HIDEOUT);
         setPageButtons(1, false, true);
         setFillerVoid();
     }
