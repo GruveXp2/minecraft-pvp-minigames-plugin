@@ -20,6 +20,18 @@ public class  MapMenu extends SettingsMenu {
             ChatColor.LIGHT_PURPLE + "Graut" + ChatColor.WHITE + " vs " + ChatColor.GREEN + "Wacky",
             "A flat arena in a spruce forest with ice spikes and igloos",
             "Has a huge ravine in the middle and many caves underground");
+    public static final ItemStack CASTLE = makeItem(Material.STONE_BRICK_STAIRS, Component.text("Castle", NamedTextColor.GREEN),
+            ChatColor.DARK_AQUA + "Kjødd" + ChatColor.WHITE + " vs " + ChatColor.DARK_GREEN + "Goofy",
+            "A castle themed arena",
+            ChatColor.YELLOW + "Work in progress");
+    public static final ItemStack STEAMPUNK = makeItem(Material.COPPER_BULB, Component.text("Steampunk", NamedTextColor.GOLD),
+            ChatColor.GRAY + "Unnamed 0" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 1",
+            "A steampunk themed arena",
+            ChatColor.YELLOW + "Work in progress");
+    public static final ItemStack VOLCANO = makeItem(Material.MAGMA_BLOCK, Component.text("Volcano", NamedTextColor.RED),
+            ChatColor.GRAY + "Unnamed 2" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 3",
+            "A steampunk themed arena",
+            ChatColor.YELLOW + "Work in progress");
 
     @Override
     public Component getMenuName() {
@@ -39,6 +51,7 @@ public class  MapMenu extends SettingsMenu {
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.GRAUT_VS_WACKY);
+            case STONE_BRICK_STAIRS, COPPER_BULB, MAGMA_BLOCK -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 4) {
                     settings.teamsMenu.open(clicker);
@@ -50,8 +63,11 @@ public class  MapMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems();
-        inventory.setItem(3, ROYAL_ARENA);
-        inventory.setItem(5, ICY_RAVINE);
+        inventory.setItem(2, ROYAL_ARENA);
+        inventory.setItem(3, ICY_RAVINE);
+        inventory.setItem(4, CASTLE);
+        inventory.setItem(5, STEAMPUNK);
+        inventory.setItem(6, VOLCANO);
         setPageButtons(1, false, true);
         setFillerVoid();
     }
