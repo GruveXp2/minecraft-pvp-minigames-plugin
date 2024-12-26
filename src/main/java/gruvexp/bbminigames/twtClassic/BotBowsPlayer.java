@@ -4,10 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.EnderPearlAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.InvisPotionAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.SpeedPotionAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.WindChargeAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -185,6 +182,7 @@ public class BotBowsPlayer {
             case WIND_CHARGE -> abilities.put(type, new WindChargeAbility(this, slot));
             case SPEED_POTION -> abilities.put(type, new SpeedPotionAbility(this, slot));
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
+            case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
         }
         player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
         player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
@@ -196,7 +194,6 @@ public class BotBowsPlayer {
         Inventory inv = player.getInventory();
         inv.setItem(abilities.get(type).getHotBarSlot(), null);
         inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
-        //BotBows.debugMessage("setter item på slot " + BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9);
         abilities.remove(type);
         player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
     }
