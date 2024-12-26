@@ -160,9 +160,13 @@ public class AbilityMenu extends SettingsMenu {
                     //BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet");
                     return;
                 }
+                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                if (p.getTotalAbilities() == p.getMaxAbilities()) {
+                    clicker.sendMessage(Component.text("Max ability count reached"));
+                    return;
+                }
                 e.setCancelled(false);
                 //BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot());
-                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
                 p.equipAbility(e.getSlot(), type);
             }
             default -> {
