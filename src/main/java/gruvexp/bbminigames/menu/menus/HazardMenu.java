@@ -80,7 +80,7 @@ public class HazardMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {

@@ -48,7 +48,7 @@ public class HealthMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) { // stuff som skal gjøres når man trykker på et item
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {

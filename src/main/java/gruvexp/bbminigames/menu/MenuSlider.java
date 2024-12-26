@@ -40,7 +40,7 @@ public class MenuSlider {
     public void setProgress(String progressTick) {
         if (!sliderSteps.contains(progressTick)) {
             setProgressSlots(0);
-            BotBows.debugMessage(progressTick + " Doesnt exist", TestCommand.log);
+            BotBows.debugMessage(progressTick + " Doesnt exist", TestCommand.verboseDebugging);
         }
         setProgressSlots(sliderSteps.indexOf(progressTick) + 1);
     }

@@ -51,6 +51,10 @@ public abstract class Menu implements InventoryHolder {
         return false; // By default, menus don't handle empty slots
     }
 
+    protected boolean clickedOnBottomButtons(InventoryClickEvent e) {
+        return e.getSlot() > getSlots() - 9;
+    }
+
     //let each menu decide what items are to be placed in the inventory menu
     public abstract void setMenuItems();
 
