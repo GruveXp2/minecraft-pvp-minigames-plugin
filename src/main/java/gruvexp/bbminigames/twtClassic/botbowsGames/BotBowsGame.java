@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.twtClassic.*;
@@ -185,6 +186,7 @@ public class BotBowsGame {
         Cooldowns.sneakRunnables.clear();
         stormHazard.end();
         earthquakeHazard.end();
+        settings.abilityMenu.disableAbilities();
     }
 
     private void postGameTitle(BotBowsTeam winningTeam) {
