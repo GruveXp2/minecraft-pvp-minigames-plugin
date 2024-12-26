@@ -8,6 +8,6 @@ public class InvisPotionAbility extends Ability {
     public InvisPotionAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
         this.type = AbilityType.INVIS_POTION;
-        this.cooldown = 25;
+        this.maxCooldown = 25;
     }
 }
