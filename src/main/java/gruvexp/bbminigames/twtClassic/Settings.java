@@ -138,7 +138,7 @@ public class Settings {
 
     public boolean playerIsntMod(BotBowsPlayer p) {
         boolean isPlayerMod = p == modPlayer;
-        if (isPlayerMod) p.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
+        if (!isPlayerMod) p.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
         return !isPlayerMod;
     }
 
