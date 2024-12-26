@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class  MapMenu extends SettingsMenu {
-    public static final ItemStack ROYAL_ARENA = makeItem(Material.SLIME_BALL, Component.text("Royal Arena", NamedTextColor.GRAY),
+    public static final ItemStack CLASSIC_ARENA = makeItem(Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
             ChatColor.BLUE + "Blaud" + ChatColor.WHITE + " vs " + ChatColor.RED + "Sauce",
             "A flat arena with modern royal style",
             "Has a huge cave room underground");
@@ -20,7 +20,7 @@ public class  MapMenu extends SettingsMenu {
             ChatColor.LIGHT_PURPLE + "Graut" + ChatColor.WHITE + " vs " + ChatColor.GREEN + "Wacky",
             "A flat arena in a spruce forest with ice spikes and igloos",
             "Has a huge ravine in the middle and many caves underground");
-    public static final ItemStack CASTLE = makeItem(Material.STONE_BRICK_STAIRS, Component.text("Castle", NamedTextColor.GREEN),
+    public static final ItemStack ROYAL_CASTLE = makeItem(Material.STONE_BRICK_STAIRS, Component.text("Royal Castle", NamedTextColor.GREEN),
             ChatColor.DARK_AQUA + "Kjødd" + ChatColor.WHITE + " vs " + ChatColor.DARK_GREEN + "Goofy",
             "A castle themed arena",
             ChatColor.YELLOW + "Work in progress");
@@ -63,9 +63,9 @@ public class  MapMenu extends SettingsMenu {
     @Override
     public void setMenuItems() {
         super.setMenuItems();
-        inventory.setItem(2, ROYAL_ARENA);
+        inventory.setItem(2, CLASSIC_ARENA);
         inventory.setItem(3, ICY_RAVINE);
-        inventory.setItem(4, CASTLE);
+        inventory.setItem(4, ROYAL_CASTLE);
         inventory.setItem(5, STEAMPUNK);
         inventory.setItem(6, VOLCANO);
         setPageButtons(1, false, true);
