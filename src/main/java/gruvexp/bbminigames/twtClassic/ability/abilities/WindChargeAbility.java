@@ -8,6 +8,6 @@ public class WindChargeAbility extends Ability {
     public WindChargeAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
         this.type = AbilityType.WIND_CHARGE;
-        this.baseCooldown = 15;
+        this.baseCooldown = type.getBaseCooldown();
     }
 }

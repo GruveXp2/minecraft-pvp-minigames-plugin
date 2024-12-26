@@ -200,8 +200,9 @@ public class AbilityMenu extends SettingsMenu {
                                 ItemStack cursorItem = clickedItem.clone();
                                 ItemMeta meta = cursorItem.getItemMeta();
                                 int percentage = (int) ((1 - p.getAbilityCooldownMultiplier()) * 100);
-                                meta.lore(List.of(Component.text("Cooldown: ").append(Component.text(p.getAbility(abilityType).getEffectiveCooldown(), NamedTextColor.YELLOW))
+                                meta.lore(List.of(Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()), NamedTextColor.YELLOW))
                                         .append(Component.text(" (" + percentage + ")", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED))));
+                                cursorItem.setItemMeta(meta);
                                 p.player.setItemOnCursor(cursorItem);
                             }
                         }

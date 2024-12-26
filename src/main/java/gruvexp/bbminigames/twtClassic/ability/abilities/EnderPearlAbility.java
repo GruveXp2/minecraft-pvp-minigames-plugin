@@ -8,6 +8,6 @@ public class EnderPearlAbility extends Ability {
     public EnderPearlAbility(BotBowsPlayer player, int slot) {
         super(player, slot);
         this.type = AbilityType.ENDER_PEARL;
-        this.baseCooldown = 15;
+        this.baseCooldown = type.getBaseCooldown();
     }
 }

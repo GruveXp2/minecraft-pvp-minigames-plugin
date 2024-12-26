@@ -14,18 +14,20 @@ public enum AbilityType {
 
 
 
-    ENDER_PEARL(new ItemStack(Material.ENDER_PEARL), new ItemStack(Material.CYAN_CONCRETE)),
-    WIND_CHARGE(new ItemStack(Material.WIND_CHARGE, 3), new ItemStack(Material.WHITE_WOOL)),
-    SPEED_POTION(makePotion(PotionType.SWIFTNESS), new ItemStack(Material.LIGHT_BLUE_CANDLE)),
-    INVIS_POTION(makePotion(PotionType.INVISIBILITY), new ItemStack(Material.LIGHT_GRAY_CANDLE)),
-    SHRINK(new ItemStack(Material.REDSTONE), new ItemStack(Material.GUNPOWDER));
+    ENDER_PEARL(new ItemStack(Material.ENDER_PEARL), new ItemStack(Material.CYAN_CONCRETE), 15),
+    WIND_CHARGE(new ItemStack(Material.WIND_CHARGE, 3), new ItemStack(Material.WHITE_WOOL), 15),
+    SPEED_POTION(makePotion(PotionType.SWIFTNESS), new ItemStack(Material.LIGHT_BLUE_CANDLE), 25),
+    INVIS_POTION(makePotion(PotionType.INVISIBILITY), new ItemStack(Material.LIGHT_GRAY_CANDLE), 25),
+    SHRINK(new ItemStack(Material.REDSTONE), new ItemStack(Material.GUNPOWDER), 20);
 
     private final ItemStack abilityItem;
     private final ItemStack cooldownItem;
+    private final int baseCooldown;
 
-    AbilityType(ItemStack item, ItemStack cooldownItem) {
+    AbilityType(ItemStack item, ItemStack cooldownItem, int baseCooldown) {
         this.abilityItem = item;
         this.cooldownItem = cooldownItem;
+        this.baseCooldown = baseCooldown;
     }
 
     public ItemStack getAbilityItem() {
@@ -34,6 +36,10 @@ public enum AbilityType {
 
     public ItemStack getCooldownItem() {
         return cooldownItem;
+    }
+
+    public int getBaseCooldown() {
+        return baseCooldown;
     }
 
     // Metode for å finne en ability basert på item
