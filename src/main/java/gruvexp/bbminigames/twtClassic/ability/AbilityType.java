@@ -56,7 +56,7 @@ public enum AbilityType {
             case INVISIBILITY -> "Invisibility Potion";
             default -> "Potion of unnamed 0";
         };
-        meta.setCustomPotionName(name);
+        meta.customName(Component.text(name));
         meta.lore(List.of(Component.text("Duration: ").append(Component.text("5s", NamedTextColor.GREEN))));
 
         potion.setItemMeta(meta);
