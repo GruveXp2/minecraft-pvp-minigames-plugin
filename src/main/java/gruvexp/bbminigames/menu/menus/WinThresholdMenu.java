@@ -23,7 +23,7 @@ public class WinThresholdMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case RED_STAINED_GLASS_PANE -> settings.changeWinThreshold(-10);

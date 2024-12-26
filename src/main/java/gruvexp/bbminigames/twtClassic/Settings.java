@@ -122,6 +122,9 @@ public class Settings {
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenu.removePlayer(p);
+        if (playerIsMod(p)) {
+            setModPlayer(players.iterator().next());
+        }
 
         p.player.setGameMode(GameMode.SPECTATOR);
         BotBows.messagePlayers(Component.text(p.player.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
@@ -137,10 +140,16 @@ public class Settings {
                 .orElse(false);
     }
 
-    public boolean playerIsntMod(BotBowsPlayer p) {
+    public void setModPlayer(BotBowsPlayer p) {
+        String first = modPlayer == null ? "" : "new ";
+        modPlayer = p;
+        BotBows.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the + " + first + "game mod", NamedTextColor.WHITE)));
+    }
+
+    public boolean playerIsMod(BotBowsPlayer p) {
         boolean isPlayerMod = p == modPlayer;
         if (!isPlayerMod) p.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
-        return !isPlayerMod;
+        return isPlayerMod;
     }
 
     public void setDynamicScoring(boolean dynamicScoring) {

@@ -46,7 +46,7 @@ public class  MapMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.BLAUD_VS_SAUCE);

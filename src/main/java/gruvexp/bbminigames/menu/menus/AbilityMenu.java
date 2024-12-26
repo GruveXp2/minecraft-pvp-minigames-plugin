@@ -92,7 +92,7 @@ public class AbilityMenu extends SettingsMenu {
         }
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
-                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> disableIndividualMaxAbilities();
@@ -101,7 +101,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
-                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> enableIndividualMaxAbilities();
@@ -110,7 +110,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
-                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
 
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
@@ -123,7 +123,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case PLAYER_HEAD -> {
-                if (settings.playerIsntMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
 
                 Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
@@ -149,7 +149,7 @@ public class AbilityMenu extends SettingsMenu {
             }
             case MACE -> {
                 BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
-                if (settings.playerIsntMod(p)) return;
+                if (!settings.playerIsMod(p)) return;
 
                 p.toggleAbilityToggle();
             }
