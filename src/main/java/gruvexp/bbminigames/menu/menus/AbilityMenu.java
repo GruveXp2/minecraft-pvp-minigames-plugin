@@ -324,7 +324,8 @@ public class AbilityMenu extends SettingsMenu {
 
     public void updateMaxAbilities(BotBowsPlayer p) {
         ItemStack headItem = maxAbilitiesRow.getItem(p);
-        headItem.setAmount(Math.max(settings.getMaxAbilities(), 1)); // oppdaterer head count
+        headItem.setAmount(Math.max(p.getMaxAbilities(), 1)); // oppdaterer head count
+        maxAbilitiesRow.updatePage();
     }
 
     public void updateCooldownMultiplier() {
