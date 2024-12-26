@@ -22,6 +22,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -199,9 +200,8 @@ public class AbilityMenu extends SettingsMenu {
                             if (e.getSlot() > 36 && e.getSlot() < 45) {
                                 ItemStack cursorItem = clickedItem.clone();
                                 ItemMeta meta = cursorItem.getItemMeta();
-                                int percentage = (int) ((1 - p.getAbilityCooldownMultiplier()) * 100);
-                                meta.lore(List.of(Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()), NamedTextColor.YELLOW))
-                                        .append(Component.text(" (" + percentage + ")", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED))));
+                                Component cooldownComponent = getCooldownComponent(p, abilityType);
+                                meta.lore(List.of(cooldownComponent));
                                 cursorItem.setItemMeta(meta);
                                 p.player.setItemOnCursor(cursorItem);
                             }
@@ -212,6 +212,15 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
         }
+    }
+
+    private static @NotNull Component getCooldownComponent(BotBowsPlayer p, AbilityType abilityType) {
+        int percentage = (int) ((1 - p.getAbilityCooldownMultiplier()) * 100);
+        Component cooldownComponent = Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()), NamedTextColor.YELLOW));
+        if (percentage != 0) {
+            cooldownComponent = cooldownComponent.append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
+        }
+        return cooldownComponent;
     }
 
     public void handleMenuClose(InventoryCloseEvent e) {
