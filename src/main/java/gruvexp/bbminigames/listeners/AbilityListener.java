@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -30,5 +31,16 @@ public class AbilityListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onAbilityDrop(PlayerDropItemEvent e) {
+        Player p = e.getPlayer();
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        if (bp == null) return;
+        AbilityType type = AbilityType.fromItem(e.getItemDrop().getItemStack());
+        if (type == null) return;
+        if (!bp.isAbilityEquipped(type)) return; // kan droppe itemet hvis det ikke var equippa
+        e.setCancelled(true); // kanke droppe ability items
     }
 }
