@@ -177,7 +177,7 @@ public class BotBowsPlayer {
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
         }
         player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
-        //BotBows.debugMessage("Equipping: " + type.name());
+        player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
     }
 
     public void unequipAbility(AbilityType type) {
@@ -188,7 +188,7 @@ public class BotBowsPlayer {
         inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         //BotBows.debugMessage("setter item på slot " + BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9);
         abilities.remove(type);
-        //BotBows.debugMessage("Unequipping: " + type.name());
+        player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
     }
 
     public boolean isAbilityEquipped(AbilityType type) {
