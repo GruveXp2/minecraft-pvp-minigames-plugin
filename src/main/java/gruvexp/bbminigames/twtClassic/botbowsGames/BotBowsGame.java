@@ -109,15 +109,17 @@ public class BotBowsGame {
         if (!isTeamEliminated(losingTeam)) return;
 
         BotBows.messagePlayers(winningTeam.toComponent()
-                .append(Component.text(" won the round!")));
+                .append(Component.text(" won the round!", NamedTextColor.GREEN)));
 
         int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
 
         BotBows.messagePlayers(team1.toComponent()
-                .append(Component.text(team1.getPoints() + "\n"))
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
                 .append(team2.toComponent())
-                .append(Component.text(team2.getPoints())));
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
 
         BotBows.titlePlayers(winningTeam + " +" + winScore, 40);
         Board.updateTeamScores();
@@ -163,7 +165,7 @@ public class BotBowsGame {
                     "================", NamedTextColor.LIGHT_PURPLE));
         } else {
             BotBows.messagePlayers(Component.text("================\n" +
-                    "TEAM " + winningTeam.toString().toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
+                    "TEAM " + winningTeam.NAME.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
                     "================", winningTeam.COLOR));
         }
         postGameTitle(winningTeam);
