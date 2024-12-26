@@ -4,34 +4,51 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 public class AbilityListener implements Listener {
 
     @EventHandler
     public void onAbilityUse(PlayerInteractEvent e) {
-        if (e.getItem() != null && e.getHand() == EquipmentSlot.HAND) {
-            Player p = e.getPlayer();
-            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-            if (bp == null) return;
-            AbilityType type = AbilityType.fromItem(e.getItem());
-            if (type == null) return;
-            if (!BotBows.activeGame) {
-                e.setCancelled(true); // kanke bruke abilities i lobbyen
-                return;
-            }
-            switch (type) {
-                case ENDER_PEARL -> bp.getAbility(type).use();
-                case WIND_CHARGE -> {
-                    if (e.getItem().getAmount() == 1) bp.getAbility(type).use();
-                }
+        if (e.getItem() == null) return;
+        Player p = e.getPlayer();
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        if (bp == null) return;
+        ItemStack abilityItem = e.getItem();
+        AbilityType type = AbilityType.fromItem(abilityItem);
+        if (type == null) return;
+        BotBows.debugMessage("Used ability: " + type.name());
+        if (!BotBows.activeGame) {
+            BotBows.debugMessage("Game is not active: cancelling");
+            e.setCancelled(true); // kanke bruke abilities i lobbyen
+            return;
+        }
+        BotBows.debugMessage("Ability gets used");
+        switch (type) {
+            case ENDER_PEARL -> bp.getAbility(type).use();
+            case WIND_CHARGE -> {
+                BotBows.debugMessage("Items in hand: " + abilityItem.getAmount());
+                bp.registerUsedAbilityItem(abilityItem.getAmount());
             }
         }
+    }
+
+    @EventHandler
+    public void onWindChargeAbilityThrow(ProjectileLaunchEvent e) {
+        if (!(e.getEntity().getShooter() instanceof Player p)) return;
+        if (!(e.getEntity() instanceof WindCharge)) return;
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        if (bp == null) return;
+        if (!bp.isAbilityEquipped(AbilityType.WIND_CHARGE)) return;
+        if (bp.getUsedAbilityItemAmount() != 1) return;
+        bp.getAbility(AbilityType.WIND_CHARGE).use();
     }
 
     @EventHandler

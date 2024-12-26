@@ -36,6 +36,7 @@ public class BotBowsPlayer {
     private float abilityCooldownMultiplier;
     private boolean canToggleAbilities = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
+    private int throwedAbilityAmount;
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
@@ -90,6 +91,14 @@ public class BotBowsPlayer {
 
     public void readyAbilities() {
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
+    }
+
+    public void registerUsedAbilityItem(int abilityItemAmount) {
+        this.throwedAbilityAmount = abilityItemAmount;
+    }
+
+    public int getUsedAbilityItemAmount() {
+        return throwedAbilityAmount;
     }
 
     public int getMaxHP() {return maxHP;}
