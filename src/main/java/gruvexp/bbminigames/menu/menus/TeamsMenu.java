@@ -23,7 +23,7 @@ public class TeamsMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Select teams");
+        return Component.text("Teams (2/6)");
     }
 
     @Override

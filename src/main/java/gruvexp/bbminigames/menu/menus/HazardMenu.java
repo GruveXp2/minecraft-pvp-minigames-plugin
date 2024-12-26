@@ -69,7 +69,7 @@ public class HazardMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Hazards");
+        return Component.text("Hazards (5/6)");
     }
 
     @Override

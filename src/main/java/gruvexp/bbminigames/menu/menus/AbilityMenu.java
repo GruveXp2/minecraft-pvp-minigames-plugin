@@ -70,7 +70,7 @@ public class AbilityMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Abilities");
+        return Component.text("Abilities (6/6)");
     }
 
     @Override

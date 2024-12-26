@@ -37,7 +37,7 @@ public class HealthMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Select player health");
+        return Component.text("Health (3/6)");
     }
 
     @Override

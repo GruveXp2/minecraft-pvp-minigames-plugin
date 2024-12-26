@@ -23,7 +23,7 @@ public class  MapMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Select map");
+        return Component.text("Arena map (1/6)");
     }
 
     @Override
