@@ -1,9 +1,14 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+
+import java.util.List;
 
 public enum AbilityType {
 
@@ -43,7 +48,17 @@ public enum AbilityType {
     private static ItemStack makePotion(PotionType type) {
         ItemStack potion = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.setBasePotionType(type);
+
+        PotionEffect effect = new PotionEffect(type.getPotionEffects().getFirst().getType(), 5 * 20, 4);
+        meta.addCustomEffect(effect, true);
+        String name = switch (type) {
+            case SWIFTNESS -> "Speed Potion 5";
+            case INVISIBILITY -> "Invisibility Potion";
+            default -> "Potion of unnamed 0";
+        };
+        meta.setCustomPotionName(name);
+        meta.lore(List.of(Component.text("Duration: ").append(Component.text("5s", NamedTextColor.GREEN))));
+
         potion.setItemMeta(meta);
         return potion;
     }
