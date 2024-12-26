@@ -216,7 +216,7 @@ public class AbilityMenu extends SettingsMenu {
 
     private static @NotNull Component getCooldownComponent(BotBowsPlayer p, AbilityType abilityType) {
         int percentage = (int) ((p.getAbilityCooldownMultiplier() - 1) * 100);
-        Component cooldownComponent = Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()), NamedTextColor.YELLOW));
+        Component cooldownComponent = Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
         if (percentage != 0) {
             cooldownComponent = cooldownComponent.append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
         }
