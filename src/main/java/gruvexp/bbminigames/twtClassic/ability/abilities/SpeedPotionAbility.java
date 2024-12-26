@@ -8,6 +8,6 @@ public class SpeedPotionAbility extends Ability {
     public SpeedPotionAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
         this.type = AbilityType.SPEED_POTION;
-        this.maxCooldown = 25;
+        this.baseCooldown = 25;
     }
 }

@@ -11,9 +11,10 @@ public abstract class Ability { // each player has some ability objects.
     protected final BotBowsPlayer player;
     protected AbilityType type;
 
-    protected int maxCooldown; // seconds
+    protected int baseCooldown; // seconds
     protected float cooldownMultiplier = 1.0f;
-    private int cooldown;
+    private int currentCooldown;
+    private int effectiveCooldown;
 
     private final int hotBarSlot;
 
@@ -32,21 +33,26 @@ public abstract class Ability { // each player has some ability objects.
 
     public void setCooldownMultiplier(float multiplier) {
         this.cooldownMultiplier = multiplier;
+        effectiveCooldown = (int) (baseCooldown * cooldownMultiplier);
+    }
+
+    public int getEffectiveCooldown() {
+        return effectiveCooldown;
     }
 
     public void use() {
         Inventory inv = player.player.getInventory();
         ItemStack cooldownItem = type.getCooldownItem().clone();
-        cooldown = (int) (maxCooldown * cooldownMultiplier);
+        currentCooldown = effectiveCooldown;
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), task -> {
-            if (cooldown == 0) {
+            if (currentCooldown == 0) {
                 inv.setItem(hotBarSlot, type.getAbilityItem());
                 task.cancel();
                 return;
             }
-            cooldownItem.setAmount(cooldown);
+            cooldownItem.setAmount(currentCooldown);
             inv.setItem(hotBarSlot, cooldownItem);
-            cooldown--;
+            currentCooldown--;
         }, 0L, 20L); // 5 sekunder
     }
 }

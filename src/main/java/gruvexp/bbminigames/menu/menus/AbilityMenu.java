@@ -197,7 +197,12 @@ public class AbilityMenu extends SettingsMenu {
                             p.unequipAbility(abilityType);
                         } else {
                             if (e.getSlot() > 36 && e.getSlot() < 45) {
-                                p.player.setItemOnCursor(clickedItem.clone());
+                                ItemStack cursorItem = clickedItem.clone();
+                                ItemMeta meta = cursorItem.getItemMeta();
+                                int percentage = (int) ((1 - p.getAbilityCooldownMultiplier()) * 100);
+                                meta.lore(List.of(Component.text("Cooldown: ").append(Component.text(p.getAbility(abilityType).getEffectiveCooldown(), NamedTextColor.YELLOW))
+                                        .append(Component.text(" (" + percentage + ")", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED))));
+                                p.player.setItemOnCursor(cursorItem);
                             }
                         }
                     } else {

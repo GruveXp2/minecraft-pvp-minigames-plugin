@@ -7,7 +7,7 @@ import org.bukkit.attribute.Attribute;
 public class ShrinkAbility extends Ability {
     public ShrinkAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
-        this.maxCooldown = 20;
+        this.baseCooldown = 20;
     }
 
     @Override

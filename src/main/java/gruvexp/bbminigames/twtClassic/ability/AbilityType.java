@@ -39,7 +39,10 @@ public enum AbilityType {
     // Metode for å finne en ability basert på item
     public static AbilityType fromItem(ItemStack item) {
         for (AbilityType ability : values()) {
-            if (ability.getAbilityItem().isSimilar(item)) {
+            ItemStack abilityItem = ability.getAbilityItem();
+            if (item.getType() == abilityItem.getType() &&
+                    item.hasItemMeta() == abilityItem.hasItemMeta() &&
+                    (!item.hasItemMeta() || item.getItemMeta().displayName().equals(abilityItem.getItemMeta().displayName()))) {
                 return ability;
             }
         }
