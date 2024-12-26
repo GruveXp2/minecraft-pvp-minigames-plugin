@@ -185,7 +185,9 @@ public class BotBowsPlayer {
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
         }
         player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
-        player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
+
+        String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
+        player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
     }
 
     public void unequipAbility(AbilityType type) {
