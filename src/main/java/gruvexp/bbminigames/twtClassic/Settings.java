@@ -75,6 +75,7 @@ public class Settings {
         teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
+        BotBows.messagePlayers(Component.text("Map set to ").append(Component.text(map.name(), NamedTextColor.GREEN)));
     }
 
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
