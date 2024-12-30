@@ -30,7 +30,7 @@ public class  MapMenu extends SettingsMenu {
             ChatColor.YELLOW + "Work in progress");
     public static final ItemStack PIGLIN_HIDEOUT = makeItem(Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
             ChatColor.GRAY + "Unnamed 2" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 3",
-            "A steampunk themed arena",
+            "A large volcano arena",
             ChatColor.YELLOW + "Work in progress");
 
     @Override
