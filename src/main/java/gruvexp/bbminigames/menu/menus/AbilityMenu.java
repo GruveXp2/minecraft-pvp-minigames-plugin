@@ -25,10 +25,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class AbilityMenu extends SettingsMenu {
 
@@ -202,7 +199,9 @@ public class AbilityMenu extends SettingsMenu {
                                 ItemStack cursorItem = clickedItem.clone();
                                 ItemMeta meta = cursorItem.getItemMeta();
                                 Component cooldownComponent = getCooldownComponent(p, abilityType);
-                                meta.lore(List.of(cooldownComponent));
+                                List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
+                                lore.add(cooldownComponent);
+                                meta.lore(lore);
                                 cursorItem.setItemMeta(meta);
                                 p.player.setItemOnCursor(cursorItem);
                             }
