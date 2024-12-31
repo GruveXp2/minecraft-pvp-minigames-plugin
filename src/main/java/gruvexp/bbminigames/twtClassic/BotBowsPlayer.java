@@ -219,9 +219,11 @@ public class BotBowsPlayer {
                     .append(attacker.player.name().color(attacker.team.COLOR))
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
-            player.setSpectatorTarget(attacker.player);
-            player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                    .append(attacker.player.name().color(attacker.team.COLOR)));
+            if (player.getGameMode() == GameMode.SPECTATOR) {
+                player.setSpectatorTarget(attacker.player);
+                player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
+                        .append(attacker.player.name().color(attacker.team.COLOR)));
+            }
             return;
         }
         setHP(hp - 1);
