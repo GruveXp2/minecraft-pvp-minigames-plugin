@@ -4,6 +4,7 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
@@ -29,7 +30,8 @@ public enum AbilityType {
     INVIS_POTION(makePotion(PotionType.INVISIBILITY),
             new ItemStack(Material.LIGHT_GRAY_CANDLE), 25),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
-            Component.text("Makes you shrink to half the size")),
+            Component.text("Makes you shrink to half the size"),
+            getDurationComponent(5)),
             new ItemStack(Material.GUNPOWDER), 20);
 
     private final ItemStack abilityItem;
@@ -115,7 +117,7 @@ public enum AbilityType {
         return potion;
     }
 
-    private static @NotNull Component getDurationComponent(int seconds) {
+    private static @NotNull TextComponent getDurationComponent(int seconds) {
         return Component.text("Duration: ").append(Component.text(seconds + "s", NamedTextColor.GREEN));
     }
 }
