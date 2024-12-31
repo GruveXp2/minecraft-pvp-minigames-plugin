@@ -3,12 +3,14 @@ package gruvexp.bbminigames.twtClassic.ability.abilities;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ShrinkAbility extends Ability {
     public ShrinkAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
+        this.type = AbilityType.SHRINK;
         this.baseCooldown = type.getBaseCooldown();
     }
 
