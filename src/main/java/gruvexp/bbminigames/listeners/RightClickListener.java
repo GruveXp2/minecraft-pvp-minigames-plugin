@@ -10,9 +10,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class RightClickListener implements Listener {
 
     @EventHandler
-    public void onPlayerRightClickCompass(PlayerInteractEvent event) {
+    public void onPlayerRightClickCompass(PlayerInteractEvent e) {
         // Check if the action is a right-click (block or air)
-        switch (event.getAction()) {
+        switch (e.getAction()) {
             case RIGHT_CLICK_AIR:
             case RIGHT_CLICK_BLOCK:
                 break;
@@ -20,10 +20,10 @@ public class RightClickListener implements Listener {
                 return;
         }
 
-        // hvis playeren holder kompass, så åpnes game menuet
-        Player p = event.getPlayer();
-        if (p.getInventory().getItemInMainHand().getType() == Material.COMPASS) {
-            BotBows.gameMenu.open(p);
+        Player p = e.getPlayer();
+        switch (p.getInventory().getItemInMainHand().getType()) {
+            case COMPASS -> BotBows.gameMenu.open(p);
+            case REDSTONE -> AbilityListener.onPlayerRightClickCompass(e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.AbilityMenuRow;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.PlayerMenuRow;
@@ -160,18 +161,18 @@ public class AbilityMenu extends SettingsMenu {
                 if (cursorItem.getType() == Material.AIR) return;
                 AbilityType type = AbilityType.fromItem(cursorItem);
                 if (type == null) {
-                    //BotBows.debugMessage("ingen ability item i cursoren");
+                    BotBows.debugMessage("ingen ability item i cursoren", TestCommand.test2);
                     return;
                 }
-                //BotBows.debugMessage("Ability i cursoren: " + type.name());
-                //BotBows.debugMessage("Plasserer i slottet: " + e.getSlot());
+                BotBows.debugMessage("Ability i cursoren: " + type.name());
+                BotBows.debugMessage("Plasserer i slottet: " + e.getSlot());
                 if (e.getClickedInventory().equals(inventory)) {
-                    //BotBows.debugMessage("prøvde å plassere tilbakei menuet");
+                    BotBows.debugMessage("prøvde å plassere tilbakei menuet", TestCommand.test2);
                     clicker.setItemOnCursor(null);
                     return;
                 }
                 if (e.getSlot() > 8 || e.getSlot() == 0) {
-                    //BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet");
+                    BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet", TestCommand.test2);
                     return;
                 }
                 BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
@@ -180,7 +181,7 @@ public class AbilityMenu extends SettingsMenu {
                     return;
                 }
                 e.setCancelled(false);
-                //BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot());
+                BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot(), TestCommand.test2);
                 p.equipAbility(e.getSlot(), type);
             }
             default -> {

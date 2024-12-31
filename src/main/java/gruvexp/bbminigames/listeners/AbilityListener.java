@@ -3,6 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
@@ -67,6 +68,23 @@ public class AbilityListener implements Listener {
         BotBows.debugMessage("Ability gets used");
         switch (type) {
             case SPEED_POTION, INVIS_POTION -> bp.getAbility(type).use();
+        }
+    }
+
+    public static void onPlayerRightClickCompass(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        if (bp == null) return;
+        AbilityType type = AbilityType.fromItem(e.getItem());
+        if (type == null) return;
+        BotBows.debugMessage("Used ability: " + type.name());
+        if (!BotBows.activeGame) {
+            BotBows.debugMessage("Game is not active: cancelling");
+            e.setCancelled(true); // kanke bruke abilities i lobbyen
+            return;
+        }
+        if (type == AbilityType.SHRINK) {
+            bp.getAbility(AbilityType.SHRINK).use();
         }
     }
 
