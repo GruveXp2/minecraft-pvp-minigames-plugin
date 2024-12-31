@@ -123,7 +123,7 @@ public class Settings {
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenu.removePlayer(p);
-        if (playerIsMod(p)) {
+        if (playerIsMod(p) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
         }
 
