@@ -162,6 +162,8 @@ public class BotBows {
             if (((Light) block.getBlockData()).getLevel() == 0) { // sida det ikke går an å sjekke når players står uttafor kanten, så workarounder jeg det ved å sette light bloccs ved sida cyan yeetpads
                 material = Material.CYAN_CARPET;
                 BotBows.debugMessage("yee it works", b);
+            } else if (((Light) block.getBlockData()).getLevel() == 1) {
+                return;
             }
         }
         switch (material) { // add effekter basert på åssen blokk som er under

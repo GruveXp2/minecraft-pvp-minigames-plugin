@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class MovementListener implements Listener {
 
     @EventHandler
-    public void onMove(PlayerMoveEvent e) { // hvis det er nedtelling og playeren er i gamet så kan dikke bevege seg
+    public void onMove(PlayerMoveEvent e) {
         if (!BotBows.activeGame) {
             BotBows.handleMovement(e);
             return;
