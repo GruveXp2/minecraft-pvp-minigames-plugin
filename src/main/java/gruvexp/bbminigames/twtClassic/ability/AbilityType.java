@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -19,11 +20,17 @@ public enum AbilityType {
 
 
 
-    ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")), new ItemStack(Material.CYAN_CONCRETE), 15),
-    WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3), new ItemStack(Material.WHITE_WOOL), 15),
-    SPEED_POTION(makePotion(PotionType.SWIFTNESS), new ItemStack(Material.LIGHT_BLUE_CANDLE), 25),
-    INVIS_POTION(makePotion(PotionType.INVISIBILITY), new ItemStack(Material.LIGHT_GRAY_CANDLE), 25),
-    SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"), "Makes you shrink to half the size"), new ItemStack(Material.GUNPOWDER), 20);
+    ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
+            new ItemStack(Material.CYAN_CONCRETE), 15),
+    WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
+            new ItemStack(Material.WHITE_WOOL), 15),
+    SPEED_POTION(makePotion(PotionType.SWIFTNESS),
+            new ItemStack(Material.LIGHT_BLUE_CANDLE), 25),
+    INVIS_POTION(makePotion(PotionType.INVISIBILITY),
+            new ItemStack(Material.LIGHT_GRAY_CANDLE), 25),
+    SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
+            Component.text("Makes you shrink to half the size")),
+            new ItemStack(Material.GUNPOWDER), 20);
 
     private final ItemStack abilityItem;
     private final ItemStack cooldownItem;
@@ -102,9 +109,13 @@ public enum AbilityType {
             default -> "Potion of unnamed 0";
         };
         meta.customName(Component.text(name));
-        meta.lore(List.of(Component.text("Duration: ").append(Component.text("5s", NamedTextColor.GREEN))));
+        meta.lore(List.of(getDurationComponent(5)));
 
         potion.setItemMeta(meta);
         return potion;
+    }
+
+    private static @NotNull Component getDurationComponent(int seconds) {
+        return Component.text("Duration: ").append(Component.text(seconds + "s", NamedTextColor.GREEN));
     }
 }

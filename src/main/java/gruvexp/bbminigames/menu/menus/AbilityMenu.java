@@ -13,7 +13,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -33,32 +32,42 @@ public class AbilityMenu extends SettingsMenu {
     private boolean individualCooldownMultipliers = false;
 
     private static final ItemStack ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.RED),
-            ChatColor.DARK_RED + "Disabled", "By enabling this, each player", "can have abilities in addition to the bow");
+            Component.text("Disabled", NamedTextColor.RED),
+            Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow"));
+
     private static final ItemStack ABILITIES_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.GREEN),
-            ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have abilities in addition to the bow");
+            Component.text("Enabled", NamedTextColor.GREEN),
+            Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow"));
 
     private static final ItemStack INDIVIDUAL_MAX_ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.RED),
-            ChatColor.DARK_RED + "Disabled", "By enabling this, each player", "can have a different max ability cap");
+            Component.text("Disabled", NamedTextColor.RED),
+            Component.text("By enabling this, each player"), Component.text("can have a different max ability cap"));
+
     private static final ItemStack INDIVIDUAL_MAX_ABILITIES_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.GREEN),
-            ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have a different max ability cap");
+            Component.text("Enabled", NamedTextColor.GREEN),
+            Component.text("By enabling this, each player"), Component.text("can have a different max ability cap"));
 
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.RED),
-            ChatColor.DARK_RED + "Disabled", "By enabling this, each player", "can have a different cooldown multiplier");
+            Component.text("Disabled", NamedTextColor.RED),
+            Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier"));
+
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.GREEN),
-            ChatColor.DARK_GREEN + "Enabled", "By enabling this, each player", "can have a different cooldown multiplier");
+            Component.text("Enabled", NamedTextColor.GREEN),
+            Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier"));
 
     private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
-    "When enabled, you can toggle", "which abilities will be allowed");
+    Component.text("When enabled, you can toggle"), Component.text("which abilities will be allowed"));
+
     public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot", Component.empty());
     public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot", Component.empty());
     public static final ItemStack ABILITY_DISABLED = makeItem("disabled_slot_covered", Component.empty());
     public static final ItemStack ABILITY_EQUIPPED = makeItem("enabled_slot", Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
-            "Click this to randomize your abilities", "from the allowed abilities");
+            Component.text("Click this to randomize your abilities"), Component.text("from the allowed abilities"));
 
     private static final ItemStack INDIVIDUAL_PLAYER_ABILITIES = makeItem("gear", Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
-            "Edit the allowed abilities", "for each individual player");
+            Component.text("Edit the allowed abilities"), Component.text("for each individual player"));
 
     private MenuSlider maxAbilitiesSlider;
     private MenuSlider cooldownMultiplierSlider;

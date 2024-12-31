@@ -18,7 +18,6 @@ import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class Menu implements InventoryHolder {
@@ -78,12 +77,12 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
-    public static ItemStack makeItem(Material material, TextComponent displayName, String... lore) {
+    public static ItemStack makeItem(Material material, TextComponent displayName, Component... lore) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(displayName);
-        itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.lore(List.of(lore));
 
         item.setItemMeta(itemMeta);
         return item;
@@ -100,11 +99,11 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    public static ItemStack makeItem(String customModelData, TextComponent displayName, String... lore) {
+    public static ItemStack makeItem(String customModelData, TextComponent displayName, Component... lore) {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(displayName);
-        itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.lore(List.of(lore));
 
         CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
         customModelDataComponent.setStrings(List.of(customModelData));

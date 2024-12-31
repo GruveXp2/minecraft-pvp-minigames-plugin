@@ -5,7 +5,6 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,25 +12,39 @@ import org.bukkit.inventory.ItemStack;
 
 public class  MapMenu extends SettingsMenu {
     public static final ItemStack CLASSIC_ARENA = makeItem(Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
-            ChatColor.BLUE + "Blaud" + ChatColor.WHITE + " vs " + ChatColor.RED + "Sauce",
-            "A flat arena with modern royal style",
-            "Has a huge cave room underground");
+            Component.text("Blaud", NamedTextColor.BLUE)
+                    .append(Component.text(" vs ", NamedTextColor.WHITE))
+                    .append(Component.text("Sauce", NamedTextColor.RED)),
+            Component.text("A flat arena with modern royal style"),
+            Component.text("Has a huge cave room underground"));
+
     public static final ItemStack ICY_RAVINE = makeItem(Material.SPRUCE_SAPLING, Component.text("Icy Ravine", NamedTextColor.AQUA),
-            ChatColor.LIGHT_PURPLE + "Graut" + ChatColor.WHITE + " vs " + ChatColor.GREEN + "Wacky",
-            "A flat arena in a spruce forest with ice spikes and igloos",
-            "Has a huge ravine in the middle and many caves underground");
+            Component.text("Graut", NamedTextColor.LIGHT_PURPLE)
+                    .append(Component.text(" vs ", NamedTextColor.WHITE))
+                    .append(Component.text("Wacky", NamedTextColor.GREEN)),
+            Component.text("A flat arena in a spruce forest with ice spikes and igloos"),
+            Component.text("Has a huge ravine in the middle and many caves underground"));
+
     public static final ItemStack ROYAL_CASTLE = makeItem(Material.STONE_BRICK_STAIRS, Component.text("Royal Castle", NamedTextColor.GREEN),
-            ChatColor.DARK_AQUA + "Kjødd" + ChatColor.WHITE + " vs " + ChatColor.DARK_GREEN + "Goofy",
-            "A castle themed arena",
-            ChatColor.YELLOW + "Work in progress");
+            Component.text("Kjødd", NamedTextColor.DARK_AQUA)
+                    .append(Component.text(" vs ", NamedTextColor.WHITE))
+                    .append(Component.text("Goofy", NamedTextColor.DARK_GREEN)),
+            Component.text("A castle themed arena"),
+            Component.text("Work in progress", NamedTextColor.YELLOW));
+
     public static final ItemStack STEAMPUNK = makeItem(Material.COPPER_BULB, Component.text("Steampunk", NamedTextColor.GOLD),
-            ChatColor.GRAY + "Unnamed 0" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 1",
-            "A steampunk themed arena",
-            ChatColor.YELLOW + "Work in progress");
+            Component.text("Unnamed 0", NamedTextColor.GRAY)
+                    .append(Component.text(" vs ", NamedTextColor.WHITE))
+                    .append(Component.text("Unnamed 1", NamedTextColor.GRAY)),
+            Component.text("A steampunk themed arena"),
+            Component.text("Work in progress", NamedTextColor.YELLOW));
+
     public static final ItemStack PIGLIN_HIDEOUT = makeItem(Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
-            ChatColor.GRAY + "Unnamed 2" + ChatColor.WHITE + " vs " + ChatColor.GRAY + "Unnamed 3",
-            "A large volcano arena",
-            ChatColor.YELLOW + "Work in progress");
+            Component.text("Unnamed 2", NamedTextColor.GRAY)
+                    .append(Component.text(" vs ", NamedTextColor.WHITE))
+                    .append(Component.text("Unnamed 3", NamedTextColor.GRAY)),
+            Component.text("A large volcano arena"),
+            Component.text("Work in progress", NamedTextColor.YELLOW));
 
     @Override
     public Component getMenuName() {

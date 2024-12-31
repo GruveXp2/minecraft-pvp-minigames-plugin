@@ -65,7 +65,8 @@ public class WinThresholdMenu extends SettingsMenu {
             is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE));
             is.setAmount(settings.getWinThreshold());
         } else {
-            is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("Infinite rounds", NamedTextColor.YELLOW), "Run /stopgame to stop the game");
+            is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("Infinite rounds", NamedTextColor.YELLOW),
+                    Component.text("Run /stopgame to stop the game"));
         }
         inventory.setItem(4, is);
     }

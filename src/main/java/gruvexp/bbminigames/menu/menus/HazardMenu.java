@@ -10,7 +10,6 @@ import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -30,39 +29,50 @@ public class HazardMenu extends SettingsMenu {
     private MenuSlider ghostSlider;
     private ItemStack getStormItem() {
         ItemStack item;
-        String[] loreDesc = new String[] {"When there is a storm, you will get hit by", "lightning if you stand in dirext exposure", "to the sky for more than 5 seconds"};
+        Component[] loreDesc = new Component[] {Component.text("When there is a storm, you will get hit by"),
+                Component.text("lightning if you stand in dirext exposure"),
+                Component.text("to the sky for more than 5 seconds")};
         if (stormHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
-                    "If enabled, x% of rounds will have storms.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.RED),
+                    Component.text("Disabled", NamedTextColor.RED),
+                    Component.text("If enabled, x% of rounds will have storms."), loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
-                    stormHazard.getHazardChance().getPercent() + "% of rounds will have storms.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Storms", NamedTextColor.GREEN),
+                    Component.text("Enabled", NamedTextColor.GREEN),
+                    Component.text(stormHazard.getHazardChance().getPercent() + "% of rounds will have storms."), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
     }
 
     private ItemStack getEarthquakeItem() {
         ItemStack item;
-        String[] loreDesc = new String[] {"When there is an earthwuake, you will get hit by", "stones if you go underground", "for more than 5 seconds"};
+        Component[] loreDesc = new Component[] {Component.text("When there is an earthwuake, you will get hit by"),
+                Component.text("stones if you go underground"),
+                Component.text("for more than 5 seconds")};
         if (earthquakeHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
-                    "If enabled, x% of rounds will have earthquakes.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.RED),
+                    Component.text("Disabled", NamedTextColor.RED),
+                    Component.text("If enabled, x% of rounds will have earthquakes."), loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
-                    earthquakeHazard.getHazardChance().getPercent() + "% of rounds will have earthquakes.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Earthquakes", NamedTextColor.GREEN),
+                    Component.text("Enabled", NamedTextColor.GREEN),
+                    Component.text(earthquakeHazard.getHazardChance().getPercent() + "% of rounds will have earthquakes."), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
     }
 
     private ItemStack getGhostItem() {
         ItemStack item;
-        String[] loreDesc = new String[] {"When there is ghost mode, you will get haunted", "by your own ghost, and when you touch it,", "you die"};
+        Component[] loreDesc = new Component[] {Component.text("When there is ghost mode, you will get haunted"),
+                Component.text("by your own ghost, and when you touch it,"), Component.text("you die")};
         if (ghostHazard.getHazardChance() == HazardChance.DISABLED) {
-            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.RED), ChatColor.DARK_RED + "" + ChatColor.BOLD + "Disabled",
-                    "If enabled, x% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.RED),
+                    Component.text("Disabled", NamedTextColor.RED),
+                    Component.text("If enabled, x% of rounds will be haunted."), loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
-            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.GREEN), ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Enabled",
-                    earthquakeHazard.getHazardChance().getPercent() + "% of rounds will be haunted.", loreDesc[0], loreDesc[1], loreDesc[2]);
+            item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.GREEN),
+                    Component.text("Enabled", NamedTextColor.GREEN),
+                    Component.text(earthquakeHazard.getHazardChance().getPercent() + "% of rounds will be haunted."), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
     }
