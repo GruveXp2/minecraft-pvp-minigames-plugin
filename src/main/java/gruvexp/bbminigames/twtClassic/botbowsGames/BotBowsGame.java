@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.twtClassic.*;
@@ -123,7 +122,7 @@ public class BotBowsGame {
                 .append(Component.text(": ", NamedTextColor.WHITE))
                 .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
 
-        BotBows.titlePlayers(winningTeam + " +" + winScore, 40);
+        BotBows.titlePlayers(Board.toChatColor((NamedTextColor) winningTeam.COLOR) + winningTeam.NAME + " +" + winScore, 40);
         Board.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinThreshold() && settings.getWinThreshold() > 0) {
