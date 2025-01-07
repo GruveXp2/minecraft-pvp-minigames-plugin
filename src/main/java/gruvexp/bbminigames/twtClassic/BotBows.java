@@ -72,15 +72,9 @@ public class BotBows {
             return;
         }
         botBowsGame = switch (settings.currentMap) {
-            case CLASSIC_ARENA -> new BotBowsGame(settings);
             case ICY_RAVINE -> new GrautWackyGame(settings);
             default -> new BotBowsGame(settings);
         };
-        if (settings.currentMap == BotBowsMap.ICY_RAVINE) {
-            botBowsGame = new GrautWackyGame(settings);
-        } else {
-            botBowsGame = new BotBowsGame(settings);
-        }
         botBowsGame.startGame(gameStarter);
     }
 
