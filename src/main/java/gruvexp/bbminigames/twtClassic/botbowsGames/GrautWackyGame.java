@@ -49,8 +49,8 @@ public class GrautWackyGame extends BotBowsGame {
     public void handleMovement(PlayerMoveEvent e) {
         super.handleMovement(e);
         Player p = e.getPlayer();
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-        if (BotBows.settings.isPlayerJoined(p) && isInDungeon(bp)) {
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+        if (settings.isPlayerJoined(p) && isInDungeon(bp)) {
             handleDungeonMovement(bp);
         }
     }

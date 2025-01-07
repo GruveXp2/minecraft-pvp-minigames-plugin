@@ -4,6 +4,7 @@ import gruvexp.bbminigames.commands.*;
 import gruvexp.bbminigames.listeners.*;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
@@ -27,7 +28,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         PLUGIN = this;
-        Bukkit.getLogger().info("BotBows plugin enabled!");
+        getLogger().info("BotBows plugin enabled!");
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new HitListener(), this);
         getServer().getPluginManager().registerEvents(new MovementListener(), this);
@@ -52,11 +53,14 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bukkit.getLogger().info("Disabling BotBows plugin");
-        if (BotBows.activeGame) {
-            Bukkit.getLogger().info("Stopping active game...");
-            BotBows.botBowsGame.endGame();
+        getLogger().info("Disabling BotBows plugin");
+        for (Lobby lobby : BotBows.getLobbies()) {
+            if (lobby.isGameActive()) {
+                getLogger().info("Stopping active game...");
+                lobby.botBowsGame.endGame();
+            }
         }
+
     }
 
     private void startSocketServer() {
@@ -73,8 +77,8 @@ public final class Main extends JavaPlugin {
                     if (command == null || command.trim().isEmpty()) return;
                     if (command.startsWith("@")) {
                         if (command.equals("@ping")) {
-                            if (BotBows.activeGame) {
-                                out.write("BotBows " + BotBows.settings.team1.size() + "v" + BotBows.settings.team2.size() + " match ongoing");
+                            if (BotBows.getLobby(1).isGameActive()) {
+                                out.write("BotBows " + BotBows.getLobby(1).settings.team1.size() + "v" + BotBows.getLobby(1).settings.team2.size() + " match ongoing");
                             } else {
                                 out.write("BotBows: " + Bukkit.getOnlinePlayers().size() + " online");
                             }

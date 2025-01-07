@@ -15,6 +15,9 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class Settings {
+
+    public final Lobby lobby;
+
     public BotBowsMap currentMap = BotBowsMap.CLASSIC_ARENA; // default map
     // hazards
     public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
@@ -41,26 +44,30 @@ public class Settings {
 
     private BotBowsPlayer modPlayer;
 
-    public Settings() {
+    public Settings(Lobby lobby) {
+        this.lobby = lobby;
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
         team2.setOppositeTeam(team1);
     }
 
     public void initMenus() {
-        mapMenu = new MapMenu();
+        mapMenu = new MapMenu(this);
 
-        healthMenu = new HealthMenu();
+        healthMenu = new HealthMenu(this);
         healthMenu.disableCustomHP();
         healthMenu.enableDynamicPoints();
         setMaxHP(3);
 
-        teamsMenu = new TeamsMenu();
+        teamsMenu = new TeamsMenu(this);
+        teamsMenu.registerTeams();
 
-        winThresholdMenu = new WinThresholdMenu();
+        winThresholdMenu = new WinThresholdMenu(this);
+        winThresholdMenu.updateMenu();
 
-        hazardMenu = new HazardMenu();
+        hazardMenu = new HazardMenu(this);
+        hazardMenu.initMenu();
 
-        abilityMenu = new AbilityMenu();
+        abilityMenu = new AbilityMenu(this);
         abilityMenu.disableAbilities();
     }
 
@@ -72,11 +79,10 @@ public class Settings {
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
         }
         teamsMenu.registerTeams();
-        teamsMenu.setColoredGlassPanes(); // update the glass pane items that show the team colors and name
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
         String mapName = map.name().charAt(0) + map.name().substring(1).toLowerCase().replace('_', ' ');
-        BotBows.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
+        lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
     }
 
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
@@ -85,10 +91,10 @@ public class Settings {
     }
 
     public void joinGame(Player p) {
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
         if (bp == null) {
             bp = new BotBowsPlayer(p, this);
-            BotBows.registerBotBowsPlayer(bp);
+            lobby.registerBotBowsPlayer(bp);
         } else if (players.contains(bp)) {
             p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
             mapMenu.open(p);
@@ -108,6 +114,7 @@ public class Settings {
             modPlayer = bp;
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")" +
                     " and will be the settings moderator"));
+            mapMenu.open(p);
         } else {
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Classic! (" + players.size() + ")"));
         }
@@ -128,7 +135,7 @@ public class Settings {
         }
 
         p.player.setGameMode(GameMode.SPECTATOR);
-        BotBows.messagePlayers(Component.text(p.player.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
+        lobby.messagePlayers(Component.text(p.player.getName() + " has left the game (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
@@ -136,7 +143,7 @@ public class Settings {
     }
 
     public boolean isPlayerJoined(Player p) {
-        return Optional.ofNullable(BotBows.getBotBowsPlayer(p))
+        return Optional.ofNullable(lobby.getBotBowsPlayer(p))
                 .map(players::contains)
                 .orElse(false);
     }
@@ -144,7 +151,7 @@ public class Settings {
     public void setModPlayer(BotBowsPlayer p) {
         String first = modPlayer == null ? "" : "new ";
         modPlayer = p;
-        BotBows.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the + " + first + "game mod", NamedTextColor.WHITE)));
+        lobby.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the + " + first + "game mod", NamedTextColor.WHITE)));
     }
 
     public boolean playerIsMod(BotBowsPlayer p) {

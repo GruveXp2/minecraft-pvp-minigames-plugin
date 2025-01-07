@@ -26,7 +26,7 @@ public class JoinLeaveListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        BotBows.leaveGame(p);
+        BotBows.getLobby(p).leaveGame(p);
     }
 
 }

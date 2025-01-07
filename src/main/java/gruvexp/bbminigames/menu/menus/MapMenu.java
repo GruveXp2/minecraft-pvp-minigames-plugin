@@ -1,8 +1,8 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
+import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class  MapMenu extends SettingsMenu {
+public class MapMenu extends SettingsMenu {
     public static final ItemStack CLASSIC_ARENA = makeItem(Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
             Component.text("Blaud", NamedTextColor.BLUE)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
@@ -46,6 +46,10 @@ public class  MapMenu extends SettingsMenu {
             Component.text("A large volcano arena"),
             Component.text("Work in progress", NamedTextColor.YELLOW));
 
+    public MapMenu(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Arena map (1/6)");
@@ -59,7 +63,7 @@ public class  MapMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);
@@ -75,7 +79,6 @@ public class  MapMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        super.setMenuItems();
         inventory.setItem(2, CLASSIC_ARENA);
         inventory.setItem(3, ICY_RAVINE);
         inventory.setItem(4, ROYAL_CASTLE);

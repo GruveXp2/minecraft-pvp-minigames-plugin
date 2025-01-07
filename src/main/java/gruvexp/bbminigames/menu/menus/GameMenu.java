@@ -24,7 +24,7 @@ public class GameMenu extends Menu {
         Player p = (Player) e.getWhoClicked();
 
         if (e.getCurrentItem().getType() == Material.BOW) {
-            BotBows.joinGame(p);
+            BotBows.lobbyMenu.open(p);
         } else if (e.getCurrentItem().getType() == Material.STICK) {
             p.sendMessage(Component.text("This will be added soon"));
         }

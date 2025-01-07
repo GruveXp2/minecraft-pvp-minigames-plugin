@@ -2,7 +2,7 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
@@ -27,6 +27,11 @@ public class HazardMenu extends SettingsMenu {
     private MenuSlider stormSlider;
     private MenuSlider earthQuakeSlider;
     private MenuSlider ghostSlider;
+
+    public HazardMenu(Settings settings) {
+        super(settings);
+    }
+
     private ItemStack getStormItem() {
         ItemStack item;
         Component[] loreDesc = new Component[] {Component.text("When there is a storm, you will get hit by"),
@@ -90,7 +95,7 @@ public class HazardMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
@@ -157,18 +162,20 @@ public class HazardMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        super.setMenuItems();
-        stormHazard = settings.stormHazard;
         stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT);
-        updateStormBar();
-        earthquakeHazard = settings.earthquakeHazard;
         earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT);
-        updateEarthquakeBar();
-        ghostHazard = settings.ghostHazard;
         ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
-        updateGhostBar();
         setPageButtons(3, true, true);
         setFillerVoid();
+    }
+
+    public void initMenu() {
+        stormHazard = settings.stormHazard;
+        updateStormBar();
+        earthquakeHazard = settings.earthquakeHazard;
+        updateEarthquakeBar();
+        ghostHazard = settings.ghostHazard;
+        updateGhostBar();
     }
 
     void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla

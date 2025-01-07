@@ -23,6 +23,7 @@ import java.util.*;
 public class BotBowsPlayer {
 
     public final Player player;
+    public final Lobby lobby;
     private BotBowsTeam team;
     private int hp;
     private int maxHP;
@@ -37,6 +38,7 @@ public class BotBowsPlayer {
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
+        lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;
         maxAbilities = settings.getMaxAbilities();
@@ -74,13 +76,13 @@ public class BotBowsPlayer {
     }
 
     public void reset() {
-        player.setScoreboard(Board.manager.getNewScoreboard());
+        player.setScoreboard(lobby.botBowsGame.boardManager.manager.getNewScoreboard());
         player.getInventory().setArmorContents(null);
         player.setGlowing(false);
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         player.setGameMode(GameMode.SPECTATOR);
-        Bar.sneakBars.get(player).setVisible(false);
+        lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
         if (Cooldowns.sneakRunnables.containsKey(player)) {
             Cooldowns.sneakRunnables.get(player).cancel();
         }
@@ -117,7 +119,7 @@ public class BotBowsPlayer {
             player.setHealth(hp * 2); // halve hjerter
             updateArmor();
         }
-        Board.updatePlayerScore(this);
+        lobby.botBowsGame.boardManager.updatePlayerScore(this);
     }
 
     public Collection<Ability> getAbilities() {
@@ -147,7 +149,7 @@ public class BotBowsPlayer {
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         this.abilityCooldownMultiplier = cooldownMultiplier;
-        BotBows.settings.abilityMenu.updateCooldownMultiplier(this);
+        lobby.settings.abilityMenu.updateCooldownMultiplier(this);
     }
 
     public float getAbilityCooldownMultiplier() {
@@ -184,7 +186,7 @@ public class BotBowsPlayer {
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
         }
-        player.getInventory().setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
+        player.getInventory().setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
@@ -195,7 +197,7 @@ public class BotBowsPlayer {
 
         Inventory inv = player.getInventory();
         inv.setItem(abilities.get(type).getHotBarSlot(), null);
-        inv.setItem(BotBows.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
+        inv.setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         abilities.remove(type);
         player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
     }
@@ -227,7 +229,7 @@ public class BotBowsPlayer {
             return;
         }
         setHP(hp - 1);
-        BotBows.messagePlayers(Component.text(player.getName(), team.COLOR)
+        lobby.messagePlayers(Component.text(player.getName(), team.COLOR)
                 .append(Component.text(" was sniped by "))
                 .append(Component.text(attacker.player.getName(), attacker.team.COLOR))
                 .append(Component.text(";"))
@@ -254,10 +256,10 @@ public class BotBowsPlayer {
 
     public void die(Component deathMessage) { // gjør at spilleren dauer
         setHP(0);
-        Board.updatePlayerScore(this);
-        BotBows.messagePlayers(deathMessage);
+        lobby.botBowsGame.boardManager.updatePlayerScore(this);
+        lobby.messagePlayers(deathMessage);
         player.setGameMode(GameMode.SPECTATOR);
-        BotBows.check4Victory(this);
+        lobby.check4Victory(this);
     }
 
     public void updateArmor() { // updates the armor pieces of the player

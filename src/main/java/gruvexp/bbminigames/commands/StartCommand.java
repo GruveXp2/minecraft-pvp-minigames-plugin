@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 public class StartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        BotBows.startGame((Player) sender);
+        Player p = (Player) sender;
+        BotBows.getLobby(p).startGame(p);
         return true;
     }
 }

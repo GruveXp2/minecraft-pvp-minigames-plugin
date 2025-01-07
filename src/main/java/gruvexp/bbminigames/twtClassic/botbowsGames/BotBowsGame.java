@@ -19,14 +19,17 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
-import static gruvexp.bbminigames.twtClassic.Bar.sneakBarInit;
+import gruvexp.bbminigames.twtClassic.BarManager;
 
 public class BotBowsGame {
 
     public final Settings settings;
+    public final Lobby lobby;
     protected final BotBowsTeam team1;
     protected final BotBowsTeam team2;
     protected final Set<BotBowsPlayer> players;
+    public final BoardManager boardManager;
+    public final BarManager barManager;
     protected final StormHazard stormHazard;
     protected final EarthquakeHazard earthquakeHazard;
     protected final GhostHazard ghostHazard;
@@ -35,22 +38,25 @@ public class BotBowsGame {
 
     public BotBowsGame(Settings settings) {
         this.settings = settings;
+        this.lobby = settings.lobby;
         this.team1 = settings.team1;
         this.team2 = settings.team2;
         this.players = settings.getPlayers();
         this.stormHazard = settings.stormHazard;
         this.earthquakeHazard = settings.earthquakeHazard;
         this.ghostHazard = settings.ghostHazard;
+        this.boardManager = new BoardManager(lobby);
+        this.barManager = new BarManager(lobby);
     }
 
     public void leaveGame(BotBowsPlayer p) {
         // stuff
         settings.leaveGame(p);
-        Board.removePlayerScore(p);
-        if (Bar.sneakBars.containsKey(p.player)) {
-            Bar.sneakBars.get(p.player).setVisible(false);
-            Bar.sneakBars.get(p.player).removeAll();
-            Bar.sneakBars.remove(p.player);
+        boardManager.removePlayerScore(p);
+        if (barManager.sneakBars.containsKey(p.player)) {
+            barManager.sneakBars.get(p.player).setVisible(false);
+            barManager.sneakBars.get(p.player).removeAll();
+            barManager.sneakBars.remove(p.player);
         }
         Cooldowns.sneakCooldowns.remove(p.player);
         if (Cooldowns.sneakRunnables.containsKey(p.player)) {
@@ -60,12 +66,11 @@ public class BotBowsGame {
     }
 
     public void startGame(Player gameStarter) {
-        BotBows.activeGame = true;
-        BotBows.messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
+        lobby.messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
                 .append(Component.text("The game has started!", NamedTextColor.GREEN)));
-        sneakBarInit();
+        barManager.sneakBarInit();
         Cooldowns.CoolDownInit(players);
-        Board.createBoard();
+        boardManager.createBoard();
         startRound();
         stormHazard.init();
         earthquakeHazard.init();
@@ -74,10 +79,10 @@ public class BotBowsGame {
         for (BotBowsPlayer q : players) {
             q.revive();
             q.readyAbilities();
-            Board.updatePlayerScore(q);
+            boardManager.updatePlayerScore(q);
         }
-        Board.updateTeamScores();
-        new BotBowsGiver().runTaskTimer(Main.getPlugin(), 100L, 10L);
+        boardManager.updateTeamScores();
+        new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
     }
     public void startRound() {
         round ++;
@@ -109,21 +114,21 @@ public class BotBowsGame {
 
         if (!isTeamEliminated(losingTeam)) return;
 
-        BotBows.messagePlayers(winningTeam.toComponent()
+        lobby.messagePlayers(winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN)));
 
         int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
 
-        BotBows.messagePlayers(team1.toComponent()
+        lobby.messagePlayers(team1.toComponent()
                 .append(Component.text(": ", NamedTextColor.WHITE))
                 .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
                 .append(team2.toComponent())
                 .append(Component.text(": ", NamedTextColor.WHITE))
                 .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
 
-        BotBows.titlePlayers(Board.toChatColor((NamedTextColor) winningTeam.COLOR) + winningTeam.NAME + " +" + winScore, 40);
-        Board.updateTeamScores();
+        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.COLOR) + winningTeam.NAME + " +" + winScore, 40);
+        boardManager.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinThreshold() && settings.getWinThreshold() > 0) {
             postGame(winningTeam);
@@ -146,26 +151,26 @@ public class BotBowsGame {
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
             HPLeft += p.getHP();
         }
-        BotBows.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.COLOR));
+        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.COLOR));
 
         int enemyHPTaken = 0;
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
             enemyHPTaken += p.getMaxHP();
         }
-        BotBows.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.COLOR));
+        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.COLOR));
 
         return HPLeft + enemyHPTaken;
     }
 
     public void postGame(BotBowsTeam winningTeam) {
-        BotBows.activeGame = false;
+        lobby.gameEnded();
         canMove = true;
         if (winningTeam == null) {
-            BotBows.messagePlayers(Component.text("================\n" +
+            lobby.messagePlayers(Component.text("================\n" +
                     "The game ended in a tie after " + round + " round" + (round == 1 ? "" : "s") + "\n" +
                     "================", NamedTextColor.LIGHT_PURPLE));
         } else {
-            BotBows.messagePlayers(Component.text("================\n" +
+            lobby.messagePlayers(Component.text("================\n" +
                     "TEAM " + winningTeam.NAME.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
                     "================", winningTeam.COLOR));
         }
@@ -177,10 +182,10 @@ public class BotBowsGame {
 
         players.forEach(BotBowsPlayer::reset);
         players.forEach(p -> p.player.getInventory().remove(Material.ARROW));
-        Board.resetTeams();
+        boardManager.resetTeams();
         team1.reset();
         team2.reset();
-        Bar.sneakBars.clear();
+        barManager.sneakBars.clear();
         Cooldowns.sneakCooldowns.clear();
         Cooldowns.sneakRunnables.clear();
         stormHazard.end();

@@ -41,12 +41,12 @@ public class StormHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        BotBows.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
+        settings.lobby.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
                 .append(Component.text(" Seek shelter immediately!", NamedTextColor.RED)));
-        BotBows.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
+        settings.lobby.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : settings.getPlayers()) {
-                hazardTimers.put(p.player, new PlayerStormTimer(p.player, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
+                hazardTimers.put(p.player, new PlayerStormTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
             }
             Main.WORLD.setThundering(true);
             Main.WORLD.setStorm(true);
@@ -77,9 +77,9 @@ public class StormHazard extends Hazard {
         final BotBowsPlayer bp;
         final BossBar bar;
         int time = 0;
-        public PlayerStormTimer(Player p, BossBar bar) {
-            this.p = p;
-            this.bp = BotBows.getBotBowsPlayer(p);
+        public PlayerStormTimer(BotBowsPlayer bp, BossBar bar) {
+            this.p = bp.player;
+            this.bp = bp;
             this.bar = bar;
         }
 

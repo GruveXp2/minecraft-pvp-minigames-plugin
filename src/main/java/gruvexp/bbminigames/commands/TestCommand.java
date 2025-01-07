@@ -4,6 +4,7 @@ import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,15 +31,14 @@ public class TestCommand implements CommandExecutor {
         Player p = (Player) sender;
         if (args.length >= 1) {
             switch (args[0]) {
-                case "t" ->
-                        BotBows.debugMessage("The team of " + p.getName() + " is " + BotBows.getBotBowsPlayer(p).getTeam());
                 case "w" -> {
-                    BotBows.joinGame(Bukkit.getPlayer("GruveXp"));
-                    BotBows.joinGame(Bukkit.getPlayer("Spionagent54"));
-                    BotBows.settings.setMap(BotBowsMap.ICY_RAVINE);
-                    BotBows.settings.setWinThreshold(-1);
-                    BotBows.settings.healthMenu.enableCustomHP();
-                    BotBowsPlayer judith = BotBows.getBotBowsPlayer(Bukkit.getPlayer("Spionagent54"));
+                    BotBows.getLobby(1).joinGame(Bukkit.getPlayer("GruveXp"));
+                    BotBows.getLobby(1).joinGame(Bukkit.getPlayer("Spionagent54"));
+                    BotBows.getLobby(1).settings.setMap(BotBowsMap.ICY_RAVINE);
+                    BotBows.getLobby(1).settings.setWinThreshold(-1);
+                    BotBows.getLobby(1).settings.healthMenu.enableCustomHP();
+                    Player judithP = Bukkit.getPlayer("Spionagent54");
+                    BotBowsPlayer judith = BotBows.getLobby(judithP).getBotBowsPlayer(judithP);
 
                     judith.setMaxHP(20);
                     Bukkit.dispatchCommand(Objects.requireNonNull(Bukkit.getPlayer("GruveXp")), "botbows:start");  // tester om dungeonen funker
@@ -63,9 +63,14 @@ public class TestCommand implements CommandExecutor {
                     test2 = !test2;
                     BotBows.debugMessage("Test2 set to: " + test2);
                 }
+                case "give_ability_items" -> {
+                    for (AbilityType type : AbilityType.values()) {
+                        ((Player) sender).getInventory().addItem(type.getAbilityItem());
+                    }
+                }
                 case "inv" -> p.openInventory(testInv);
                 case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);
-                default -> BotBows.debugMessage("Wrong arg");
+                default -> sender.sendMessage("Wrong arg (" + args[0] + ")");
             }
             return true;
         }

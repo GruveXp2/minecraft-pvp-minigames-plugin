@@ -3,8 +3,8 @@ package gruvexp.bbminigames.menu.menus;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -46,6 +46,10 @@ public class HealthMenu extends SettingsMenu {
     private boolean customHP;
     private MenuSlider healthSlider;
 
+    public HealthMenu(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Health (3/6)");
@@ -59,7 +63,7 @@ public class HealthMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) { // stuff som skal gjøres når man trykker på et item
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
@@ -86,7 +90,7 @@ public class HealthMenu extends SettingsMenu {
             case PLAYER_HEAD -> {
                 ItemStack head = e.getCurrentItem();
                 Player p = Bukkit.getPlayer(UUID.fromString(head.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
                 int slot = e.getSlot();
                 int maxHP = head.getAmount();
 
@@ -115,7 +119,6 @@ public class HealthMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        super.setMenuItems(); // initer settings
         healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
         setPageButtons(2, true, true);
         setFillerVoid();

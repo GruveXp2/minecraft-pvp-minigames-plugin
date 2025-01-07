@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,7 +17,7 @@ import java.util.List;
 public class SwitchSpectator implements Listener {
 
     private static void spectateNext(Player p, boolean isOwnTeam) {
-        BotBowsTeam team = BotBows.getBotBowsPlayer(p).getTeam();
+        BotBowsTeam team = BotBows.getLobby(p).getBotBowsPlayer(p).getTeam();
         if (!isOwnTeam) {
             team = team.getOppositeTeam();
         }
@@ -35,7 +36,7 @@ public class SwitchSpectator implements Listener {
             //p.sendMessage(ChatColor.GRAY + "Currently spectating no players, spectating " + alive_players.get(0).getPlayerListName() + "(first player in " + team_str + ")");
             return;
         }
-        if (team.hasPlayer(BotBows.getBotBowsPlayer((Player) p.getSpectatorTarget()))) {
+        if (team.hasPlayer(BotBows.getLobby(p).getBotBowsPlayer((Player) p.getSpectatorTarget()))) {
             int i = alivePlayers.indexOf((Player) p.getSpectatorTarget());
             if (i == alivePlayers.size() - 1) {
                 i = -1;
@@ -50,9 +51,10 @@ public class SwitchSpectator implements Listener {
 
     @EventHandler()
     public void onMouseClick(PlayerInteractEvent e) {
-        if (!BotBows.activeGame) return;
         Player p = e.getPlayer();
-        if (!BotBows.settings.isPlayerJoined(p)) return;
+        Lobby lobby = BotBows.getLobby(p);
+        if (lobby == null) return;
+        if (!lobby.isGameActive()) return;
         if (p.getGameMode() != GameMode.SPECTATOR) return;
         Action a = e.getAction();
 

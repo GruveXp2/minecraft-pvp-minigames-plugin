@@ -3,11 +3,10 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.menus.*;
-import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
-import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -22,65 +21,43 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class BotBows {
 
     public static final ItemStack BOTBOW = getBotBow();
-    public static Settings settings;
-    public static BotBowsGame botBowsGame;
-    private static final HashMap<Player, BotBowsPlayer> PLAYERS = new HashMap<>(); // liste med alle players som er i gamet
-    public static boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
+    private static Lobby[] lobbies;
+    private static final HashMap<Player, Lobby> players = new HashMap<>(); // liste med alle players som er i gamet
 
     public static GameMenu gameMenu;
+    public static LobbyMenu lobbyMenu;
 
     public static void init() { // a
-        settings = new Settings();
-        settings.initMenus();
         gameMenu = new GameMenu();
+        lobbyMenu = new LobbyMenu();
+        lobbies = new Lobby[]{new Lobby(1), new Lobby(2), new Lobby(3)};
     }
 
-    public static void joinGame(Player p) {
-        if (activeGame) {
-            p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
-            return;
-        }
-        settings.joinGame(p);
+    public static Lobby getLobby(int ID) {
+        return lobbies[ID];
     }
 
-    public static void leaveGame(Player p) {
-        BotBowsPlayer bp = getBotBowsPlayer(p);
-        if (!settings.isPlayerJoined(p)) {
-            p.sendMessage("Nothing happened, you werent in the game in the first place");
-            return;
-        }
-        if (activeGame) {
-            botBowsGame.leaveGame(bp);
-        } else {
-            settings.leaveGame(bp);
-        }
+    public static Lobby getLobby(Player p) {
+        return players.get(p);
     }
 
-    public static void startGame(Player gameStarter) {
-        if (activeGame) {
-            gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED));
-            return;
-        } else if (settings.team1.isEmpty() || settings.team2.isEmpty()) {
-            gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED));
-            return;
-        }
-        botBowsGame = switch (settings.currentMap) {
-            case ICY_RAVINE -> new GrautWackyGame(settings);
-            default -> new BotBowsGame(settings);
-        };
-        botBowsGame.startGame(gameStarter);
+    public static Lobby[] getLobbies() {
+        return lobbies;
+    }
+
+    public static boolean isPlayerJoined(Player p) {
+        return getLobby(p) != null;
     }
 
     private static ItemStack getBotBow() {
-        ItemStack BOTBOW = new ItemStack(Material.CROSSBOW);
-        CrossbowMeta meta = (CrossbowMeta) BOTBOW.getItemMeta();
+        ItemStack botBow = new ItemStack(Material.CROSSBOW);
+        CrossbowMeta meta = (CrossbowMeta) botBow.getItemMeta();
         meta.displayName(Component.text("BotBow").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
         meta.lore(List.of(Component.text("The strongest bow"), Component.text("ever known to man")));
         meta.addEnchant(Enchantment.POWER, 10, true);
@@ -88,50 +65,18 @@ public class BotBows {
         meta.addChargedProjectile(new ItemStack(Material.ARROW));
         Damageable damageable = (Damageable) meta;
         damageable.setDamage((short) 464);
-        BOTBOW.setItemMeta(damageable);
-        return BOTBOW;
-    }
-
-    public static BotBowsPlayer getBotBowsPlayer(Player p) {
-        return PLAYERS.get(p);
-    }
-
-    public static void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (PLAYERS.containsKey(p.player)) return;
-        PLAYERS.put(p.player, p);
-    }
-
-    public static void check4Victory(BotBowsPlayer dedPlayer) {
-        botBowsGame.check4Victory(dedPlayer);
-    }
-
-    public static void messagePlayers(Component message) {
-        for (BotBowsPlayer p : settings.getPlayers()) {
-            p.player.sendMessage(message);
-        }
+        botBow.setItemMeta(damageable);
+        return botBow;
     }
 
     public static void debugMessage(String message) {
         if (!TestCommand.debugging) return;
-        messagePlayers(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY));
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY)));
         Main.getPlugin().getLogger().info("[DEBUG]: " + message);
     }
 
     public static void debugMessage(String message, boolean showMessage) {
         if (showMessage) debugMessage(message);
-    }
-
-    public static void titlePlayers(String title, int duration) {
-        for (BotBowsPlayer p : settings.getPlayers()) {
-            p.player.sendTitle(title, null, 2, duration, 5);
-        }
-    }
-
-    public static int getTotalPlayers() {
-        return settings.getPlayers().size();
-    }
-    public static Collection<BotBowsPlayer> getPlayers() {
-        return PLAYERS.values();
     }
 
     public static void handleMovement(PlayerMoveEvent e) {

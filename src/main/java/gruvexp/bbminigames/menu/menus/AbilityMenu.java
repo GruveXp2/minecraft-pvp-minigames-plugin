@@ -8,6 +8,7 @@ import gruvexp.bbminigames.menu.PlayerMenuRow;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -76,6 +77,10 @@ public class AbilityMenu extends SettingsMenu {
     private PlayerMenuRow cooldownMultiplierRow;
     private AbilityMenuRow abilityRow;
 
+    public AbilityMenu(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Abilities (6/6)");
@@ -100,7 +105,7 @@ public class AbilityMenu extends SettingsMenu {
         }
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
-                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> disableIndividualMaxAbilities();
@@ -109,7 +114,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
-                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> enableIndividualMaxAbilities();
@@ -118,7 +123,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
-                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
@@ -131,10 +136,10 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case PLAYER_HEAD -> {
-                if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker))) return;
+                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
                 if (e.getSlot() < 9) {
                     int maxAbilities = bp.getMaxAbilities(); // oppdaterer max abilities
                     maxAbilities++;
@@ -156,7 +161,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case MACE -> {
-                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
                 if (!settings.playerIsMod(p)) return;
 
                 p.toggleAbilityToggle();
@@ -181,7 +186,7 @@ public class AbilityMenu extends SettingsMenu {
                     BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet", TestCommand.test2);
                     return;
                 }
-                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
                 if (p.getTotalAbilities() == p.getMaxAbilities()) {
                     clicker.sendMessage(Component.text("Max ability count reached", NamedTextColor.RED));
                     return;
@@ -244,7 +249,6 @@ public class AbilityMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        super.setMenuItems(); // initer settings
         setPageButtons(5, true, false);
         maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"));
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"));
@@ -264,7 +268,7 @@ public class AbilityMenu extends SettingsMenu {
                 inv.setItem(i, null);
             }
         }
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
         bp.disableAbilityToggle();
         bp.getAbilities().forEach(ability -> inv.setItem(9 + getRelativeAbilitySlot(ability.getType()), ABILITY_EQUIPPED));
     }

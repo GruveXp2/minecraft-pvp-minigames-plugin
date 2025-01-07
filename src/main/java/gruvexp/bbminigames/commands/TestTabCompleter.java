@@ -11,6 +11,6 @@ import java.util.List;
 public class TestTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of("t", "w", "a", "b", "toggle_debugging", "inv", "set_blaze_rod_cooldown");
+        return List.of("t", "w", "a", "b", "t1", "t2", "give_ability_items", "toggle_debugging", "inv", "set_blaze_rod_cooldown");
     }
 }

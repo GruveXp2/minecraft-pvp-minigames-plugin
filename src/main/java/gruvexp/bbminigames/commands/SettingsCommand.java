@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.commands;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -15,14 +16,16 @@ public class SettingsCommand implements CommandExecutor {
         if (!(sender instanceof Player p)) {
             return false;
         }
-        // grabs which player did the command. endrer datatype til Player
-        if (BotBows.activeGame) {
-            p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
-        } else if (!BotBows.settings.isPlayerJoined(p)) {
+        Lobby lobby = BotBows.getLobby(p);
+        if (lobby == null) {
             p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED));
-        } else {
-            BotBows.settings.mapMenu.open(p);
+            return true;
         }
+        if (lobby.isGameActive()) {
+            p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
+            return true;
+        }
+        BotBows.getLobby(p).settings.mapMenu.open(p);
         return true;
     }
 }

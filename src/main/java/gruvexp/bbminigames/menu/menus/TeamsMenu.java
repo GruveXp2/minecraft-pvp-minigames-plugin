@@ -2,8 +2,8 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -21,6 +21,10 @@ public class TeamsMenu extends SettingsMenu {
     BotBowsTeam team1;
     BotBowsTeam team2;
 
+    public TeamsMenu(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Teams (2/6)");
@@ -35,12 +39,12 @@ public class TeamsMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         // if you click on a player then they change teams
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(BotBows.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {
                 Player p = Bukkit.getPlayer(UUID.fromString(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
                 bp.getTeam().getOppositeTeam().join(bp);
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
@@ -57,18 +61,16 @@ public class TeamsMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        super.setMenuItems(); // settings init
-        registerTeams();
-        setColoredGlassPanes();
         setPageButtons(2, true, true);
     }
 
     public void registerTeams() {
         team1 = settings.team1;
         team2 = settings.team2;
+        setColoredGlassPanes();
     }
 
-    public void setColoredGlassPanes() {
+    private void setColoredGlassPanes() { // update the glass pane items that show the team colors and name
         ItemStack team1Pane = makeItem(team1.getGlassPane(), Component.text("Team " + team1.NAME, team1.COLOR));
         ItemStack team2Pane = makeItem(team2.getGlassPane(), Component.text("Team " + team2.NAME, team2.COLOR));
         inventory.setItem(0, team1Pane);

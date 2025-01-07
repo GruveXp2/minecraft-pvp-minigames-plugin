@@ -5,10 +5,9 @@ import gruvexp.bbminigames.twtClassic.Settings;
 
 public abstract class SettingsMenu extends Menu {
 
-    protected Settings settings;
+    protected final Settings settings;
 
-    @Override
-    public void setMenuItems() {
-        this.settings = BotBows.settings;
+    protected SettingsMenu(Settings settings) {
+        this.settings = settings;
     }
 }

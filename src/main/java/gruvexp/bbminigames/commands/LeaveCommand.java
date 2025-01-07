@@ -12,7 +12,7 @@ public class LeaveCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 
         Player p = (Player) sender;
-        BotBows.leaveGame(p);
+        BotBows.getLobby(p).leaveGame(p);
         return true;
     }
 }
