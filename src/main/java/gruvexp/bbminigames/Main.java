@@ -77,8 +77,8 @@ public final class Main extends JavaPlugin {
                     if (command == null || command.trim().isEmpty()) return;
                     if (command.startsWith("@")) {
                         if (command.equals("@ping")) {
-                            if (BotBows.getLobby(1).isGameActive()) {
-                                out.write("BotBows " + BotBows.getLobby(1).settings.team1.size() + "v" + BotBows.getLobby(1).settings.team2.size() + " match ongoing");
+                            if (BotBows.getLobby(0).isGameActive()) {
+                                out.write("BotBows " + BotBows.getLobby(0).settings.team1.size() + "v" + BotBows.getLobby(1).settings.team2.size() + " match ongoing");
                             } else {
                                 out.write("BotBows: " + Bukkit.getOnlinePlayers().size() + " online");
                             }

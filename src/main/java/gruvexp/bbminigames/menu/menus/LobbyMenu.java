@@ -51,20 +51,20 @@ public class LobbyMenu extends Menu {
     public void updateLobbyItem(Lobby lobby) {
         ItemStack lobbyItem;
         if (lobby.isGameActive()) {
-            lobbyItem = makeItem(Material.RED_CONCRETE, Component.text("Lobby #" + lobby.ID),
+            lobbyItem = makeItem(Material.RED_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
                     Component.text("Closed: active game"));
         } else {
             lobbyItem = switch (lobby.getTotalPlayers()) {
-                case 0 -> makeItem(Material.LIGHT_GRAY_CONCRETE, Component.text("Lobby #" + lobby.ID),
+                case 0 -> makeItem(Material.LIGHT_GRAY_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
                         Component.text("No players"));
-                case 1, 2, 3, 4, 5 -> makeItem(Material.LIME_CONCRETE, Component.text("Lobby #" + lobby.ID),
+                case 1, 2, 3, 4, 5 -> makeItem(Material.LIME_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
                         Component.text(lobby.getTotalPlayers() + "/8 players"));
-                case 6, 7 -> makeItem(Material.YELLOW_CONCRETE, Component.text("Lobby #" + lobby.ID),
+                case 6, 7 -> makeItem(Material.YELLOW_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
                         Component.text(lobby.getTotalPlayers() + "/8 players"));
-                default -> makeItem(Material.ORANGE_CONCRETE, Component.text("Lobby #" + lobby.ID),
+                default -> makeItem(Material.ORANGE_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
                         Component.text("FULL"));
             };
         }
-        inventory.setItem(2 + lobby.ID, lobbyItem);
+        inventory.setItem(3 + lobby.ID, lobbyItem);
     }
 }

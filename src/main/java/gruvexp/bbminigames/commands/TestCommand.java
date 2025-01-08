@@ -32,11 +32,11 @@ public class TestCommand implements CommandExecutor {
         if (args.length >= 1) {
             switch (args[0]) {
                 case "w" -> {
-                    BotBows.getLobby(1).joinGame(Bukkit.getPlayer("GruveXp"));
-                    BotBows.getLobby(1).joinGame(Bukkit.getPlayer("Spionagent54"));
-                    BotBows.getLobby(1).settings.setMap(BotBowsMap.ICY_RAVINE);
-                    BotBows.getLobby(1).settings.setWinThreshold(-1);
-                    BotBows.getLobby(1).settings.healthMenu.enableCustomHP();
+                    BotBows.getLobby(0).joinGame(Bukkit.getPlayer("GruveXp"));
+                    BotBows.getLobby(0).joinGame(Bukkit.getPlayer("Spionagent54"));
+                    BotBows.getLobby(0).settings.setMap(BotBowsMap.ICY_RAVINE);
+                    BotBows.getLobby(0).settings.setWinThreshold(-1);
+                    BotBows.getLobby(0).settings.healthMenu.enableCustomHP();
                     Player judithP = Bukkit.getPlayer("Spionagent54");
                     BotBowsPlayer judith = BotBows.getLobby(judithP).getBotBowsPlayer(judithP);
 

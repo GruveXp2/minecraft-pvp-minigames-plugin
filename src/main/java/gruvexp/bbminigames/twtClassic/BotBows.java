@@ -36,7 +36,7 @@ public class BotBows {
     public static void init() { // a
         gameMenu = new GameMenu();
         lobbyMenu = new LobbyMenu();
-        lobbies = new Lobby[]{new Lobby(1), new Lobby(2), new Lobby(3)};
+        lobbies = new Lobby[]{new Lobby(0), new Lobby(1), new Lobby(2)};
     }
 
     public static Lobby getLobby(int ID) {
