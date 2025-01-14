@@ -19,7 +19,7 @@ public class MovementListener implements Listener {
             return;
         }
         Lobby lobby = BotBows.getLobby(p);
-        if (lobby.botBowsGame.canMove) {
+        if (lobby.isGameActive() && lobby.botBowsGame.canMove) {
             lobby.botBowsGame.handleMovement(e);
         } else {
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
