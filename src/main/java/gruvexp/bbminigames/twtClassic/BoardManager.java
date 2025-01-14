@@ -108,7 +108,7 @@ public class BoardManager {
             }
         }
         int totalPlayers = lobby.getTotalPlayers();
-        if (winThreshold == -1) {
+        if (winThreshold == 0) {
             setScore(toChatColor((NamedTextColor) team1().color) + team1().name + ": " + ChatColor.RESET + team1().getPoints(), 4 + totalPlayers); // legger inn scoren til hvert team
             setScore(toChatColor((NamedTextColor) team2().color) + team2().name + ": " + ChatColor.RESET + team2().getPoints(), 3 + totalPlayers);
         } else if (winThreshold >= 35) {
