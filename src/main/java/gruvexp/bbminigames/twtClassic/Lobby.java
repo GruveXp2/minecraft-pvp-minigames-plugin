@@ -53,6 +53,7 @@ public class Lobby {
         } else {
             settings.leaveGame(bp);
         }
+        players.remove(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
     }
 
