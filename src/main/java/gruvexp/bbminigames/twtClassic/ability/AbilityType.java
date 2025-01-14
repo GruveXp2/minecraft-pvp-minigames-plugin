@@ -22,34 +22,38 @@ public enum AbilityType {
 
 
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
-            new ItemStack(Material.CYAN_CONCRETE), 15),
+            15, "CONCRETE"),
     WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
-            new ItemStack(Material.WHITE_WOOL), 15),
+            15, "DYE"),
     SPEED_POTION(makePotion(PotionType.SWIFTNESS),
-            new ItemStack(Material.LIGHT_BLUE_CANDLE), 25),
+            25, "CANDLE"),
     INVIS_POTION(makePotion(PotionType.INVISIBILITY),
-            new ItemStack(Material.LIGHT_GRAY_CANDLE), 25),
+            25, "CANDLE"),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
             getDurationComponent(5)),
-            new ItemStack(Material.GUNPOWDER), 20);
+            20, "BUNDLE");
 
     private final ItemStack abilityItem;
-    private final ItemStack cooldownItem;
+    private final ItemStack[] cooldownItems;
     private final int baseCooldown;
 
-    AbilityType(ItemStack item, ItemStack cooldownItem, int baseCooldown) {
+    AbilityType(ItemStack item, int baseCooldown, String cooldownItemType) {
         this.abilityItem = item;
-        this.cooldownItem = cooldownItem;
         this.baseCooldown = baseCooldown;
+        Material red = Material.getMaterial("RED_" + cooldownItemType);
+        Material orange = Material.getMaterial("ORANGE_" + cooldownItemType);
+        Material yellow = Material.getMaterial("YELLOW_" + cooldownItemType);
+        Material green = Material.getMaterial("LIME_" + cooldownItemType);
+        this.cooldownItems = new ItemStack[]{new ItemStack(red), new ItemStack(orange), new ItemStack(yellow), new ItemStack(green)};
     }
 
     public ItemStack getAbilityItem() {
         return abilityItem;
     }
 
-    public ItemStack getCooldownItem() {
-        return cooldownItem;
+    public ItemStack[] getCooldownItems() {
+        return cooldownItems;
     }
 
     public int getBaseCooldown() {

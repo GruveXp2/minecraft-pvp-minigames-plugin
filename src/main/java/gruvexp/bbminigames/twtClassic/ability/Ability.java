@@ -2,9 +2,9 @@ package gruvexp.bbminigames.twtClassic.ability;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Ability { // each player has some ability objects.
 
@@ -42,17 +42,25 @@ public abstract class Ability { // each player has some ability objects.
 
     public void use() {
         Inventory inv = player.player.getInventory();
-        ItemStack cooldownItem = type.getCooldownItem().clone();
-        currentCooldown = effectiveCooldown;
-        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), task -> {
-            if (currentCooldown == 0) {
-                inv.setItem(hotBarSlot, type.getAbilityItem());
-                task.cancel();
-                return;
+        new BukkitRunnable() {
+            ItemStack cooldownItem = type.getCooldownItems()[0].clone();
+            int currentCooldown = effectiveCooldown;
+            @Override
+            public void run() {
+                switch (currentCooldown) {
+                    case 10 -> cooldownItem = type.getCooldownItems()[1].clone();
+                    case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
+                    case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
+                    case 0 -> {
+                        inv.setItem(hotBarSlot, type.getAbilityItem());
+                        cancel();
+                        return;
+                    }
+                }
+                cooldownItem.setAmount(currentCooldown);
+                inv.setItem(hotBarSlot, cooldownItem);
+                currentCooldown--;
             }
-            cooldownItem.setAmount(currentCooldown);
-            inv.setItem(hotBarSlot, cooldownItem);
-            currentCooldown--;
-        }, 0L, 20L); // 5 sekunder
+        }.runTaskTimer(Main.getPlugin(), 0L, 20L);
     }
 }
