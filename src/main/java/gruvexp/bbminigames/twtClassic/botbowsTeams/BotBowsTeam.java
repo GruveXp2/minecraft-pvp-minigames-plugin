@@ -90,6 +90,7 @@ public abstract class BotBowsTeam {
     }
 
     public int getPoints() {return points;}
+
     public void addPoints(int score) {
         points += score;
     }
