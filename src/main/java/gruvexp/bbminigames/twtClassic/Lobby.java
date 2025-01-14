@@ -30,6 +30,13 @@ public class Lobby {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
             return;
         }
+        if (BotBows.getLobby(p) != null) {
+            if (BotBows.getLobby(p) == this) {
+                p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
+                return;
+            }
+            BotBows.getLobby(p).leaveGame(p); // leaver den forrige lobbien for å joine denne
+        }
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.registerPlayerLobby(p, this);

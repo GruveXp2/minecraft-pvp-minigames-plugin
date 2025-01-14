@@ -96,7 +96,6 @@ public class Settings {
             bp = new BotBowsPlayer(p, this);
             lobby.registerBotBowsPlayer(bp);
         } else if (players.contains(bp)) {
-            p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
             mapMenu.open(p);
             return;
         }
