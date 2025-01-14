@@ -135,7 +135,6 @@ public class BotBowsPlayer {
         if (getTotalAbilities() > maxAbilities) {
             int excess = getTotalAbilities() - maxAbilities;
             BotBows.debugMessage("excess: " + excess);
-            AbilityType[] types = AbilityType.values();
             for (int i = 0; i < excess; i++) {
                 unequipAbility(types[types.length - 1 - i]);
             }
