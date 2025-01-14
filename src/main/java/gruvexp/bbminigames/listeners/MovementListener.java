@@ -19,14 +19,20 @@ public class MovementListener implements Listener {
             return;
         }
         Lobby lobby = BotBows.getLobby(p);
-        if (lobby.isGameActive() && lobby.botBowsGame.canMove) {
+        if (!lobby.isGameActive()) return;
+
+        if (lobby.botBowsGame.canMove) {
             lobby.botBowsGame.handleMovement(e);
         } else {
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            Location spawnPos = bp.getTeam().getSpawnPos(bp);
-            if (p.getLocation().getX() == spawnPos.getX() && p.getLocation().getZ() == spawnPos.getZ()) {return;}
-            // hvis det er countdown (!canMove), playeren er joina og playeren har gått vekk fra spawn blir han telportert tebake
-            p.teleport(spawnPos);
+            freeze(lobby, p);
         }
+    }
+
+    private void freeze(Lobby lobby, Player p) {
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+        Location spawnPos = bp.getTeam().getSpawnPos(bp);
+        if (p.getLocation().getX() == spawnPos.getX() && p.getLocation().getZ() == spawnPos.getZ()) {return;}
+        // hvis det er countdown (!canMove), playeren er joina og playeren har gått vekk fra spawn blir han telportert tebake
+        p.teleport(spawnPos);
     }
 }
