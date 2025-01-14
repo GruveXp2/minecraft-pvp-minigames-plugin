@@ -216,24 +216,24 @@ public class BotBowsPlayer {
 
     public void handleHit(BotBowsPlayer attacker) {
         if (hp == 1) { // spilleren kommer til å daue
-            die(player.name().color(team.COLOR)
+            die(player.name().color(team.color)
                     .append(Component.text(" was sniped by "))
-                    .append(attacker.player.name().color(attacker.team.COLOR))
+                    .append(attacker.player.name().color(attacker.team.color))
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
             if (player.getGameMode() == GameMode.SPECTATOR) {
                 player.setSpectatorTarget(attacker.player);
                 player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                        .append(attacker.player.name().color(attacker.team.COLOR)));
+                        .append(attacker.player.name().color(attacker.team.color)));
             }
             return;
         }
         setHP(hp - 1);
-        lobby.messagePlayers(Component.text(player.getName(), team.COLOR)
+        lobby.messagePlayers(Component.text(player.getName(), team.color)
                 .append(Component.text(" was sniped by "))
-                .append(Component.text(attacker.player.getName(), attacker.team.COLOR))
+                .append(Component.text(attacker.player.getName(), attacker.team.color))
                 .append(Component.text(";"))
-                .append(Component.text(hp + "hp left", team.COLOR)));
+                .append(Component.text(hp + "hp left", team.color)));
         // defender effects
         player.setGlowing(true);
         player.setInvulnerable(true);
@@ -294,7 +294,7 @@ public class BotBowsPlayer {
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
-        meta.setColor(team.DYECOLOR.getColor());
+        meta.setColor(team.dyeColor.getColor());
         armor.setItemMeta(meta);
         return armor;
     }

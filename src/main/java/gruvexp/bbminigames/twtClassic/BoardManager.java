@@ -34,9 +34,9 @@ public class BoardManager {
         BotBowsTeam team1 = lobby.settings.team1;
         BotBowsTeam team2 = lobby.settings.team2;
         // setter inn scores
-        setScore(toChatColor((NamedTextColor) darkenColor(team2.COLOR)) + "TEAM " + team2.NAME.toUpperCase(), lobby.settings.team2.size());
+        setScore(toChatColor((NamedTextColor) darkenColor(team2.color)) + "TEAM " + team2.name.toUpperCase(), lobby.settings.team2.size());
 
-        setScore(toChatColor((NamedTextColor) darkenColor(team1.COLOR)) + "TEAM " + team1.NAME.toUpperCase(), lobby.getTotalPlayers() + 1);
+        setScore(toChatColor((NamedTextColor) darkenColor(team1.color)) + "TEAM " + team1.name.toUpperCase(), lobby.getTotalPlayers() + 1);
         setScore(ChatColor.GRAY + "----------", lobby.getTotalPlayers() + 2);
         setScore("", lobby.getTotalPlayers() + 5);
 
@@ -46,11 +46,11 @@ public class BoardManager {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         // Team stuff!
-        sbTeam1 = board.registerNewTeam(team1.NAME);
-        sbTeam2 = board.registerNewTeam(team2.NAME);
+        sbTeam1 = board.registerNewTeam(team1.name);
+        sbTeam2 = board.registerNewTeam(team2.name);
 
-        sbTeam1.color((NamedTextColor) team1.COLOR);
-        sbTeam2.color((NamedTextColor) team2.COLOR);
+        sbTeam1.color((NamedTextColor) team1.color);
+        sbTeam2.color((NamedTextColor) team2.color);
 
         for (BotBowsPlayer p : team1.getPlayers()) {
             sbTeam1.addEntry(p.player.getName());
@@ -74,9 +74,9 @@ public class BoardManager {
 
         String healthBar;
         if (maxHp > 5) {
-            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().COLOR) + " " + p.player.getName();
+            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().color) + " " + p.player.getName();
         } else {
-            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().COLOR) + " " + p.player.getName();
+            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().color) + " " + p.player.getName();
         }
 
         setScore(healthBar, playerLineIndex);
@@ -99,10 +99,10 @@ public class BoardManager {
 
         for (Objective ignored : sb.getObjectives()) {
             for (String entries : sb.getEntries()) {
-                if (entries.contains(lobby.settings.team1.NAME + ": ")) {
+                if (entries.contains(lobby.settings.team1.name + ": ")) {
                     sb.resetScores(entries);
                 }
-                if (entries.contains(lobby.settings.team2.NAME + ": ")) {
+                if (entries.contains(lobby.settings.team2.name + ": ")) {
                     sb.resetScores(entries);
                 }
             }
@@ -111,18 +111,18 @@ public class BoardManager {
         BotBowsTeam team2 = lobby.settings.team2;
         int totalPlayers = lobby.getTotalPlayers();
         if (winThreshold == -1) {
-            setScore(toChatColor((NamedTextColor) team1.COLOR) + team1.NAME + ": " + ChatColor.RESET + team1.getPoints(), 4 + totalPlayers); // legger inn scoren til hvert team
-            setScore(toChatColor((NamedTextColor) team2.COLOR) + team2.NAME + ": " + ChatColor.RESET + team2.getPoints(), 3 + totalPlayers);
+            setScore(toChatColor((NamedTextColor) team1.color) + team1.name + ": " + ChatColor.RESET + team1.getPoints(), 4 + totalPlayers); // legger inn scoren til hvert team
+            setScore(toChatColor((NamedTextColor) team2.color) + team2.name + ": " + ChatColor.RESET + team2.getPoints(), 3 + totalPlayers);
         } else if (winThreshold >= 35) {
-            setScore(toChatColor((NamedTextColor) team1.COLOR) + team1.NAME + ": " + ChatColor.RESET + team1.getPoints() + " / " + ChatColor.GRAY + winThreshold, 4 + totalPlayers); // legger inn scoren til hvert team
-            setScore(toChatColor((NamedTextColor) team2.COLOR) + team2.NAME + ": " + ChatColor.RESET + team2.getPoints() + " / " + ChatColor.GRAY + winThreshold, 3 + totalPlayers);
+            setScore(toChatColor((NamedTextColor) team1.color) + team1.name + ": " + ChatColor.RESET + team1.getPoints() + " / " + ChatColor.GRAY + winThreshold, 4 + totalPlayers); // legger inn scoren til hvert team
+            setScore(toChatColor((NamedTextColor) team2.color) + team2.name + ": " + ChatColor.RESET + team2.getPoints() + " / " + ChatColor.GRAY + winThreshold, 3 + totalPlayers);
         } else { // få plass til mest mulig streker
             String healthSymbol = getHealthSymbol(winThreshold);
             int team1Points = Math.min(lobby.settings.getWinThreshold(), team1.getPoints());
             int team2Points = Math.min(lobby.settings.getWinThreshold(), team2.getPoints());
 
-            setScore(toChatColor((NamedTextColor) team1.COLOR) + team1.NAME + ": " + ChatColor.GREEN + healthSymbol.repeat(team1Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team1Points), 4 + totalPlayers); // legger inn scoren til hvert team
-            setScore(toChatColor((NamedTextColor) team2.COLOR) + team2.NAME + ": " + ChatColor.GREEN + healthSymbol.repeat(team2Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team2Points), 3 + totalPlayers);
+            setScore(toChatColor((NamedTextColor) team1.color) + team1.name + ": " + ChatColor.GREEN + healthSymbol.repeat(team1Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team1Points), 4 + totalPlayers); // legger inn scoren til hvert team
+            setScore(toChatColor((NamedTextColor) team2.color) + team2.name + ": " + ChatColor.GREEN + healthSymbol.repeat(team2Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team2Points), 3 + totalPlayers);
         }
     }
 

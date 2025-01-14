@@ -55,13 +55,13 @@ public class LobbyMenu extends Menu {
                     Component.text("Closed: active game"));
         } else {
             lobbyItem = switch (lobby.getTotalPlayers()) {
-                case 0 -> makeItem(Material.LIGHT_GRAY_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
+                case 0 -> makeItem(Material.LIGHT_GRAY_CONCRETE, Component.text("Lobby #" + (lobby.ID + 1)),
                         Component.text("No players"));
-                case 1, 2, 3, 4, 5 -> makeItem(Material.LIME_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
+                case 1, 2, 3, 4, 5 -> makeItem(Material.LIME_CONCRETE, Component.text("Lobby #" + (lobby.ID + 1)),
                         Component.text(lobby.getTotalPlayers() + "/8 players"));
-                case 6, 7 -> makeItem(Material.YELLOW_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
+                case 6, 7 -> makeItem(Material.YELLOW_CONCRETE, Component.text("Lobby #" + (lobby.ID + 1)),
                         Component.text(lobby.getTotalPlayers() + "/8 players"));
-                default -> makeItem(Material.ORANGE_CONCRETE, Component.text("Lobby #" + lobby.ID + 1),
+                default -> makeItem(Material.ORANGE_CONCRETE, Component.text("Lobby #" + (lobby.ID + 1)),
                         Component.text("FULL"));
             };
         }

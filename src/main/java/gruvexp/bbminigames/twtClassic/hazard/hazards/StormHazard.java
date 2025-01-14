@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -117,7 +116,7 @@ public class StormHazard extends Hazard {
                     time = 0; // resetter
                     bar.setProgress(0);
                     p.damage(0.5);
-                    bp.die(Component.text(p.getName(), bp.getTeam().COLOR)
+                    bp.die(Component.text(p.getName(), bp.getTeam().color)
                             .append(Component.text(" was electrocuted to a crisp!", NamedTextColor.AQUA)));
                 }
             } else {

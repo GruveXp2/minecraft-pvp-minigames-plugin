@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -110,7 +109,7 @@ public class EarthquakeHazard extends Hazard {
                     bar.setProgress(0);
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                         p.damage(1); // sånn
-                        bp.die(Component.text(p.getName(), bp.getTeam().COLOR)
+                        bp.die(Component.text(p.getName(), bp.getTeam().color)
                                 .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
                     }, 20L);
                 }

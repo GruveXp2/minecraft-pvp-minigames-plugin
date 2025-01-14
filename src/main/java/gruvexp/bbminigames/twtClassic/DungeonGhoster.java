@@ -25,22 +25,22 @@ public class DungeonGhoster {
     private static final Location GREEN_ENTER_BB_MAX = new Location(Main.WORLD, -251, 18, -287.7);
 
     private Section section = Section.OUTSIDE;
-    private ArmorStand AS_1;
-    private ArmorStand AS_2;
+    private ArmorStand as1;
+    private ArmorStand as2;
 
-    private final Player PLAYER;
-    private final BotBowsPlayer BOTBOWSPLAYER;
+    private final Player p;
+    private final BotBowsPlayer bp;
     private Location prevLoc;
 
-    public DungeonGhoster(BotBowsPlayer p) {
-        BOTBOWSPLAYER = p;
-        PLAYER = p.player;
-        prevLoc = PLAYER.getLocation();
+    public DungeonGhoster(BotBowsPlayer bp) {
+        this.bp = bp;
+        this.p = bp.player;
+        prevLoc = p.getLocation();
         updateArmorStandsAndSection();
     }
 
     public void handleMovement() {
-        Location currentLoc = PLAYER.getLocation();
+        Location currentLoc = p.getLocation();
         if (currentLoc.equals(prevLoc)) {
             Bukkit.getLogger().info("Somehow handleMovement() was called when the player didnt move (bug)");
             return; // No movement, no need to process
@@ -60,11 +60,11 @@ public class DungeonGhoster {
         Location movement = currentLoc.clone().subtract(prevLoc);
         if (section != Section.OUTSIDE) {
             //BotBowsManager.debugMessage(STR."\{PLAYER.getName()}s armorstands moved Δ(\{movement.getX()}, \{movement.getY()}, \{movement.getZ()})");
-            AS_1.teleport(AS_1.getLocation().add(movement));
-            AS_2.teleport(AS_2.getLocation().add(movement));
+            as1.teleport(as1.getLocation().add(movement));
+            as2.teleport(as2.getLocation().add(movement));
             if (TestCommand.rotation) {
-                AS_1.setRotation(currentLoc.getYaw(), currentLoc.getPitch());
-                AS_2.setRotation(currentLoc.getYaw(), currentLoc.getPitch());
+                as1.setRotation(currentLoc.getYaw(), currentLoc.getPitch());
+                as2.setRotation(currentLoc.getYaw(), currentLoc.getPitch());
             }
         }
     }
@@ -81,12 +81,12 @@ public class DungeonGhoster {
 
         if (isInGreenArea()) {
             section = Section.GREEN;
-            AS_1 = spawnArmorStand(PLAYER.getLocation().add(-4, 0, -11));
-            AS_2 = spawnArmorStand(PLAYER.getLocation().add(-8, 0, -22));
+            as1 = spawnArmorStand(p.getLocation().add(-4, 0, -11));
+            as2 = spawnArmorStand(p.getLocation().add(-8, 0, -22));
         } else if (isInPurpleArea()) {
             section = Section.PURPLE;
-            AS_1 = spawnArmorStand(PLAYER.getLocation().add(4, 0, 11));
-            AS_2 = spawnArmorStand(PLAYER.getLocation().add(-4, 0, -11));
+            as1 = spawnArmorStand(p.getLocation().add(4, 0, 11));
+            as2 = spawnArmorStand(p.getLocation().add(-4, 0, -11));
         } else {
             section = Section.OUTSIDE;
         }
@@ -103,27 +103,27 @@ public class DungeonGhoster {
         AS.setLeftArmPose(new EulerAngle(275f,49f,0f));
         AS.getEquipment().setItemInMainHand(BotBows.BOTBOW);
         AS.getEquipment().setArmorContents(new ItemStack[] {
-                BOTBOWSPLAYER.getArmorPiece(Material.LEATHER_BOOTS),
-                BOTBOWSPLAYER.getArmorPiece(Material.LEATHER_LEGGINGS),
-                BOTBOWSPLAYER.getArmorPiece(Material.LEATHER_CHESTPLATE),
-                BOTBOWSPLAYER.getArmorPiece(Material.LEATHER_HELMET)});
+                bp.getArmorPiece(Material.LEATHER_BOOTS),
+                bp.getArmorPiece(Material.LEATHER_LEGGINGS),
+                bp.getArmorPiece(Material.LEATHER_CHESTPLATE),
+                bp.getArmorPiece(Material.LEATHER_HELMET)});
         return AS;
     }
 
     private void removeArmorStands() {
-        if (AS_1 != null) AS_1.remove();
-        if (AS_2 != null) AS_2.remove();
-        AS_1 = null;
-        AS_2 = null;
+        if (as1 != null) as1.remove();
+        if (as2 != null) as2.remove();
+        as1 = null;
+        as2 = null;
         //BotBowsManager.debugMessage("Armor stands removed");
     }
 
     private boolean isInGreenArea() {
-        return GvwDungeonProximityScanner.isInsideBoundingBox(PLAYER.getLocation(), GREEN_BOUNDING_BOX_MIN, GREEN_BOUNDING_BOX_MAX);
+        return GvwDungeonProximityScanner.isInsideBoundingBox(p.getLocation(), GREEN_BOUNDING_BOX_MIN, GREEN_BOUNDING_BOX_MAX);
     }
 
     private boolean isInPurpleArea() {
-        return GvwDungeonProximityScanner.isInsideBoundingBox(PLAYER.getLocation(), PURPLE_BOUNDING_BOX_MIN, PURPLE_BOUNDING_BOX_MAX);
+        return GvwDungeonProximityScanner.isInsideBoundingBox(p.getLocation(), PURPLE_BOUNDING_BOX_MIN, PURPLE_BOUNDING_BOX_MAX);
     }
 
     /*private boolean enteredGreenArea() {

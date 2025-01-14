@@ -127,7 +127,7 @@ public class BotBowsGame {
                 .append(Component.text(": ", NamedTextColor.WHITE))
                 .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
 
-        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.COLOR) + winningTeam.NAME + " +" + winScore, 40);
+        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
         boardManager.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinThreshold() && settings.getWinThreshold() > 0) {
@@ -151,13 +151,13 @@ public class BotBowsGame {
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
             HPLeft += p.getHP();
         }
-        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.COLOR));
+        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.color));
 
         int enemyHPTaken = 0;
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
             enemyHPTaken += p.getMaxHP();
         }
-        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.COLOR));
+        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.color));
 
         return HPLeft + enemyHPTaken;
     }
@@ -171,8 +171,8 @@ public class BotBowsGame {
                     "================", NamedTextColor.LIGHT_PURPLE));
         } else {
             lobby.messagePlayers(Component.text("================\n" +
-                    "TEAM " + winningTeam.NAME.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
-                    "================", winningTeam.COLOR));
+                    "TEAM " + winningTeam.name.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
+                    "================", winningTeam.color));
         }
         postGameTitle(winningTeam);
 
@@ -199,11 +199,11 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Victory", winningTeam.COLOR), Component.text(""),
+            p.player.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
                     Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Defeat", losingTeam.COLOR), Component.text(""),
+            p.player.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
                     Title.Times.times(Duration.of(500, ChronoUnit.MILLIS), Duration.of(3, ChronoUnit.SECONDS), Duration.of(1, ChronoUnit.SECONDS))));
         }
     }

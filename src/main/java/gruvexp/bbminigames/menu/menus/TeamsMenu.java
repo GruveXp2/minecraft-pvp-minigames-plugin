@@ -71,8 +71,8 @@ public class TeamsMenu extends SettingsMenu {
     }
 
     private void setColoredGlassPanes() { // update the glass pane items that show the team colors and name
-        ItemStack team1Pane = makeItem(team1.getGlassPane(), Component.text("Team " + team1.NAME, team1.COLOR));
-        ItemStack team2Pane = makeItem(team2.getGlassPane(), Component.text("Team " + team2.NAME, team2.COLOR));
+        ItemStack team1Pane = makeItem(team1.getGlassPane(), Component.text("Team " + team1.name, team1.color));
+        ItemStack team2Pane = makeItem(team2.getGlassPane(), Component.text("Team " + team2.name, team2.color));
         inventory.setItem(0, team1Pane);
         inventory.setItem(1, team1Pane);
         inventory.setItem(7, team1Pane);
@@ -87,11 +87,11 @@ public class TeamsMenu extends SettingsMenu {
         inventory.remove(Material.PLAYER_HEAD); // Fjerner player heads sånn at det kan kalkuleres pånytt
 
         for (int i = 0; i < team1.size(); i++) { // team 1
-            ItemStack p = makeHeadItem(team1.getPlayer(i).player, team1.COLOR);
+            ItemStack p = makeHeadItem(team1.getPlayer(i).player, team1.color);
             inventory.setItem(2 + i, p);
         }
         for (int i = 0; i < team2.size(); i++) { // team 2
-            ItemStack p = makeHeadItem(team2.getPlayer(i).player, team2.COLOR);
+            ItemStack p = makeHeadItem(team2.getPlayer(i).player, team2.color);
             inventory.setItem(11 + i, p);
         }
     }

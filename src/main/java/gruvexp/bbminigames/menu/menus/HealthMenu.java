@@ -131,13 +131,13 @@ public class HealthMenu extends SettingsMenu {
             }
             for (int i = 0; i < settings.team1.size(); i++) {
                 BotBowsPlayer p = settings.team1.getPlayer(i);
-                ItemStack item = makeHeadItem(p.player, settings.team1.COLOR);
+                ItemStack item = makeHeadItem(p.player, settings.team1.color);
                 item.setAmount(p.getMaxHP());
                 inventory.setItem(i + 9, item);
             }
             for (int i = 0; i < settings.team2.size(); i++) {
                 BotBowsPlayer p = settings.team2.getPlayer(i);
-                ItemStack item = makeHeadItem(p.player, settings.team2.COLOR);
+                ItemStack item = makeHeadItem(p.player, settings.team2.color);
                 item.setAmount(p.getMaxHP());
                 inventory.setItem(17 - i, item);
             }
