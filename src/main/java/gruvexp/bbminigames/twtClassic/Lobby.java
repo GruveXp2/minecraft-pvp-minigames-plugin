@@ -55,6 +55,7 @@ public class Lobby {
         }
         players.remove(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
+        BotBows.unRegisterPlayerLobby(p);
     }
 
     public boolean isPlayerJoined(Player p) {

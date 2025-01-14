@@ -43,6 +43,10 @@ public class BotBows {
         players.put(p, lobby);
     }
 
+    public static void unRegisterPlayerLobby(Player p) {
+        players.remove(p);
+    }
+
     public static Lobby getLobby(int ID) {
         return lobbies[ID];
     }
