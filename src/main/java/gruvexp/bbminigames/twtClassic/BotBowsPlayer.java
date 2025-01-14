@@ -64,7 +64,6 @@ public class BotBowsPlayer {
 
     public void leaveGame() {
         team.leave(this);
-        player.sendMessage(Component.text("You left BotBows Classic", NamedTextColor.YELLOW));
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().remove(BotBows.BOTBOW);
     }
