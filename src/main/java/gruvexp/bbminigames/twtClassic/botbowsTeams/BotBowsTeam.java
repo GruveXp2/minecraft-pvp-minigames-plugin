@@ -46,6 +46,7 @@ public abstract class BotBowsTeam {
 
     public void postTeamSwap() { // when the map is changed and the teams are swapped out
         for (BotBowsPlayer p : players) {
+            p.updateTeam(this);
             p.player.teleport(tribunePos);
         }
     }

@@ -23,6 +23,5 @@ public class TeamSauce extends BotBowsTeam {
     public TeamSauce(BotBowsTeam otherTeam) {
         this();
         players = otherTeam.players;
-        postTeamSwap();
     }
 }

@@ -58,6 +58,10 @@ public class BotBowsPlayer {
         this.team = team;
     }
 
+    public void updateTeam(BotBowsTeam team) {
+        this.team = team;
+    }
+
     public void leaveTeam() {
         this.team = null;
     }

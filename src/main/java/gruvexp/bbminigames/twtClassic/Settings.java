@@ -78,6 +78,8 @@ public class Settings {
             case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
         }
+        team1.postTeamSwap();
+        team2.postTeamSwap();
         teamsMenu.registerTeams();
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
@@ -88,6 +90,8 @@ public class Settings {
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
         team1 = newTeam1;
         team2 = newTeam2;
+        team1.setOppositeTeam(team2);
+        team2.setOppositeTeam(team1);
     }
 
     public void joinGame(Player p) {

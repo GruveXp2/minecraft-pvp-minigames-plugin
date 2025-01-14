@@ -23,6 +23,5 @@ public class TeamWacky extends BotBowsTeam {
     public TeamWacky(BotBowsTeam otherTeam) {
         this();
         players = otherTeam.players;
-        postTeamSwap();
     }
 }

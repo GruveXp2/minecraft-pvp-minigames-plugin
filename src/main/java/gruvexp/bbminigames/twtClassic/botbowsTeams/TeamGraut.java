@@ -23,7 +23,6 @@ public class TeamGraut extends BotBowsTeam {
     public TeamGraut(BotBowsTeam otherTeam) {
         this();
         players = otherTeam.players;
-        postTeamSwap();
     }
 
 }

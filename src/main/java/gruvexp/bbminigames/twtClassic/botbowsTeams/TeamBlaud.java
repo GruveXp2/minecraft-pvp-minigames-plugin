@@ -24,6 +24,5 @@ public class TeamBlaud extends BotBowsTeam {
     public TeamBlaud(BotBowsTeam otherTeam) {
         this();
         players = otherTeam.players;
-        postTeamSwap();
     }
 }
