@@ -5,6 +5,7 @@ import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +22,18 @@ public class JoinLeaveListener implements Listener {
             Main.WORLD.dropItem(p.getLocation(), p.getInventory().getItemInMainHand());
         }
         p.getInventory().setItemInMainHand(Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE)));
+        p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD));
+        p.sendMessage(Component.text("To join a game, run ")
+                .append(Component.text("/menu ", NamedTextColor.AQUA))
+                .append(Component.text("or right click the compass\n"))
+                .append(Component.text("To leave a game, run "))
+                .append(Component.text("/leave\n", NamedTextColor.AQUA))
+                .append(Component.text("To access settings for a game, run "))
+                .append(Component.text("/settings\n", NamedTextColor.AQUA))
+                .append(Component.text("To start/stop a game, run "))
+                .append(Component.text("/start ", NamedTextColor.AQUA))
+                .append(Component.text("or "))
+                .append(Component.text("/stopgame", NamedTextColor.AQUA)));
     }
 
     @EventHandler
