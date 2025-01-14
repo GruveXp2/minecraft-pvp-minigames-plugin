@@ -39,6 +39,10 @@ public class BotBows {
         lobbies = new Lobby[]{new Lobby(0), new Lobby(1), new Lobby(2)};
     }
 
+    public static void registerPlayerLobby(Player p, Lobby lobby) {
+        players.put(p, lobby);
+    }
+
     public static Lobby getLobby(int ID) {
         return lobbies[ID];
     }

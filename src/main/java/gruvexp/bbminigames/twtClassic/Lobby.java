@@ -32,6 +32,7 @@ public class Lobby {
         }
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
+        BotBows.registerPlayerLobby(p, this);
     }
 
     public void leaveGame(Player p) {
