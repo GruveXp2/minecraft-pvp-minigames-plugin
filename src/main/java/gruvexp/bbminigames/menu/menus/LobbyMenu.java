@@ -34,7 +34,7 @@ public class LobbyMenu extends Menu {
                 Component displayName = meta.displayName();
                 assert displayName != null;
                 String text = PlainTextComponentSerializer.plainText().serialize(displayName);
-                int lobbyID = Integer.parseInt(String.valueOf(text.charAt(text.length() - 1)));
+                int lobbyID = Integer.parseInt(String.valueOf(text.charAt(text.length() - 1))) - 1;
                 BotBows.getLobby(lobbyID).joinGame(p);
             }
         }
