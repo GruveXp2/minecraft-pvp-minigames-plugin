@@ -96,8 +96,6 @@ public class WinConditionMenu extends SettingsMenu {
         inventory.setItem(5, add1);
         inventory.setItem(6, add10);
 
-        disableDynamicPoints();
-
         inventory.setItem(11, sub10);
         inventory.setItem(12, sub1);
         inventory.setItem(14, add1);
