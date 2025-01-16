@@ -57,11 +57,6 @@ public abstract class BotBowsTeam {
         p.joinTeam(this);
     }
 
-    public void moveToTeam(BotBowsPlayer p, BotBowsTeam newTeam) {
-        players.remove(p);
-        newTeam.join(p);
-    }
-
     public void leave(BotBowsPlayer p) {
         players.remove(p);
         p.leaveTeam();
@@ -93,6 +88,17 @@ public abstract class BotBowsTeam {
 
     public void addPoints(int score) {
         points += score;
+    }
+
+    public int getHealthPercentage() {
+        int totalHealth = 0;
+        int currentHealth = 0;
+        for (BotBowsPlayer player : players) {
+            totalHealth += player.getMaxHP();
+            currentHealth += player.getHP();
+        }
+        double healthLevel = (float) currentHealth / totalHealth;
+        return (int) (healthLevel * 100);
     }
 
     public Material getGlassPane() {

@@ -265,7 +265,7 @@ public class BotBowsPlayer {
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
         player.setGameMode(GameMode.SPECTATOR);
-        lobby.check4Victory(this);
+        lobby.check4Elimination(this);
     }
 
     public void updateArmor() { // updates the armor pieces of the player

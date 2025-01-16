@@ -152,7 +152,7 @@ public class HazardMenu extends SettingsMenu {
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
-                    settings.winThresholdMenu.open(clicker);
+                    settings.winConditionMenu.open(clicker);
                 } else if (e.getSlot() == getSlots() - 4) {
                     settings.abilityMenu.open(clicker);
                 }

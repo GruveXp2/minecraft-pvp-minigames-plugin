@@ -107,8 +107,8 @@ public class Lobby {
         }
     }
 
-    public void check4Victory(BotBowsPlayer dedPlayer) {
-        botBowsGame.check4Victory(dedPlayer);
+    public void check4Elimination(BotBowsPlayer dedPlayer) {
+        botBowsGame.check4Elimination(dedPlayer);
     }
 
     public int getTotalPlayers() {

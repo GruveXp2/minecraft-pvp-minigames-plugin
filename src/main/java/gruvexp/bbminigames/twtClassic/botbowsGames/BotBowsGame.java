@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.botbowsGames;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
+import gruvexp.bbminigames.tasks.RoundTimer;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
@@ -10,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -97,6 +99,9 @@ public class BotBowsGame {
         team2.tpPlayersToSpawn();
         canMove = false;
         new RoundCountdown(this).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
+        if (settings.getRoundDuration() != 0) {
+            new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 100L, 20L);
+        }
     }
 
     public void triggerHazards() {
@@ -108,29 +113,74 @@ public class BotBowsGame {
         BotBows.handleMovement(e);
     }
 
-    public void check4Victory(BotBowsPlayer dedPlayer) {
+    public void check4Elimination(BotBowsPlayer dedPlayer) {
         BotBowsTeam losingTeam = dedPlayer.getTeam();
+
+        if (isTeamEliminated(losingTeam)) {
+            endGameEliminated(losingTeam);
+        }
+    }
+
+    private void endGameEliminated(BotBowsTeam losingTeam) {
         BotBowsTeam winningTeam = losingTeam.getOppositeTeam();
-
-        if (!isTeamEliminated(losingTeam)) return;
-
         lobby.messagePlayers(winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN)));
-
         int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
+        postRound(winningTeam, winScore);
+    }
 
-        lobby.messagePlayers(team1.toComponent()
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
+    public void endGameTimeout() {
+        int team1Percentage = team1.getHealthPercentage();
+        int team2Percentage = team2.getHealthPercentage();
+        BotBowsTeam winningTeam = null;
+        NamedTextColor team1ResultColor;
+        NamedTextColor team2ResultColor;
+        if (team1Percentage > team2Percentage) {
+            winningTeam = team1;
+            team1ResultColor = NamedTextColor.GREEN;
+            team2ResultColor = NamedTextColor.RED;
+        } else if (team1Percentage < team2Percentage) {
+            winningTeam = team2;
+            team1ResultColor = NamedTextColor.RED;
+            team2ResultColor = NamedTextColor.GREEN;
+        } else {
+            team1ResultColor = team2ResultColor = NamedTextColor.YELLOW;
+        }
+        lobby.messagePlayers(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD)
+                .append(team1.toComponent())
+                .append(Component.text(": "))
+                .append(Component.text(team1Percentage, team1ResultColor))
+                .append(Component.text("% hp left\n", team1ResultColor))
                 .append(team2.toComponent())
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
+                .append(Component.text(": "))
+                .append(Component.text(team2Percentage, team2ResultColor))
+                .append(Component.text("% hp left\n", team2ResultColor)));
+        if (winningTeam != null) {
+            lobby.messagePlayers(winningTeam.toComponent()
+                    .append(Component.text(" won the round!", NamedTextColor.GREEN)));
+        } else {
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
+        }
+        BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
+        int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+        winningTeam.addPoints(winScore);
+        postRound(winningTeam, winScore);
+    }
+
+    private void postRound(BotBowsTeam winningTeam, int winScore) {
+        lobby.messagePlayers(
+                team1.toComponent()
+                        .append(Component.text(": ", NamedTextColor.WHITE))
+                        .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
+                        .append(team2.toComponent())
+                        .append(Component.text(": ", NamedTextColor.WHITE))
+                        .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
 
         lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
         boardManager.updateTeamScores();
 
-        if (winningTeam.getPoints() >= settings.getWinThreshold() && settings.getWinThreshold() > 0) {
+        if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
         } else {
             startRound();

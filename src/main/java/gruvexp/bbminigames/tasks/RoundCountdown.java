@@ -7,7 +7,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.Component;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class RoundCountdown extends BukkitRunnable { // LANGUAGE LEVEL = 14
+public class RoundCountdown extends BukkitRunnable {
 
     final BotBowsGame botBowsGame;
     int time = 0;

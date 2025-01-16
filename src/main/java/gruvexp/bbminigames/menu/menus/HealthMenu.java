@@ -21,18 +21,6 @@ import java.util.UUID;
 
 public class HealthMenu extends SettingsMenu {
 
-    private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
-            Component.text("If enabled, winning team gets 1"),
-            Component.text("point for each remaining hp."),
-            Component.text("If disbabled, winning team only gets 1 point."));
-
-    private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
-            Component.text("If enabled, winning team gets 1"),
-            Component.text("point for each remaining hp."),
-            Component.text("If disbabled, winning team only gets 1 point."));
-
     private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
             Component.text("Disabled", NamedTextColor.RED),
             Component.text("By enabling this, each player"),
@@ -65,7 +53,7 @@ public class HealthMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
 
-        switch (e.getCurrentItem().getType()) { // stuff som skal gjøres når man trykker på et item
+        switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
@@ -74,16 +62,12 @@ public class HealthMenu extends SettingsMenu {
                 updateMenu();
             }
             case RED_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(DYNAMIC_POINTS_DISABLED)) {
-                    enableDynamicPoints();
-                } else if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) { // clicked on custom hp setting
+                if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) {
                     enableCustomHP();
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(DYNAMIC_POINTS_ENABLED)) {
-                    disableDynamicPoints();
-                } else if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) { // clicked on custom hp setting
+                if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) {
                     disableCustomHP();
                 }
             }
@@ -111,7 +95,7 @@ public class HealthMenu extends SettingsMenu {
                 if (e.getSlot() == getSlots() - 6) {
                     settings.teamsMenu.open(clicker);
                 } else if (e.getSlot() == getSlots() - 4) {
-                    settings.winThresholdMenu.open(clicker);
+                    settings.winConditionMenu.open(clicker);
                 }
             }
         }
@@ -161,15 +145,5 @@ public class HealthMenu extends SettingsMenu {
         inventory.setItem(16, VOID);
         inventory.setItem(17, VOID);
         settings.setMaxHP(3);
-    }
-
-    public void enableDynamicPoints() {
-        inventory.setItem(2, DYNAMIC_POINTS_ENABLED);
-        settings.setDynamicScoring(true);
-    }
-
-    public void disableDynamicPoints() {
-        inventory.setItem(2, DYNAMIC_POINTS_DISABLED);
-        settings.setDynamicScoring(false);
     }
 }

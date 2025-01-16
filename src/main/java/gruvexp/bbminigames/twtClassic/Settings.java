@@ -19,17 +19,19 @@ public class Settings {
     public final Lobby lobby;
 
     public BotBowsMap currentMap = BotBowsMap.CLASSIC_ARENA; // default map
-    // hazards
-    public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
-    public EarthquakeHazard earthquakeHazard = new EarthquakeHazard(this); // holder styr på innstillinger og utførelse av storm logikk
-    public GhostHazard ghostHazard = new GhostHazard(this);
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
     private final Set<BotBowsPlayer> players = new HashSet<>(); // liste med alle players som er i gamet
     private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
+    // win condition
     private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
-    private int winThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er satt til -1, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
+    private int winScoreThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
+    private int roundDuration = 0;
+    // hazards
+    public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
+    public EarthquakeHazard earthquakeHazard = new EarthquakeHazard(this); // holder styr på innstillinger og utførelse av storm logikk
+    public GhostHazard ghostHazard = new GhostHazard(this);
     // abilities
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
@@ -38,7 +40,7 @@ public class Settings {
     public MapMenu mapMenu;
     public HealthMenu healthMenu;
     public TeamsMenu teamsMenu;
-    public WinThresholdMenu winThresholdMenu;
+    public WinConditionMenu winConditionMenu;
     public HazardMenu hazardMenu;
     public AbilityMenu abilityMenu;
 
@@ -55,14 +57,15 @@ public class Settings {
 
         healthMenu = new HealthMenu(this);
         healthMenu.disableCustomHP();
-        healthMenu.enableDynamicPoints();
         setMaxHP(3);
 
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
 
-        winThresholdMenu = new WinThresholdMenu(this);
-        winThresholdMenu.updateMenu();
+        winConditionMenu = new WinConditionMenu(this);
+        winConditionMenu.enableDynamicPoints();
+        winConditionMenu.updateWinScoreThreshold();
+        winConditionMenu.updateRoundDuration();
 
         hazardMenu = new HazardMenu(this);
         hazardMenu.initMenu();
@@ -182,17 +185,30 @@ public class Settings {
         return maxHP;
     }
 
-    public int getWinThreshold() {
-        return winThreshold;
+    public int getWinScoreThreshold() {
+        return winScoreThreshold;
     }
 
-    public void changeWinThreshold(int ΔthresholdChange) {
-        setWinThreshold(winThreshold + ΔthresholdChange);
+    public void changeWinScoreThreshold(int Δthreshold) {
+        setWinScoreThreshold(winScoreThreshold + Δthreshold);
     }
 
-    public void setWinThreshold(int threshold) {
-        winThreshold = Math.max(threshold, 0);
-        winThresholdMenu.updateMenu();
+    public void setWinScoreThreshold(int threshold) {
+        winScoreThreshold = Math.max(threshold, 0);
+        winConditionMenu.updateWinScoreThreshold();
+    }
+
+    public int getRoundDuration() {
+        return roundDuration;
+    }
+
+    public void changeRoundDuration(int Δduration) {
+        setRoundDuration(roundDuration + Δduration);
+    }
+
+    public void setRoundDuration(int duration) {
+        roundDuration = Math.max(duration, 0);
+        winConditionMenu.updateRoundDuration();
     }
 
     public void setMaxAbilities(int maxAbilities) {
