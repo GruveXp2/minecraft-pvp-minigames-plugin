@@ -31,6 +31,16 @@ public class HealthMenu extends SettingsMenu {
             Component.text("By enabling this, each player"),
             Component.text("can have a different amount of hp"));
 
+    private static final ItemStack CUSTOM_DAMAGE_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.RED),
+            Component.text("Disabled", NamedTextColor.RED),
+            Component.text("By enabling this, each player"),
+            Component.text("ca do different amounts of damage"));
+
+    private static final ItemStack CUSTOM_DAMAGE_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.GREEN),
+            Component.text("Enabled", NamedTextColor.GREEN),
+            Component.text("By enabling this, each player"),
+            Component.text("can do different amounts of damage"));
+
     private boolean customHP;
     private MenuSlider healthSlider;
 
@@ -40,7 +50,7 @@ public class HealthMenu extends SettingsMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Health (3/6)");
+        return Component.text("Health & Damage (3/6)");
     }
 
     @Override
