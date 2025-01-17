@@ -13,6 +13,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -161,13 +163,14 @@ public class BotBowsGame {
         if (winningTeam != null) {
             lobby.messagePlayers(winningTeam.toComponent()
                     .append(Component.text(" won the round!", NamedTextColor.GREEN)));
+            BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
+            int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+            winningTeam.addPoints(winScore);
+            postRound(winningTeam, winScore);
         } else {
             lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
+            postRound(null, 0);
         }
-        BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-        int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
-        winningTeam.addPoints(winScore);
-        postRound(winningTeam, winScore);
     }
 
     private void postRound(BotBowsTeam winningTeam, int winScore) {
@@ -178,17 +181,22 @@ public class BotBowsGame {
                         .append(team2.toComponent())
                         .append(Component.text(": ", NamedTextColor.WHITE))
                         .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
-
-        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
-        boardManager.updateTeamScores();
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
         }
+        if (winningTeam == null) {
+            lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
+            return;
+        }
+
+        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
+        boardManager.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
         } else {
-            startRound();
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
         }
     }
 
