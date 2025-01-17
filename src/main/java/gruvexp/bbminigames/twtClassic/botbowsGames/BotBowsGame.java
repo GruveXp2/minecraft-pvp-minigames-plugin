@@ -98,8 +98,6 @@ public class BotBowsGame {
         for (BotBowsPlayer p : players) {
             p.revive();
         }
-        stormHazard.end();
-        earthquakeHazard.end();
         // teleporterer til spawn
         team1.tpPlayersToSpawn();
         team2.tpPlayersToSpawn();
@@ -125,7 +123,7 @@ public class BotBowsGame {
         BotBowsTeam losingTeam = dedPlayer.getTeam();
 
         if (losingTeam.isEliminated()) {
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGameEliminated(losingTeam), 40L);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGameEliminated(losingTeam), 2L);
         }
     }
 
@@ -196,6 +194,8 @@ public class BotBowsGame {
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
         }
+        stormHazard.end();
+        earthquakeHazard.end();
         if (winningTeam == null) {
             lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
             canShoot = false;
