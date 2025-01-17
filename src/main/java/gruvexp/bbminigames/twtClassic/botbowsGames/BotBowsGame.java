@@ -153,7 +153,8 @@ public class BotBowsGame {
         } else {
             team1ResultColor = team2ResultColor = NamedTextColor.YELLOW;
         }
-        lobby.messagePlayers(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD)
+        lobby.messagePlayers(Component.empty()
+                .append(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD))
                 .append(team1.toComponent())
                 .append(Component.text(": "))
                 .append(Component.text(team1Percentage, team1ResultColor))
