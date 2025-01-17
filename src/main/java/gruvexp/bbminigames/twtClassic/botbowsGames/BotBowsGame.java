@@ -22,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import gruvexp.bbminigames.twtClassic.BarManager;
+import org.bukkit.scheduler.BukkitTask;
 
 public class BotBowsGame {
 
@@ -37,6 +38,7 @@ public class BotBowsGame {
     protected final GhostHazard ghostHazard;
     public boolean canMove = true;
     protected int round = 0; // hvilken runde man er på
+    private BukkitTask roundTimer;
 
     public BotBowsGame(Settings settings) {
         this.settings = settings;
@@ -100,7 +102,7 @@ public class BotBowsGame {
         canMove = false;
         new RoundCountdown(this).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         if (settings.getRoundDuration() != 0) {
-            new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 100L, 20L);
+            roundTimer = new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 100L, 20L);
         }
     }
 
@@ -179,6 +181,9 @@ public class BotBowsGame {
 
         lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
         boardManager.updateTeamScores();
+        if (settings.getRoundDuration() > 0) {
+            roundTimer.cancel();
+        }
 
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
