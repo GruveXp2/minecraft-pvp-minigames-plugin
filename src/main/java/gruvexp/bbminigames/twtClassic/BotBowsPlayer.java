@@ -105,6 +105,10 @@ public class BotBowsPlayer {
         return thrownAbilityAmount;
     }
 
+    public void useRadarAbility() {
+        team.glow(4);
+    }
+
     public int getMaxHP() {return maxHP;}
 
     public void setMaxHP(int maxHP) {
@@ -201,6 +205,7 @@ public class BotBowsPlayer {
             case SPEED_POTION -> abilities.put(type, new SpeedPotionAbility(this, slot));
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
+            case RADAR -> abilities.put(type, new RadarAbility(this, slot));
         }
         player.getInventory().setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
 

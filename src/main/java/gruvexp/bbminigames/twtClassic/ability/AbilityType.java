@@ -32,7 +32,11 @@ public enum AbilityType {
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
             getDurationComponent(5)),
-            20, "BUNDLE");
+            20, "BUNDLE"),
+    RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
+            Component.text("Reveals the position of the enemy team by making them glow"),
+            getDurationComponent(4)),
+            30, "BANNER");
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;

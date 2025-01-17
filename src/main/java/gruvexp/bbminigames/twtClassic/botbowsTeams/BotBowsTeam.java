@@ -1,9 +1,11 @@
 package gruvexp.bbminigames.twtClassic.botbowsTeams;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -99,6 +101,11 @@ public abstract class BotBowsTeam {
         }
         double healthLevel = (float) currentHealth / totalHealth;
         return (int) (healthLevel * 100);
+    }
+
+    public void glow(int seconds) {
+        players.forEach(p -> p.player.setGlowing(true));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.player.setGlowing(true)), 20L * seconds);
     }
 
     public Material getGlassPane() {

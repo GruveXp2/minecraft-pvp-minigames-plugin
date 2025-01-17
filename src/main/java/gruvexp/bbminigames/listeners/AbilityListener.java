@@ -74,7 +74,7 @@ public class AbilityListener implements Listener {
         }
     }
 
-    public static void onPlayerRightClickCompass(PlayerInteractEvent e) {
+    public static void onPlayerRightClick(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) return;
@@ -87,8 +87,8 @@ public class AbilityListener implements Listener {
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;
         }
-        if (type == AbilityType.SHRINK) {
-            bp.getAbility(AbilityType.SHRINK).use();
+        switch (type) {
+            case SHRINK, RADAR -> bp.getAbility(type).use();
         }
     }
 
