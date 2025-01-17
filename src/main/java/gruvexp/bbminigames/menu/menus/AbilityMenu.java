@@ -171,12 +171,7 @@ public class AbilityMenu extends SettingsMenu {
                 ItemStack cursorItem = e.getCursor();
                 if (cursorItem.getType() == Material.AIR) return;
                 AbilityType type = AbilityType.fromItem(cursorItem);
-                if (type == null) {
-                    BotBows.debugMessage("ingen ability item i cursoren", TestCommand.test2);
-                    return;
-                }
-                BotBows.debugMessage("Ability i cursoren: " + type.name());
-                BotBows.debugMessage("Plasserer i slottet: " + e.getSlot());
+                if (type == null) return;
                 if (e.getClickedInventory().equals(inventory)) {
                     BotBows.debugMessage("prøvde å plassere tilbakei menuet", TestCommand.test2);
                     clicker.setItemOnCursor(null);
@@ -192,16 +187,13 @@ public class AbilityMenu extends SettingsMenu {
                     return;
                 }
                 e.setCancelled(false);
-                BotBows.debugMessage("abilitien blir nå plassert i slot " + e.getSlot(), TestCommand.test2);
                 p.equipAbility(e.getSlot(), type);
             }
             default -> {
                 AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
-                if (abilityType == null) {
-                    //BotBows.debugMessage("R: No ability connected to item clicked on");
-                    return;
-                }
-                BotBowsPlayer p = BotBows.getBotBowsPlayer(clicker);
+                if (abilityType == null) return;
+                BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
+                BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
                 if (p.canToggleAbilities()) {
                     settings.toggleAbility(abilityType);
                 } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
@@ -371,11 +363,11 @@ public class AbilityMenu extends SettingsMenu {
 
     public void addPlayer(BotBowsPlayer p) {
         //max abilities
-        ItemStack abilitiesHead = makeHeadItem(p.player, p.getTeam().COLOR);
+        ItemStack abilitiesHead = makeHeadItem(p.player, p.getTeam().color);
         abilitiesHead.setAmount(Math.max(p.getMaxAbilities(), 1));
         maxAbilitiesRow.addItem(abilitiesHead);
         // cooldown multiplier
-        ItemStack cooldownHead = makeHeadItem(p.player, p.getTeam().COLOR);
+        ItemStack cooldownHead = makeHeadItem(p.player, p.getTeam().color);
         ItemMeta meta = cooldownHead.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         cooldownHead.setItemMeta(meta);
