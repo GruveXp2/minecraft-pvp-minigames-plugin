@@ -21,8 +21,8 @@ public class HitListener implements Listener {
             arrow.setKnockbackStrength(8);
             BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
             BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
-            if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing()) {
-                arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, the arrow won't do damage
+            if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
+                arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
                 e.setCancelled(true);
                 return;
             }

@@ -39,6 +39,7 @@ public class BotBowsGame {
     protected final EarthquakeHazard earthquakeHazard;
     protected final GhostHazard ghostHazard;
     public boolean canMove = true;
+    public boolean canShoot = false;
     protected int round = 0; // hvilken runde man er på
     private BukkitTask roundTimer;
 
@@ -102,6 +103,7 @@ public class BotBowsGame {
         team1.tpPlayersToSpawn();
         team2.tpPlayersToSpawn();
         canMove = false;
+        canShoot = false;
         new RoundCountdown(this).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         if (settings.getRoundDuration() != 0) {
             roundTimer = new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 200L, 20L);
@@ -186,6 +188,7 @@ public class BotBowsGame {
         }
         if (winningTeam == null) {
             lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
+            canShoot = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
             return;
         }
@@ -196,6 +199,7 @@ public class BotBowsGame {
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
         } else {
+            canShoot = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
         }
     }
