@@ -57,6 +57,7 @@ public class Settings {
 
         healthMenu = new HealthMenu(this);
         healthMenu.disableCustomHP();
+        healthMenu.disableCustomDamage();
         setMaxHP(3);
 
         teamsMenu = new TeamsMenu(this);

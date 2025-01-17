@@ -118,7 +118,7 @@ public class HealthMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        healthSlider = new MenuSlider(inventory, 11, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
+        healthSlider = new MenuSlider(inventory, 2, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
         setPageButtons(2, true, true);
         setFillerVoid();
     }
@@ -135,7 +135,7 @@ public class HealthMenu extends SettingsMenu {
     }
 
     private void updateCustomSetting(int slotOffset, boolean isHealth) {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 2; i < 9; i++) {
             inventory.setItem(i + slotOffset, null);
         }
         int start = 2;
@@ -182,14 +182,14 @@ public class HealthMenu extends SettingsMenu {
 
     public void enableCustomDamage() {
         customDamage = true;
-        inventory.setItem(9, CUSTOM_HP_ENABLED);
+        inventory.setItem(9, CUSTOM_DAMAGE_ENABLED);
         inventory.setItem(10, VOID);
         updateCustomDamage();
     }
 
     public void disableCustomDamage() {
         customDamage = false;
-        inventory.setItem(9, CUSTOM_HP_DISABLED);
+        inventory.setItem(9, CUSTOM_DAMAGE_DISABLED);
         inventory.setItem(10, VOID);
         for (int i = 0; i < 7; i++) {
             inventory.setItem(11 + i, DISABLED);
