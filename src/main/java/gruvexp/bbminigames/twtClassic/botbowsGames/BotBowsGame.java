@@ -40,6 +40,7 @@ public class BotBowsGame {
     protected final GhostHazard ghostHazard;
     public boolean canMove = true;
     public boolean canShoot = false;
+    public boolean activeRound = false;
     protected int round = 0; // hvilken runde man er på
     private BukkitTask roundTimer;
 
@@ -104,6 +105,7 @@ public class BotBowsGame {
         team2.tpPlayersToSpawn();
         canMove = false;
         canShoot = false;
+        activeRound = true;
         new RoundCountdown(this).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         if (settings.getRoundDuration() != 0) {
             roundTimer = new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 200L, 20L);
@@ -182,6 +184,8 @@ public class BotBowsGame {
     }
 
     private void postRound(BotBowsTeam winningTeam, int winScore) {
+        if (!activeRound) return;
+        activeRound = false;
         lobby.messagePlayers(
                 team1.toComponent()
                         .append(Component.text(": ", NamedTextColor.WHITE))
