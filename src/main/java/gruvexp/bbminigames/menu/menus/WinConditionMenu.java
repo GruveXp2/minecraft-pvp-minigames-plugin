@@ -59,16 +59,16 @@ public class WinConditionMenu extends SettingsMenu {
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
+                if (e.getCurrentItem().equals(DYNAMIC_POINTS_ENABLED)) {
+                    disableDynamicPoints();
+                } else
                 if (slot < 9) {
                     settings.changeWinScoreThreshold(1);
                 } else {
                     settings.changeRoundDuration(1);
                 }
             }
-            case GREEN_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(DYNAMIC_POINTS_ENABLED)) {
-                    disableDynamicPoints();
-                } else if (slot < 9) {
+            case GREEN_STAINED_GLASS_PANE -> {if (slot < 9) {
                     settings.changeWinScoreThreshold(10);
                 } else {
                     settings.changeRoundDuration(10);
