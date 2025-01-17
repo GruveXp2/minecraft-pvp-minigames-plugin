@@ -122,18 +122,23 @@ public class BotBowsGame {
     public void check4Elimination(BotBowsPlayer dedPlayer) {
         BotBowsTeam losingTeam = dedPlayer.getTeam();
 
-        if (isTeamEliminated(losingTeam)) {
-            endGameEliminated(losingTeam);
+        if (losingTeam.isEliminated()) {
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGameEliminated(losingTeam), 40L);
         }
     }
 
     private void endGameEliminated(BotBowsTeam losingTeam) {
         BotBowsTeam winningTeam = losingTeam.getOppositeTeam();
+        if (winningTeam.isEliminated()) { // begge daua på likt
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
+            postRound(null, 0);
+            return;
+        }
         lobby.messagePlayers(winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN)));
         int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
-        postRound(winningTeam, winScore);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> postRound(winningTeam, winScore), 2L); // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
 
     public void endGameTimeout() {
