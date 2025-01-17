@@ -103,6 +103,15 @@ public abstract class BotBowsTeam {
         return (int) (healthLevel * 100);
     }
 
+    public boolean isEliminated() {
+        for (BotBowsPlayer p : players) {
+            if (p.getHP() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void glow(int seconds) {
         players.forEach(p -> p.player.setGlowing(true));
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.player.setGlowing(true)), 20L * seconds);

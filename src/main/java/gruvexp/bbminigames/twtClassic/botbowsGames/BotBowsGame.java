@@ -205,15 +205,6 @@ public class BotBowsGame {
         }
     }
 
-    private boolean isTeamEliminated(BotBowsTeam team) {
-        for (BotBowsPlayer p : team.getPlayers()) {
-            if (p.getHP() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private int calculateDynamicScore(BotBowsTeam winningTeam, BotBowsTeam losingTeam) {
         int HPLeft = 0;
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
