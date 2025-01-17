@@ -114,7 +114,7 @@ public abstract class BotBowsTeam {
 
     public void glow(int seconds) {
         players.forEach(p -> p.player.setGlowing(true));
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.player.setGlowing(true)), 20L * seconds);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.player.setGlowing(false)), 20L * seconds);
     }
 
     public Material getGlassPane() {
