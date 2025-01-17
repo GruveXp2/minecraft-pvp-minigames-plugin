@@ -277,6 +277,9 @@ public class BotBowsGame {
     }
 
     public void endGame() { // the game has ended, check who won
+        if (settings.getRoundDuration() > 0) {
+            roundTimer.cancel();
+        }
         if (team1.getPoints() == team2.getPoints()) {
             postGame(null);
         } else if (team1.getPoints() > team2.getPoints()) {
