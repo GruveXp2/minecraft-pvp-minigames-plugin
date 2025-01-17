@@ -92,20 +92,29 @@ public class HealthMenu extends SettingsMenu {
                 Player p = Bukkit.getPlayer(UUID.fromString(head.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
                 BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
                 int slot = e.getSlot();
-                int maxHP = head.getAmount();
-
-                if (maxHP > 9) {
-                    maxHP += 5;
-                    if (maxHP > 20) {
-                        maxHP = 1;
+                if (slot < 9) {
+                    int maxHP = head.getAmount();
+                    if (maxHP > 9) {
+                        maxHP += 5;
+                        if (maxHP > 20) {
+                            maxHP = 1;
+                        }
+                    } else {
+                        maxHP += 1;
                     }
+                    bp.setMaxHP(maxHP);
+                    head.setAmount(maxHP);
                 } else {
-                    maxHP += 1;
+                    int attackDamage = head.getAmount();
+                    attackDamage += 1;
+                    if (attackDamage > 5) {
+                        attackDamage = 1;
+                    }
+                    bp.setAttackDamage(attackDamage);
+                    head.setAmount(attackDamage);
                 }
 
-                head.setAmount(maxHP);
                 inventory.setItem(slot, head);
-                bp.setMaxHP(maxHP);
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
