@@ -3,6 +3,7 @@ package gruvexp.bbminigames.menu.menus;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
@@ -142,11 +143,11 @@ public class HealthMenu extends SettingsMenu {
         if (settings.lobby.getTotalPlayers() == 8) {
             start = 1;
         }
-        for (int i = start; i < settings.team1.size(); i++) {
+        for (int i = 0; i < settings.team1.size(); i++) {
             BotBowsPlayer p = settings.team1.getPlayer(i);
             ItemStack item = makeHeadItem(p.player, settings.team1.color);
             item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
-            inventory.setItem(i + slotOffset, item);
+            inventory.setItem(i + start + slotOffset, item);
         }
         for (int i = 0; i < settings.team2.size(); i++) {
             BotBowsPlayer p = settings.team2.getPlayer(i);
