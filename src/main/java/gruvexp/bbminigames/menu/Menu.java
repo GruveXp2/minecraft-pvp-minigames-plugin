@@ -27,6 +27,7 @@ public abstract class Menu implements InventoryHolder {
     public static final ItemStack VOID = makeItem("void", Component.empty());
     public static final ItemStack PREV = makeItem("prev", Component.text("Prev"));
     public static final ItemStack NEXT = makeItem("next", Component.text("Next"));
+    public static final ItemStack DISABLED = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
