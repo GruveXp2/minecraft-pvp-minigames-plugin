@@ -185,6 +185,10 @@ public class Settings {
         return maxHP;
     }
 
+    public void resetAttackDamage() {
+        players.forEach(p -> p.setAttackDamage(1));
+    }
+
     public int getWinScoreThreshold() {
         return winScoreThreshold;
     }

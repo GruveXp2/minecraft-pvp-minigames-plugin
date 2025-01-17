@@ -42,6 +42,7 @@ public class HealthMenu extends SettingsMenu {
             Component.text("can do different amounts of damage"));
 
     private boolean customHP;
+    private boolean customDamage;
     private MenuSlider healthSlider;
 
     public HealthMenu(Settings settings) {
@@ -74,11 +75,15 @@ public class HealthMenu extends SettingsMenu {
             case RED_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) {
                     enableCustomHP();
+                } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_DISABLED)) {
+                    enableCustomDamage();
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) {
                     disableCustomHP();
+                } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_ENABLED)) {
+                    disableCustomDamage();
                 }
             }
             case PLAYER_HEAD -> {
@@ -120,40 +125,75 @@ public class HealthMenu extends SettingsMenu {
 
     public void updateMenu() {
         if (customHP) { // each player can have their own health
-            for (int i = 9; i < 18; i++) {
-                inventory.setItem(i, null);
-            }
-            for (int i = 0; i < settings.team1.size(); i++) {
-                BotBowsPlayer p = settings.team1.getPlayer(i);
-                ItemStack item = makeHeadItem(p.player, settings.team1.color);
-                item.setAmount(p.getMaxHP());
-                inventory.setItem(i + 9, item);
-            }
-            for (int i = 0; i < settings.team2.size(); i++) {
-                BotBowsPlayer p = settings.team2.getPlayer(i);
-                ItemStack item = makeHeadItem(p.player, settings.team2.color);
-                item.setAmount(p.getMaxHP());
-                inventory.setItem(17 - i, item);
-            }
+            updateCustomHP();
         } else { // The normal menu with a slider
             healthSlider.setProgressSlots(settings.getMaxHP());
         }
+        if (customDamage) {
+            updateCustomDamage();
+        }
+    }
+
+    private void updateCustomSetting(int slotOffset, boolean isHealth) {
+        for (int i = 0; i < 9; i++) {
+            inventory.setItem(i + slotOffset, null);
+        }
+        int start = 2;
+        if (settings.lobby.getTotalPlayers() == 8) {
+            start = 1;
+        }
+        for (int i = start; i < settings.team1.size(); i++) {
+            BotBowsPlayer p = settings.team1.getPlayer(i);
+            ItemStack item = makeHeadItem(p.player, settings.team1.color);
+            item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
+            inventory.setItem(i + slotOffset, item);
+        }
+        for (int i = 0; i < settings.team2.size(); i++) {
+            BotBowsPlayer p = settings.team2.getPlayer(i);
+            ItemStack item = makeHeadItem(p.player, settings.team2.color);
+            item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
+            inventory.setItem(8 - i + slotOffset, item);
+        }
+    }
+
+    private void updateCustomHP() {
+        updateCustomSetting(0, true);
+    }
+
+    private void updateCustomDamage() {
+        updateCustomSetting(9, false);
     }
     
     public void enableCustomHP() {
         customHP = true;
-        inventory.setItem(6, CUSTOM_HP_ENABLED);
-        inventory.setItem(13, VOID);
-        updateMenu();
+        inventory.setItem(0, CUSTOM_HP_ENABLED);
+        inventory.setItem(1, VOID);
+        updateCustomHP();
     }
 
     public void disableCustomHP() {
         customHP = false;
-        inventory.setItem(6, CUSTOM_HP_DISABLED);
-        inventory.setItem(9, VOID);
-        inventory.setItem(10, VOID);
-        inventory.setItem(16, VOID);
-        inventory.setItem(17, VOID);
+        inventory.setItem(0, CUSTOM_HP_DISABLED);
+        inventory.setItem(1, VOID);
+        inventory.setItem(7, VOID);
+        inventory.setItem(8, VOID);
         settings.setMaxHP(3);
+    }
+
+    public void enableCustomDamage() {
+        customDamage = true;
+        inventory.setItem(9, CUSTOM_HP_ENABLED);
+        inventory.setItem(10, VOID);
+        updateCustomDamage();
+    }
+
+    public void disableCustomDamage() {
+        customDamage = false;
+        inventory.setItem(9, CUSTOM_HP_DISABLED);
+        inventory.setItem(10, VOID);
+        for (int i = 0; i < 7; i++) {
+            inventory.setItem(11 + i, DISABLED);
+        }
+        settings.resetAttackDamage();
     }
 }

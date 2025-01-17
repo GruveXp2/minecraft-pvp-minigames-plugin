@@ -27,6 +27,7 @@ public class BotBowsPlayer {
     private BotBowsTeam team;
     private int hp;
     private int maxHP;
+    private int attackDamage;
     private boolean isDamaged = false; // cooldown når playeren er hitta
     private static final List<List<Set<Integer>>> PLAYER_HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
 
@@ -41,6 +42,7 @@ public class BotBowsPlayer {
         lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;
+        attackDamage = 1;
         maxAbilities = settings.getMaxAbilities();
         abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
     }
@@ -123,6 +125,14 @@ public class BotBowsPlayer {
             updateArmor();
         }
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
+    }
+
+    public void setAttackDamage(int hearts) {
+        this.attackDamage = hearts;
+    }
+
+    public int getAttackDamage() {
+        return attackDamage;
     }
 
     public Collection<Ability> getAbilities() {
@@ -221,7 +231,7 @@ public class BotBowsPlayer {
     }
 
     public void handleHit(BotBowsPlayer attacker) {
-        if (hp == 1) { // spilleren kommer til å daue
+        if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
                     .append(Component.text(" was sniped by "))
                     .append(attacker.player.name().color(attacker.team.color))
@@ -234,7 +244,7 @@ public class BotBowsPlayer {
             }
             return;
         }
-        setHP(hp - 1);
+        setHP(hp - attacker.attackDamage);
         lobby.messagePlayers(Component.text(player.getName(), team.color)
                 .append(Component.text(" was sniped by "))
                 .append(Component.text(attacker.player.getName(), attacker.team.color))
