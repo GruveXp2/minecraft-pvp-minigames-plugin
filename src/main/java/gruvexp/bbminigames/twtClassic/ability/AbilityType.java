@@ -8,7 +8,9 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -36,7 +38,9 @@ public enum AbilityType {
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of the enemy team by making them glow"),
             getDurationComponent(4)),
-            30, "BANNER");
+            30, "BANNER"),
+    SPLASH_BOW(makeSplashBow(),
+            15, "CONCRETE_POWDER");
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
@@ -123,6 +127,19 @@ public enum AbilityType {
 
         potion.setItemMeta(meta);
         return potion;
+    }
+
+    private static ItemStack makeSplashBow() {
+        ItemStack splashBow = new ItemStack(Material.BOW);
+        ItemMeta meta = splashBow.getItemMeta();
+        meta.displayName(Component.text("Splash Bow"));
+        meta.lore(List.of(Component.text("A bow that does splash damage"), Component.text("in 3 blocks radius")));
+        meta.addEnchant(Enchantment.POWER, 10, true);
+        meta.addEnchant(Enchantment.PUNCH, 10, true);
+        Damageable damageable = (Damageable) meta;
+        damageable.setDamage((short) 384);
+        splashBow.setItemMeta(damageable);
+        return splashBow;
     }
 
     private static @NotNull TextComponent getDurationComponent(int seconds) {
