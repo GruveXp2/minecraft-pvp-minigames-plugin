@@ -206,6 +206,7 @@ public class BotBowsPlayer {
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
             case RADAR -> abilities.put(type, new RadarAbility(this, slot));
+            case SPLASH_BOW -> abilities.put(type, new SplashBowAbility(this, slot));
         }
         player.getInventory().setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
 
