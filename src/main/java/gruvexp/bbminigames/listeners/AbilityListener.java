@@ -69,6 +69,8 @@ public class AbilityListener implements Listener {
                 BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow).runTaskLater(Main.getPlugin(), 1L);
                 splashArrows.put(arrow, arrowTrail);
                 bp.getAbility(AbilityType.SPLASH_BOW).use();
+            } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
+                arrow.setGravity(false);
             }
         }
     }
@@ -133,5 +135,6 @@ public class AbilityListener implements Listener {
         SplashBowAbility.handleArrowHit(attacker, hitLoc);
         splashArrows.get(arrow).cancel();
         splashArrows.remove(arrow);
+        arrow.remove();
     }
 }
