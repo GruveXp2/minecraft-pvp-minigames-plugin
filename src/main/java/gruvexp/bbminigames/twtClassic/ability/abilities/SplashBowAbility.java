@@ -22,6 +22,7 @@ public class SplashBowAbility extends Ability {
         super(player, hotBarSlot);
         this.type = AbilityType.SPLASH_BOW;
         this.baseCooldown = type.getBaseCooldown();
+        player.player.getInventory().setItem(9, new ItemStack(Material.ARROW, 64));
     }
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
