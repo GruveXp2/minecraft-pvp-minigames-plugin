@@ -18,12 +18,13 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class AbilityListener implements Listener {
 
-    public static HashSet<Arrow> splashArrows = new HashSet<>();
+    public static HashMap<Arrow, BukkitTask> splashArrows = new HashMap<>();
 
     @EventHandler
     public void onAbilityUse(PlayerInteractEvent e) {
@@ -65,7 +66,8 @@ public class AbilityListener implements Listener {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (!bp.isAbilityEquipped(AbilityType.SPLASH_BOW)) return;
                 arrow.setColor(Color.RED);
-                splashArrows.add(arrow);
+                BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow).runTaskLater(Main.getPlugin(), 1L);
+                splashArrows.put(arrow, arrowTrail);
                 bp.getAbility(AbilityType.SPLASH_BOW).use();
             }
         }
@@ -121,22 +123,15 @@ public class AbilityListener implements Listener {
         Projectile projectile = e.getEntity();
         if (!(projectile instanceof Arrow arrow)) return;
         if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
-        if (!splashArrows.contains(arrow)) return;
+        if (!splashArrows.containsKey(arrow)) return;
         Location hitLoc;
         if (e.getHitEntity() != null) {
             hitLoc = e.getHitEntity().getLocation();
         } else {
             hitLoc = e.getHitBlock().getLocation();
         }
-        double radius = SplashBowAbility.SPLASH_RADIUS;
-        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, radius, radius, radius, entity -> entity instanceof Player)) {
-            Player p = (Player) entity;
-            p.sendMessage("You are within 3 blocks of the arrow impact!");
-            Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) return;
-            if (lobby != BotBows.getLobby(attacker)) return;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.handleHit(lobby.getBotBowsPlayer(attacker));
-        }
+        SplashBowAbility.handleArrowHit(attacker, hitLoc);
+        splashArrows.get(arrow).cancel();
+        splashArrows.remove(arrow);
     }
 }
