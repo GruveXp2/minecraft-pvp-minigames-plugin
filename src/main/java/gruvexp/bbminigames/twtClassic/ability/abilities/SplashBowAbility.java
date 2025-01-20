@@ -8,10 +8,12 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SplashBowAbility extends Ability {
@@ -22,7 +24,7 @@ public class SplashBowAbility extends Ability {
         super(player, hotBarSlot);
         this.type = AbilityType.SPLASH_BOW;
         this.baseCooldown = type.getBaseCooldown();
-        player.player.getInventory().setItem(9, new ItemStack(Material.ARROW, 64));
+        player.player.getInventory().setItem(18, new ItemStack(Material.ARROW, 64));
     }
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
