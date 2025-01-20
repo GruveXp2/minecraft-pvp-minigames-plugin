@@ -28,9 +28,9 @@ public class SplashBowAbility extends Ability {
     }
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
-        Main.WORLD.spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 30, SPLASH_RADIUS, SPLASH_RADIUS, SPLASH_RADIUS, 0.1);
-        Main.WORLD.spawnParticle(Particle.DUST, hitLoc, 25, 3, 3, 3, 0.1, new Particle.DustOptions(Color.RED, 5));  // Red color
-        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, SPLASH_RADIUS, SPLASH_RADIUS, SPLASH_RADIUS, entity -> entity instanceof Player)) {
+        Main.WORLD.spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, SPLASH_RADIUS/4, SPLASH_RADIUS/4, SPLASH_RADIUS/4, 5);
+        Main.WORLD.spawnParticle(Particle.DUST, hitLoc, 1000, 3, 3, 3, 0.4, new Particle.DustOptions(Color.RED, 5));  // Red color
+        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, SPLASH_RADIUS*2, SPLASH_RADIUS*2, SPLASH_RADIUS*2, entity -> entity instanceof Player)) {
             Player p = (Player) entity;
             p.sendMessage("You are within 3 blocks of the arrow impact!");
             Lobby lobby = BotBows.getLobby(p);
