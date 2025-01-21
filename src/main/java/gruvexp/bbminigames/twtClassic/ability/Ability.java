@@ -13,7 +13,6 @@ public abstract class Ability { // each player has some ability objects.
 
     protected int baseCooldown; // seconds
     protected float cooldownMultiplier = 1.0f;
-    private int currentCooldown;
     private int effectiveCooldown;
 
     private final int hotBarSlot;

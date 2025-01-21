@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -12,12 +13,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -53,7 +57,7 @@ public class AbilityListener implements Listener {
     }
 
     @EventHandler
-    public void onWindChargeAbilityThrow(ProjectileLaunchEvent e) {
+    public void onProjectileLaunch(ProjectileLaunchEvent e) {
         if (!(e.getEntity().getShooter() instanceof Player p)) return;
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) return;
@@ -71,6 +75,26 @@ public class AbilityListener implements Listener {
                 bp.getAbility(AbilityType.SPLASH_BOW).use();
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSpawnEntity(CreatureSpawnEvent e) {
+        if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG && e.getEntity() instanceof Chicken chicken) {
+            boolean isFloatSpellAbilityChicken = false;
+            for (Entity nearbyEntity : Main.WORLD.getNearbyEntities(chicken.getLocation(), 5, 5, 5, entity -> entity instanceof Player)) {
+                Player p = (Player) nearbyEntity;
+                Lobby lobby = BotBows.getLobby(p);
+                if (lobby == null) continue;
+                isFloatSpellAbilityChicken = true;
+                BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+                if (bp.isAbilityEquipped(AbilityType.FLOAT_SPELL) && !((FloatSpellAbility) bp.getAbility(AbilityType.FLOAT_SPELL)).isImmune()) {
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, FloatSpellAbility.DURATION * 20, 1, false, false));
+                }
+            }
+            if (isFloatSpellAbilityChicken) {
+                FloatSpellAbility.animateChicken(chicken);
             }
         }
     }
@@ -104,7 +128,7 @@ public class AbilityListener implements Listener {
             return;
         }
         switch (type) {
-            case SHRINK, RADAR -> bp.getAbility(type).use();
+            case SHRINK, RADAR, FLOAT_SPELL -> bp.getAbility(type).use();
         }
     }
 

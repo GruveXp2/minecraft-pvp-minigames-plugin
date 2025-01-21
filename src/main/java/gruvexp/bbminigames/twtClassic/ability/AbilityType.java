@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.ability;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,7 +41,9 @@ public enum AbilityType {
             getDurationComponent(4)),
             30, "BANNER"),
     SPLASH_BOW(makeSplashBow(),
-            15, "CONCRETE_POWDER");
+            15, "CONCRETE_POWDER"),
+    FLOAT_SPELL(getFloatSpellItem(),
+            10, "BUNDLE");
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
@@ -144,5 +147,11 @@ public enum AbilityType {
 
     private static @NotNull TextComponent getDurationComponent(int seconds) {
         return Component.text("Duration: ").append(Component.text(seconds + "s", NamedTextColor.GREEN));
+    }
+
+    private static ItemStack getFloatSpellItem() {
+        ItemStack item = Menu.makeItem(Material.CHICKEN_SPAWN_EGG, Component.text("Float Spell"));
+        item.lore(List.of(getDurationComponent(FloatSpellAbility.DURATION)));
+        return item;
     }
 }
