@@ -42,8 +42,8 @@ public abstract class Ability { // each player has some ability objects.
     public void use() {
         Inventory inv = player.player.getInventory();
         new BukkitRunnable() {
-            ItemStack cooldownItem = type.getCooldownItems()[0].clone();
             int currentCooldown = effectiveCooldown;
+            ItemStack cooldownItem = getCooldownItem(currentCooldown);
             @Override
             public void run() {
                 switch (currentCooldown) {
@@ -61,5 +61,17 @@ public abstract class Ability { // each player has some ability objects.
                 currentCooldown--;
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 20L);
+    }
+
+    private ItemStack getCooldownItem(int cooldown) {
+        if (cooldown > 10) {
+            return type.getCooldownItems()[0].clone();
+        } else if (cooldown > 5) {
+            return type.getCooldownItems()[1].clone();
+        } else if (cooldown > 2) {
+            return type.getCooldownItems()[2].clone();
+        } else {
+            return type.getCooldownItems()[3].clone();
+        }
     }
 }
