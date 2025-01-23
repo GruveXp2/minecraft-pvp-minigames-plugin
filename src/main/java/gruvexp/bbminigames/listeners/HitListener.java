@@ -3,12 +3,14 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class HitListener implements Listener {
 
@@ -27,17 +29,21 @@ public class HitListener implements Listener {
                 return;
             }
             e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferig
-            defenderBp.handleHit(attackerBp);
+            defenderBp.handleHit(attackerBp, Component.text(" was sniped by "));
         } else {
             if (!(e.getEntity() instanceof Player defender)) {return;} // den som blei hitta
             if (e.getDamager() instanceof Player attacker) {
-                if (attacker.getInventory().getItemInMainHand().getType() == Material.STICK) {
+                ItemStack weapon = attacker.getInventory().getItemInMainHand();
+                if (weapon.getType() == Material.STICK) {
                     e.setCancelled(true); // hvis man bruker stick så skjer det ikke noe
                     return;
+                } else if (weapon.getType() == Material.BLAZE_ROD) {
+                    StickSlap.handleHit(attacker);
+                    e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
+                    return;
+                } else {
+                    AbilityListener.onSlap(attacker, defender, weapon);
                 }
-                StickSlap.handleHit(attacker);
-                e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
-                return;
             }
             if (!BotBows.isPlayerJoined(defender)) {
                 e.setCancelled(true); // cant damage ingame players without bow

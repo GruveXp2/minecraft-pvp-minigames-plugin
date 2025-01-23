@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
@@ -9,6 +10,9 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -43,11 +47,19 @@ public enum AbilityType {
     SPLASH_BOW(makeSplashBow(),
             15, "CONCRETE_POWDER"),
     FLOAT_SPELL(getFloatSpellItem(),
-            10, "BUNDLE");
+            10, "BUNDLE"),
+    LONG_ARMS(getLongHandsItem(),
+            15, "WOOL");
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
     private final int baseCooldown;
+
+    private static final AttributeModifier extraRangeModifier = new AttributeModifier(
+            new NamespacedKey(Main.getPlugin(), "extra_range"),
+            50,
+            AttributeModifier.Operation.ADD_NUMBER
+    );
 
     AbilityType(ItemStack item, int baseCooldown, String cooldownItemType) {
         this.abilityItem = item;
@@ -152,6 +164,15 @@ public enum AbilityType {
     private static ItemStack getFloatSpellItem() {
         ItemStack item = Menu.makeItem(Material.EGG, Component.text("Float Spell"));
         item.lore(List.of(getDurationComponent(FloatSpellAbility.DURATION)));
+        return item;
+    }
+
+    private static ItemStack getLongHandsItem() {
+        ItemStack item = Menu.makeItem(Material.FISHING_ROD, Component.text("Long arms"),
+                Component.text("Has a very long range"));
+        ItemMeta meta = item.getItemMeta();
+        meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier);
+        item.setItemMeta(meta);
         return item;
     }
 }

@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -37,7 +38,7 @@ public class SplashBowAbility extends Ability {
             if (lobby == null) return;
             if (lobby != BotBows.getLobby(attacker)) return;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.handleHit(lobby.getBotBowsPlayer(attacker));
+            bp.handleHit(lobby.getBotBowsPlayer(attacker), Component.text(" was splash bowed by "));
         }
     }
 

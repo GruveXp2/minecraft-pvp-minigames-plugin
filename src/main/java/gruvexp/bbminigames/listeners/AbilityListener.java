@@ -7,21 +7,20 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class AbilityListener implements Listener {
             }
             case FLOAT_SPELL -> {
                 bp.getAbility(type).use();
-                org.bukkit.block.Block block = e.getClickedBlock();
+                Block block = e.getClickedBlock();
                 if (block == null) return;
                 Chicken chicken = (Chicken) Main.WORLD.spawnEntity(block.getLocation().add(0.5, 1, 0.5), EntityType.CHICKEN);
                 FloatSpellAbility.animateChicken(chicken);
@@ -67,6 +66,20 @@ public class AbilityListener implements Listener {
                 }
                 e.setCancelled(true); // gjør sånn at det ikke spawnes 2 stykker
             }
+        }
+    }
+
+    public static void onSlap(Player attacker, Player defender, ItemStack weapon) {
+        Lobby lobby = BotBows.getLobby(attacker);
+        if (lobby == null) return;
+        BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
+        BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
+        if (defenderBp == null) return;
+        AbilityType type = AbilityType.fromItem(weapon);
+        if (type == null) return;
+        if (type == AbilityType.LONG_ARMS) {
+            attackerBp.getAbility(type).use();
+            defenderBp.handleHit(attackerBp, Component.text(" was slapped by "));
         }
     }
 

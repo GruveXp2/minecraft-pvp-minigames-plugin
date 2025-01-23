@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -208,6 +209,7 @@ public class BotBowsPlayer {
             case RADAR -> abilities.put(type, new RadarAbility(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBowAbility(this, slot));
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
+            case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
         }
         player.getInventory().setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
 
@@ -237,7 +239,7 @@ public class BotBowsPlayer {
         return isDamaged;
     }
 
-    public void handleHit(BotBowsPlayer attacker) {
+    public void handleHit(BotBowsPlayer attacker, TextComponent hitActionMessage) {
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
                     .append(Component.text(" was sniped by "))
@@ -253,7 +255,7 @@ public class BotBowsPlayer {
         }
         setHP(hp - attacker.attackDamage);
         lobby.messagePlayers(Component.text(player.getName(), team.color)
-                .append(Component.text(" was sniped by "))
+                .append(hitActionMessage)
                 .append(Component.text(attacker.player.getName(), attacker.team.color))
                 .append(Component.text(";"))
                 .append(Component.text(hp + "hp left", team.color)));
