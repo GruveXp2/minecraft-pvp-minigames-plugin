@@ -20,7 +20,7 @@ public class FloatSpellAbility extends Ability {
 
     public FloatSpellAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
-        this.type = AbilityType.ENDER_PEARL;
+        this.type = AbilityType.FLOAT_SPELL;
         this.baseCooldown = type.getBaseCooldown();
     }
 
