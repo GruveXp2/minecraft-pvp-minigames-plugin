@@ -150,7 +150,7 @@ public enum AbilityType {
     }
 
     private static ItemStack getFloatSpellItem() {
-        ItemStack item = Menu.makeItem(Material.CHICKEN_SPAWN_EGG, Component.text("Float Spell"));
+        ItemStack item = Menu.makeItem(Material.EGG, Component.text("Float Spell"));
         item.lore(List.of(getDurationComponent(FloatSpellAbility.DURATION)));
         return item;
     }
