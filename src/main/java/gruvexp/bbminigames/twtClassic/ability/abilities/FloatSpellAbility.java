@@ -46,10 +46,11 @@ public class FloatSpellAbility extends Ability {
                     this.cancel();
                     chicken.remove();
                 }
-                double angle = i * 5 * Math.PI / 600;
-                chicken.getAttribute(Attribute.SCALE).setBaseValue(2 * Math.sin(Math.PI / 6 + angle));
+                double value = 2 * Math.sin(Math.PI/6 * ((double) i /12 + 1));
+                Main.getPlugin().getLogger().info("i = " + i + ", val: " + value);
+                chicken.getAttribute(Attribute.SCALE).setBaseValue(value);
                 i++;
             }
-        }.runTaskTimer(Main.getPlugin(), 100L, 1L);
+        }.runTaskTimer(Main.getPlugin(), 0, 1L);
     }
 }
