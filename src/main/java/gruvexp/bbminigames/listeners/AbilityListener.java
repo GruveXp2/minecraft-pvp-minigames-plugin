@@ -54,8 +54,9 @@ public class AbilityListener implements Listener {
             }
             case FLOAT_SPELL -> {
                 bp.getAbility(type).use();
-
-                Chicken chicken = (Chicken) e.getClickedBlock().getWorld().spawnEntity(e.getClickedBlock().getLocation().add(0.5, 1, 0.5), EntityType.CHICKEN);
+                org.bukkit.block.Block block = e.getClickedBlock();
+                if (block == null) return;
+                Chicken chicken = (Chicken) Main.WORLD.spawnEntity(block.getLocation().add(0.5, 1, 0.5), EntityType.CHICKEN);
                 FloatSpellAbility.animateChicken(chicken);
                 ((FloatSpellAbility) bp.getAbility(type)).handleUsage(chicken);
                 // Reduce the item count (simulate spawn egg usage)
