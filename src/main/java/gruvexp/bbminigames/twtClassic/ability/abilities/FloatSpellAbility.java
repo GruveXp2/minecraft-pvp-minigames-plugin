@@ -1,18 +1,22 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class FloatSpellAbility extends Ability {
 
     public static final int DURATION = 3;
-    private boolean immune = false;
 
     public FloatSpellAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
@@ -20,19 +24,16 @@ public class FloatSpellAbility extends Ability {
         this.baseCooldown = type.getBaseCooldown();
     }
 
-    @Override
-    public void use() {
-        super.use();
-        immune = true;
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::deImmunize, 20L * DURATION);
-    }
-
-    private void deImmunize() {
-        this.immune = false;
-    }
-
-    public boolean isImmune() {
-        return immune;
+    public void handleUsage(Chicken chicken) {
+        for (Entity nearbyEntity : Main.WORLD.getNearbyEntities(chicken.getLocation(), 5, 5, 5, entity -> entity instanceof Player)) {
+            Player p = (Player) nearbyEntity;
+            Lobby lobby = BotBows.getLobby(p);
+            if (lobby == null) continue;
+            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+            if (bp != player) { // kun på andre players
+                p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, FloatSpellAbility.DURATION * 20, 1, false, false));
+            }
+        }
     }
 
     public static void animateChicken(Chicken chicken) {
