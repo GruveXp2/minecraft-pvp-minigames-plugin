@@ -30,8 +30,7 @@ public class AbilityListener implements Listener {
 
     public static HashMap<Arrow, BukkitTask> splashArrows = new HashMap<>();
 
-    @EventHandler
-    public void onAbilityUse(PlayerInteractEvent e) {
+    public static void onAbilityUse(PlayerInteractEvent e) {
         if (e.getItem() == null) return;
         Player p = e.getPlayer();
         Lobby lobby = BotBows.getLobby(p);
@@ -48,10 +47,24 @@ public class AbilityListener implements Listener {
         }
         BotBows.debugMessage("Ability gets used");
         switch (type) {
-            case ENDER_PEARL -> bp.getAbility(type).use();
+            case ENDER_PEARL, SHRINK, RADAR -> bp.getAbility(type).use();
             case WIND_CHARGE -> {
                 BotBows.debugMessage("Items in hand: " + abilityItem.getAmount());
                 bp.registerUsedAbilityItem(abilityItem.getAmount());
+            }
+            case FLOAT_SPELL -> {
+                bp.getAbility(type).use();
+
+                Chicken chicken = (Chicken) e.getClickedBlock().getWorld().spawnEntity(e.getClickedBlock().getLocation().add(0.5, 1, 0.5), EntityType.CHICKEN);
+                FloatSpellAbility.animateChicken(chicken);
+                ((FloatSpellAbility) bp.getAbility(type)).handleUsage(chicken);
+                // Reduce the item count (simulate spawn egg usage)
+                if (abilityItem.getAmount() > 1) {
+                    abilityItem.setAmount(abilityItem.getAmount() - 1);
+                } else {
+                    p.getInventory().remove(abilityItem);
+                }
+                e.setCancelled(true); // gjør sånn at det ikke spawnes 2 stykker
             }
         }
     }
@@ -80,26 +93,6 @@ public class AbilityListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerSpawnEntity(CreatureSpawnEvent e) {
-        if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG && e.getEntity() instanceof Chicken chicken) {
-            boolean isFloatSpellAbilityChicken = false;
-            for (Entity nearbyEntity : Main.WORLD.getNearbyEntities(chicken.getLocation(), 5, 5, 5, entity -> entity instanceof Player)) {
-                Player p = (Player) nearbyEntity;
-                Lobby lobby = BotBows.getLobby(p);
-                if (lobby == null) continue;
-                isFloatSpellAbilityChicken = true;
-                BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-                if (bp.isAbilityEquipped(AbilityType.FLOAT_SPELL) && !((FloatSpellAbility) bp.getAbility(AbilityType.FLOAT_SPELL)).isImmune()) {
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, FloatSpellAbility.DURATION * 20, 1, false, false));
-                }
-            }
-            if (isFloatSpellAbilityChicken) {
-                FloatSpellAbility.animateChicken(chicken);
-            }
-        }
-    }
-
-    @EventHandler
     public void onPotionAbilityUse(PlayerItemConsumeEvent e) {
         Player p = e.getPlayer();
         Lobby lobby = BotBows.getLobby(p);
@@ -113,22 +106,6 @@ public class AbilityListener implements Listener {
         }
         switch (type) {
             case SPEED_POTION, INVIS_POTION -> bp.getAbility(type).use();
-        }
-    }
-
-    public static void onPlayerRightClick(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        AbilityType type = AbilityType.fromItem(e.getItem());
-        if (type == null) return;
-        if (!lobby.isGameActive()) {
-            e.setCancelled(true); // kanke bruke abilities i lobbyen
-            return;
-        }
-        switch (type) {
-            case SHRINK, RADAR, FLOAT_SPELL -> bp.getAbility(type).use();
         }
     }
 

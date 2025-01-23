@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,9 +21,10 @@ public class RightClickListener implements Listener {
         }
 
         Player p = e.getPlayer();
-        switch (p.getInventory().getItemInMainHand().getType()) {
-            case COMPASS -> BotBows.gameMenu.open(p);
-            case REDSTONE, BELL -> AbilityListener.onPlayerRightClick(e);
+        if (p.getInventory().getItemInMainHand().getType() == Material.COMPASS) {
+            BotBows.gameMenu.open(p);
+        } else {
+            AbilityListener.onAbilityUse(e);
         }
     }
 }
