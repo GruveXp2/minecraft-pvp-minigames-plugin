@@ -159,7 +159,7 @@ public class Settings {
     public void setModPlayer(BotBowsPlayer p) {
         String first = modPlayer == null ? "" : "new ";
         modPlayer = p;
-        lobby.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the + " + first + "game mod", NamedTextColor.WHITE)));
+        lobby.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
     }
 
     public boolean playerIsMod(BotBowsPlayer p) {
