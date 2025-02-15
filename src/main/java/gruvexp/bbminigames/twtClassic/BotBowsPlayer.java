@@ -112,7 +112,7 @@ public class BotBowsPlayer {
     }
 
     public void useRadarAbility() {
-        team.getOppositeTeam().glow(4);
+        team.getOppositeTeam().glow(RadarAbility.DURATION);
     }
 
     public int getMaxHP() {return maxHP;}
