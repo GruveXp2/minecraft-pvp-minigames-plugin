@@ -86,7 +86,7 @@ public class BotBowsGame {
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
             q.revive();
-            q.readyAbilities();
+            q.initAbilities();
             boardManager.updatePlayerScore(q);
         }
         boardManager.updateTeamScores();
@@ -97,6 +97,7 @@ public class BotBowsGame {
         // alle har fullt med liv
         for (BotBowsPlayer p : players) {
             p.revive();
+            p.readyAbilities();
         }
         // teleporterer til spawn
         team1.tpPlayersToSpawn();

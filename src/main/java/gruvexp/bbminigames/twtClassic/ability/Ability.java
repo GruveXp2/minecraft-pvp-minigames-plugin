@@ -16,6 +16,7 @@ public abstract class Ability { // each player has some ability objects.
     private int effectiveCooldown;
 
     private final int hotBarSlot;
+    private CooldownTimer cooldownTimer;
 
     protected Ability(BotBowsPlayer player, int hotBarSlot) {
         this.player = player;
@@ -39,28 +40,16 @@ public abstract class Ability { // each player has some ability objects.
         return effectiveCooldown;
     }
 
+    public void resetCooldown() {
+        if (cooldownTimer != null) {
+            cooldownTimer.resetCooldown();
+        }
+    }
+
     public void use() {
         Inventory inv = player.player.getInventory();
-        new BukkitRunnable() {
-            int currentCooldown = effectiveCooldown;
-            ItemStack cooldownItem = getCooldownItem(currentCooldown);
-            @Override
-            public void run() {
-                switch (currentCooldown) {
-                    case 10 -> cooldownItem = type.getCooldownItems()[1].clone();
-                    case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
-                    case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
-                    case 0 -> {
-                        inv.setItem(hotBarSlot, type.getAbilityItem());
-                        cancel();
-                        return;
-                    }
-                }
-                cooldownItem.setAmount(currentCooldown);
-                inv.setItem(hotBarSlot, cooldownItem);
-                currentCooldown--;
-            }
-        }.runTaskTimer(Main.getPlugin(), 0L, 20L);
+        cooldownTimer = new CooldownTimer(inv);
+        cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, 20L);
     }
 
     private ItemStack getCooldownItem(int cooldown) {
@@ -72,6 +61,37 @@ public abstract class Ability { // each player has some ability objects.
             return type.getCooldownItems()[2].clone();
         } else {
             return type.getCooldownItems()[3].clone();
+        }
+    }
+
+    private class CooldownTimer extends BukkitRunnable {
+        int currentCooldown = effectiveCooldown;
+        ItemStack cooldownItem = getCooldownItem(currentCooldown);
+        private final Inventory inv;
+
+        private CooldownTimer(Inventory inv) {
+            this.inv = inv;
+        }
+
+        @Override
+        public void run() {
+            switch (currentCooldown) {
+                case 10 -> cooldownItem = type.getCooldownItems()[1].clone();
+                case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
+                case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
+                case 0 -> {
+                    inv.setItem(hotBarSlot, type.getAbilityItem());
+                    cancel();
+                    return;
+                }
+            }
+            cooldownItem.setAmount(currentCooldown);
+            inv.setItem(hotBarSlot, cooldownItem);
+            currentCooldown--;
+        }
+
+        public void resetCooldown() {
+            currentCooldown = 0;
         }
     }
 }

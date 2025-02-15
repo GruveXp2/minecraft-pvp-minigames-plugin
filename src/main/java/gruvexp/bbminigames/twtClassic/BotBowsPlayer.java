@@ -95,8 +95,12 @@ public class BotBowsPlayer {
         }
     }
 
-    public void readyAbilities() {
+    public void initAbilities() {
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
+    }
+
+    public void readyAbilities() {
+        abilities.values().forEach(ability -> ability.resetCooldown());
     }
 
     public void registerUsedAbilityItem(int abilityItemAmount) {
