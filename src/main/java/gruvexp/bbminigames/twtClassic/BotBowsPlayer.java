@@ -225,7 +225,8 @@ public class BotBowsPlayer {
         inv.setItem(abilities.get(type).getHotBarSlot(), null);
         inv.setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         abilities.remove(type);
-        player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(type.name(), NamedTextColor.LIGHT_PURPLE)));
+        String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
+        player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
     }
 
     public boolean isAbilityEquipped(AbilityType type) {
