@@ -3,6 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -39,7 +40,10 @@ public class JoinLeaveListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        BotBows.getLobby(p).leaveGame(p);
+        Lobby lobby = BotBows.getLobby(p);
+        if (lobby != null) {
+            lobby.leaveGame(p);
+        }
     }
 
 }
