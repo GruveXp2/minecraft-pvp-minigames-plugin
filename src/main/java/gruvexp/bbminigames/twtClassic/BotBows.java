@@ -110,7 +110,7 @@ public class BotBows {
                 material = Material.CYAN_CARPET;
                 BotBows.debugMessage("yee it works", b);
             } else if (((Light) block.getBlockData()).getLevel() == 1) {
-                return;
+                material = Material.YELLOW_CARPET;
             }
         }
         switch (material) { // add effekter basert på åssen blokk som er under
