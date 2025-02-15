@@ -128,7 +128,7 @@ public class HealthMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        healthSlider = new MenuSlider(inventory, 2, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"));
+        healthSlider = new MenuSlider(inventory, 2, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"), "Health");
         setPageButtons(2, true, true);
         setFillerVoid();
     }

@@ -162,9 +162,9 @@ public class HazardMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT);
-        earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT);
-        ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT);
+        stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT, "Storm chance");
+        earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT, "Earthquake chance");
+        ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT, "Ghost chance");
         setPageButtons(3, true, true);
         setFillerVoid();
     }

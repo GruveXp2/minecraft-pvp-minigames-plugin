@@ -19,20 +19,22 @@ public class MenuSlider {
     private static final Material EMPTY_TRACK_MATERIAL = Material.WHITE_STAINED_GLASS_PANE;
     private static final NamedTextColor EMPTY_TRACK_COLOR = NamedTextColor.WHITE;
     protected final List<String> sliderSteps;
+    protected final String description;
 
-    public MenuSlider(Inventory inventory, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps) {
+    public MenuSlider(Inventory inventory, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps, String description) {
         this.inventory = inventory;
         this.startSlot = startSlot;
         this.filledTrackMaterial = filledTrackMaterial;
         this.filledTrackColor = filledTrackColor;
         this.sliderSteps = sliderSteps;
+        this.description = description;
     }
 
     public void setProgressSlots(int slots) {
         slots = Math.min(slots, sliderSteps.size()); // Begrenser slots til sliderens størrelse
         for (int i = 0; i < sliderSteps.size(); i++) {
-            ItemStack is = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor))
-                    : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR));
+            ItemStack is = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), Component.text("Health"))
+                    : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR), Component.text(description));
             inventory.setItem(i + startSlot, is);
         }
     }
