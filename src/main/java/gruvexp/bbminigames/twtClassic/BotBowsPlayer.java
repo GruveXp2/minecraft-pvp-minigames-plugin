@@ -73,6 +73,7 @@ public class BotBowsPlayer {
         team.leave(this);
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().remove(BotBows.BOTBOW);
+        abilities.keySet().forEach(this::unequipAbility);
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
