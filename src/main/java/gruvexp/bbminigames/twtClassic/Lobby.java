@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Lobby {
 
@@ -94,7 +95,7 @@ public class Lobby {
 
     public void reset() {
         activeGame = false;
-        players.keySet().forEach(this::leaveGame);
+        new HashSet<>(players.keySet()).forEach(this::leaveGame);
     }
 
     public void messagePlayers(Component message) {
