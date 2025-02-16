@@ -232,7 +232,6 @@ public class BotBowsGame {
     }
 
     public void postGame(BotBowsTeam winningTeam) {
-        lobby.gameEnded();
         canMove = true;
         if (winningTeam == null) {
             lobby.messagePlayers(Component.text("================\n" +
@@ -260,6 +259,7 @@ public class BotBowsGame {
         stormHazard.end();
         earthquakeHazard.end();
         settings.abilityMenu.disableAbilities();
+        lobby.reset();
     }
 
     private void postGameTitle(BotBowsTeam winningTeam) {

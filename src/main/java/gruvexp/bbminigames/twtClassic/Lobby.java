@@ -92,8 +92,9 @@ public class Lobby {
         activeGame = true;
     }
 
-    public void gameEnded() {
+    public void reset() {
         activeGame = false;
+        players.keySet().forEach(this::leaveGame);
     }
 
     public void messagePlayers(Component message) {
