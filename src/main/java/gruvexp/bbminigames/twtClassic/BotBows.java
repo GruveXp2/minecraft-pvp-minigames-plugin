@@ -33,6 +33,9 @@ public class BotBows {
     public static GameMenu gameMenu;
     public static LobbyMenu lobbyMenu;
 
+    public static ItemStack MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE));
+    public static ItemStack SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE));
+
     public static void init() { // a
         gameMenu = new GameMenu();
         lobbyMenu = new LobbyMenu();
@@ -85,6 +88,19 @@ public class BotBows {
 
     public static void debugMessage(String message, boolean showMessage) {
         if (showMessage) debugMessage(message);
+    }
+
+    public static void accessSettings(Player p) {
+        Lobby lobby = BotBows.getLobby(p);
+        if (lobby == null) {
+            p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED));
+            return;
+        }
+        if (lobby.isGameActive()) {
+            p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
+            return;
+        }
+        BotBows.getLobby(p).settings.mapMenu.open(p);
     }
 
     public static void handleMovement(PlayerMoveEvent e) {

@@ -22,7 +22,7 @@ public class JoinLeaveListener implements Listener {
         if (p.getInventory().getItemInMainHand().getType() != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
             Main.WORLD.dropItem(p.getLocation(), p.getInventory().getItemInMainHand());
         }
-        p.getInventory().setItemInMainHand(Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE)));
+        p.getInventory().setItem(0, BotBows.MENU_ITEM);
         p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD));
         p.sendMessage(Component.text("To join a game, run ")
                 .append(Component.text("/menu ", NamedTextColor.AQUA))

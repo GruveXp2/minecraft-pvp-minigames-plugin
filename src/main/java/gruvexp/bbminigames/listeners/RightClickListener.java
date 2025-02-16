@@ -21,8 +21,10 @@ public class RightClickListener implements Listener {
         }
 
         Player p = e.getPlayer();
-        if (p.getInventory().getItemInMainHand().getType() == Material.COMPASS) {
+        if (p.getInventory().getItemInMainHand() == BotBows.MENU_ITEM) {
             BotBows.gameMenu.open(p);
+        } else if (p.getInventory().getItemInMainHand() == BotBows.SETTINGS_ITEM) {
+            BotBows.accessSettings(p);
         } else {
             AbilityListener.onAbilityUse(e);
         }

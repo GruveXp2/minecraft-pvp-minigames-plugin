@@ -40,6 +40,7 @@ public class Lobby {
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.registerPlayerLobby(p, this);
+        p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
     }
 
     public void leaveGame(Player p) {
