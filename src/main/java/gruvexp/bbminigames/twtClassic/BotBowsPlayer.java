@@ -227,7 +227,9 @@ public class BotBowsPlayer {
         if (!abilities.containsKey(type)) return;
 
         Inventory inv = player.getInventory();
-        inv.setItem(abilities.get(type).getHotBarSlot(), null);
+        Ability ability = abilities.get(type);
+        ability.resetCooldown();
+        inv.setItem(ability.getHotBarSlot(), null);
         inv.setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         abilities.remove(type);
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
