@@ -47,6 +47,7 @@ public abstract class Ability { // each player has some ability objects.
     }
 
     public void use() {
+        if (!player.lobby.botBowsGame.canMove) return;
         Inventory inv = player.player.getInventory();
         cooldownTimer = new CooldownTimer(inv);
         cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, 20L);
