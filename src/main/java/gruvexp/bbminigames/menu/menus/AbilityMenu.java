@@ -278,6 +278,8 @@ public class AbilityMenu extends SettingsMenu {
 
     public void disableAbilities() {
         abilityRow.hide();
+        maxAbilitiesRow.hide();
+        cooldownMultiplierRow.hide();
         inventory.setItem(8, ABILITIES_DISABLED);
         // fyller med gråe glassvinduer der settings var
         disableIndividualMaxAbilities();
