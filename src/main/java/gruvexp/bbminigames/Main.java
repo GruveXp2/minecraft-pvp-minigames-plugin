@@ -58,6 +58,8 @@ public final class Main extends JavaPlugin {
             if (lobby.isGameActive()) {
                 getLogger().info("Stopping active game...");
                 lobby.botBowsGame.endGame();
+            } else {
+                lobby.reset();
             }
         }
 
