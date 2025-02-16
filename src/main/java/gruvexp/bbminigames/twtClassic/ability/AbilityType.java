@@ -26,8 +26,6 @@ import java.util.List;
 
 public enum AbilityType {
 
-
-
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
             15, "CONCRETE"),
     WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
@@ -48,7 +46,8 @@ public enum AbilityType {
             15, "CONCRETE_POWDER"),
     FLOAT_SPELL(getFloatSpellItem(),
             10, "BUNDLE"),
-    LONG_ARMS(getLongHandsItem(),
+    LONG_ARMS(Menu.makeItem(Material.BARRIER, Component.text("Long arms"),
+            Component.text("Not implemented yet")),
             15, "WOOL");
 
     private final ItemStack abilityItem;
