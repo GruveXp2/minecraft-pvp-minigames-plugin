@@ -1,11 +1,11 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class RightClickListener implements Listener {
 
@@ -21,9 +21,10 @@ public class RightClickListener implements Listener {
         }
 
         Player p = e.getPlayer();
-        if (p.getInventory().getItemInMainHand() == BotBows.MENU_ITEM) {
+        ItemStack item = p.getInventory().getItemInMainHand();
+        if (item.isSimilar(BotBows.MENU_ITEM)) {
             BotBows.gameMenu.open(p);
-        } else if (p.getInventory().getItemInMainHand() == BotBows.SETTINGS_ITEM) {
+        } else if (item.isSimilar(BotBows.SETTINGS_ITEM)) {
             BotBows.accessSettings(p);
         } else {
             AbilityListener.onAbilityUse(e);
