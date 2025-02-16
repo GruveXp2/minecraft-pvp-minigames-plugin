@@ -103,7 +103,7 @@ public class BotBows {
             p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
             return;
         }
-        BotBows.getLobby(p).settings.mapMenu.open(p);
+        lobby.settings.mapMenu.open(p);
     }
 
     public static void handleMovement(PlayerMoveEvent e) {
