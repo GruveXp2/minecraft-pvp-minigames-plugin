@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
+import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.menu.menus.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -127,6 +128,8 @@ public class BotBows {
                 BotBows.debugMessage("yee it works", b);
             } else if (((Light) block.getBlockData()).getLevel() == 1) {
                 material = Material.YELLOW_CARPET;
+            } else if (((Light) block.getBlockData()).getLevel() == 2) {
+                material = Material.AIR;
             }
         }
         switch (material) { // add effekter basert på åssen blokk som er under
