@@ -37,6 +37,8 @@ public class BotBows {
     public static ItemStack MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE));
     public static ItemStack SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE));
 
+    public static int HIT_DISABLED_ITEM_TICKS = 40;
+
     public static void init() { // a
         gameMenu = new GameMenu();
         lobbyMenu = new LobbyMenu();

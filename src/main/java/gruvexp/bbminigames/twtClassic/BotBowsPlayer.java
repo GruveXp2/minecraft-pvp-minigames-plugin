@@ -101,7 +101,7 @@ public class BotBowsPlayer {
     }
 
     public void readyAbilities() {
-        abilities.values().forEach(ability -> ability.resetCooldown());
+        abilities.values().forEach(Ability::resetCooldown);
     }
 
     public void registerUsedAbilityItem(int abilityItemAmount) {
@@ -275,6 +275,7 @@ public class BotBowsPlayer {
             inv.setItem(i + 27, inv.getItem(i));
             inv.setItem(i, new ItemStack(Material.BARRIER));
         }
+        abilities.values().forEach(Ability::hit);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             player.setGlowing(false);
             player.setInvulnerable(false);
@@ -283,7 +284,7 @@ public class BotBowsPlayer {
                 inv.setItem(i, inv.getItem(i + 27));
                 inv.setItem(i + 27, new ItemStack(Material.RED_STAINED_GLASS_PANE));
             }
-        }, 40L); // 2 sekunder
+        }, BotBows.HIT_DISABLED_ITEM_TICKS);
     }
 
     public void die(Component deathMessage) { // gjør at spilleren dauer

@@ -1,12 +1,13 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public abstract class Ability { // each player has some ability objects.
+public abstract class Ability {
 
     protected final BotBowsPlayer player;
     protected AbilityType type;
@@ -43,6 +44,12 @@ public abstract class Ability { // each player has some ability objects.
     public void resetCooldown() {
         if (cooldownTimer != null) {
             cooldownTimer.resetCooldown();
+        }
+    }
+
+    public void hit() {
+        if (cooldownTimer != null) {
+            cooldownTimer.hit();
         }
     }
 
@@ -93,6 +100,10 @@ public abstract class Ability { // each player has some ability objects.
 
         public void resetCooldown() {
             currentCooldown = 0;
+        }
+
+        public void hit() { // when someone hits you with a bow, the cooldown wont go down until the damage cooldown is complete (when barrier blocks get removed)
+            currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20;
         }
     }
 }
