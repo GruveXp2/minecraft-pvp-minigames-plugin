@@ -295,7 +295,9 @@ public class BotBowsPlayer {
             player.setInvulnerable(false);
             isDamaged = false;
             for (int i = 0; i < 9; i++) { // flytter items tilbake
-                inv.setItem(i, inv.getItem(i + 27));
+                ItemStack item = inv.getItem(i + 27);
+                if (item != null && item.getType() == Material.RED_STAINED_GLASS) continue;
+                inv.setItem(i, item);
                 inv.setItem(i + 27, new ItemStack(Material.RED_STAINED_GLASS_PANE));
             }
         }, BotBows.HIT_DISABLED_ITEM_TICKS);
