@@ -29,6 +29,9 @@ public class Lobby {
             Component.text("The match will not start until youre ready"),
             Component.text("To ready up, right click this item"));
 
+    public static ItemStack LOADING = Menu.makeItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
+            Component.text("Please wait for your action to be processed"));
+
     public Lobby(int ID) {
         this.ID = ID;
         BotBows.lobbyMenu.updateLobbyItem(this);

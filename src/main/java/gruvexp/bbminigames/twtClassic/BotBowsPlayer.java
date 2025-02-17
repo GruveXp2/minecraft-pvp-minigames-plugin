@@ -375,7 +375,9 @@ public class BotBowsPlayer {
     public void setReady(boolean ready) {
         if (this.ready == ready) return;
         this.ready = ready;
-        player.getInventory().setItem(4, ready ? Lobby.READY : Lobby.NOT_READY);
+        player.getInventory().setItem(4, Lobby.LOADING);
+        // venter litt før itemet settes itilfelle noen spammer og bøgger det til
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(4, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
         lobby.handlePlayerReady(this);
     }
 }
