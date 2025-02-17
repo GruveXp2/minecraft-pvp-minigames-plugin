@@ -30,6 +30,7 @@ public class BotBowsPlayer {
     private int maxHP;
     private int attackDamage;
     private boolean isDamaged = false; // cooldown når playeren er hitta
+    private boolean ready = false; // om playeren er klar for å spille
     private static final List<List<Set<Integer>>> PLAYER_HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
 
     private int maxAbilities;
@@ -360,5 +361,15 @@ public class BotBowsPlayer {
         PLAYER_HEALTH_ARMOR.add(hp3);
         PLAYER_HEALTH_ARMOR.add(hp4);
         PLAYER_HEALTH_ARMOR.add(hp5);
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        if (this.ready == ready) return;
+        this.ready = ready;
+        lobby.handlePlayerReady(this);
     }
 }

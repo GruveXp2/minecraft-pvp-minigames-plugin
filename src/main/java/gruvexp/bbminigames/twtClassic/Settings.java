@@ -99,14 +99,8 @@ public class Settings {
     }
 
     public void joinGame(Player p) {
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        if (bp == null) {
-            bp = new BotBowsPlayer(p, this);
-            lobby.registerBotBowsPlayer(bp);
-        } else if (players.contains(bp)) {
-            mapMenu.open(p);
-            return;
-        }
+        BotBowsPlayer bp = new BotBowsPlayer(p, this);
+        lobby.registerBotBowsPlayer(bp);
         players.add(bp);
         if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
             team1.join(bp);

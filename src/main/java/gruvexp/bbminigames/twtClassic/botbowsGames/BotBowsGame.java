@@ -73,9 +73,7 @@ public class BotBowsGame {
         }
     }
 
-    public void startGame(Player gameStarter) {
-        lobby.messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
-                .append(Component.text("The game has started!", NamedTextColor.GREEN)));
+    public void startGame() {
         barManager.sneakBarInit();
         Cooldowns.CoolDownInit(players);
         boardManager.createBoard();

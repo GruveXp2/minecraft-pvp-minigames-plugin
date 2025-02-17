@@ -1,10 +1,13 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +20,14 @@ public class Lobby {
     public Settings settings;
     public BotBowsGame botBowsGame;
     private boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
+
+    public static ItemStack READY = Menu.makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Ready", NamedTextColor.GREEN),
+            Component.text("When everyone else is also ready, the match will start"),
+            Component.text("To unready, right click this item"));
+
+    public static ItemStack NOT_READY = Menu.makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Not Ready", NamedTextColor.RED),
+            Component.text("The match will not start until youre ready"),
+            Component.text("To ready up, right click this item"));
 
     public Lobby(int ID) {
         this.ID = ID;
@@ -42,6 +53,7 @@ public class Lobby {
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.registerPlayerLobby(p, this);
         p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
+        p.getInventory().setItem(4, NOT_READY);
     }
 
     public void leaveGame(Player p) {
@@ -85,11 +97,17 @@ public class Lobby {
             gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED));
             return;
         }
+        messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
+                .append(Component.text("The game has started!", NamedTextColor.GREEN)));
+        startGame();
+    }
+
+    private void startGame() {
         botBowsGame = switch (settings.currentMap) {
             case ICY_RAVINE -> new GrautWackyGame(settings);
             default -> new BotBowsGame(settings);
         };
-        botBowsGame.startGame(gameStarter);
+        botBowsGame.startGame();
         activeGame = true;
     }
 
@@ -120,5 +138,19 @@ public class Lobby {
 
     public boolean isGameActive() {
         return activeGame;
+    }
+
+    public void handlePlayerReady(BotBowsPlayer p) {
+        boolean ready = p.isReady();
+        long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
+        int totalPlayers = players.size();
+
+        messagePlayers(Component.text(p.player.getName() +
+                (ready ? " has readied up " : " is no longer ready ") +
+                "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
+        if (readyPlayers == totalPlayers && settings.team1.isEmpty() || settings.team2.isEmpty()) {
+            messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN));
+            startGame();
+        }
     }
 }

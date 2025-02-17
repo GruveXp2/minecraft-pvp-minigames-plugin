@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +28,12 @@ public class RightClickListener implements Listener {
             BotBows.gameMenu.open(p);
         } else if (item.isSimilar(BotBows.SETTINGS_ITEM)) {
             BotBows.accessSettings(p);
+        } else if (item.isSimilar(Lobby.NOT_READY)) {
+            BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
+            bp.setReady(true);
+        } else if (item.isSimilar(Lobby.READY)) {
+            BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
+            bp.setReady(false);
         } else {
             AbilityListener.onAbilityUse(e);
         }
