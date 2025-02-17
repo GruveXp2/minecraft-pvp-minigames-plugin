@@ -259,7 +259,7 @@ public class BotBowsPlayer {
     public void handleHit(BotBowsPlayer attacker, TextComponent hitActionMessage) {
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
-                    .append(Component.text(" was sniped by "))
+                    .append(hitActionMessage)
                     .append(attacker.player.name().color(attacker.team.color))
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
