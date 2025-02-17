@@ -34,8 +34,8 @@ public class GrautWackyGame extends BotBowsGame {
     }
 
     @Override
-    public void startGame(Player gameStarter) {
-        super.startGame(gameStarter);
+    public void startGame() {
+        super.startGame();
         initDungeon();
     }
 
