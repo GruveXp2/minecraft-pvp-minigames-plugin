@@ -167,7 +167,7 @@ public class AbilityMenu extends SettingsMenu {
                 p.toggleAbilityToggle();
             }
             case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
-            case AIR -> {
+            case AIR -> { // clicked WITH ability in cursor
                 ItemStack cursorItem = e.getCursor();
                 if (cursorItem.getType() == Material.AIR) return;
                 AbilityType type = AbilityType.fromItem(cursorItem);
@@ -179,6 +179,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
                 if (e.getSlot() > 8 || e.getSlot() == 0) {
                     BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet", TestCommand.test2);
+                    clicker.setItemOnCursor(null);
                     return;
                 }
                 BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
@@ -189,7 +190,7 @@ public class AbilityMenu extends SettingsMenu {
                 e.setCancelled(false);
                 p.equipAbility(e.getSlot(), type);
             }
-            default -> {
+            default -> { // clicked ON ability in inventory
                 AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
                 if (abilityType == null) return;
                 BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
