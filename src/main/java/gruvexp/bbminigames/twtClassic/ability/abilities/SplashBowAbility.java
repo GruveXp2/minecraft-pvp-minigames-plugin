@@ -45,14 +45,17 @@ public class SplashBowAbility extends Ability {
     public static class ArrowTrailGenerator extends BukkitRunnable {
 
         private final Arrow arrow;
+        private final Color color;
 
-        public ArrowTrailGenerator(Arrow arrow) {
+        public ArrowTrailGenerator(Arrow arrow, Color color) {
             this.arrow = arrow;
+            this.color = color;
         }
 
         @Override
         public void run() {
-            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 1, 1, 1, 0.1, new Particle.DustOptions(Color.RED, 1));  // Red color
+            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0, 0, 0, 0.1, new Particle.DustOptions(Color.RED, 10));  // Red color
+            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 20, 1, 1, 1, 0.1, new Particle.DustOptions(color, 3));  // Red color
         }
     }
 }
