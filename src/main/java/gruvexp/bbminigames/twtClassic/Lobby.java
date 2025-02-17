@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
@@ -73,6 +74,10 @@ public class Lobby {
         players.remove(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.unRegisterPlayerLobby(p);
+        Inventory inv = p.getInventory();
+        for (int i = 1; i < 9; i++) {
+            inv.setItem(i, null); // fjerner abilities
+        }
     }
 
     public boolean isPlayerJoined(Player p) {
