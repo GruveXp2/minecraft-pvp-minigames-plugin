@@ -73,7 +73,7 @@ public class BotBowsPlayer {
         team.leave(this);
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().remove(BotBows.BOTBOW);
-        abilities.keySet().forEach(this::unequipAbility);
+        abilities.keySet().forEach(p -> unequipAbility(p, true));
         player.getInventory().setItem(0, BotBows.MENU_ITEM);
     }
 
@@ -224,6 +224,10 @@ public class BotBowsPlayer {
     }
 
     public void unequipAbility(AbilityType type) {
+        unequipAbility(type, false);
+    }
+
+    public void unequipAbility(AbilityType type, boolean hideMessage) {
         if (!abilities.containsKey(type)) return;
 
         Inventory inv = player.getInventory();
@@ -233,7 +237,9 @@ public class BotBowsPlayer {
         inv.setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
         abilities.remove(type);
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
-        player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+        if (!hideMessage) {
+            player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+        }
     }
 
     public boolean isAbilityEquipped(AbilityType type) {
