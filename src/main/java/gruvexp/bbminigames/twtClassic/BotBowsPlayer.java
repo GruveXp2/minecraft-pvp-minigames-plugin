@@ -97,8 +97,9 @@ public class BotBowsPlayer {
         }
     }
 
-    public void initAbilities() {
+    public void initBattle() {
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
+        player.getInventory().setItem(4, null); // fjerner ready item
     }
 
     public void readyAbilities() {

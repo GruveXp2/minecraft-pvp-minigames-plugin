@@ -16,7 +16,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.time.Duration;
@@ -84,7 +83,7 @@ public class BotBowsGame {
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
             q.revive();
-            q.initAbilities();
+            q.initBattle();
             boardManager.updatePlayerScore(q);
         }
         boardManager.updateTeamScores();
