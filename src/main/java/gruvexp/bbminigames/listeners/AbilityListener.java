@@ -97,7 +97,7 @@ public class AbilityListener implements Listener {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (!bp.isAbilityEquipped(AbilityType.SPLASH_BOW)) return;
                 arrow.setColor(Color.RED);
-                BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskLater(Main.getPlugin(), 1L);
+                BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
                 splashArrows.put(arrow, arrowTrail);
                 bp.getAbility(AbilityType.SPLASH_BOW).use();
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
