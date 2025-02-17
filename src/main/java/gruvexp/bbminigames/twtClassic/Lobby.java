@@ -143,12 +143,12 @@ public class Lobby {
     public void handlePlayerReady(BotBowsPlayer p) {
         boolean ready = p.isReady();
         long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
-        int totalPlayers = players.size();
+        int totalPlayers = Math.max(players.size(), 2);
 
         messagePlayers(Component.text(p.player.getName() +
                 (ready ? " has readied up " : " is no longer ready ") +
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
-        if (readyPlayers == totalPlayers && settings.team1.isEmpty() || settings.team2.isEmpty()) {
+        if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {
             messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN));
             startGame();
         }
