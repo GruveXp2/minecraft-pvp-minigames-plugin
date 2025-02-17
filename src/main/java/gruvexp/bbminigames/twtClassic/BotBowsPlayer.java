@@ -281,6 +281,10 @@ public class BotBowsPlayer {
         isDamaged = true;
         PlayerInventory inv = player.getInventory();
         for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
+            if (inv.getItem(i) == null) return;
+            AbilityType abilityType = AbilityType.fromItem(inv.getItem(i));
+            if (abilityType != null && !abilityType.isDamaging) return;
+
             inv.setItem(i + 27, inv.getItem(i));
             inv.setItem(i, new ItemStack(Material.BARRIER));
         }

@@ -27,32 +27,33 @@ import java.util.List;
 public enum AbilityType {
 
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
-            15, "CONCRETE"),
+            15, "CONCRETE", false),
     WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
-            15, "DYE"),
+            15, "DYE", false),
     SPEED_POTION(makePotion(PotionType.SWIFTNESS),
-            25, "CANDLE"),
+            25, "CANDLE", false),
     INVIS_POTION(makePotion(PotionType.INVISIBILITY),
-            25, "CANDLE"),
+            25, "CANDLE", false),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
             getDurationComponent(5)),
-            20, "BUNDLE"),
+            20, "BUNDLE", false),
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of the enemy team by making them glow"),
             getDurationComponent(4)),
-            30, "BANNER"),
+            30, "BANNER", false),
     SPLASH_BOW(makeSplashBow(),
-            15, "CONCRETE_POWDER"),
+            15, "CONCRETE_POWDER", true),
     FLOAT_SPELL(getFloatSpellItem(),
-            10, "BUNDLE"),
+            10, "BUNDLE", false),
     LONG_ARMS(Menu.makeItem(Material.BARRIER, Component.text("Long arms"),
             Component.text("Not implemented yet")),
-            15, "WOOL");
+            15, "WOOL", true);
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
     private final int baseCooldown;
+    public final boolean isDamaging;
 
     private static final AttributeModifier extraRangeModifier = new AttributeModifier(
             new NamespacedKey(Main.getPlugin(), "extra_range"),
@@ -60,9 +61,10 @@ public enum AbilityType {
             AttributeModifier.Operation.ADD_NUMBER
     );
 
-    AbilityType(ItemStack item, int baseCooldown, String cooldownItemType) {
+    AbilityType(ItemStack item, int baseCooldown, String cooldownItemType, boolean isDamaging) {
         this.abilityItem = item;
         this.baseCooldown = baseCooldown;
+        this.isDamaging = isDamaging;
         Material red = Material.getMaterial("RED_" + cooldownItemType);
         Material orange = Material.getMaterial("ORANGE_" + cooldownItemType);
         Material yellow = Material.getMaterial("YELLOW_" + cooldownItemType);
