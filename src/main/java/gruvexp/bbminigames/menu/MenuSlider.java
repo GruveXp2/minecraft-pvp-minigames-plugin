@@ -33,7 +33,7 @@ public class MenuSlider {
     public void setProgressSlots(int slots) {
         slots = Math.min(slots, sliderSteps.size()); // Begrenser slots til sliderens størrelse
         for (int i = 0; i < sliderSteps.size(); i++) {
-            ItemStack is = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), Component.text("Health"))
+            ItemStack is = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), Component.text(description))
                     : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR), Component.text(description));
             inventory.setItem(i + startSlot, is);
         }
