@@ -374,6 +374,7 @@ public class BotBowsPlayer {
     public void setReady(boolean ready) {
         if (this.ready == ready) return;
         this.ready = ready;
+        player.getInventory().setItem(4, ready ? Lobby.READY : Lobby.NOT_READY);
         lobby.handlePlayerReady(this);
     }
 }
