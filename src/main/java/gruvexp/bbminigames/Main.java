@@ -30,7 +30,7 @@ public final class Main extends JavaPlugin {
         PLUGIN = this;
         getLogger().info("BotBows plugin enabled!");
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
-        getServer().getPluginManager().registerEvents(new HitListener(), this);
+        getServer().getPluginManager().registerEvents(new DamageListener(), this);
         getServer().getPluginManager().registerEvents(new MovementListener(), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(), this);
         getServer().getPluginManager().registerEvents(new RightClickListener(), this);

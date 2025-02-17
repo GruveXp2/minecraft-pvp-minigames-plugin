@@ -3,6 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -10,9 +11,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class HitListener implements Listener {
+public class DamageListener implements Listener {
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
@@ -48,6 +50,19 @@ public class HitListener implements Listener {
             if (!BotBows.isPlayerJoined(defender)) {
                 e.setCancelled(true); // cant damage ingame players without bow
             }// entitien som utførte damag
+        }
+    }
+
+    @EventHandler
+    public void onDamaged(EntityDamageEvent e) {
+        if (e.getEntity() instanceof Player p && (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION)) {
+            Lobby lobby = BotBows.getLobby(p);
+            if (lobby == null) return;
+            p.teleport(p.getLocation().add(0, 1, 0));
+            e.setCancelled(true);
+        } else if (e.getCause() == EntityDamageEvent.DamageCause.CAMPFIRE ||
+                e.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
+            e.setCancelled(true);
         }
     }
 }
