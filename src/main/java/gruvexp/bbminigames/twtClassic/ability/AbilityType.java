@@ -43,7 +43,7 @@ public enum AbilityType {
             getDurationComponent(4)),
             30, "BANNER", AbilityCategory.UTILITY),
     SPLASH_BOW(makeSplashBow(),
-            15, "CONCRETE_POWDER", AbilityCategory.DAMAGING),
+            0, "CONCRETE_POWDER", AbilityCategory.DAMAGING),
     FLOAT_SPELL(getFloatSpellItem(),
             10, "BUNDLE", AbilityCategory.UTILITY),
     LONG_ARMS(Menu.makeItem(Material.BARRIER, Component.text("Long arms"),
