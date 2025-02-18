@@ -26,7 +26,11 @@ public class AbilityMenuRow extends MenuRow {
     public int getAbilitySlot(AbilityType type) {
         ItemStack abilityItem = type.getAbilityItem();
         for (int i = 0; i < itemList.size(); i++) {
-            if (itemList.get(i).isSimilar(abilityItem)) return i - firstVisibleItem;
+            if (itemList.get(i).isSimilar(abilityItem)) {
+                int slot = i - firstVisibleItem;
+                if (currentPage > 1) slot++;
+                return slot;
+            }
         }
         return -1;
     }
