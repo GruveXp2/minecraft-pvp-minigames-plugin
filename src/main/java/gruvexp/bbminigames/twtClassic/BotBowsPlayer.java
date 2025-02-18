@@ -75,7 +75,7 @@ public class BotBowsPlayer {
         team.leave(this);
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().remove(BotBows.BOTBOW);
-        abilities.keySet().forEach(p -> unequipAbility(p, true));
+        new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
         player.getInventory().setItem(0, BotBows.MENU_ITEM);
     }
 
