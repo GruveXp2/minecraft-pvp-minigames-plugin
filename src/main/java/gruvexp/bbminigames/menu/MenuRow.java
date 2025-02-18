@@ -45,11 +45,13 @@ public class MenuRow {
     }
 
     public void nextPage() {
-        goTo(currentPage++);
+        currentPage++;
+        goTo(currentPage);
     }
 
     public void prevPage() {
-        goTo(currentPage--);
+        currentPage--;
+        goTo(currentPage);
     }
 
     public void updatePage() {
