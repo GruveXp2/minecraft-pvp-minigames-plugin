@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
+import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
@@ -284,7 +285,7 @@ public class BotBowsPlayer {
         for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
             if (inv.getItem(i) == null) continue;
             AbilityType abilityType = AbilityType.fromItem(inv.getItem(i));
-            if (abilityType != null && !abilityType.isDamaging) continue;
+            if (abilityType != null && abilityType.category != AbilityCategory.DAMAGING) continue;
 
             inv.setItem(i + 27, inv.getItem(i));
             inv.setItem(i, new ItemStack(Material.BARRIER));
