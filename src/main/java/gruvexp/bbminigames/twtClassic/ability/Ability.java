@@ -43,8 +43,14 @@ public abstract class Ability {
 
     public void resetCooldown() {
         if (cooldownTimer != null) {
-            cooldownTimer.resetCooldown();
+            cooldownTimer.cancel();
         }
+    }
+
+    public void obtain() {
+        resetCooldown();
+        Inventory inv = player.player.getInventory();
+        inv.setItem(hotBarSlot, type.getAbilityItem());
     }
 
     public void hit() {
@@ -56,8 +62,12 @@ public abstract class Ability {
     public void use() {
         if (!player.lobby.botBowsGame.canMove) return;
         Inventory inv = player.player.getInventory();
-        cooldownTimer = new CooldownTimer(inv);
-        cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, 20L);
+        if (baseCooldown > 0) {
+            cooldownTimer = new CooldownTimer(inv);
+            cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, 20L);
+        } else {
+            inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
+        }
     }
 
     private ItemStack getCooldownItem(int cooldown) {
@@ -88,18 +98,13 @@ public abstract class Ability {
                 case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
                 case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
                 case 0 -> {
-                    inv.setItem(hotBarSlot, type.getAbilityItem());
-                    cancel();
+                    obtain();
                     return;
                 }
             }
             cooldownItem.setAmount(currentCooldown);
             inv.setItem(hotBarSlot, cooldownItem);
             currentCooldown--;
-        }
-
-        public void resetCooldown() {
-            currentCooldown = 0;
         }
 
         public void hit() { // when someone hits you with a bow, the cooldown wont go down until the damage cooldown is complete (when barrier blocks get removed)

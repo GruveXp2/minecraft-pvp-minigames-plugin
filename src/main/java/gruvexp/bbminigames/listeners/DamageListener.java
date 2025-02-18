@@ -4,6 +4,7 @@ import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -32,6 +33,9 @@ public class DamageListener implements Listener {
             }
             e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferig
             defenderBp.handleHit(attackerBp, Component.text(" was sniped by "));
+            if (attackerBp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
+                attackerBp.getAbility(AbilityType.SPLASH_BOW).obtain();
+            }
         } else {
             if (!(e.getEntity() instanceof Player defender)) {return;} // den som blei hitta
             if (e.getDamager() instanceof Player attacker) {

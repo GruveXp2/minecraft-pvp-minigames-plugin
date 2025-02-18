@@ -104,7 +104,7 @@ public class BotBowsPlayer {
     }
 
     public void readyAbilities() {
-        abilities.values().forEach(Ability::resetCooldown);
+        abilities.values().forEach(Ability::obtain);
     }
 
     public void registerUsedAbilityItem(int abilityItemAmount) {
