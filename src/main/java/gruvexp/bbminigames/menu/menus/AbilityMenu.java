@@ -158,6 +158,10 @@ public class AbilityMenu extends SettingsMenu {
                     settings.hazardMenu.open(clicker);
                 } else if (e.getSlot() == 49) {
                     clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
+                } else if (e.getSlot() == 37) {
+                    abilityRow.prevPage();
+                } else if (e.getSlot() == 44) {
+                    abilityRow.nextPage();
                 }
             }
             case MACE -> {
@@ -231,7 +235,10 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void handleMenuClose(InventoryCloseEvent e) {
-        Player p = (Player) e.getPlayer();
+        handleMenuClose((Player) e.getPlayer());
+    }
+
+    public void handleMenuClose(Player p) {
         Inventory inv = p.getInventory();
         for (int i = 9; i < 18; i++) { // fjerner menu overlay greier
             if (inv.getItem(i) != null && inv.getItem(i).getType() == Material.FIREWORK_STAR) {
@@ -248,7 +255,7 @@ public class AbilityMenu extends SettingsMenu {
                 List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"), "Cooldown multiplier");
         maxAbilitiesRow = new PlayerMenuRow(inventory, 2, 5);
         cooldownMultiplierRow = new PlayerMenuRow(inventory, 20, 7);
-        abilityRow = new AbilityMenuRow(inventory, 37, 8);
+        abilityRow = new AbilityMenuRow(inventory, 37, 8, this);
         setFillerVoid();
     }
     
@@ -353,11 +360,25 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateAbilityStatus(AbilityType type) {
-        int index = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
+        int slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
         if (settings.abilityAllowed(type)) {
-            inventory.setItem(index - 9, VOID);
+            inventory.setItem(slot - 9, VOID);
         } else {
-            inventory.setItem(index - 9, ABILITY_DISABLED);
+            inventory.setItem(slot - 9, ABILITY_DISABLED);
+        }
+    }
+    
+    public void updateAbilityStatuses() {
+        for (int i = 0; i < abilityRow.getSize(); i++) {
+            int abilitySlot = abilityRow.startSlot + i;
+            ItemStack abilityItem = inventory.getItem(abilitySlot);
+            AbilityType abilityType = AbilityType.fromItem(abilityItem);
+            if (abilityType == null) continue;
+            if (settings.abilityAllowed(abilityType)) {
+                inventory.setItem(abilitySlot - 9, VOID);
+            } else {
+                inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
+            }
         }
     }
 
