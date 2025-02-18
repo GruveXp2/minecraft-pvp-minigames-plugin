@@ -39,7 +39,7 @@ public class TeamsMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         // if you click on a player then they change teams
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {

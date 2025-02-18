@@ -63,7 +63,7 @@ public class MapMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);

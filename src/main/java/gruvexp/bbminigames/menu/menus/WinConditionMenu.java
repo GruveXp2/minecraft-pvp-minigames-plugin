@@ -39,7 +39,7 @@ public class WinConditionMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker)) && !clickedOnBottomButtons(e)) return;
+        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
         int slot = e.getSlot();
         switch (e.getCurrentItem().getType()) {
             case RED_STAINED_GLASS_PANE -> {
