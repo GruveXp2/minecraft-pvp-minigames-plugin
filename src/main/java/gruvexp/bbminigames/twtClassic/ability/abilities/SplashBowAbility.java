@@ -54,8 +54,8 @@ public class SplashBowAbility extends Ability {
 
         @Override
         public void run() {
-            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0, 0, 0, 0.1, new Particle.DustOptions(Color.RED, 10));  // Red color
-            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 20, 1, 1, 1, 0.1, new Particle.DustOptions(color, 3));  // Red color
+            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.1, new Particle.DustOptions(Color.RED, 3), true);
+            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 20, 0.5, 0.5, 0.5, 0.4, new Particle.DustOptions(color, 2), true);
         }
     }
 }
