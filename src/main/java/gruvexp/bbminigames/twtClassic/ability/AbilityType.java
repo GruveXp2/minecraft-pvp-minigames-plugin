@@ -85,6 +85,7 @@ public enum AbilityType {
     }
 
     public static AbilityType fromItem(ItemStack item) {
+        if (item == null) return null;
         for (AbilityType ability : values()) {
             BotBows.debugMessage("\nability: " + ability.name(), TestCommand.test2);
             ItemStack abilityItem = ability.getAbilityItem();

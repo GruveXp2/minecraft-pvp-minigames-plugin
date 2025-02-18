@@ -220,7 +220,11 @@ public class BotBowsPlayer {
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
             case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
         }
-        player.getInventory().setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, AbilityMenu.ABILITY_EQUIPPED);
+        int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
+        if (relativeAbilitySlot > 0) {
+            player.getInventory().setItem(relativeAbilitySlot + 9, AbilityMenu.ABILITY_EQUIPPED);
+            BotBows.debugMessage("Setting equip item at " + relativeAbilitySlot);
+        }
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
@@ -237,7 +241,10 @@ public class BotBowsPlayer {
         Ability ability = abilities.get(type);
         ability.resetCooldown();
         inv.setItem(ability.getHotBarSlot(), null);
-        inv.setItem(lobby.settings.abilityMenu.getRelativeAbilitySlot(type) + 9, null);
+        int abilityEquipSlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
+        if (abilityEquipSlot > 0) {
+            inv.setItem(abilityEquipSlot + 9, null);
+        }
         abilities.remove(type);
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         if (!hideMessage) {

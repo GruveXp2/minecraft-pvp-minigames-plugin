@@ -11,7 +11,7 @@ public class MenuRow {
     protected final Inventory inventory;
     public final int startSlot; // slotten i inventoriet som man begynner på
     protected final List<ItemStack> itemList = new ArrayList<>();
-    protected final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
+    public final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
     protected int currentPage = 1; // åssen side man er på nå
     protected boolean isVisible = false;
     protected int firstVisibleItem = 0;
@@ -21,10 +21,6 @@ public class MenuRow {
         this.inventory = inventory;
         this.startSlot = startSlot;
         this.size = size;
-    }
-
-    public int getSize() {
-        return size;
     }
 
     public int getStartSlot() {

@@ -271,7 +271,12 @@ public class AbilityMenu extends SettingsMenu {
         }
         BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
         bp.disableAbilityToggle();
-        bp.getAbilities().forEach(ability -> inv.setItem(9 + getRelativeAbilitySlot(ability.getType()), ABILITY_EQUIPPED));
+        bp.getAbilities().forEach(ability ->  {
+            int abilityEquipSlot = getRelativeAbilitySlot(ability.getType());
+            if (abilityEquipSlot > 0) {
+                inv.setItem(abilityEquipSlot + 9, ABILITY_EQUIPPED);
+            }
+        });
     }
 
     public void enableAbilities() {
@@ -369,12 +374,11 @@ public class AbilityMenu extends SettingsMenu {
     }
     
     public void updateAbilityStatuses() {
-        for (int i = 0; i < abilityRow.getSize(); i++) {
+        for (int i = 0; i < abilityRow.size; i++) {
             int abilitySlot = abilityRow.startSlot + i;
             ItemStack abilityItem = inventory.getItem(abilitySlot);
             AbilityType abilityType = AbilityType.fromItem(abilityItem);
-            if (abilityType == null) continue;
-            if (settings.abilityAllowed(abilityType)) {
+            if (abilityType == null || settings.abilityAllowed(abilityType)) {
                 inventory.setItem(abilitySlot - 9, VOID);
             } else {
                 inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
@@ -382,8 +386,10 @@ public class AbilityMenu extends SettingsMenu {
         }
     }
 
-    public int getRelativeAbilitySlot(AbilityType type) { // åssen rad det er, 0-9
-        return abilityRow.getAbilitySlot(type) + 1;
+    public int getRelativeAbilitySlot(AbilityType type) { // åssen rad det er, 0-9. negative verdier hvis det er på feil side
+        int slot = abilityRow.getAbilitySlot(type) + 1;
+        if (slot > abilityRow.size) return -1;
+        return slot;
     }
 
     public void addPlayer(BotBowsPlayer p) {

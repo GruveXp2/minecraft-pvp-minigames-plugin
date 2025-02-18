@@ -37,7 +37,6 @@ public class AbilityMenuRow extends MenuRow {
 
     protected void goTo(int page) {
         super.goTo(page);
-        if (page == currentPage) return;
         menu.updateAbilityStatuses();
         for (HumanEntity viewer : inventory.getViewers()) {
             Player p = (Player) viewer;
