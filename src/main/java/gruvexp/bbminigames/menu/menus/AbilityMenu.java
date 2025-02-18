@@ -199,7 +199,7 @@ public class AbilityMenu extends SettingsMenu {
                     settings.toggleAbility(abilityType);
                 } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
                     if (settings.abilityAllowed(abilityType)) {
-                        if (p.isAbilityEquipped(abilityType)) {
+                        if (p.hasAbilityEquipped(abilityType)) {
                             p.unequipAbility(abilityType);
                         } else {
                             if (e.getSlot() > 36 && e.getSlot() < 45) {

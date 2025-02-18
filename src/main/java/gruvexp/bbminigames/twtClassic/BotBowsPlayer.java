@@ -164,7 +164,7 @@ public class BotBowsPlayer {
             int excess = getTotalAbilities() - maxAbilities;
             for (int i = 0; i < excess; i++) {
                 for (AbilityType type : AbilityType.values()) {
-                    if (isAbilityEquipped(type)) {
+                    if (hasAbilityEquipped(type)) {
                         unequipAbility(type);
                         break;
                     }
@@ -245,7 +245,7 @@ public class BotBowsPlayer {
         }
     }
 
-    public boolean isAbilityEquipped(AbilityType type) {
+    public boolean hasAbilityEquipped(AbilityType type) {
         return abilities.containsKey(type);
     }
 

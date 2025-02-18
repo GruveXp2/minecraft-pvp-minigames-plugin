@@ -90,12 +90,12 @@ public class AbilityListener implements Listener {
         if (lobby == null) return;
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
         if (e.getEntity() instanceof WindCharge) {
-            if (!bp.isAbilityEquipped(AbilityType.WIND_CHARGE)) return;
+            if (!bp.hasAbilityEquipped(AbilityType.WIND_CHARGE)) return;
             if (bp.getUsedAbilityItemAmount() != 1) return;
             bp.getAbility(AbilityType.WIND_CHARGE).use();
         } else if (e.getEntity() instanceof Arrow arrow) {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                if (!bp.isAbilityEquipped(AbilityType.SPLASH_BOW)) return;
+                if (!bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) return;
                 arrow.setColor(Color.RED);
                 BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
                 splashArrows.put(arrow, arrowTrail);
@@ -131,7 +131,7 @@ public class AbilityListener implements Listener {
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
         AbilityType type = AbilityType.fromItem(e.getItemDrop().getItemStack());
         if (type == null) return;
-        if (!bp.isAbilityEquipped(type)) return; // kan droppe itemet hvis det ikke var equippa
+        if (!bp.hasAbilityEquipped(type)) return; // kan droppe itemet hvis det ikke var equippa
         e.setCancelled(true); // kanke droppe ability items
     }
 
