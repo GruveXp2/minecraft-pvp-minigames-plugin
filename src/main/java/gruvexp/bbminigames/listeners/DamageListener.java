@@ -48,7 +48,7 @@ public class DamageListener implements Listener {
                     e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
                     return;
                 } else {
-                    AbilityListener.onSlap(attacker, defender, weapon);
+                    AbilityListener.onSlap(e, attacker, defender, weapon);
                 }
             }
             if (!BotBows.isPlayerJoined(defender)) {

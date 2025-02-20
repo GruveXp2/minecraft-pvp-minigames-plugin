@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -38,9 +39,9 @@ public class AbilityListener implements Listener {
         ItemStack abilityItem = e.getItem();
         AbilityType type = AbilityType.fromItem(abilityItem);
         if (type == null) return;
-        BotBows.debugMessage("Used ability: " + type.name());
+        //BotBows.debugMessage("Used ability: " + type.name());
         if (!lobby.isGameActive()) {
-            BotBows.debugMessage("Game is not active: cancelling");
+            //BotBows.debugMessage("Game is not active: cancelling");
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;
         }
@@ -69,18 +70,18 @@ public class AbilityListener implements Listener {
         }
     }
 
-    public static void onSlap(Player attacker, Player defender, ItemStack weapon) {
+    public static void onSlap(EntityDamageByEntityEvent e, Player attacker, Player defender, ItemStack weapon) {
         Lobby lobby = BotBows.getLobby(attacker);
         if (lobby == null) return;
         BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
         BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
         if (defenderBp == null) return;
         AbilityType type = AbilityType.fromItem(weapon);
-        if (type == null) return;
         if (type == AbilityType.LONG_ARMS) {
             attackerBp.getAbility(type).use();
             defenderBp.handleHit(attackerBp, Component.text(" was slapped by "));
         }
+        e.setCancelled(true);
     }
 
     @EventHandler
