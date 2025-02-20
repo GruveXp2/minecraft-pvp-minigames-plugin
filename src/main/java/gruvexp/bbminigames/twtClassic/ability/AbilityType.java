@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.ability.abilities.BabyPotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,8 @@ public enum AbilityType {
     SPEED_POTION(makePotion(PotionType.SWIFTNESS),
             25, "CANDLE", AbilityCategory.POTION),
     INVIS_POTION(makePotion(PotionType.INVISIBILITY),
+            25, "CANDLE", AbilityCategory.POTION),
+    BABY_POTION(makeBabyPotion(),
             25, "CANDLE", AbilityCategory.POTION),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
@@ -141,6 +145,20 @@ public enum AbilityType {
         };
         meta.customName(Component.text(name));
         meta.lore(List.of(getDurationComponent(5)));
+
+        potion.setItemMeta(meta);
+        return potion;
+    }
+
+    private static ItemStack makeBabyPotion() {
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotionAbility.DURATION * 20, 4), true);
+        meta.customName(Component.text("Baby Potion"));
+        meta.lore(List.of(Component.text("2x Speed", NamedTextColor.BLUE),
+                Component.text("0.5 Size", NamedTextColor.BLUE),
+                getDurationComponent(10)));
 
         potion.setItemMeta(meta);
         return potion;
