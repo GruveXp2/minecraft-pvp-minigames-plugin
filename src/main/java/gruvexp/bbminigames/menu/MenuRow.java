@@ -77,7 +77,7 @@ public class MenuRow {
             inventory.setItem(startSlot + size - 1, Menu.NEXT);
             return;
         }
-        firstVisibleItem = size + (size - 2)*(page - 2); // første element på den sida
+        firstVisibleItem = size - 1 + (size - 2)*(page - 2); // første element på den sida
         setItem(0, Menu.PREV); // en prev knapp først, deretter fylles rada opp bortsett fra den siste hvis det er en midtside, da blir det en next på slutten
         for (int i = 0; i < size - 2; i++) {
             int targetSlot = 1 + i; // begynner på slot 2 pga nr 1 er for PREV knappen
