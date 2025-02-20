@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+ import org.bukkit.util.Vector;
 
 public class SplashBowAbility extends Ability {
 
@@ -56,6 +57,7 @@ public class SplashBowAbility extends Ability {
         public void run() {
             Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.1, new Particle.DustOptions(Color.RED, 3), true);
             Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 20, 0.5, 0.5, 0.5, 0.4, new Particle.DustOptions(color, 2), true);
+            arrow.getVelocity().add(new Vector(0, 0.03, 0));
         }
     }
 }
