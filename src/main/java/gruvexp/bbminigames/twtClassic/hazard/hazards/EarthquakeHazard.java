@@ -7,10 +7,8 @@ import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -19,9 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class EarthquakeHazard extends Hazard {
-    static HashMap<BotBowsPlayer, BossBar> bars = new HashMap<>(2);
+    static Map<BotBowsPlayer, BossBar> bars = new HashMap<>();
+    static Set<Location> anvilLocations = new HashSet<>();
 
     public EarthquakeHazard(Settings settings) {
         super(settings);
@@ -55,6 +57,13 @@ public class EarthquakeHazard extends Hazard {
             bossBar.setVisible(false);
             bossBar.setProgress(0d);
         }
+        for (Location anvilLocation : anvilLocations) {
+            Block block = anvilLocation.getBlock();
+            if (block.getType() == Material.ANVIL) {
+                anvilLocation.getBlock().setType(Material.AIR);
+            }
+        }
+        anvilLocations.clear();
     }
 
     public static class PlayerEarthQuakeTimer extends BukkitRunnable {
@@ -112,6 +121,12 @@ public class EarthquakeHazard extends Hazard {
                         bp.die(Component.text(p.getName(), bp.getTeam().color)
                                 .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
                     }, 20L);
+                    Location anvilLoc = p.getLocation().toBlockLocation();
+                    while (anvilLoc.getBlock().getType() == Material.AIR) {
+                        anvilLoc.subtract(0, 1, 0);
+                    }
+                    anvilLoc.add(0, 1, 0);
+                    anvilLocations.add(anvilLoc);
                 }
             } else {
                 if (time > 0) {
