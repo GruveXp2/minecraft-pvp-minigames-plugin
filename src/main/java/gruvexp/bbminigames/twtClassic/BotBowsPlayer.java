@@ -19,8 +19,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class BotBowsPlayer {
 
@@ -39,8 +43,7 @@ public class BotBowsPlayer {
     private boolean canToggleAbilities = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
-
-    private int abilityCooldownTickRate = 20;
+    private boolean hasKarmaEffect = false;
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
@@ -94,6 +97,7 @@ public class BotBowsPlayer {
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         abilities.values().forEach(a -> a.setTickRate(20));
+        hasKarmaEffect = false;
         player.setGameMode(GameMode.SPECTATOR);
         lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
         if (Cooldowns.sneakRunnables.containsKey(player)) {
@@ -320,6 +324,7 @@ public class BotBowsPlayer {
         lobby.messagePlayers(deathMessage);
         player.setGameMode(GameMode.SPECTATOR);
         abilities.values().forEach(a -> a.setTickRate(20));
+        hasKarmaEffect = false;
         lobby.check4Elimination(this);
     }
 
@@ -396,9 +401,41 @@ public class BotBowsPlayer {
     }
 
     public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
-        this.abilityCooldownTickRate = abilityCooldownTickRate;
         for (Ability ability : abilities.values()) {
             ability.setTickRate(abilityCooldownTickRate);
         }
+    }
+
+    public boolean hasKarmaEffect() {
+        return hasKarmaEffect;
+    }
+
+    public void setKarmaEffect(boolean hasKarmaEffect) {
+        this.hasKarmaEffect = hasKarmaEffect;
+    }
+
+    public void getKarma() {
+        PotionEffectType[] effects = {
+            PotionEffectType.SLOWNESS,
+            PotionEffectType.NAUSEA,
+            PotionEffectType.LEVITATION,
+            PotionEffectType.BLINDNESS
+        };
+
+        PotionEffectType randomEffect = effects[BotBows.RANDOM.nextInt(effects.length)];
+
+        player.addPotionEffect(new PotionEffect(randomEffect, 100, 1)); // 100 ticks = 5 seconds
+        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
+            int counter = 10;
+            @Override
+            public void accept(BukkitTask task) {
+                if (counter == 0) { // når antall sticks er 0 så settes en blaze rod istedet og loopsn stoppes
+                    task.cancel();
+                    return;
+                }
+                player.setGlowing(counter % 2 == 0);
+                counter--;
+            }
+        }, 0, 1);
     }
 }

@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.ability.abilities.BabyPotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ChargePotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.KarmaPotion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,6 +41,8 @@ public enum AbilityType {
     BABY_POTION(makeBabyPotion(),
             25, "CANDLE", AbilityCategory.POTION),
     CHARGE_POTION(makeChargePotion(),
+            25, "CANDLE", AbilityCategory.POTION),
+    KARMA_POTION(makeKarmaPotion(),
             25, "CANDLE", AbilityCategory.POTION),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
@@ -175,6 +178,20 @@ public enum AbilityType {
         meta.customName(Component.text("Charge Potion"));
         meta.lore(List.of(Component.text("2x cooldown reduction speed", NamedTextColor.BLUE),
                 getDurationComponent(ChargePotionAbility.DURATION)));
+
+        potion.setItemMeta(meta);
+        return potion;
+    }
+
+    private static ItemStack makeKarmaPotion() {
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true);
+        meta.customName(Component.text("Karma Potion"));
+        meta.lore(List.of(Component.text("Attacker gets glowing and", NamedTextColor.BLUE),
+                Component.text("slowness, levitation, nausea, or blindness", NamedTextColor.BLUE),
+                getDurationComponent(KarmaPotion.DURATION)));
 
         potion.setItemMeta(meta);
         return potion;

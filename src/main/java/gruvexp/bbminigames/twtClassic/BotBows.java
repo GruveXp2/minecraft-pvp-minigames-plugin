@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class BotBows {
 
@@ -38,6 +39,7 @@ public class BotBows {
     public static ItemStack SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE));
 
     public static int HIT_DISABLED_ITEM_TICKS = 40;
+    public static final Random RANDOM = new Random();
 
     public static void init() { // a
         gameMenu = new GameMenu();

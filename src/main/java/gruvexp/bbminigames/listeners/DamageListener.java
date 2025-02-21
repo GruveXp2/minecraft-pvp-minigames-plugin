@@ -32,6 +32,9 @@ public class DamageListener implements Listener {
                 return;
             }
             e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferig
+            if (defenderBp.hasKarmaEffect()) {
+                attackerBp.getKarma();
+            }
             defenderBp.handleHit(attackerBp, Component.text(" was sniped by "));
             if (attackerBp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
                 attackerBp.getAbility(AbilityType.SPLASH_BOW).obtain();

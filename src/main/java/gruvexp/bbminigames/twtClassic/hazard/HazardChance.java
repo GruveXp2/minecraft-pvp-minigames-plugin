@@ -1,8 +1,8 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
-import java.util.ArrayList;
+import gruvexp.bbminigames.twtClassic.BotBows;
+
 import java.util.List;
-import java.util.Random;
 
 public enum HazardChance {
 
@@ -15,7 +15,6 @@ public enum HazardChance {
 
     private final int percent;
     private final String chanceString;
-    private static final Random RANDOM = new Random();
 
     HazardChance(int percent, String chanceString) {
         this.percent = percent;
@@ -33,7 +32,7 @@ public enum HazardChance {
 
     // Sjekker om sjangsen slår til
     public boolean occurs() {
-        return RANDOM.nextInt(100) < percent;
+        return BotBows.RANDOM.nextInt(100) < percent;
     }
 
     public static List<String> getPercentStrings() {
