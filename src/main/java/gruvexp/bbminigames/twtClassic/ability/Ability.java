@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public abstract class Ability {
 
@@ -44,6 +45,7 @@ public abstract class Ability {
     public void resetCooldown() {
         if (cooldownTimer != null) {
             cooldownTimer.cancel();
+            cooldownTimer = null;
         }
     }
 
@@ -64,9 +66,15 @@ public abstract class Ability {
         Inventory inv = player.player.getInventory();
         if (baseCooldown > 0) {
             cooldownTimer = new CooldownTimer(inv);
-            cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, 20L);
+            cooldownTimer.tickCooldown(20);
         } else {
             inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
+        }
+    }
+
+    public void setTickRate(int tickRate) {
+        if (cooldownTimer != null) {
+            cooldownTimer.tickCooldown(tickRate);
         }
     }
 
@@ -86,6 +94,7 @@ public abstract class Ability {
         int currentCooldown = effectiveCooldown;
         ItemStack cooldownItem = getCooldownItem(currentCooldown);
         private final Inventory inv;
+        private BukkitTask task;
 
         private CooldownTimer(Inventory inv) {
             this.inv = inv;
@@ -93,14 +102,16 @@ public abstract class Ability {
 
         @Override
         public void run() {
+            if (currentCooldown <= 0) {
+                obtain();
+                this.cancel();
+                return;
+            }
+
             switch (currentCooldown) {
                 case 10 -> cooldownItem = type.getCooldownItems()[1].clone();
                 case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
                 case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
-                case 0 -> {
-                    obtain();
-                    return;
-                }
             }
             cooldownItem.setAmount(currentCooldown);
             inv.setItem(hotBarSlot, cooldownItem);
@@ -109,6 +120,11 @@ public abstract class Ability {
 
         public void hit() { // when someone hits you with a bow, the cooldown wont go down until the damage cooldown is complete (when barrier blocks get removed)
             currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20;
+        }
+
+        public void tickCooldown(int tickRate) {
+            if (task != null) task.cancel();
+            task = this.runTaskTimer(Main.getPlugin(), 0L, tickRate);
         }
     }
 }

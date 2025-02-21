@@ -5,6 +5,7 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.ability.abilities.BabyPotionAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.ChargePotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -37,6 +38,8 @@ public enum AbilityType {
     INVIS_POTION(makePotion(PotionType.INVISIBILITY),
             25, "CANDLE", AbilityCategory.POTION),
     BABY_POTION(makeBabyPotion(),
+            25, "CANDLE", AbilityCategory.POTION),
+    CHARGE_POTION(makeChargePotion(),
             25, "CANDLE", AbilityCategory.POTION),
     SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
             Component.text("Makes you shrink to half the size"),
@@ -157,8 +160,21 @@ public enum AbilityType {
         meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotionAbility.DURATION * 20, 4), true);
         meta.customName(Component.text("Baby Potion"));
         meta.lore(List.of(Component.text("2x Speed", NamedTextColor.BLUE),
-                Component.text("0.5 Size", NamedTextColor.BLUE),
-                getDurationComponent(10)));
+                Component.text("-30% Size", NamedTextColor.BLUE),
+                getDurationComponent(BabyPotionAbility.DURATION)));
+
+        potion.setItemMeta(meta);
+        return potion;
+    }
+
+    private static ItemStack makeChargePotion() {
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, ChargePotionAbility.DURATION * 20, 4), true);
+        meta.customName(Component.text("Charge Potion"));
+        meta.lore(List.of(Component.text("2x cooldown reduction speed", NamedTextColor.BLUE),
+                getDurationComponent(ChargePotionAbility.DURATION)));
 
         potion.setItemMeta(meta);
         return potion;

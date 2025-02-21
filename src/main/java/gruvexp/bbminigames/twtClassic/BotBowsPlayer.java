@@ -40,6 +40,8 @@ public class BotBowsPlayer {
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
 
+    private int abilityCooldownTickRate = 20;
+
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
         lobby = settings.lobby;
@@ -91,6 +93,7 @@ public class BotBowsPlayer {
         player.setGlowing(false);
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+        abilities.values().forEach(a -> a.setTickRate(20));
         player.setGameMode(GameMode.SPECTATOR);
         lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
         if (Cooldowns.sneakRunnables.containsKey(player)) {
@@ -316,6 +319,7 @@ public class BotBowsPlayer {
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
         player.setGameMode(GameMode.SPECTATOR);
+        abilities.values().forEach(a -> a.setTickRate(20));
         lobby.check4Elimination(this);
     }
 
@@ -389,5 +393,12 @@ public class BotBowsPlayer {
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(4, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
         lobby.handlePlayerReady(this);
+    }
+
+    public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
+        this.abilityCooldownTickRate = abilityCooldownTickRate;
+        for (Ability ability : abilities.values()) {
+            ability.setTickRate(abilityCooldownTickRate);
+        }
     }
 }
