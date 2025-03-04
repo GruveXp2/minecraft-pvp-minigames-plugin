@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 
 public class AbilityListener implements Listener {
 
+    public static HashMap<Arrow, BukkitTask> thunderArrows = new HashMap<>();
     public static HashMap<Arrow, BukkitTask> splashArrows = new HashMap<>();
 
     public static void onAbilityUse(PlayerInteractEvent e) {
@@ -96,12 +98,18 @@ public class AbilityListener implements Listener {
             bp.getAbility(AbilityType.WIND_CHARGE).use();
         } else if (e.getEntity() instanceof Arrow arrow) {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                if (!bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) return;
-                arrow.setColor(Color.RED);
-                BukkitTask arrowTrail = new SplashBowAbility.ArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
-                arrow.getVelocity().multiply(0.5f);
-                splashArrows.put(arrow, arrowTrail);
-                bp.getAbility(AbilityType.SPLASH_BOW).use();
+                if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
+                    arrow.setColor(Color.RED);
+                    BukkitTask arrowTrail = new SplashBowAbility.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
+                    arrow.getVelocity().multiply(0.5f);
+                    splashArrows.put(arrow, arrowTrail);
+                    bp.getAbility(AbilityType.SPLASH_BOW).use();
+                } else if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)) {
+                    arrow.setColor(Color.AQUA);
+                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
+                    thunderArrows.put(arrow, arrowTrail);
+
+                }
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
             }

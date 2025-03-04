@@ -224,6 +224,7 @@ public class BotBowsPlayer {
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
             case RADAR -> abilities.put(type, new RadarAbility(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBowAbility(this, slot));
+            case THUNDER_BOW -> abilities.put(type, new ThunderBowAbility(this, slot));
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
             case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
         }
@@ -261,6 +262,10 @@ public class BotBowsPlayer {
 
     public boolean hasAbilityEquipped(AbilityType type) {
         return abilities.containsKey(type);
+    }
+
+    public void obtainWeaponAbilities() {
+        abilities.values().stream().filter(a -> a.getType().category == AbilityCategory.DAMAGING).forEach(Ability::obtain);
     }
 
     public int getTotalAbilities() {

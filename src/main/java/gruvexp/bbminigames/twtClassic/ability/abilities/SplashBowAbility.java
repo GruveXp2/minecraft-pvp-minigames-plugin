@@ -43,12 +43,12 @@ public class SplashBowAbility extends Ability {
         }
     }
 
-    public static class ArrowTrailGenerator extends BukkitRunnable {
+    public static class SplashArrowTrailGenerator extends BukkitRunnable {
 
         private final Arrow arrow;
         private final Color color;
 
-        public ArrowTrailGenerator(Arrow arrow, Color color) {
+        public SplashArrowTrailGenerator(Arrow arrow, Color color) {
             this.arrow = arrow;
             this.color = color;
         }

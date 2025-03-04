@@ -4,10 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.ability.abilities.BabyPotionAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.ChargePotionAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.KarmaPotion;
+import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -54,6 +51,13 @@ public enum AbilityType {
             30, "BANNER", AbilityCategory.UTILITY),
     SPLASH_BOW(makeSplashBow(),
             0, "CONCRETE_POWDER", AbilityCategory.DAMAGING),
+    THUNDER_BOW(Menu.makeItem(Material.BLUE_ICE, Component.text("Thunder Bow"),
+            Component.text("Converts your crossbow into a thunder crossbow"),
+            Component.text("When hitting an enemy,"),
+            Component.text("lightning strikes other enemies within 6 blocks"),
+            Component.text("Not implemented yet", NamedTextColor.YELLOW),
+            getDurationComponent(ThunderBowAbility.DURATION)),
+            20, "TERRACOTTA", AbilityCategory.DAMAGING),
     FLOAT_SPELL(getFloatSpellItem(),
             10, "BUNDLE", AbilityCategory.UTILITY),
     LONG_ARMS(Menu.makeItem(Material.BARRIER, Component.text("Long arms"),

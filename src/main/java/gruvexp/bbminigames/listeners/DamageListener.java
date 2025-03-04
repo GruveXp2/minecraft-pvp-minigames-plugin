@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -20,8 +21,8 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
         if ((e.getDamager() instanceof Arrow arrow)) {
-            if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
-            if (!(e.getEntity() instanceof Player defender)) {return;} // den som blei hitta
+            if (!(arrow.getShooter() instanceof Player attacker)) {return;}
+            if (!(e.getEntity() instanceof Player defender)) {return;}
             if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
             arrow.setKnockbackStrength(8);
             BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
@@ -31,16 +32,20 @@ public class DamageListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferig
+            e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
             if (defenderBp.hasKarmaEffect()) {
                 attackerBp.getKarma();
             }
             defenderBp.handleHit(attackerBp, Component.text(" was sniped by "));
-            if (attackerBp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
-                attackerBp.getAbility(AbilityType.SPLASH_BOW).obtain();
+            if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && AbilityListener.thunderArrows.containsKey(arrow)) {
+                AbilityListener.thunderArrows.get(arrow).cancel();
+                AbilityListener.thunderArrows.remove(arrow);
+                ThunderBowAbility.handleArrowHit(attackerBp, defender);
+            } else {
+                attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
             }
         } else {
-            if (!(e.getEntity() instanceof Player defender)) {return;} // den som blei hitta
+            if (!(e.getEntity() instanceof Player defender)) {return;}
             if (e.getDamager() instanceof Player attacker) {
                 ItemStack weapon = attacker.getInventory().getItemInMainHand();
                 if (weapon.getType() == Material.STICK) {
