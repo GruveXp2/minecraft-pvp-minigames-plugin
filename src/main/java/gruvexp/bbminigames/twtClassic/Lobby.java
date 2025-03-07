@@ -122,6 +122,9 @@ public class Lobby {
     public void reset() {
         activeGame = false;
         new HashSet<>(players.keySet()).forEach(this::leaveGame);
+        botBowsGame = null;
+        settings = new Settings(this);
+        settings.initMenus();
     }
 
     public void messagePlayers(Component message) {

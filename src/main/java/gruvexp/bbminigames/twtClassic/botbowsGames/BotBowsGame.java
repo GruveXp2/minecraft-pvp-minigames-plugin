@@ -255,7 +255,6 @@ public class BotBowsGame {
         Cooldowns.sneakRunnables.clear();
         stormHazard.end();
         earthquakeHazard.end();
-        settings.abilityMenu.disableAbilities();
         lobby.reset();
     }
 
