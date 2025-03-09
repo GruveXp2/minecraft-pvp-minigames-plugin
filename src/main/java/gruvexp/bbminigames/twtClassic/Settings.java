@@ -29,9 +29,9 @@ public class Settings {
     private int winScoreThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
     private int roundDuration = 0;
     // hazards
-    public StormHazard stormHazard = new StormHazard(this); // holder styr på innstillinger og utførelse av storm logikk
-    public EarthquakeHazard earthquakeHazard = new EarthquakeHazard(this); // holder styr på innstillinger og utførelse av storm logikk
-    public GhostHazard ghostHazard = new GhostHazard(this);
+    public final StormHazard stormHazard; // holder styr på innstillinger og utførelse av storm logikk
+    public final EarthquakeHazard earthquakeHazard; // holder styr på innstillinger og utførelse av storm logikk
+    public final GhostHazard ghostHazard;
     // abilities
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
@@ -48,6 +48,9 @@ public class Settings {
 
     public Settings(Lobby lobby) {
         this.lobby = lobby;
+        this.stormHazard = new StormHazard(lobby);
+        this.earthquakeHazard = new EarthquakeHazard(lobby);
+        this.ghostHazard = new GhostHazard(lobby);
         team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
         team2.setOppositeTeam(team1);
     }

@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
-import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -11,10 +11,10 @@ public abstract class Hazard {
 
     private HazardChance hazardChance = HazardChance.TEN;
     private boolean isActive = false;
-    protected final Settings settings;
+    protected final Lobby lobby;
 
-    protected Hazard(Settings settings) {
-        this.settings = settings;
+    protected Hazard(Lobby lobby) {
+        this.lobby = lobby;
     }
 
     public HazardChance getHazardChance() {return hazardChance;}

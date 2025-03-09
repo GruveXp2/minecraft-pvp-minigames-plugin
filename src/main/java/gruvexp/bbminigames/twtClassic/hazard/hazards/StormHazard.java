@@ -2,7 +2,7 @@ package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import net.kyori.adventure.text.Component;
@@ -21,15 +21,15 @@ import java.util.HashMap;
 
 public class StormHazard extends Hazard {
 
-    static HashMap<BotBowsPlayer, BossBar> bars = new HashMap<>(2);
+    final HashMap<BotBowsPlayer, BossBar> bars = new HashMap<>(3);
 
-    public StormHazard(Settings settings) {
-        super(settings);
+    public StormHazard(Lobby lobby) {
+        super(lobby);
     }
 
     public void init() { // calles når spillet begynner
         if (getHazardChance() == HazardChance.DISABLED) return;
-        for (BotBowsPlayer p : settings.getPlayers()) {
+        for (BotBowsPlayer p : lobby.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.AQUA + "Lightning timer", BarColor.BLUE, BarStyle.SEGMENTED_6);
             bar.addPlayer(p.player);
             bar.setProgress(0d);
@@ -40,11 +40,11 @@ public class StormHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        settings.lobby.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
+        lobby.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
                 .append(Component.text(" Seek shelter immediately!", NamedTextColor.RED)));
-        settings.lobby.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
+        lobby.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            for (BotBowsPlayer p : settings.getPlayers()) {
+            for (BotBowsPlayer p : lobby.getPlayers()) {
                 hazardTimers.put(p.player, new PlayerStormTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
             }
             Main.WORLD.setThundering(true);

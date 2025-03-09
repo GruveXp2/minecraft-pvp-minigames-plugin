@@ -148,6 +148,10 @@ public class BotBowsPlayer {
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
     }
 
+    public boolean isAlive() {
+        return hp > 0;
+    }
+
     public void setAttackDamage(int hearts) {
         this.attackDamage = hearts;
     }

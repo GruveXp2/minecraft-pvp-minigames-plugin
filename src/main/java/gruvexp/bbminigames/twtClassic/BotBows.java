@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -149,5 +150,17 @@ public class BotBows {
             }
             default -> p.removePotionEffect(PotionEffectType.JUMP_BOOST);
         }
+    }
+
+    public static void setTimeSmooth(long start, long end, int seconds) {
+        int ticks = seconds * 20;
+        long step = (end - start) / ticks;
+        new BukkitRunnable() {
+            long count = 0;
+            public void run() {
+                if (count >= ticks) cancel();
+                else Main.WORLD.setTime(start + (count++ * step));
+            }
+        }.runTaskTimer(Main.getPlugin(), 0, 1);
     }
 }

@@ -111,6 +111,7 @@ public class BotBowsGame {
     public void triggerHazards() {
         stormHazard.triggerOnChance();
         earthquakeHazard.triggerOnChance();
+        ghostHazard.triggerOnChance();
     }
 
     public void handleMovement(PlayerMoveEvent e) {
