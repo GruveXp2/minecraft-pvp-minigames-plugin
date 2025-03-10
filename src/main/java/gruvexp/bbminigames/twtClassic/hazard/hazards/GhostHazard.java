@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
+import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -89,19 +90,23 @@ public class GhostHazard extends Hazard {
             if (movementHistory.isEmpty()) return;
 
             ghost.teleport(movementHistory.poll());
-            if (BotBows.RANDOM.nextInt(10) == 0) { // randomly gjør at ghostene blinker for å gjøre det litt scary
+            if (BotBows.RANDOM.nextInt(5) == 0) { // randomly gjør at ghostene blinker for å gjøre det litt scary
                 ItemStack[] armor = p.getInventory().getArmorContents();
                 ghost.getEquipment().setArmorContents(armor);
             } else {
                 ghost.getEquipment().setArmorContents(new ItemStack[]{});
             }
-            if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
-                ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD);
-                if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
-                    killPlayer(bp);
+            if (p.getLocation().distanceSquared(ghost.getLocation()) < 36) {
+                ghost.lookAt(p.getLocation(), LookAnchor.EYES);
+                if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
+                    ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD);
+                    if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
+                        if (TestCommand.test2 && p.getName().equals("Spionagent54")) return;
+                        killPlayer(bp);
+                    }
+                } else {
+                    ghost.setItem(EquipmentSlot.HAND, null);
                 }
-            } else {
-                ghost.setItem(EquipmentSlot.HAND, null);
             }
         }
 
