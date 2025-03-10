@@ -82,7 +82,7 @@ public class GhostHazard extends Hazard {
 
         @Override
         public void run() {
-            if (bp.isAlive() && bp.lobby.botBowsGame.activeRound && bp.lobby.botBowsGame.canMove && !isDying) {
+            if (bp.isAlive() && bp.lobby.botBowsGame.canMove && !isDying) {
                 movementHistory.add(p.getLocation());
             }
             if (movementHistory.size() < HISTORY_SIZE && bp.isAlive()) return;
