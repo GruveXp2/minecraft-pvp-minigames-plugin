@@ -194,6 +194,7 @@ public class BotBowsGame {
         }
         stormHazard.end();
         earthquakeHazard.end();
+        ghostHazard.end();
         if (winningTeam == null) {
             lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
             canShoot = false;
