@@ -73,12 +73,12 @@ public class GhostHazard extends Hazard {
         final BotBowsPlayer bp;
         final ArrayDeque<Location> movementHistory = new ArrayDeque<>(HISTORY_SIZE);
         private boolean isDying = false;
+        final ArmorStand ghost;
         public PlayerGhostMover(BotBowsPlayer bp) {
             this.p = bp.player;
             this.bp = bp;
+            ghost = spawnGhost();
         }
-
-        final ArmorStand ghost = spawnGhost();
 
         @Override
         public void run() {
