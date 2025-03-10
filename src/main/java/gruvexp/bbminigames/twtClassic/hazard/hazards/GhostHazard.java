@@ -110,6 +110,7 @@ public class GhostHazard extends Hazard {
             ghost.setInvisible(true);
             ghost.setGravity(false);
             ghost.setMarker(true); // ingen hitbox
+            ghost.setSilent(true);
             ghost.setArms(true);
             return ghost;
         }
