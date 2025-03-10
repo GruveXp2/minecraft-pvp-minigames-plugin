@@ -29,7 +29,7 @@ public class ThunderBowAbility extends Ability {
 
     public ThunderBowAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot);
-        this.type = AbilityType.SPLASH_BOW;
+        this.type = AbilityType.THUNDER_BOW;
         this.baseCooldown = type.getBaseCooldown();
     }
 
