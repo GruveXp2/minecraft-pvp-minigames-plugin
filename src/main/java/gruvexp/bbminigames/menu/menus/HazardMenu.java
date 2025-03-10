@@ -77,7 +77,7 @@ public class HazardMenu extends SettingsMenu {
         } else {
             item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Haunted Arena", NamedTextColor.GREEN),
                     Component.text("Enabled", NamedTextColor.GREEN),
-                    Component.text(earthquakeHazard.getHazardChance().getPercent() + "% of rounds will be haunted."), loreDesc[0], loreDesc[1], loreDesc[2]);
+                    Component.text(ghostHazard.getHazardChance().getPercent() + "% of rounds will be haunted."), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
     }
