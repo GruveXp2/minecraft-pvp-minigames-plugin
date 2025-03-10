@@ -92,7 +92,7 @@ public class BotBowsPlayer {
 
     public void reset() {
         player.setScoreboard(lobby.botBowsGame.boardManager.manager.getNewScoreboard());
-        player.getInventory().setArmorContents(null);
+        player.getInventory().setArmorContents(new ItemStack[]{});
         player.setGlowing(false);
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
