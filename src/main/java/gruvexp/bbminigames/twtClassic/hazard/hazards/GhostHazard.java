@@ -100,6 +100,8 @@ public class GhostHazard extends Hazard {
                 if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
                     killPlayer(bp);
                 }
+            } else {
+                ghost.setItem(EquipmentSlot.HAND, null);
             }
         }
 
