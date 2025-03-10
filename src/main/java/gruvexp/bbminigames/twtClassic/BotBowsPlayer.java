@@ -137,7 +137,6 @@ public class BotBowsPlayer {
     public int getHP() {return hp;}
 
     private void setHP(int hp) { // heile hjerter
-        if (this.hp == hp) return;
         this.hp = hp;
         if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
             player.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
