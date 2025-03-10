@@ -47,7 +47,7 @@ public enum AbilityType {
             20, "BUNDLE", AbilityCategory.UTILITY),
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of the enemy team by making them glow"),
-            getDurationComponent(4)),
+            getDurationComponent(RadarAbility.DURATION)),
             30, "BANNER", AbilityCategory.UTILITY),
     SPLASH_BOW(makeSplashBow(),
             0, "CONCRETE_POWDER", AbilityCategory.DAMAGING),
