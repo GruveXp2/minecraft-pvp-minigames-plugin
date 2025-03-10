@@ -49,7 +49,7 @@ public class AbilityListener implements Listener {
         }
         BotBows.debugMessage("Ability gets used");
         switch (type) {
-            case ENDER_PEARL, SHRINK, RADAR -> bp.getAbility(type).use();
+            case ENDER_PEARL, SHRINK, RADAR, THUNDER_BOW -> bp.getAbility(type).use();
             case WIND_CHARGE -> {
                 BotBows.debugMessage("Items in hand: " + abilityItem.getAmount());
                 bp.registerUsedAbilityItem(abilityItem.getAmount());
