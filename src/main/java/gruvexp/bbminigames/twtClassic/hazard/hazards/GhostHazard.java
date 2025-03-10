@@ -157,6 +157,7 @@ public class GhostHazard extends Hazard {
                 public void run() {
                     if (ticks >= totalTicks) {
                         cancel();
+                        ghost.remove(); // the ghost is in the ground and can be removed
                         return;
                     }
                     ghostLoc.add(0, Δy, 0);
