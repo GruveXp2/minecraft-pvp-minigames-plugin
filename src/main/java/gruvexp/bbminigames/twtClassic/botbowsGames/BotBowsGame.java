@@ -81,7 +81,6 @@ public class BotBowsGame {
 
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
-            q.revive();
             q.initBattle();
             boardManager.updatePlayerScore(q);
         }
