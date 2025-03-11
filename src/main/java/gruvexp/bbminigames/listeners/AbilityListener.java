@@ -49,7 +49,7 @@ public class AbilityListener implements Listener {
         }
         BotBows.debugMessage("Ability gets used");
         switch (type) {
-            case ENDER_PEARL, SHRINK, RADAR, THUNDER_BOW -> bp.getAbility(type).use();
+            case ENDER_PEARL, SHRINK, RADAR, THUNDER_BOW, SALMON_SLAP -> bp.getAbility(type).use();
             case WIND_CHARGE -> {
                 BotBows.debugMessage("Items in hand: " + abilityItem.getAmount());
                 bp.registerUsedAbilityItem(abilityItem.getAmount());
@@ -82,7 +82,7 @@ public class AbilityListener implements Listener {
         if (type == AbilityType.LONG_ARMS) {
             attackerBp.getAbility(type).use();
             defenderBp.handleHit(attackerBp, Component.text(" was long-slapped by "));
-        } else if (type == AbilityType.SALMON_SLAP) {
+        } else if (weapon.getType() == Material.SALMON) {
             defenderBp.handleHit(attackerBp, Component.text(" was slapped by "));
         }
         e.setCancelled(true);
