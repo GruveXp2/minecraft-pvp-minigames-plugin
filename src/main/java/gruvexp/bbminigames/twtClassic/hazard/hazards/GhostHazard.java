@@ -17,6 +17,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -74,6 +76,7 @@ public class GhostHazard extends Hazard {
         final BotBowsPlayer bp;
         final ArrayDeque<Location> movementHistory = new ArrayDeque<>(HISTORY_SIZE);
         private boolean isDying = false;
+        private boolean isClose = false;
         final ArmorStand ghost;
         public PlayerGhostMover(BotBowsPlayer bp) {
             this.p = bp.player;
@@ -89,7 +92,8 @@ public class GhostHazard extends Hazard {
             if (movementHistory.size() < HISTORY_SIZE && bp.isAlive()) return;
             if (movementHistory.isEmpty()) return;
 
-            ghost.teleport(movementHistory.poll());
+            Location ghostLoc = movementHistory.poll();
+            ghost.teleport(ghostLoc);
             if (BotBows.RANDOM.nextInt(5) == 0) { // randomly gjør at ghostene blinker for å gjøre det litt scary
                 ItemStack[] armor = p.getInventory().getArmorContents();
                 ghost.getEquipment().setArmorContents(armor);
@@ -98,6 +102,17 @@ public class GhostHazard extends Hazard {
             }
             if (p.getLocation().distanceSquared(ghost.getLocation()) < 36) {
                 ghost.lookAt(p.getLocation(), LookAnchor.EYES);
+                if (!isClose) {
+                    float randomPitch = 0.8f + (float) Math.random() * 0.4f;
+                    String command = String.format(
+                            "playsound minecraft:ambient.cave.cave12 ambient %s %.2f %.2f %.2f 1 %.2f",
+                            p.getName(),
+                            ghostLoc.getX(), ghostLoc.getY(), ghostLoc.getZ(),
+                            randomPitch
+                    );
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    isClose = true;
+                }
                 if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
                     ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD);
                     if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
@@ -107,6 +122,8 @@ public class GhostHazard extends Hazard {
                 } else {
                     ghost.setItem(EquipmentSlot.HAND, null);
                 }
+            } else {
+                isClose = false;
             }
         }
 
@@ -134,6 +151,7 @@ public class GhostHazard extends Hazard {
 
             ghost.setRotation(playerLoc.getYaw(), playerLoc.getPitch());
             ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD_NETHERITE);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false));
 
             new BukkitRunnable() {
                 final Location oldLocation = p.getLocation();
