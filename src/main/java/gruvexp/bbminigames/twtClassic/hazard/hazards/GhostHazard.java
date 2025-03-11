@@ -139,8 +139,7 @@ public class GhostHazard extends Hazard {
             movementHistory.clear();
             Player p = bp.player;
             Location playerLoc = p.getLocation();
-            Vector dir = playerLoc.getDirection().multiply(-0.5).normalize();
-            dir.setY(0);
+            Vector dir = playerLoc.getDirection().multiply(-1).setY(0).normalize();
 
             Location ghostLoc = playerLoc.clone().add(dir); // 0.5 blocks behind the player
             ghostLoc.add(dir.crossProduct(new Vector(0, 1, 0)).normalize().multiply(0.5)); // 0.5 blocks left of the player
