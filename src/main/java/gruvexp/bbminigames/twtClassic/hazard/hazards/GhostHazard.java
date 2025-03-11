@@ -147,7 +147,7 @@ public class GhostHazard extends Hazard {
 
             ghost.setRotation(playerLoc.getYaw(), playerLoc.getPitch());
             ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD_NETHERITE);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 60, 0, false, false));
 
             new BukkitRunnable() {
                 final Location oldLocation = p.getLocation();
