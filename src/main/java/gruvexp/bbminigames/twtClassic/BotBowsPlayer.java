@@ -236,6 +236,7 @@ public class BotBowsPlayer {
             case THUNDER_BOW -> abilities.put(type, new ThunderBowAbility(this, slot));
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
             case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
+            case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
         }
         int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
         if (relativeAbilitySlot > 0) {
