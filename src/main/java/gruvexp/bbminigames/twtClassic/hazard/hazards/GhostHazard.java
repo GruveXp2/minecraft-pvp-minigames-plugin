@@ -46,8 +46,10 @@ public class GhostHazard extends Hazard {
 
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                 ghostMover.ascendGhost(p.player.getLocation());
-                playAscendingSound(lobby.settings.team1.spawnPos[0]);
-                playAscendingSound(lobby.settings.team2.spawnPos[0]);
+
+                float randomPitch = 0.8f + (float) Math.random() * 0.4f;
+                Main.WORLD.playSound(lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(lobby.settings.team2.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
             }, 60L); // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
 
@@ -70,16 +72,6 @@ public class GhostHazard extends Hazard {
         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
         sword.addEnchantment(Enchantment.SHARPNESS, 4);
         return sword;
-    }
-
-    public void playAscendingSound(Location loc) {
-        float randomPitch = 0.8f + (float) Math.random() * 0.4f;
-        String command = String.format(
-                "playsound minecraft:ambient.cave.cave8 ambient @a %.2f %.2f %.2f 1 %.2f",
-                loc.getX(), loc.getY(), loc.getZ(),
-                randomPitch
-        );
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     public static class PlayerGhostMover extends BukkitRunnable {
@@ -115,14 +107,8 @@ public class GhostHazard extends Hazard {
             if (p.getLocation().distanceSquared(ghost.getLocation()) < 36) {
                 ghost.lookAt(p.getLocation(), LookAnchor.EYES);
                 if (!isClose) {
-                    float randomPitch = 0.8f + (float) Math.random() * 0.4f;
-                    String command = String.format(
-                            "playsound minecraft:ambient.cave.cave12 ambient %s %.2f %.2f %.2f 1 %.2f",
-                            p.getName(),
-                            ghostLoc.getX(), ghostLoc.getY(), ghostLoc.getZ(),
-                            randomPitch
-                    );
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    float randomPitch = 0.7f + (float) Math.random() * 0.2f;
+                    p.playSound(ghostLoc, "minecraft:botbows.ghost_approach", 1.0f, randomPitch);
                     isClose = true;
                 }
                 if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
@@ -150,7 +136,7 @@ public class GhostHazard extends Hazard {
         }
 
         private void killPlayer(BotBowsPlayer bp) {
-            isDying = true; // when the ghost has found the player, it doesn't follow the players path anymore
+            cancel();
             movementHistory.clear();
             Player p = bp.player;
             Location playerLoc = p.getLocation();
