@@ -79,7 +79,6 @@ public class GhostHazard extends Hazard {
         final Player p;
         final BotBowsPlayer bp;
         final ArrayDeque<Location> movementHistory = new ArrayDeque<>(HISTORY_SIZE);
-        private boolean isDying = false;
         private boolean isClose = false;
         final ArmorStand ghost;
         public PlayerGhostMover(BotBowsPlayer bp) {
@@ -90,7 +89,7 @@ public class GhostHazard extends Hazard {
 
         @Override
         public void run() {
-            if (bp.isAlive() && bp.lobby.botBowsGame.canMove && !isDying) {
+            if (bp.isAlive() && bp.lobby.botBowsGame.canMove) {
                 movementHistory.add(p.getLocation());
             }
             if (movementHistory.size() < HISTORY_SIZE && bp.isAlive()) return;
@@ -160,7 +159,6 @@ public class GhostHazard extends Hazard {
                         cancel();
                         bp.die(Component.text(p.getName(), bp.getTeamColor())
                                 .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
-                        isDying = false;
                         descendGhost(ghostLoc);
                         return;
                     }
