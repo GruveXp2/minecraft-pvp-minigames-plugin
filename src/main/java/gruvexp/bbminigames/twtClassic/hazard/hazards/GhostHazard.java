@@ -46,6 +46,8 @@ public class GhostHazard extends Hazard {
 
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                 ghostMover.ascendGhost(p.player.getLocation());
+                playAscendingSound(lobby.settings.team1.spawnPos[0]);
+                playAscendingSound(lobby.settings.team2.spawnPos[0]);
             }, 60L); // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
 
@@ -68,6 +70,16 @@ public class GhostHazard extends Hazard {
         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
         sword.addEnchantment(Enchantment.SHARPNESS, 4);
         return sword;
+    }
+
+    public void playAscendingSound(Location loc) {
+        float randomPitch = 0.8f + (float) Math.random() * 0.4f;
+        String command = String.format(
+                "playsound minecraft:ambient.cave.cave8 ambient @a %.2f %.2f %.2f 1 %.2f",
+                loc.getX(), loc.getY(), loc.getZ(),
+                randomPitch
+        );
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     public static class PlayerGhostMover extends BukkitRunnable {
