@@ -102,7 +102,6 @@ public class BotBowsPlayer {
         player.setGlowing(false);
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
-        abilities.values().forEach(a -> a.setTickRate(20));
         hasKarmaEffect = false;
         player.setGameMode(GameMode.SPECTATOR);
         lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
