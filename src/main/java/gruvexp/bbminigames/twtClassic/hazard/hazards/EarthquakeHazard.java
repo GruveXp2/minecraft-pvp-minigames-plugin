@@ -118,7 +118,7 @@ public class EarthquakeHazard extends Hazard {
                     bar.setProgress(0);
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                         p.damage(1); // sånn
-                        bp.die(Component.text(p.getName(), bp.getTeam().color)
+                        bp.die(Component.text(p.getName(), bp.getTeamColor())
                                 .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
                     }, 20L);
                     Location anvilLoc = p.getLocation().toBlockLocation();

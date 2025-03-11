@@ -10,6 +10,7 @@ import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -56,6 +57,11 @@ public class BotBowsPlayer {
     }
 
     public BotBowsTeam getTeam() {return team;}
+
+    public TextColor getTeamColor() {
+        if (team != null) return team.color;
+        return NamedTextColor.WHITE;
+    }
 
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {

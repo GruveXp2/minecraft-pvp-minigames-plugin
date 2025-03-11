@@ -74,9 +74,9 @@ public class BoardManager {
 
         String healthBar;
         if (maxHp > 5) {
-            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().color) + " " + p.player.getName();
+            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeamColor()) + " " + p.player.getName();
         } else {
-            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeam().color) + " " + p.player.getName();
+            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeamColor()) + " " + p.player.getName();
         }
 
         setScore(healthBar, playerLineIndex);

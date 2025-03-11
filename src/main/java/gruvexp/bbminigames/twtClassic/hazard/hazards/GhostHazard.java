@@ -172,7 +172,7 @@ public class GhostHazard extends Hazard {
                 public void run() {
                     if (!p.isOnline() || ticks >= 40) {
                         cancel();
-                        bp.die(Component.text(p.getName(), bp.getTeam().color)
+                        bp.die(Component.text(p.getName(), bp.getTeamColor())
                                 .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
                         isDying = false;
                         descendGhost(ghostLoc);
