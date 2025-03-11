@@ -286,6 +286,7 @@ public class BotBowsPlayer {
     }
 
     public void handleHit(BotBowsPlayer attacker, TextComponent hitActionMessage) {
+        if (isDamaged) return;
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
                     .append(hitActionMessage)
