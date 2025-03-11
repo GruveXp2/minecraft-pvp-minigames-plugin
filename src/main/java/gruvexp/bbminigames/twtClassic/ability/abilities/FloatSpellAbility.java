@@ -18,8 +18,8 @@ public class FloatSpellAbility extends Ability {
 
     public static final int DURATION = 3;
 
-    public FloatSpellAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    public FloatSpellAbility(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
         this.type = AbilityType.FLOAT_SPELL;
         this.baseCooldown = type.getBaseCooldown();
     }
@@ -30,7 +30,7 @@ public class FloatSpellAbility extends Ability {
             Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) continue;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            if (bp != player) { // kun på andre players
+            if (bp != this.bp) { // kun på andre players
                 p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, FloatSpellAbility.DURATION * 20, 1, false, false));
             }
         }

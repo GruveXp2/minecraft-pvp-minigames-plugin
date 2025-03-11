@@ -5,13 +5,12 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class InvisPotionAbility extends Ability {
-    public InvisPotionAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    public InvisPotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
         this.type = AbilityType.INVIS_POTION;
         this.baseCooldown = type.getBaseCooldown();
     }
@@ -19,7 +18,7 @@ public class InvisPotionAbility extends Ability {
     @Override
     public void use() {
         super.use();
-        PlayerInventory inv = player.player.getInventory();
+        PlayerInventory inv = bp.player.getInventory();
         inv.setItem(9, inv.getHelmet());
         inv.setItem(10, inv.getChestplate());
         inv.setItem(11, inv.getLeggings());

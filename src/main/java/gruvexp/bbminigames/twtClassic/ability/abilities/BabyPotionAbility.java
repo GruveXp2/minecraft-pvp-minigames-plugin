@@ -26,7 +26,7 @@ public class BabyPotionAbility extends PotionAbility {
     public void use(Set<Player> players) {
 
         players.forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4))); // 75% of the duration will be given to other players on the team
-        player.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, 4));
+        bp.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, 4));
         new BukkitRunnable() {
             int i = 1;
             @Override
@@ -35,7 +35,7 @@ public class BabyPotionAbility extends PotionAbility {
                     this.cancel();
                 }
                 players.forEach(p -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0 - 0.2/10 * i));
-                player.player.getAttribute(Attribute.SCALE).setBaseValue(1.0 - 0.34/10 * i);
+                bp.player.getAttribute(Attribute.SCALE).setBaseValue(1.0 - 0.34/10 * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 1L);
@@ -47,7 +47,7 @@ public class BabyPotionAbility extends PotionAbility {
                     this.cancel();
                 }
                 players.forEach(p -> p.getAttribute(Attribute.SCALE).setBaseValue(0.8 + 0.2/20 * i));
-                player.player.getAttribute(Attribute.SCALE).setBaseValue(0.66 - 0.34/10 * i);
+                bp.player.getAttribute(Attribute.SCALE).setBaseValue(0.66 - 0.34/10 * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 200L, 1L);

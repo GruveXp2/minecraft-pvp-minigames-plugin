@@ -12,19 +12,19 @@ public abstract class PotionAbility extends Ability {
 
     protected static final int RADIUS = 4;
 
-    protected PotionAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    protected PotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
     }
 
     @Override
     public void use() {
         super.use();
-        Set<Player> players = Main.WORLD.getNearbyEntities(player.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
+        Set<Player> players = Main.WORLD.getNearbyEntities(bp.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
                 .stream().map(p -> (Player) p)
                 .filter(p -> BotBows.getLobby(p) != null)
-                .filter(p -> BotBows.getLobby(p).getBotBowsPlayer(p).getTeam() == player.getTeam())
+                .filter(p -> BotBows.getLobby(p).getBotBowsPlayer(p).getTeam() == bp.getTeam())
                 .collect(Collectors.toSet());
-        players.remove(player.player);
+        players.remove(bp.player);
         use(players);
     }
 

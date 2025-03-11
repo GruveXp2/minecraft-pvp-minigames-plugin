@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public abstract class Ability {
 
-    protected final BotBowsPlayer player;
+    protected final BotBowsPlayer bp;
     protected AbilityType type;
 
     protected int baseCooldown; // seconds
@@ -20,8 +20,8 @@ public abstract class Ability {
     private final int hotBarSlot;
     private CooldownTimer cooldownTimer;
 
-    protected Ability(BotBowsPlayer player, int hotBarSlot) {
-        this.player = player;
+    protected Ability(BotBowsPlayer bp, int hotBarSlot) {
+        this.bp = bp;
         this.hotBarSlot = hotBarSlot;
     }
 
@@ -51,7 +51,7 @@ public abstract class Ability {
 
     public void obtain() {
         resetCooldown();
-        Inventory inv = player.player.getInventory();
+        Inventory inv = bp.player.getInventory();
         inv.setItem(hotBarSlot, type.getAbilityItem());
     }
 
@@ -62,8 +62,8 @@ public abstract class Ability {
     }
 
     public void use() {
-        if (!player.lobby.botBowsGame.canMove) return;
-        Inventory inv = player.player.getInventory();
+        if (!bp.lobby.botBowsGame.canMove) return;
+        Inventory inv = bp.player.getInventory();
         if (baseCooldown > 0) {
             cooldownTimer = new CooldownTimer(inv);
             cooldownTimer.tickCooldown(20);

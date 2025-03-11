@@ -14,20 +14,20 @@ public class KarmaPotion extends PotionAbility {
 
     public static final int DURATION = 20;
 
-    protected KarmaPotion(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    protected KarmaPotion(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
         this.type = AbilityType.KARMA_POTION;
         this.baseCooldown = type.getBaseCooldown();
     }
 
     @Override
     protected void use(Set<Player> players) {
-        player.setKarmaEffect(true);
+        bp.setKarmaEffect(true);
         players.stream()
                 .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
                 .forEach(p -> p.setKarmaEffect(true));
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> player.setKarmaEffect(false), 20L * DURATION);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> bp.setKarmaEffect(false), 20L * DURATION);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> players.stream()
                 .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
                 .forEach(p -> p.setKarmaEffect(false)), 15L * DURATION);

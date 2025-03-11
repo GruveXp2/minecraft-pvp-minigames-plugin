@@ -14,21 +14,21 @@ public class ChargePotionAbility extends PotionAbility {
 
     public static final int DURATION = 20;
 
-    protected ChargePotionAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    protected ChargePotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
         this.type = AbilityType.CHARGE_POTION;
         this.baseCooldown = type.getBaseCooldown();
     }
 
     @Override
     protected void use(Set<Player> players) {
-        player.setAbilityCooldownTickRate(10);
+        bp.setAbilityCooldownTickRate(10);
         players.stream()
                 .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
                 .forEach(p -> p.setAbilityCooldownTickRate(13));
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> {
-            player.setAbilityCooldownTickRate(20);
+            bp.setAbilityCooldownTickRate(20);
             players.stream()
                     .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
                     .forEach(p -> p.setAbilityCooldownTickRate(20));

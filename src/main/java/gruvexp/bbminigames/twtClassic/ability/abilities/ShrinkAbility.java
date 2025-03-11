@@ -8,8 +8,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ShrinkAbility extends Ability {
-    public ShrinkAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
+    public ShrinkAbility(BotBowsPlayer bp, int hotBarSlot) {
+        super(bp, hotBarSlot);
         this.type = AbilityType.SHRINK;
         this.baseCooldown = type.getBaseCooldown();
     }
@@ -24,7 +24,7 @@ public class ShrinkAbility extends Ability {
                 if (i == 10) {
                     this.cancel();
                 }
-                player.player.getAttribute(Attribute.SCALE).setBaseValue(1.0 - 0.5/10 * i);
+                bp.player.getAttribute(Attribute.SCALE).setBaseValue(1.0 - 0.5/10 * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 1L);
@@ -35,7 +35,7 @@ public class ShrinkAbility extends Ability {
                 if (i == 20) {
                     this.cancel();
                 }
-                player.player.getAttribute(Attribute.SCALE).setBaseValue(0.5 + 0.5/20 * i);
+                bp.player.getAttribute(Attribute.SCALE).setBaseValue(0.5 + 0.5/20 * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 100L, 1L);
