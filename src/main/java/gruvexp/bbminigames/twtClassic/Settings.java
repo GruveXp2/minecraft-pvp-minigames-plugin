@@ -26,8 +26,8 @@ public class Settings {
     private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
     // win condition
     private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
-    private int winScoreThreshold = 5; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
-    private int roundDuration = 0;
+    private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
+    private int roundDuration = 5;
     // hazards
     public final StormHazard stormHazard; // holder styr på innstillinger og utførelse av storm logikk
     public final EarthquakeHazard earthquakeHazard; // holder styr på innstillinger og utførelse av storm logikk
