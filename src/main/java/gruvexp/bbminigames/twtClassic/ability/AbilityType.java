@@ -29,21 +29,21 @@ import java.util.UUID;
 public enum AbilityType {
 
     SPLASH_BOW(makeSplashBow(),
-            0, "CONCRETE_POWDER", AbilityCategory.DAMAGING),
+            "CONCRETE_POWDER", AbilityCategory.DAMAGING),
     THUNDER_BOW(Menu.makeItem(Material.BLUE_ICE, Component.text("Thunder Bow"),
             Component.text("Converts your crossbow into a thunder crossbow"),
             Component.text("When hitting an enemy,"),
             Component.text("lightning strikes other enemies within 6 blocks"),
             Component.text("Not implemented yet", NamedTextColor.YELLOW),
             getDurationComponent(ThunderBowAbility.DURATION)),
-            20, "TERRACOTTA", AbilityCategory.DAMAGING),
+            "TERRACOTTA", AbilityCategory.DAMAGING),
     LONG_ARMS(getLongHandsItem(),
-            15, "WOOL", AbilityCategory.DAMAGING),
+            "WOOL", AbilityCategory.DAMAGING),
     SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon"),
             Component.text("Melee weapon"),
             Component.text("Not implemented yet"),
             getDurationComponent(SalmonSlapAbility.DURATION)),
-            15, "WOOL", AbilityCategory.DAMAGING),
+            "WOOL", AbilityCategory.DAMAGING),
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of the enemy team by making them glow"),
             getDurationComponent(RadarAbility.DURATION)),
@@ -83,6 +83,10 @@ public enum AbilityType {
         Material yellow = Material.getMaterial("YELLOW_" + cooldownItemType);
         Material green = Material.getMaterial("LIME_" + cooldownItemType);
         this.cooldownItems = new ItemStack[]{new ItemStack(red), new ItemStack(orange), new ItemStack(yellow), new ItemStack(green)};
+    }
+
+    AbilityType(ItemStack item, String cooldownItemType, AbilityCategory category) {
+        this(item, -1, cooldownItemType, category);
     }
 
     public ItemStack getAbilityItem() {
