@@ -191,9 +191,10 @@ public class BotBowsGame {
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
         }
-        stormHazard.end();
-        earthquakeHazard.end();
-        ghostHazard.end();
+        if (stormHazard.isActive()) stormHazard.end();
+        if (earthquakeHazard.isActive()) earthquakeHazard.end();
+        if (ghostHazard.isActive()) ghostHazard.end();
+
         if (winningTeam == null) {
             lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
             canShoot = false;
@@ -253,8 +254,6 @@ public class BotBowsGame {
         barManager.sneakBars.clear();
         Cooldowns.sneakCooldowns.clear();
         Cooldowns.sneakRunnables.clear();
-        stormHazard.end();
-        earthquakeHazard.end();
         lobby.reset();
     }
 
@@ -277,6 +276,10 @@ public class BotBowsGame {
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
         }
+        if (stormHazard.isActive()) stormHazard.end();
+        if (earthquakeHazard.isActive()) earthquakeHazard.end();
+        if (ghostHazard.isActive()) ghostHazard.end();
+
         if (team1.getPoints() == team2.getPoints()) {
             postGame(null);
         } else if (team1.getPoints() > team2.getPoints()) {
