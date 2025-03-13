@@ -64,11 +64,11 @@ public abstract class Ability {
     public void use() {
         if (!bp.lobby.botBowsGame.canMove) return;
         Inventory inv = bp.player.getInventory();
-        if (baseCooldown > 0) {
+        if (type.category == AbilityCategory.DAMAGING) {
+            inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
+        } else {
             cooldownTimer = new CooldownTimer(inv);
             cooldownTimer.tickCooldown(20);
-        } else {
-            inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
         }
     }
 
