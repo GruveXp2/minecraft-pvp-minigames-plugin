@@ -16,7 +16,6 @@ public class SalmonSlapAbility extends Ability {
     public SalmonSlapAbility(BotBowsPlayer bp, int slot) {
         super(bp, slot);
         this.type = AbilityType.SALMON_SLAP;
-        this.baseCooldown = type.getBaseCooldown();
     }
 
     @Override

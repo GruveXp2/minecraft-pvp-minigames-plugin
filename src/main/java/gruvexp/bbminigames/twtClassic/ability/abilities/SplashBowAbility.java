@@ -25,7 +25,6 @@ public class SplashBowAbility extends Ability {
     public SplashBowAbility(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot);
         this.type = AbilityType.SPLASH_BOW;
-        this.baseCooldown = type.getBaseCooldown();
         bp.player.getInventory().setItem(18, new ItemStack(Material.ARROW, 64));
     }
 

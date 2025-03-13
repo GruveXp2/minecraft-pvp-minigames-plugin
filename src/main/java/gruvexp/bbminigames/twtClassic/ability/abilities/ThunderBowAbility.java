@@ -30,7 +30,6 @@ public class ThunderBowAbility extends Ability {
     public ThunderBowAbility(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot);
         this.type = AbilityType.THUNDER_BOW;
-        this.baseCooldown = type.getBaseCooldown();
     }
 
     @Override

@@ -8,6 +8,5 @@ public class LongArmsAbility extends Ability {
     public LongArmsAbility(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot);
         this.type = AbilityType.LONG_ARMS;
-        this.baseCooldown = type.getBaseCooldown();
     }
 }
