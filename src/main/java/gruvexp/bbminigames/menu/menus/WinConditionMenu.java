@@ -107,9 +107,11 @@ public class WinConditionMenu extends SettingsMenu {
 
     public void updateWinScoreThreshold() {
         ItemStack is;
-        if (settings.getWinScoreThreshold() > 0) {
-            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE));
-            is.setAmount(settings.getWinScoreThreshold());
+        int threshold = settings.getWinScoreThreshold();
+        if (threshold > 0) {
+            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE),
+                    Component.text(threshold, NamedTextColor.LIGHT_PURPLE).append(Component.text(" points to win", NamedTextColor.DARK_PURPLE)));
+            is.setAmount(threshold);
         } else {
             is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("Infinite rounds", NamedTextColor.YELLOW),
                     Component.text("Run /stopgame to stop the game"));
@@ -119,9 +121,10 @@ public class WinConditionMenu extends SettingsMenu {
 
     public void updateRoundDuration() {
         ItemStack is;
-        if (settings.getRoundDuration() > 0) {
-            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Round duration", NamedTextColor.BLUE), Component.text("minutes"));
-            is.setAmount(settings.getRoundDuration());
+        int roundDuration = settings.getRoundDuration();
+        if (roundDuration > 0) {
+            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Round duration", NamedTextColor.BLUE), Component.text(roundDuration, NamedTextColor.LIGHT_PURPLE).append(Component.text(" min", NamedTextColor.DARK_PURPLE)));
+            is.setAmount(roundDuration);
         } else {
             is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("No timer", NamedTextColor.YELLOW),
                     Component.text("Run /stopgame to stop the game"));
