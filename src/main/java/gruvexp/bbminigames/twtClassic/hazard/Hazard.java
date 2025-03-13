@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
 import gruvexp.bbminigames.twtClassic.Lobby;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -17,9 +18,9 @@ public abstract class Hazard {
         this.lobby = lobby;
     }
 
-    public HazardChance getHazardChance() {return hazardChance;}
+    public HazardChance getChance() {return hazardChance;}
 
-    public void setHazardChance(HazardChance chance) {hazardChance = chance;}
+    public void setChance(HazardChance chance) {hazardChance = chance;}
 
     public Map<Player, BukkitTask> hazardTimers = new HashMap<>();
 
@@ -35,6 +36,12 @@ public abstract class Hazard {
     }
 
     protected abstract void trigger(); // hazarden starter
+
+    public abstract String getName();
+
+    public abstract Component[] getDescription();
+
+    public abstract String getActionDescription();
 
     public void end() {
         for (BukkitTask timer : hazardTimers.values()) { // stopp timerene

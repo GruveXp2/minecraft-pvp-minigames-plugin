@@ -30,7 +30,7 @@ public class EarthquakeHazard extends Hazard {
     }
 
     public void init() { // calles når spillet begynner
-        if (getHazardChance() == HazardChance.DISABLED) return;
+        if (getChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer p : lobby.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.GOLD + "Anvil timer", BarColor.YELLOW, BarStyle.SEGMENTED_6);
             bar.addPlayer(p.player);
@@ -50,6 +50,24 @@ public class EarthquakeHazard extends Hazard {
             }
         }, 100L); // 5 sekunder
     }
+
+    @Override
+    public String getName() {
+        return "Earthquakes";
+    }
+
+    @Override
+    public Component[] getDescription() {
+        return new Component[] {Component.text("When there is an earthwuake, you will get hit by"),
+                Component.text("stones if you go underground"),
+                Component.text("for more than 5 seconds")};
+    }
+
+    @Override
+    public String getActionDescription() {
+        return "will have storms";
+    }
+
     @Override
     public void end() {
         super.end();

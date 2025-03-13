@@ -28,7 +28,7 @@ public class StormHazard extends Hazard {
     }
 
     public void init() { // calles når spillet begynner
-        if (getHazardChance() == HazardChance.DISABLED) return;
+        if (getChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer p : lobby.getPlayers()) {
             BossBar bar = Bukkit.createBossBar(ChatColor.AQUA + "Lightning timer", BarColor.BLUE, BarStyle.SEGMENTED_6);
             bar.addPlayer(p.player);
@@ -51,6 +51,23 @@ public class StormHazard extends Hazard {
             Main.WORLD.setStorm(true);
             Main.WORLD.setThunderDuration(12000); //10min
         }, 100L); // 5 sekunder
+    }
+
+    @Override
+    public String getName() {
+        return "Storms";
+    }
+
+    @Override
+    public Component[] getDescription() {
+        return new Component[] {Component.text("When there is a storm, you will get hit by"),
+                Component.text("lightning if you stand in dirext exposure"),
+                Component.text("to the sky for more than 5 seconds")};
+    }
+
+    @Override
+    public String getActionDescription() {
+        return "will have storms";
     }
 
     @Override

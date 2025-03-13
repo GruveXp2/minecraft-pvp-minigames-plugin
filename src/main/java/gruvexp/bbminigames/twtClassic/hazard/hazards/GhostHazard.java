@@ -57,6 +57,22 @@ public class GhostHazard extends Hazard {
     }
 
     @Override
+    public String getName() {
+        return "Haunted Arena";
+    }
+
+    @Override
+    public Component[] getDescription() {
+        return new Component[] {Component.text("When there is ghost mode, you will get haunted"),
+                Component.text("by your own ghost, and when you touch it,"), Component.text("you die")};
+    }
+
+    @Override
+    public String getActionDescription() {
+        return "will be haunted by ghosts";
+    }
+
+    @Override
     public void end() {
         super.end();
         BotBows.setTimeSmooth(18000, 30000, 5);
