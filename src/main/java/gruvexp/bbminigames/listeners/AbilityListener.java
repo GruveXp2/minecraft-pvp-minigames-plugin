@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -163,5 +164,18 @@ public class AbilityListener implements Listener {
         splashArrows.get(arrow).cancel();
         splashArrows.remove(arrow);
         arrow.remove();
+    }
+
+    @EventHandler
+    public void onSwing(PlayerAnimationEvent e) { // left clicking but not hitting anything
+        Player p = e.getPlayer();
+        Lobby lobby = BotBows.getLobby(p);
+        if (lobby == null) return;
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+        AbilityType type = AbilityType.fromItem(p.getInventory().getItemInMainHand());
+        if (type == null) return;
+        if (lobby.isGameActive() && type == AbilityType.LONG_ARMS) {
+            bp.getAbility(AbilityType.LONG_ARMS).use();
+        }
     }
 }

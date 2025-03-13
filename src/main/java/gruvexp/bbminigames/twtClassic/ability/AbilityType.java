@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.UUID;
 
 public enum AbilityType {
 
@@ -36,9 +37,7 @@ public enum AbilityType {
             Component.text("Not implemented yet", NamedTextColor.YELLOW),
             getDurationComponent(ThunderBowAbility.DURATION)),
             20, "TERRACOTTA", AbilityCategory.DAMAGING),
-    LONG_ARMS(Menu.makeItem(Material.BARRIER, Component.text("Long arms"),
-            Component.text("Punch someone far away, only 1 punch granted"),
-            Component.text("Not implemented yet", NamedTextColor.YELLOW)),
+    LONG_ARMS(getLongHandsItem(),
             15, "WOOL", AbilityCategory.DAMAGING),
     SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon"),
             Component.text("Melee weapon"),
@@ -74,12 +73,6 @@ public enum AbilityType {
     private final ItemStack[] cooldownItems;
     private final int baseCooldown;
     public final AbilityCategory category;
-
-    private static final AttributeModifier extraRangeModifier = new AttributeModifier(
-            new NamespacedKey(Main.getPlugin(), "extra_range"),
-            50,
-            AttributeModifier.Operation.ADD_NUMBER
-    );
 
     AbilityType(ItemStack item, int baseCooldown, String cooldownItemType, AbilityCategory category) {
         this.abilityItem = item;
@@ -232,8 +225,17 @@ public enum AbilityType {
 
     private static ItemStack getLongHandsItem() {
         ItemStack item = Menu.makeItem(Material.FISHING_ROD, Component.text("Long arms"),
-                Component.text("Has a very long range"));
+                Component.text("Punch someone far away, only 1 punch granted"));
         ItemMeta meta = item.getItemMeta();
+
+        // Create a unique NamespacedKey for this item
+        NamespacedKey key = new NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID());
+
+        AttributeModifier extraRangeModifier = new AttributeModifier(
+                key,
+                50,
+                AttributeModifier.Operation.ADD_NUMBER
+        );
         meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier);
         item.setItemMeta(meta);
         return item;
