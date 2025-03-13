@@ -5,10 +5,12 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.BubbleJetAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,14 +21,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class AbilityListener implements Listener {
 
@@ -116,6 +117,11 @@ public class AbilityListener implements Listener {
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
             }
+        } else if (e.getEntity() instanceof Trident) {
+            if (!bp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
+
+            Main.WORLD.setStorm(true); // make it temporarily rain so that channeling works
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> Main.WORLD.setStorm(false), 100L);
         }
     }
 
@@ -177,5 +183,42 @@ public class AbilityListener implements Listener {
         if (lobby.isGameActive() && type == AbilityType.LONG_ARMS) {
             bp.getAbility(AbilityType.LONG_ARMS).use();
         }
+    }
+
+    private final Map<Player, BukkitTask> riptideTasks = new HashMap<>();
+
+    @EventHandler
+    public void onRiptide(PlayerRiptideEvent e) {
+        Player attacker = e.getPlayer();
+        Lobby lobby = BotBows.getLobby(attacker);
+        if (lobby == null) return;
+        BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
+
+        if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
+        attackerBp.getAbility(AbilityType.BUBBLE_JET).use();
+
+        if (riptideTasks.containsKey(attacker)) {
+            riptideTasks.get(attacker).cancel();
+        }
+
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (attacker.isOnGround() || attacker.isSwimming()) {
+                    this.cancel(); // if the player is done riptiding and hitting the ground
+                    riptideTasks.remove(attacker);
+                    return;
+                }
+                double radius = BubbleJetAbility.DAMAGE_RADIUS;
+                for (Entity entity : Main.WORLD.getNearbyEntities(attacker.getLocation(), radius, radius, radius, entity -> entity instanceof Player)) {
+                    Player defender = (Player) entity;
+                    Lobby lobby = BotBows.getLobby(defender);
+                    if (lobby == null) return;
+                    if (lobby != BotBows.getLobby(attacker)) return;
+                    lobby.getBotBowsPlayer(defender).handleHit(lobby.getBotBowsPlayer(attacker), Component.text(" was hit by bubble jet from "));
+                }
+            }
+        }.runTaskTimer(Main.getPlugin(), 0L, 2L);
+        riptideTasks.put(attacker, task);
     }
 }

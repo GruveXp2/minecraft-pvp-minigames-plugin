@@ -236,6 +236,7 @@ public class BotBowsPlayer {
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
             case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
             case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
+            case BUBBLE_JET -> abilities.put(type, new BubbleJetAbility(this, slot));
         }
         int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
         if (relativeAbilitySlot > 0) {

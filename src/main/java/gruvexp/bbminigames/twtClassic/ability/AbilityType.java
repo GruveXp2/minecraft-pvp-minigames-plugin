@@ -37,6 +37,8 @@ public enum AbilityType {
             Component.text("Not implemented yet", NamedTextColor.YELLOW),
             getDurationComponent(ThunderBowAbility.DURATION)),
             "TERRACOTTA", AbilityCategory.DAMAGING),
+    BUBBLE_JET(getRiptideTrident(),
+            "CANDLE", AbilityCategory.DAMAGING),
     LONG_ARMS(getLongHandsItem(),
             "WOOL", AbilityCategory.DAMAGING),
     SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon"),
@@ -242,6 +244,15 @@ public enum AbilityType {
         );
         meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier);
         item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack getRiptideTrident() {
+        ItemStack item = Menu.makeItem(Material.TRIDENT, Component.text("Trident"),
+                Component.text("Makes you fly thru the air"),
+                Component.text("and damage enemies in a 2m radius"),
+                Component.text("Not implemented yet", NamedTextColor.YELLOW));
+        item.addEnchantment(Enchantment.RIPTIDE, 0);
         return item;
     }
 }
