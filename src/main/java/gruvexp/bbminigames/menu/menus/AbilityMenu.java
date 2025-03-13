@@ -23,6 +23,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -265,7 +266,9 @@ public class AbilityMenu extends SettingsMenu {
         Inventory inv = p.getInventory();
         for (int i = 9; i < 18; i++) {
             if (inv.getItem(i) != null) {
-                Main.WORLD.dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
+                BotBows.debugMessage("Dropping item:" + inv.getItem(i).getType().name() + ", slot=" + i);
+                var item = Main.WORLD.dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
+                item.getVelocity().add(new Vector(1, 2, 1));
                 inv.setItem(i, null);
             }
         }
