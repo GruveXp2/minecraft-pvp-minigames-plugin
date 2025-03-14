@@ -25,12 +25,14 @@ public class BubbleJetAbility extends Ability {
 
     public void use(Player attacker) {
         super.use();
+        attacker.setInvulnerable(true);
         if (riptideTask == null) {
             riptideTask = new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (attacker.isOnGround() || attacker.isSwimming()) {
                         this.cancel(); // if the player is done riptiding and hitting the ground
+                        attacker.setInvulnerable(false);
                         return;
                     }
                     for (Entity entity : Main.WORLD.getNearbyEntities(attacker.getLocation(), DAMAGE_RADIUS, DAMAGE_RADIUS, DAMAGE_RADIUS, entity -> entity instanceof Player)) {
