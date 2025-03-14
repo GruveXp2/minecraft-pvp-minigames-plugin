@@ -45,7 +45,9 @@ public class StormHazard extends Hazard {
         lobby.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : lobby.getPlayers()) {
-                hazardTimers.put(p.player, new PlayerStormTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
+                PlayerStormTimer stormTimer = new PlayerStormTimer(p, bars.get(p));
+                stormTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
+                hazardTimers.put(p.player, stormTimer);
             }
             Main.WORLD.setThundering(true);
             Main.WORLD.setStorm(true);

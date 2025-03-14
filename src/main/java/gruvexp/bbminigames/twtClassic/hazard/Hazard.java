@@ -3,7 +3,7 @@ package gruvexp.bbminigames.twtClassic.hazard;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public abstract class Hazard {
 
     public void setChance(HazardChance chance) {hazardChance = chance;}
 
-    public Map<Player, BukkitTask> hazardTimers = new HashMap<>();
+    public Map<Player, BukkitRunnable> hazardTimers = new HashMap<>();
 
     public void triggerOnChance() {
         if (hazardChance.occurs()) {
@@ -44,7 +44,7 @@ public abstract class Hazard {
     public abstract String getActionDescription();
 
     public void end() {
-        for (BukkitTask timer : hazardTimers.values()) { // stopp timerene
+        for (BukkitRunnable timer : hazardTimers.values()) { // stopp timerene
             timer.cancel();
         }
         hazardTimers.clear();

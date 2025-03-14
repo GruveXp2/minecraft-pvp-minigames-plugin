@@ -46,7 +46,9 @@ public class EarthquakeHazard extends Hazard {
         lobby.titlePlayers(ChatColor.RED + "EARTHQUAKE INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : lobby.getPlayers()) {
-                hazardTimers.put(p.player, new PlayerEarthQuakeTimer(p, bars.get(p)).runTaskTimer(Main.getPlugin(), 0L, 2L));
+                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(p, bars.get(p));
+                earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
+                hazardTimers.put(p.player, earthQuakeTimer);
             }
         }, 100L); // 5 sekunder
     }

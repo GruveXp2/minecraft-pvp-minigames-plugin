@@ -42,7 +42,8 @@ public class GhostHazard extends Hazard {
 
         for (BotBowsPlayer p : lobby.getPlayers()) {
             PlayerGhostMover ghostMover = new PlayerGhostMover(p);
-            hazardTimers.put(p.player, ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L));
+            ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L);
+            hazardTimers.put(p.player, ghostMover);
 
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                 ghostMover.ascendGhost(p.player.getLocation());
