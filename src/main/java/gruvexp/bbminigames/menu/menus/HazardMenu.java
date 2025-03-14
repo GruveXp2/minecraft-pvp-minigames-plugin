@@ -44,7 +44,7 @@ public class HazardMenu extends SettingsMenu {
             Component percentage = Component.text(hazard.getChance().getPercent() + "%", NamedTextColor.LIGHT_PURPLE);
             item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
                     Component.text("Enabled", NamedTextColor.GREEN),
-                    percentage.append(Component.text(" of rounds will" + hazard.getActionDescription() + ".", NamedTextColor.DARK_PURPLE)), loreDesc[0], loreDesc[1], loreDesc[2]);
+                    percentage.append(Component.text(" of rounds " + hazard.getActionDescription() + ".", NamedTextColor.DARK_PURPLE)), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;
     }
