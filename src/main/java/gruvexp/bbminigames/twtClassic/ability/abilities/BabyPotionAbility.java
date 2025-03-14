@@ -17,9 +17,7 @@ public class BabyPotionAbility extends PotionAbility {
     public static int DURATION = 10;
 
     protected BabyPotionAbility(BotBowsPlayer player, int hotBarSlot) {
-        super(player, hotBarSlot);
-        this.type = AbilityType.BABY_POTION;
-        this.baseCooldown = type.getBaseCooldown();
+        super(player, hotBarSlot, AbilityType.BABY_POTION);
     }
 
     @Override

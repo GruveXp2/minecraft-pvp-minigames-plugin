@@ -9,7 +9,6 @@ public class BubbleJetAbility extends Ability {
     public static final double DAMAGE_RADIUS = 2.0;
 
     public BubbleJetAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.BUBBLE_JET;
+        super(bp, hotBarSlot, AbilityType.BUBBLE_JET);
     }
 }

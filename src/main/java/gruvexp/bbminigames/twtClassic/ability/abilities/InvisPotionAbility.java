@@ -9,10 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class InvisPotionAbility extends Ability {
+
     public InvisPotionAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.INVIS_POTION;
-        this.baseCooldown = type.getBaseCooldown();
+        super(bp, hotBarSlot, AbilityType.INVIS_POTION);
     }
 
     @Override

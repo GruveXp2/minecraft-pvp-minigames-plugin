@@ -23,8 +23,7 @@ public class SplashBowAbility extends Ability {
     public static final double SPLASH_RADIUS = 3.0;
 
     public SplashBowAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.SPLASH_BOW;
+        super(bp, hotBarSlot, AbilityType.SPLASH_BOW);
         bp.player.getInventory().setItem(18, new ItemStack(Material.ARROW, 64));
     }
 

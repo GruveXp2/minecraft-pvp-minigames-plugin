@@ -14,8 +14,7 @@ public class SalmonSlapAbility extends Ability {
     public static final ItemStack SALMON = new ItemStack(Material.SALMON);
 
     public SalmonSlapAbility(BotBowsPlayer bp, int slot) {
-        super(bp, slot);
-        this.type = AbilityType.SALMON_SLAP;
+        super(bp, slot, AbilityType.SALMON_SLAP);
     }
 
     @Override

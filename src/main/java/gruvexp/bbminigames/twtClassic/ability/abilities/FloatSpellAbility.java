@@ -19,9 +19,7 @@ public class FloatSpellAbility extends Ability {
     public static final int DURATION = 3;
 
     public FloatSpellAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.FLOAT_SPELL;
-        this.baseCooldown = type.getBaseCooldown();
+        super(bp, hotBarSlot, AbilityType.FLOAT_SPELL);
     }
 
     public void handleUsage(Chicken chicken) {

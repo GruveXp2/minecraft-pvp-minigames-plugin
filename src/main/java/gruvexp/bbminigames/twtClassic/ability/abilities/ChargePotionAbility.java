@@ -15,7 +15,7 @@ public class ChargePotionAbility extends PotionAbility {
     public static final int DURATION = 20;
 
     protected ChargePotionAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
+        super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
         this.type = AbilityType.CHARGE_POTION;
         this.baseCooldown = type.getBaseCooldown();
     }

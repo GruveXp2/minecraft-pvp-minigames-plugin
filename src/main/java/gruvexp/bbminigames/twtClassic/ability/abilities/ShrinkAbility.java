@@ -8,10 +8,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ShrinkAbility extends Ability {
+
     public ShrinkAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.SHRINK;
-        this.baseCooldown = type.getBaseCooldown();
+        super(bp, hotBarSlot, AbilityType.SHRINK);
     }
 
     @Override

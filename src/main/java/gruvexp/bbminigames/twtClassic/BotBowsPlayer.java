@@ -225,16 +225,16 @@ public class BotBowsPlayer {
 
     public void equipAbility(int slot, AbilityType type) {
         switch (type) {
-            case ENDER_PEARL -> abilities.put(type, new EnderPearlAbility(this, slot));
-            case WIND_CHARGE -> abilities.put(type, new WindChargeAbility(this, slot));
-            case SPEED_POTION -> abilities.put(type, new SpeedPotionAbility(this, slot));
+            case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
+            case WIND_CHARGE -> abilities.put(type, new Ability(this, slot, AbilityType.WIND_CHARGE));
+            case SPEED_POTION -> abilities.put(type, new Ability(this, slot, AbilityType.SPEED_POTION));
             case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
             case SHRINK -> abilities.put(type, new ShrinkAbility(this, slot));
             case RADAR -> abilities.put(type, new RadarAbility(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBowAbility(this, slot));
             case THUNDER_BOW -> abilities.put(type, new ThunderBowAbility(this, slot));
             case FLOAT_SPELL -> abilities.put(type, new FloatSpellAbility(this, slot));
-            case LONG_ARMS -> abilities.put(type, new LongArmsAbility(this, slot));
+            case LONG_ARMS -> abilities.put(type, new Ability(this, slot, AbilityType.LONG_ARMS));
             case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
             case BUBBLE_JET -> abilities.put(type, new BubbleJetAbility(this, slot));
         }

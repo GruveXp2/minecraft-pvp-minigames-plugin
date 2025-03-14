@@ -28,8 +28,7 @@ public class ThunderBowAbility extends Ability {
     private boolean isActive = false;
 
     public ThunderBowAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.THUNDER_BOW;
+        super(bp, hotBarSlot, AbilityType.THUNDER_BOW);
     }
 
     @Override

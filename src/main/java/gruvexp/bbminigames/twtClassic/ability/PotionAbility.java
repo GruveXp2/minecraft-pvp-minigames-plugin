@@ -12,8 +12,8 @@ public abstract class PotionAbility extends Ability {
 
     protected static final int RADIUS = 4;
 
-    protected PotionAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
+    protected PotionAbility(BotBowsPlayer bp, int hotBarSlot, AbilityType type) {
+        super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
     }
 
     @Override

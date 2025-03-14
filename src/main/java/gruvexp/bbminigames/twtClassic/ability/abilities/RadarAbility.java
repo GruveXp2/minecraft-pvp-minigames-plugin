@@ -9,9 +9,7 @@ public class RadarAbility extends Ability {
     public static final int DURATION = 4; // seconds
 
     public RadarAbility(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot);
-        this.type = AbilityType.RADAR;
-        this.baseCooldown = type.getBaseCooldown();
+        super(bp, hotBarSlot, AbilityType.RADAR);
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public abstract class Ability {
+public class Ability {
 
     protected final BotBowsPlayer bp;
     protected AbilityType type;
@@ -20,9 +20,13 @@ public abstract class Ability {
     private final int hotBarSlot;
     private CooldownTimer cooldownTimer;
 
-    protected Ability(BotBowsPlayer bp, int hotBarSlot) {
+    public Ability(BotBowsPlayer bp, int hotBarSlot, AbilityType type) {
         this.bp = bp;
         this.hotBarSlot = hotBarSlot;
+        this.type = type;
+        if (type.category != AbilityCategory.DAMAGING) {
+            this.baseCooldown = type.getBaseCooldown();
+        }
     }
 
     public AbilityType getType() {
