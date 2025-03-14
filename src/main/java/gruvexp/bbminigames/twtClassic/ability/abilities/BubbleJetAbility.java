@@ -23,29 +23,32 @@ public class BubbleJetAbility extends Ability {
         super(bp, hotBarSlot, AbilityType.BUBBLE_JET);
     }
 
-    public void use(Player attacker) {
+    @Override
+    public void use() {
         super.use();
-        attacker.setInvulnerable(true);
-        if (riptideTask == null) {
-            riptideTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (attacker.isOnGround() || attacker.isSwimming()) {
-                        this.cancel(); // if the player is done riptiding and hitting the ground
-                        attacker.setInvulnerable(false);
-                        return;
-                    }
-                    for (Entity entity : Main.WORLD.getNearbyEntities(attacker.getLocation(), DAMAGE_RADIUS, DAMAGE_RADIUS, DAMAGE_RADIUS, entity -> entity instanceof Player)) {
-                        Player defender = (Player) entity;
-                        Lobby lobby = BotBows.getLobby(defender);
-                        if (lobby == null) return;
-                        if (lobby != BotBows.getLobby(attacker)) return;
-                        defender.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
-                        lobby.getBotBowsPlayer(defender).handleHit(lobby.getBotBowsPlayer(attacker), Component.text(" was hit by bubble jet from "));
-                    }
+        Player p = bp.player;
+        p.setInvulnerable(true);
+        if (riptideTask != null) return;
+        riptideTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (p.isOnGround() || p.isSwimming()) {
+                    p.setInvulnerable(false);
+                    this.cancel(); // if the player is done riptiding and hitting the ground
+                    riptideTask = null;
+                    return;
                 }
-            };
-        }
+                for (Entity entity : Main.WORLD.getNearbyEntities(p.getLocation(), DAMAGE_RADIUS, DAMAGE_RADIUS, DAMAGE_RADIUS, entity -> entity instanceof Player)) {
+                    Player defender = (Player) entity;
+                    if (defender == p) continue;
+                    Lobby lobby = BotBows.getLobby(defender);
+                    if (lobby == null) return;
+                    if (lobby != BotBows.getLobby(p)) return;
+                    defender.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
+                    lobby.getBotBowsPlayer(defender).handleHit(lobby.getBotBowsPlayer(p), Component.text(" was hit by bubble jet from "));
+                }
+            }
+        };
         riptideTask.runTaskTimer(Main.getPlugin(), 0L, 2L);
     }
 }

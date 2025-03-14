@@ -243,6 +243,7 @@ public class BotBowsPlayer {
             player.getInventory().setItem(relativeAbilitySlot + 9, AbilityMenu.ABILITY_EQUIPPED);
             BotBows.debugMessage("Setting equip item at " + relativeAbilitySlot);
         }
+        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
@@ -264,6 +265,8 @@ public class BotBowsPlayer {
             inv.setItem(abilityEquipSlot + 9, null);
         }
         abilities.remove(type);
+        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--;
+
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         if (!hideMessage) {
             player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));

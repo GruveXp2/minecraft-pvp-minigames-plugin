@@ -36,6 +36,7 @@ public class Settings {
     private int maxAbilities = 2;
     private float abilityCooldownMultiplier = 1.0f;
     private final Map<AbilityType, Boolean> abilityStates = new HashMap<>();
+    public int rain = 0;
     // menus
     public MapMenu mapMenu;
     public HealthMenu healthMenu;

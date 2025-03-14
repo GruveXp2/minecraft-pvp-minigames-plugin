@@ -16,6 +16,7 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.time.Duration;
@@ -190,6 +191,10 @@ public class BotBowsGame {
                         .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
+        }
+        if (settings.rain > 0) {
+            Main.WORLD.setStorm(false);
+            Bukkit.getOnlinePlayers().forEach(Player::resetPlayerWeather);
         }
         if (stormHazard.isActive()) stormHazard.end();
         if (earthquakeHazard.isActive()) earthquakeHazard.end();

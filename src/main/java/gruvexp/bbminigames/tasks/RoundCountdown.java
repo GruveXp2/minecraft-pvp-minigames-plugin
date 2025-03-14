@@ -1,10 +1,13 @@
 package gruvexp.bbminigames.tasks;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.WeatherType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class RoundCountdown extends BukkitRunnable {
@@ -28,7 +31,13 @@ public class RoundCountdown extends BukkitRunnable {
                         .append(Component.text("has started!")));
                 botBowsGame.canMove = true;
                 botBowsGame.canShoot = true;
+
                 botBowsGame.triggerHazards();
+
+                if (botBowsGame.settings.rain > 0 && !botBowsGame.settings.stormHazard.isActive()) {
+                    Main.WORLD.setStorm(true);
+                    Bukkit.getOnlinePlayers().forEach(p -> p.setPlayerWeather(WeatherType.CLEAR));
+                }
                 cancel(); // stopper loopen
             }
         }

@@ -5,16 +5,13 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.BubbleJetAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,13 +20,9 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class AbilityListener implements Listener {
 
@@ -73,6 +66,10 @@ public class AbilityListener implements Listener {
                 }
                 e.setCancelled(true); // gjør sånn at det ikke spawnes 2 stykker
             }
+            case BUBBLE_JET -> {
+                p.resetPlayerWeather();
+                p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
+            }
         }
     }
 
@@ -84,7 +81,7 @@ public class AbilityListener implements Listener {
         if (defenderBp == null) return;
         AbilityType type = AbilityType.fromItem(weapon);
         if (type == AbilityType.LONG_ARMS) {
-            attackerBp.getAbility(type).use();
+            attackerBp.getAbility(AbilityType.LONG_ARMS).use();
             defenderBp.handleHit(attackerBp, Component.text(" was long-slapped by "));
         } else if (weapon.getType() == Material.SALMON) {
             defenderBp.handleHit(attackerBp, Component.text(" was slapped by "));
@@ -119,11 +116,6 @@ public class AbilityListener implements Listener {
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
             }
-        } else if (e.getEntity() instanceof Trident) {
-            if (!bp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
-
-            Main.WORLD.setStorm(true); // make it temporarily rain so that channeling works
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> Main.WORLD.setStorm(false), 100L);
         }
     }
 
@@ -195,6 +187,13 @@ public class AbilityListener implements Listener {
         BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
 
         if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+            if (!attackerBp.lobby.settings.stormHazard.isActive()) {
+                attacker.setPlayerWeather(WeatherType.CLEAR);
+            } else {
+                attacker.resetPlayerWeather();
+            }
+        }, 10L);
         attackerBp.getAbility(AbilityType.BUBBLE_JET).use();
     }
 }

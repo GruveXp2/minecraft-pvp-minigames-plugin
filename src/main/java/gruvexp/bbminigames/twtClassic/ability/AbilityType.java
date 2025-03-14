@@ -252,7 +252,6 @@ public enum AbilityType {
                 Component.text("Makes you fly thru the air"),
                 Component.text("and damage enemies in a 2m radius"),
                 Component.text("Not implemented yet", NamedTextColor.YELLOW));
-        item.addEnchantment(Enchantment.RIPTIDE, 3);
         return item;
     }
 }
