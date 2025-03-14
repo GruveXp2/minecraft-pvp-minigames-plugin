@@ -75,6 +75,7 @@ public class GhostHazard extends Hazard {
 
     @Override
     public void end() {
+        hazardTimers.values().forEach(t -> ((PlayerGhostMover) t).descendGhost());
         super.end();
         BotBows.setTimeSmooth(18000, 30000, 5);
     }
@@ -172,7 +173,6 @@ public class GhostHazard extends Hazard {
                 @Override
                 public void run() {
                     if (!p.isOnline() || ticks >= 40) {
-                        cancel();
                         bp.die(Component.text(p.getName(), bp.getTeamColor())
                                 .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
                         descendGhost(ghostLoc);
@@ -187,7 +187,12 @@ public class GhostHazard extends Hazard {
             }.runTaskTimer(Main.getPlugin(), 0L, 1L);
         }
 
+        public void descendGhost() {
+            descendGhost(ghost.getLocation());
+        }
+
         private void descendGhost(Location ghostLoc) {
+            cancel();
             final int blocks = -2;
             final int totalTicks = 2 * 20;
             final double Δy = (double) blocks / totalTicks;
