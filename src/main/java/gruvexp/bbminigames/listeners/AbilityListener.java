@@ -187,8 +187,6 @@ public class AbilityListener implements Listener {
         }
     }
 
-    private final Map<Player, BukkitTask> riptideTasks = new HashMap<>();
-
     @EventHandler
     public void onRiptide(PlayerRiptideEvent e) {
         Player attacker = e.getPlayer();
@@ -198,30 +196,5 @@ public class AbilityListener implements Listener {
 
         if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
         attackerBp.getAbility(AbilityType.BUBBLE_JET).use();
-
-        if (riptideTasks.containsKey(attacker)) {
-            riptideTasks.get(attacker).cancel();
-        }
-
-        BukkitTask task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (attacker.isOnGround() || attacker.isSwimming()) {
-                    this.cancel(); // if the player is done riptiding and hitting the ground
-                    riptideTasks.remove(attacker);
-                    return;
-                }
-                double radius = BubbleJetAbility.DAMAGE_RADIUS;
-                for (Entity entity : Main.WORLD.getNearbyEntities(attacker.getLocation(), radius, radius, radius, entity -> entity instanceof Player)) {
-                    Player defender = (Player) entity;
-                    Lobby lobby = BotBows.getLobby(defender);
-                    if (lobby == null) return;
-                    if (lobby != BotBows.getLobby(attacker)) return;
-                    defender.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
-                    lobby.getBotBowsPlayer(defender).handleHit(lobby.getBotBowsPlayer(attacker), Component.text(" was hit by bubble jet from "));
-                }
-            }
-        }.runTaskTimer(Main.getPlugin(), 0L, 2L);
-        riptideTasks.put(attacker, task);
     }
 }
