@@ -19,7 +19,12 @@ public class Util {
         }
     }
 
-    public static Vector3i getTargetBlock(Player player, int range) { // modified method by https://www.spigotmc.org/members/clip.1001/ that gets the block the player is looking at
+    public static Vector3i getTargetBlockLoc(Player player, int range) { // modified method by https://www.spigotmc.org/members/clip.1001/ that gets the block the player is looking at
+        Block lastBlock = getTargetBlock(player, range);
+        return new Vector3i(lastBlock.getX(), lastBlock.getY(), lastBlock.getZ());
+    }
+
+    public static Block getTargetBlock(Player player, int range) { // modified method by https://www.spigotmc.org/members/clip.1001/ that gets the block the player is looking at
         BlockIterator iter = new BlockIterator(player, range);
         Block lastBlock = iter.next();
         while (iter.hasNext()) {
@@ -29,7 +34,7 @@ public class Util {
             }
             break;
         }
-        return new Vector3i(lastBlock.getX(), lastBlock.getY(), lastBlock.getZ());
+        return lastBlock;
     }
 
     public static String print(Vector3i vec) {

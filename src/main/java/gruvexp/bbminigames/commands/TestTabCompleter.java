@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.commands;
 
-import gruvexp.bbminigames.Utils;
+import gruvexp.bbminigames.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -22,12 +22,12 @@ public class TestTabCompleter implements TabCompleter {
         String oper = args[0];
         if (oper.equals("test_arc")) {
             if (args.length <= 4) {
-                Vector3i loc1 = Utils.getTargetBlock(p, 10);
-                return List.of(Utils.print(loc1));
+                Vector3i loc1 = Util.getTargetBlockLoc(p, 10);
+                return List.of(Util.print(loc1));
             }
             if (args.length <= 7) {
-                Vector3i loc2 = Utils.getTargetBlock(p, 10);
-                return List.of(Utils.print(loc2));
+                Vector3i loc2 = Util.getTargetBlockLoc(p, 10);
+                return List.of(Util.print(loc2));
             }
         }
         return List.of("");

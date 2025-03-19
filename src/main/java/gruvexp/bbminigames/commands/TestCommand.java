@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.commands;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.Utils;
+import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
@@ -98,8 +98,8 @@ public class TestCommand implements CommandExecutor {
                     if (args.length < 7) {
                         sender.sendMessage("Not enough args (need 8)");
                     }
-                    Location loc1 = Utils.toLocation(Main.WORLD, args[1], args[2], args[3]);
-                    Location loc2 = Utils.toLocation(Main.WORLD, args[4], args[5], args[6]);
+                    Location loc1 = Util.toLocation(Main.WORLD, args[1], args[2], args[3]);
+                    Location loc2 = Util.toLocation(Main.WORLD, args[4], args[5], args[6]);
                     ThunderBowAbility.createElectricArc(loc1, loc2, Color.RED);
                 }
                 case "inv" -> p.openInventory(testInv);
