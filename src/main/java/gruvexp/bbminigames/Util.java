@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.joml.Vector3i;
 
-public class Utils {
+public class Util {
 
     public static Location toLocation(World world, String x, String y, String z) {
         try {
