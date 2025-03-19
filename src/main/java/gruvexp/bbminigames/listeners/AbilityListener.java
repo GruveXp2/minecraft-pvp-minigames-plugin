@@ -42,7 +42,7 @@ public class AbilityListener implements Listener {
         AbilityType type = AbilityType.fromItem(abilityItem);
         if (type == null) return;
         //BotBows.debugMessage("Used ability: " + type.name());
-        if (!lobby.isGameActive()) {
+        if (!lobby.isGameActive() && !TestCommand.testAbilities) {
             //BotBows.debugMessage("Game is not active: cancelling");
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;

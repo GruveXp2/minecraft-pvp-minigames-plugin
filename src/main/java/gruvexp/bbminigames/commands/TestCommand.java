@@ -29,6 +29,7 @@ public class TestCommand implements CommandExecutor {
     public static boolean debugging = true;
     public static boolean test1 = false;
     public static boolean test2 = false;
+    public static boolean testAbilities = false;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
 
     @Override
@@ -88,6 +89,10 @@ public class TestCommand implements CommandExecutor {
                 case "t2" -> {
                     test2 = !test2;
                     BotBows.debugMessage("Test2 set to: " + test2);
+                }
+                case "ta", "d" -> {
+                    testAbilities = !testAbilities;
+                    BotBows.debugMessage("testAbilities set to: " + testAbilities);
                 }
                 case "give_ability_items" -> {
                     for (AbilityType type : AbilityType.values()) {

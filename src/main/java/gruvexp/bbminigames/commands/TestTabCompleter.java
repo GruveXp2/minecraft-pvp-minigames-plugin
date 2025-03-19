@@ -16,7 +16,7 @@ public class TestTabCompleter implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if (args.length == 1)
-            return List.of("t", "w", "a", "b", "t1", "t2", "give_ability_items", "toggle_debugging", "inv", "set_blaze_rod_cooldown", "test_arc");
+            return List.of("t", "w", "a", "b", "t1", "t2", "ta", "give_ability_items", "toggle_debugging", "inv", "set_blaze_rod_cooldown", "test_arc");
 
         Player p = (Player) sender;
         String oper = args[0];
