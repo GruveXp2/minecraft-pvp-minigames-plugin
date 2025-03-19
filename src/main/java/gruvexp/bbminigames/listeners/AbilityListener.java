@@ -1,10 +1,13 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.Util;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrapAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
@@ -69,6 +72,13 @@ public class AbilityListener implements Listener {
             case BUBBLE_JET -> {
                 p.resetPlayerWeather();
                 p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
+            }
+            case CREEPER_TRAP -> {
+                Block block = Util.getTargetBlock(p, 5);
+                if (block.getType() == Material.AIR) return;
+                Location placeLoc = block.getLocation().add(0.5, 1, 0.5);
+                CreeperTrapAbility creeperTrapAbility = (CreeperTrapAbility) bp.getAbility(type);
+                creeperTrapAbility.use(placeLoc);
             }
         }
     }

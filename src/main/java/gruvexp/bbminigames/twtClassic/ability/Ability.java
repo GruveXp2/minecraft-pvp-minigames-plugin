@@ -66,7 +66,7 @@ public class Ability {
     }
 
     public void use() {
-        if (!bp.lobby.botBowsGame.canMove) return;
+        if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return; // null check used when testing ability outside of match
         Inventory inv = bp.player.getInventory();
         if (type.category == AbilityCategory.DAMAGING) {
             inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
