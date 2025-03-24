@@ -39,6 +39,13 @@ public class CreeperTrapAbility extends Ability {
 
     public void use(Location loc) {
         super.use();
+        if (creeperOwners.containsValue(bp)) {
+            creeperOwners.forEach((creeper, owner) -> {
+                if (owner == bp) {
+                    ignite(creeper);
+                }
+            });
+        }
         creeper = (Creeper) Main.WORLD.spawnEntity(loc, EntityType.CREEPER);
         creeper.setAI(false);
         creeper.getAttribute(Attribute.SCALE).setBaseValue(0.75);
