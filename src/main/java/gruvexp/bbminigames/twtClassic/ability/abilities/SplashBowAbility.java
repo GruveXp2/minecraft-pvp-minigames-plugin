@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SplashBowAbility extends Ability {
 
-    public static final double SPLASH_RADIUS = 3.0;
+    public static final double BLAST_RADIUS = 3.0;
 
     public SplashBowAbility(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.SPLASH_BOW);
@@ -29,9 +29,9 @@ public class SplashBowAbility extends Ability {
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
         Color attackerTeamColor = BotBows.getLobby(attacker).getBotBowsPlayer(attacker).getTeam().dyeColor.getColor();
-        Main.WORLD.spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, SPLASH_RADIUS/4, SPLASH_RADIUS/4, SPLASH_RADIUS/4, 5);
+        Main.WORLD.spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
         Main.WORLD.spawnParticle(Particle.DUST, hitLoc, 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
-        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, SPLASH_RADIUS, SPLASH_RADIUS, SPLASH_RADIUS, entity -> entity instanceof Player)) {
+        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
             Player p = (Player) entity;
             Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
