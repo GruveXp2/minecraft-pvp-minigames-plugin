@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -62,6 +63,8 @@ public enum AbilityType {
             Component.text("Deploy a creeper mine"),
             Component.text("to surprise your friends!")),
             25, "CONCRETE_POWDER", AbilityCategory.TRAP),
+    LINGERING_POTION(makeLingeringPotion(),
+            LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP),
     FLOAT_SPELL(getFloatSpellItem(),
             10, "BUNDLE", AbilityCategory.UTILITY),
     WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
@@ -204,6 +207,21 @@ public enum AbilityType {
                 Component.text("slowness, levitation, nausea, or blindness", NamedTextColor.BLUE),
                 getDurationComponent(KarmaPotion.DURATION)));
 
+        potion.setItemMeta(meta);
+        return potion;
+    }
+
+    private static ItemStack makeLingeringPotion() {
+        ItemStack potion = new ItemStack(Material.LINGERING_POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+        meta.customName(Component.text("Lingering potion"));
+        meta.lore(List.of(Component.text("Contains one of the following at random:"),
+                Component.text("Nausea", NamedTextColor.LIGHT_PURPLE),
+                Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
+                Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
+                Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
+                getDurationComponent(LingeringPotionAbility.DURATION)));
+        meta.setColor(Color.fromRGB(100, 62, 46));
         potion.setItemMeta(meta);
         return potion;
     }

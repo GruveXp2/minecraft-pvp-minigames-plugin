@@ -7,10 +7,7 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrapAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.FloatSpellAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.SplashBowAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -125,6 +122,10 @@ public class AbilityListener implements Listener {
                 }
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
+            }
+        } else if (e.getEntity() instanceof ThrownPotion potion) {
+            if (potion.getItem().getType() == Material.LINGERING_POTION) {
+                LingeringPotionAbility.giveRandomEffect(potion.getItem());
             }
         }
     }

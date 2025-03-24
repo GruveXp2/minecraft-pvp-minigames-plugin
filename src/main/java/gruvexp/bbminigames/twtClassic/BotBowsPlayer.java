@@ -238,6 +238,7 @@ public class BotBowsPlayer {
             case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
             case BUBBLE_JET -> abilities.put(type, new BubbleJetAbility(this, slot));
             case CREEPER_TRAP -> abilities.put(type, new CreeperTrapAbility(this, slot));
+            case LINGERING_POTION -> abilities.put(type, new LingeringPotionAbility(this, slot));
         }
         int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
         if (relativeAbilitySlot > 0) {
