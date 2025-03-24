@@ -37,7 +37,7 @@ public class SplashBowAbility extends Ability {
             if (lobby == null) return;
             if (lobby != BotBows.getLobby(attacker)) return;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.handleHit(lobby.getBotBowsPlayer(attacker), Component.text(" was splash bowed by "));
+            bp.handleHit(Component.text(" was splash bowed by "), lobby.getBotBowsPlayer(attacker));
         }
     }
 

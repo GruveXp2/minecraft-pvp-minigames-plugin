@@ -92,9 +92,9 @@ public class AbilityListener implements Listener {
         AbilityType type = AbilityType.fromItem(weapon);
         if (type == AbilityType.LONG_ARMS) {
             attackerBp.getAbility(AbilityType.LONG_ARMS).use();
-            defenderBp.handleHit(attackerBp, Component.text(" was long-slapped by "));
+            defenderBp.handleHit(Component.text(" was long-slapped by "), attackerBp);
         } else if (weapon.getType() == Material.SALMON) {
-            defenderBp.handleHit(attackerBp, Component.text(" was slapped by "));
+            defenderBp.handleHit(Component.text(" was slapped by "), attackerBp);
         }
         e.setCancelled(true);
     }

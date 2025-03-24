@@ -45,7 +45,7 @@ public class BubbleJetAbility extends Ability {
                     if (lobby == null) return;
                     if (lobby != BotBows.getLobby(p)) return;
                     defender.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
-                    lobby.getBotBowsPlayer(defender).handleHit(lobby.getBotBowsPlayer(p), Component.text(" was hit by bubble jet from "));
+                    lobby.getBotBowsPlayer(defender).handleHit(Component.text(" was hit by bubble jet from "), lobby.getBotBowsPlayer(p));
                 }
             }
         };

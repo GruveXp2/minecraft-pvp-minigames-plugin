@@ -50,7 +50,7 @@ public class ThunderBowAbility extends Ability {
             Main.WORLD.strikeLightningEffect(p.getLocation());
             createElectricArc(hitLoc, p.getLocation(), attackerTeamColor);
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.handleHit(attacker, Component.text(" was thunder bowed by "));
+            bp.handleHit(Component.text(" was thunder bowed by "), attacker);
         }
     }
 

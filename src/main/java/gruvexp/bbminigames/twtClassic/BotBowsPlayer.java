@@ -290,12 +290,17 @@ public class BotBowsPlayer {
         return isDamaged;
     }
 
-    public void handleHit(BotBowsPlayer attacker, TextComponent hitActionMessage) {
+    public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker) {
+        handleHit(hitActionMessage, attacker, Component.empty());
+    }
+
+    public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
                     .append(hitActionMessage)
                     .append(attacker.player.name().color(attacker.team.color))
+                    .append(hitActionMessage2)
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
             if (player.getGameMode() == GameMode.SPECTATOR) {
@@ -309,6 +314,7 @@ public class BotBowsPlayer {
         lobby.messagePlayers(Component.text(player.getName(), team.color)
                 .append(hitActionMessage)
                 .append(Component.text(attacker.player.getName(), attacker.team.color))
+                .append(hitActionMessage2)
                 .append(Component.text(";"))
                 .append(Component.text(hp + "hp left", team.color)));
         // defender effects
