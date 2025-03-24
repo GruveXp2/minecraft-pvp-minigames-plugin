@@ -5,10 +5,12 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrapAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,27 +24,30 @@ public class DamageListener implements Listener {
     public void onHit(EntityDamageByEntityEvent e) {
         if ((e.getDamager() instanceof Arrow arrow)) {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
-            if (!(e.getEntity() instanceof Player defender)) {return;}
-            if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
-            arrow.setKnockbackStrength(8);
-            BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
-            BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
-            if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
-                arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
-                e.setCancelled(true);
-                return;
-            }
-            e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
-            if (defenderBp.hasKarmaEffect()) {
-                attackerBp.getKarma();
-            }
-            defenderBp.handleHit(attackerBp, Component.text(" was sniped by "));
-            if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && AbilityListener.thunderArrows.containsKey(arrow)) {
-                AbilityListener.thunderArrows.get(arrow).cancel();
-                AbilityListener.thunderArrows.remove(arrow);
-                ThunderBowAbility.handleArrowHit(attackerBp, defender);
-            } else {
-                attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
+            if (e.getEntity() instanceof Player defender) {
+                if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
+                arrow.setKnockbackStrength(8);
+                BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
+                BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
+                if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
+                    arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
+                    e.setCancelled(true);
+                    return;
+                }
+                e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
+                if (defenderBp.hasKarmaEffect()) {
+                    attackerBp.getKarma();
+                }
+                defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
+                if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && AbilityListener.thunderArrows.containsKey(arrow)) {
+                    AbilityListener.thunderArrows.get(arrow).cancel();
+                    AbilityListener.thunderArrows.remove(arrow);
+                    ThunderBowAbility.handleArrowHit(attackerBp, defender);
+                } else {
+                    attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
+                }
+            } else if (e.getEntity() instanceof Creeper creeper) {
+                CreeperTrapAbility.ignite(creeper);
             }
         } else {
             if (!(e.getEntity() instanceof Player defender)) {return;}
