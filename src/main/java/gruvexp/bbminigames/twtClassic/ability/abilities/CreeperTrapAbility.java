@@ -132,6 +132,7 @@ public class CreeperTrapAbility extends Ability {
         }
 
         public void ignite() {
+            lampDisplay.setBlock(Bukkit.createBlockData(Material.COPPER_BULB)); // normal copper bulb that will give off more light
             creeper.ignite();
             igniting = true;
             ticks = -20;
