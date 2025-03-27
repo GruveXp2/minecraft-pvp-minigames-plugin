@@ -9,6 +9,7 @@ import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -231,6 +232,9 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     private static @NotNull Component getCooldownComponent(BotBowsPlayer p, AbilityType abilityType) {
+        if (abilityType.category == AbilityCategory.DAMAGING) {
+            return Component.text("Cooldown: ").append(Component.text("obtain by getting a kill"));
+        }
         int percentage = (int) ((p.getAbilityCooldownMultiplier() - 1) * 100);
         Component cooldownComponent = Component.text("Cooldown: ").append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
         if (percentage != 0) {
