@@ -41,7 +41,7 @@ public enum AbilityType {
             "CANDLE", AbilityCategory.DAMAGING),
     LONG_ARMS(getLongHandsItem(),
             "WOOL", AbilityCategory.DAMAGING),
-    SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon"),
+    SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon Slap"),
             Component.text("Melee weapon"),
             getDurationComponent(SalmonSlapAbility.DURATION)),
             "WOOL", AbilityCategory.DAMAGING),
@@ -250,7 +250,7 @@ public enum AbilityType {
     }
 
     private static ItemStack getLongHandsItem() {
-        ItemStack item = Menu.makeItem(Material.FISHING_ROD, Component.text("Long arms"),
+        ItemStack item = Menu.makeItem(Material.FISHING_ROD, Component.text("Cool Rod"),
                 Component.text("Punch someone far away, only 1 punch granted"));
         ItemMeta meta = item.getItemMeta();
 
