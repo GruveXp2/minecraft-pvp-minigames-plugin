@@ -177,7 +177,9 @@ public class AbilityMenu extends SettingsMenu {
                 if (cursorItem.getType() == Material.AIR) return;
                 AbilityType type = AbilityType.fromItem(cursorItem);
                 if (type == null) return;
-                if (e.getClickedInventory().equals(inventory)) {
+                Inventory clickedInventory = e.getClickedInventory();
+                if (clickedInventory == null) return;
+                if (clickedInventory.equals(inventory)) {
                     BotBows.debugMessage("prøvde å plassere tilbakei menuet", TestCommand.test2);
                     clicker.setItemOnCursor(null);
                     return;
