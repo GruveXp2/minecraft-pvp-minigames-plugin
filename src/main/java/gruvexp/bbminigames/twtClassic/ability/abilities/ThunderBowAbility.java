@@ -38,6 +38,10 @@ public class ThunderBowAbility extends Ability {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isActive = false, 20L * DURATION);
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
     public static void handleArrowHit(BotBowsPlayer attacker, Player defender) {
         Location hitLoc = defender.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();

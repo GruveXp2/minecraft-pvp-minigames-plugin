@@ -38,12 +38,12 @@ public class DamageListener implements Listener {
                 if (defenderBp.hasKarmaEffect()) {
                     attackerBp.getKarma();
                 }
-                defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
-                if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && AbilityListener.thunderArrows.containsKey(arrow)) {
+                if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBowAbility) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                     AbilityListener.thunderArrows.get(arrow).cancel();
                     AbilityListener.thunderArrows.remove(arrow);
                     ThunderBowAbility.handleArrowHit(attackerBp, defender);
                 } else {
+                    defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
                 }
             } else if (e.getEntity() instanceof Creeper creeper) {
