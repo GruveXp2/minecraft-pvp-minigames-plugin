@@ -63,6 +63,7 @@ public class MapMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() != inventory) return;
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {

@@ -106,6 +106,7 @@ public class AbilityMenu extends SettingsMenu {
         }
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
+                if (e.getClickedInventory() != inventory) return;
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
@@ -115,6 +116,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
+                if (e.getClickedInventory() != inventory) return;
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {

@@ -39,6 +39,7 @@ public class WinConditionMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() != inventory) return;
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
         int slot = e.getSlot();
         switch (e.getCurrentItem().getType()) {
