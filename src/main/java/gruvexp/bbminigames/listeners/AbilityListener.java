@@ -69,6 +69,13 @@ public class AbilityListener implements Listener {
             case BUBBLE_JET -> {
                 p.resetPlayerWeather();
                 p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
+                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+                    if (!bp.lobby.settings.stormHazard.isActive()) {
+                        p.setPlayerWeather(WeatherType.CLEAR);
+                    } else {
+                        p.resetPlayerWeather();
+                    }
+                }, 60L);
             }
             case CREEPER_TRAP -> {
                 Block block = Util.getTargetBlock(p, 5);
