@@ -22,6 +22,11 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
+        if (e.getEntity() instanceof Creeper creeper) {
+            e.setDamage(0.01);
+            CreeperTrapAbility.ignite(creeper);
+            return;
+        }
         if ((e.getDamager() instanceof Arrow arrow)) {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
             if (e.getEntity() instanceof Player defender) {
@@ -47,9 +52,6 @@ public class DamageListener implements Listener {
                 if (hasKarma) {
                     attackerBp.getKarma();
                 }
-            } else if (e.getEntity() instanceof Creeper creeper) {
-                e.setDamage(0.01);
-                CreeperTrapAbility.ignite(creeper);
             }
         } else {
             if (!(e.getEntity() instanceof Player defender)) {return;}
