@@ -18,6 +18,9 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CreeperTrapAbility extends Ability {
 
@@ -39,13 +42,11 @@ public class CreeperTrapAbility extends Ability {
 
     public void use(Location loc) {
         super.use();
-        if (creeperOwners.containsValue(bp)) {
-            creeperOwners.forEach((creeper, owner) -> {
-                if (owner == bp) {
-                    ignite(creeper);
-                }
-            });
-        }
+        // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
+        Set<Creeper> creepers = creeperOwners.entrySet().stream().filter(entry -> entry.getValue() == bp)
+                .map(Map.Entry::getKey).collect(Collectors.toSet());
+        creepers.forEach(CreeperTrapAbility::ignite);
+
         creeper = (Creeper) Main.WORLD.spawnEntity(loc, EntityType.CREEPER);
         creeper.setAI(false);
         creeper.getAttribute(Attribute.SCALE).setBaseValue(0.75);
@@ -94,7 +95,7 @@ public class CreeperTrapAbility extends Ability {
         private final BotBowsPlayer owner;
         private int ticks = 0;
         private boolean igniting = false;
-        private HashSet<BotBowsPlayer> hitPlayers = new HashSet<>();
+        private final HashSet<BotBowsPlayer> hitPlayers = new HashSet<>();
 
         public CreeperTicker(Creeper creeper, BlockDisplay lampDisplay, BlockDisplay glassDisplay, BotBowsPlayer owner) {
             this.lampDisplay = lampDisplay;
