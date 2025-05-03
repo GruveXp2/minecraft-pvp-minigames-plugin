@@ -238,7 +238,11 @@ public class BotBowsPlayer {
             case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
             case BUBBLE_JET -> abilities.put(type, new BubbleJetAbility(this, slot));
             case CREEPER_TRAP -> abilities.put(type, new CreeperTrapAbility(this, slot));
+            case BABY_POTION -> abilities.put(type, new BabyPotionAbility(this, slot));
             case LINGERING_POTION -> abilities.put(type, new LingeringPotionAbility(this, slot));
+            case CHARGE_POTION -> abilities.put(type, new ChargePotionAbility(this, slot));
+            case KARMA_POTION -> abilities.put(type, new KarmaPotion(this, slot));
+            default -> throw new IllegalStateException("Error, contact Gruve: he forgot to connect this ability type to a java class");
         }
         int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
         if (relativeAbilitySlot > 0) {
