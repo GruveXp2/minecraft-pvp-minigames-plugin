@@ -121,14 +121,16 @@ public class AbilityListener implements Listener {
                     arrow.getVelocity().multiply(0.5f);
                     splashArrows.put(arrow, arrowTrail);
                     bp.getAbility(AbilityType.SPLASH_BOW).use();
-                } else if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)) {
-                    arrow.setColor(Color.AQUA);
-                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
-                    thunderArrows.put(arrow, arrowTrail);
-
                 }
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
+                 if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
+                         && ((ThunderBowAbility) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
+                    arrow.setColor(Color.AQUA);
+                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
+                    thunderArrows.put(arrow, arrowTrail);
+                    BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
+                }
             }
         } else if (e.getEntity() instanceof ThrownPotion potion) {
             if (potion.getItem().getType() == Material.LINGERING_POTION) {
