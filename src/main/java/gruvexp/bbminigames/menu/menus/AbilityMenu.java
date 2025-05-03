@@ -194,7 +194,6 @@ public class AbilityMenu extends SettingsMenu {
                 }
                 BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
                 if (p.getTotalAbilities() == p.getMaxAbilities()) {
-                    clicker.sendMessage(Component.text("Max ability count reached", NamedTextColor.RED));
                     return;
                 }
                 e.setCancelled(false);
