@@ -14,7 +14,7 @@ public class KarmaPotion extends PotionAbility {
 
     public static final int DURATION = 20;
 
-    protected KarmaPotion(BotBowsPlayer bp, int hotBarSlot) {
+    public KarmaPotion(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.KARMA_POTION);
     }
 
