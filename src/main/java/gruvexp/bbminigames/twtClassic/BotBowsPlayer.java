@@ -468,5 +468,10 @@ public class BotBowsPlayer {
                 counter--;
             }
         }, 0, 1);
+
+        lobby.messagePlayers(Component.empty()
+                .append(player.name().color(team.color))
+                .append(Component.text(" got karma! ", NamedTextColor.RED))
+                .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
     }
 }
