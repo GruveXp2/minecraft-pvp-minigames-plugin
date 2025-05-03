@@ -184,7 +184,7 @@ public class BotBowsGame {
         if (!activeRound) return;
         activeRound = false;
         CreeperTrapAbility.igniteAllCreepers();
-        lobby.messagePlayers(
+        lobby.messagePlayers( // team1: %d points, team2: %d points
                 team1.toComponent()
                         .append(Component.text(": ", NamedTextColor.WHITE))
                         .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
