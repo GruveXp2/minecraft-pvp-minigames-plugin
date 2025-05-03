@@ -53,20 +53,20 @@ public class ThunderBowAbility extends Ability {
             if (lobby == null) return;
             if (lobby != attacker.lobby) return;
             Main.WORLD.strikeLightningEffect(p.getLocation());
-            createElectricArc(hitLoc, p.getLocation(), attackerTeamColor);
+            createElectricArc(hitLoc, p.getLocation(), attackerTeamColor, 1.0);
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
             bp.handleHit(Component.text(" was electrobowed by "), attacker);
         }
     }
 
-    public static void createElectricArc(Location loc1, Location loc2, Color color) {
+    public static void createElectricArc(Location loc1, Location loc2, Color color, double frequencyMultiplier) {
         double length = loc1.distance(loc2);
         Vector diff = new Vector(
                 loc2.getX() - loc1.getX(),
                 loc2.getY() - loc1.getY(),
                 loc2.getZ() - loc1.getZ()
         );
-        int steps = (int) length;
+        int steps = (int) (length * frequencyMultiplier);
         List<Vector> locations = new ArrayList<>(steps + 1);
         Vector start = loc1.toVector();
         Vector end = loc2.toVector();
