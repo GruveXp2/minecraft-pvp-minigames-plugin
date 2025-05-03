@@ -59,6 +59,19 @@ public class ThunderBowAbility extends Ability {
         }
     }
 
+    public static void handleArrowHitBlock(Location hitLoc) {
+        for (int i = 0; i < 10; i++) {
+            int x = BotBows.RANDOM.nextInt(11) - 5; // -5 til 5
+            int y = BotBows.RANDOM.nextInt(11) - 5;
+            int z = BotBows.RANDOM.nextInt(11) - 5;
+            Vector randomVec = new Vector(x, y, z);
+            Location arcLoc = hitLoc.clone().add(randomVec);
+            if (arcLoc.getBlock().getType() != Material.AIR) {
+                createElectricArc(hitLoc, arcLoc, Color.AQUA, 2.0);
+            }
+        }
+    }
+
     public static void createElectricArc(Location loc1, Location loc2, Color color, double frequencyMultiplier) {
         double length = loc1.distance(loc2);
         Vector diff = new Vector(
