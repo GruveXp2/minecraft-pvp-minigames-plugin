@@ -1,14 +1,11 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -111,15 +108,12 @@ public enum AbilityType {
     public static AbilityType fromItem(ItemStack item) {
         if (item == null) return null;
         for (AbilityType ability : values()) {
-            BotBows.debugMessage("\nability: " + ability.name(), TestCommand.test2);
             ItemStack abilityItem = ability.getAbilityItem();
-            BotBows.debugMessage("Type: " + item.getType().name() + " == " + abilityItem.getType().name(), TestCommand.test2);
 
             if (item.getType() != abilityItem.getType()) continue;
 
             boolean itemHasMeta = item.hasItemMeta();
             boolean abilityHasMeta = abilityItem.hasItemMeta();
-            BotBows.debugMessage("HasMeta: " + itemHasMeta + " == " + abilityHasMeta, TestCommand.test2);
 
             if (!itemHasMeta || !abilityHasMeta) {
                 if (itemHasMeta == abilityHasMeta) return ability;
@@ -131,7 +125,6 @@ public enum AbilityType {
 
             boolean itemHasDisplayName = meta.hasDisplayName();
             boolean abilityHasDisplayName = abilityMeta.hasDisplayName();
-            BotBows.debugMessage("HasDisplayName: " + itemHasDisplayName + " == " + abilityHasDisplayName, TestCommand.test2);
 
             if (itemHasDisplayName != abilityHasDisplayName) continue;
 
@@ -140,7 +133,6 @@ public enum AbilityType {
                 Component abilityDisplayName = abilityMeta.displayName();
                 assert itemDisplayName != null;
                 assert abilityDisplayName != null;
-                BotBows.debugMessage("DisplayName: " + PlainTextComponentSerializer.plainText().serialize(itemDisplayName) + " == " + PlainTextComponentSerializer.plainText().serialize(abilityDisplayName), TestCommand.test2);
 
                 if (itemDisplayName.equals(abilityDisplayName)) {
                     return ability;
