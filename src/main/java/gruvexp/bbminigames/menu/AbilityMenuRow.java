@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AbilityMenuRow extends MenuRow {
 
     private final AbilityMenu menu;
@@ -38,7 +41,8 @@ public class AbilityMenuRow extends MenuRow {
     protected void goTo(int page) {
         super.goTo(page);
         menu.updateAbilityStatuses();
-        for (HumanEntity viewer : inventory.getViewers()) {
+        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
+        for (HumanEntity viewer : viewers) {
             Player p = (Player) viewer;
             menu.handleMenuClose(p);
             menu.open(p);
