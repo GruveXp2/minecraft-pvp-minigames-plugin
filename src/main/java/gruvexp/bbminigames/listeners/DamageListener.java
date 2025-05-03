@@ -47,6 +47,7 @@ public class DamageListener implements Listener {
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
                 }
             } else if (e.getEntity() instanceof Creeper creeper) {
+                e.setDamage(0.01);
                 CreeperTrapAbility.ignite(creeper);
             }
         } else {
