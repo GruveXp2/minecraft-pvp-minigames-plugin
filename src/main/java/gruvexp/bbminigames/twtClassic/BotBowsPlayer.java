@@ -112,7 +112,7 @@ public class BotBowsPlayer {
 
     public void initBattle() {
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
-        player.getInventory().setItem(4, null); // fjerner ready item
+        player.getInventory().remove(Lobby.READY.clone()); // removes ready up item
     }
 
     public void readyAbilities() {
@@ -422,12 +422,12 @@ public class BotBowsPlayer {
         return ready;
     }
 
-    public void setReady(boolean ready) {
+    public void setReady(boolean ready, int itemIndex) {
         if (this.ready == ready) return;
         this.ready = ready;
-        player.getInventory().setItem(4, Lobby.LOADING);
+        player.getInventory().setItem(itemIndex, Lobby.LOADING);
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(4, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(itemIndex, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
         lobby.handlePlayerReady(this);
     }
 

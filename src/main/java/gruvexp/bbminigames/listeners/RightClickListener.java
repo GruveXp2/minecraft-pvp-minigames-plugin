@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class RightClickListener implements Listener {
 
@@ -23,17 +24,18 @@ public class RightClickListener implements Listener {
         }
 
         Player p = e.getPlayer();
-        ItemStack item = p.getInventory().getItemInMainHand();
+        PlayerInventory inv = p.getInventory();
+        ItemStack item = inv.getItemInMainHand();
         if (item.isSimilar(BotBows.MENU_ITEM)) {
             BotBows.gameMenu.open(p);
         } else if (item.isSimilar(BotBows.SETTINGS_ITEM)) {
             BotBows.accessSettings(p);
         } else if (item.isSimilar(Lobby.NOT_READY)) {
             BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
-            bp.setReady(true);
+            bp.setReady(true, inv.getHeldItemSlot());
         } else if (item.isSimilar(Lobby.READY)) {
             BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
-            bp.setReady(false);
+            bp.setReady(false, inv.getHeldItemSlot());
         } else {
             AbilityListener.onAbilityUse(e);
         }
