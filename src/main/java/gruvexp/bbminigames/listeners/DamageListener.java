@@ -35,9 +35,6 @@ public class DamageListener implements Listener {
                     return;
                 }
                 e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
-                if (defenderBp.hasKarmaEffect()) {
-                    attackerBp.getKarma();
-                }
                 if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBowAbility) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                     AbilityListener.thunderArrows.get(arrow).cancel();
                     AbilityListener.thunderArrows.remove(arrow);
@@ -45,6 +42,9 @@ public class DamageListener implements Listener {
                 } else {
                     defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
+                }
+                if (defenderBp.hasKarmaEffect()) {
+                    attackerBp.getKarma();
                 }
             } else if (e.getEntity() instanceof Creeper creeper) {
                 e.setDamage(0.01);
