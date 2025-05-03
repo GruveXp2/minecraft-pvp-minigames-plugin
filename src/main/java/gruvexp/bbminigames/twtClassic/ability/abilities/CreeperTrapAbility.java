@@ -123,7 +123,7 @@ public class CreeperTrapAbility extends Ability {
                 if (lobby == null) return;
                 if (lobby != owner.lobby) return;
                 BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-                if (bp.getTeam() == owner.getTeam() && bp.player.getLocation().distanceSquared(creeper.getLocation()) < 4) continue;
+                if (bp.getTeam() == owner.getTeam() && bp.player.getLocation().distanceSquared(creeper.getLocation()) > 1) continue;
                 hitPlayers.add(bp);
             }
             if (!hitPlayers.isEmpty() && !igniting) {
