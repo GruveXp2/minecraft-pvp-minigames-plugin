@@ -117,8 +117,12 @@ public class ThunderBowAbility extends Ability {
         public void run() {
             Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.5, new Particle.DustOptions(Color.WHITE, 1), true);
             Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.3, new Particle.DustOptions(color, 0.5f), true);
-            //Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 20, 0.5, 0.5, 0.5, 0.4, new Particle.DustOptions(color, 2), true);
             arrow.getVelocity().add(new Vector(0, 0.03, 0));
+            Vector spark = getRandomPerpendicular(arrow.getVelocity()).multiply(1 + Math.random() * 2);
+            Location sparkLocation = arrow.getLocation().add(spark);
+            if (BotBows.RANDOM.nextInt(3) == 0 && sparkLocation.getBlock().getType() != Material.AIR) {
+                createElectricArc(arrow.getLocation(), sparkLocation, Color.AQUA, 2.0);
+            }
         }
     }
 }
