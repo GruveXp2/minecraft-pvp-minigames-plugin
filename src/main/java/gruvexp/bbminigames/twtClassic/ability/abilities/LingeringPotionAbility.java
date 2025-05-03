@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.Color;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -34,16 +35,16 @@ public class LingeringPotionAbility extends Ability {
         super(bp, hotBarSlot, AbilityType.LINGERING_POTION);
     }
 
-    public static void giveRandomEffect(ItemStack potion) {
+    public static void giveRandomEffect(ThrownPotion thrownPotion) {
         PotionEffectType randomEffect = EFFECTS[BotBows.RANDOM.nextInt(EFFECTS.length)];
         Color potionColor = EFFECT_COLORS.getOrDefault(randomEffect, Color.GRAY);
 
+        ItemStack potion = thrownPotion.getItem();
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        if (meta != null) {
-            meta.clearCustomEffects();
-            meta.addCustomEffect(new PotionEffect(randomEffect, DURATION * 20, 0), true);
-            meta.setColor(potionColor);
-            potion.setItemMeta(meta);
-        }
+        meta.clearCustomEffects();
+        meta.addCustomEffect(new PotionEffect(randomEffect, DURATION * 20, 0), true);
+        meta.setColor(potionColor);
+        potion.setItemMeta(meta);
+        thrownPotion.setItem(potion);
     }
 }
