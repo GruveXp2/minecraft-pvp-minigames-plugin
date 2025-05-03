@@ -186,6 +186,8 @@ public class AbilityListener implements Listener {
             arrow.remove();
         } else if (thunderArrows.containsKey(arrow)) {
             if (e.getHitEntity() != null) return; // det handles på et ant sted
+            Location hitLoc = e.getHitBlock().getLocation();
+            ThunderBowAbility.handleArrowHitBlock(hitLoc);
             thunderArrows.get(arrow).cancel();
             thunderArrows.remove(arrow);
             arrow.remove();
