@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -25,16 +25,16 @@ public class JoinLeaveListener implements Listener {
         p.getInventory().setItem(0, BotBows.MENU_ITEM);
         p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD));
         p.sendMessage(Component.text("To join a game, run ")
-                .append(Component.text("/menu ", NamedTextColor.AQUA))
+                .append(Component.text("/menu ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/menu")))
                 .append(Component.text("or right click the compass\n"))
                 .append(Component.text("To leave a game, run "))
-                .append(Component.text("/leave\n", NamedTextColor.AQUA))
+                .append(Component.text("/leave\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/leave")))
                 .append(Component.text("To access settings for a game, run "))
-                .append(Component.text("/settings\n", NamedTextColor.AQUA))
+                .append(Component.text("/settings\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/settings")))
                 .append(Component.text("To start/stop a game, run "))
-                .append(Component.text("/start ", NamedTextColor.AQUA))
+                .append(Component.text("/start ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/start")))
                 .append(Component.text("or "))
-                .append(Component.text("/stopgame", NamedTextColor.AQUA)));
+                .append(Component.text("/stopgame", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/stopgame"))));
     }
 
     @EventHandler
@@ -45,5 +45,4 @@ public class JoinLeaveListener implements Listener {
             lobby.leaveGame(p);
         }
     }
-
 }
