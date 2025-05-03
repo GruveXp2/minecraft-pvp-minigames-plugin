@@ -45,7 +45,7 @@ public class BabyPotionAbility extends PotionAbility {
                     this.cancel();
                 }
                 players.forEach(p -> p.getAttribute(Attribute.SCALE).setBaseValue(0.8 + 0.2/20 * i));
-                bp.player.getAttribute(Attribute.SCALE).setBaseValue(0.66 - 0.34/10 * i);
+                bp.player.getAttribute(Attribute.SCALE).setBaseValue(0.66 + 0.34/10 * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 200L, 1L);
