@@ -150,7 +150,7 @@ public class AbilityListener implements Listener {
             return;
         }
         switch (type) {
-            case SPEED_POTION, INVIS_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
+            case SPEED_POTION, INVIS_POTION, BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
         }
     }
 
