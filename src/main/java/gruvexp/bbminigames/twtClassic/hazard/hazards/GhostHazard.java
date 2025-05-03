@@ -171,8 +171,14 @@ public class GhostHazard extends Hazard {
             new BukkitRunnable() {
                 final Location oldLocation = p.getLocation();
                 int ticks = 0;
+                final BotBowsGame game = bp.lobby.botBowsGame;
                 @Override
                 public void run() {
+                    if (game == null) { // if the game ended before the animation completed, then stop
+                        cancel();
+                        descendGhost(ghostLoc);
+                        return;
+                    }
                     if (!p.isOnline() || ticks >= 40) {
                         cancel();
                         bp.die(Component.text(p.getName(), bp.getTeamColor())
