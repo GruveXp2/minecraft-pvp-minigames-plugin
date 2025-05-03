@@ -173,17 +173,23 @@ public class AbilityListener implements Listener {
         Projectile projectile = e.getEntity();
         if (!(projectile instanceof Arrow arrow)) return;
         if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
-        if (!splashArrows.containsKey(arrow)) return;
-        Location hitLoc;
-        if (e.getHitEntity() != null) {
-            hitLoc = e.getHitEntity().getLocation();
-        } else {
-            hitLoc = e.getHitBlock().getLocation();
+        if (splashArrows.containsKey(arrow)) {
+            Location hitLoc;
+            if (e.getHitEntity() != null) {
+                hitLoc = e.getHitEntity().getLocation();
+            } else {
+                hitLoc = e.getHitBlock().getLocation();
+            }
+            SplashBowAbility.handleArrowHit(attacker, hitLoc);
+            splashArrows.get(arrow).cancel();
+            splashArrows.remove(arrow);
+            arrow.remove();
+        } else if (thunderArrows.containsKey(arrow)) {
+            if (e.getHitEntity() != null) return; // det handles på et ant sted
+            thunderArrows.get(arrow).cancel();
+            thunderArrows.remove(arrow);
+            arrow.remove();
         }
-        SplashBowAbility.handleArrowHit(attacker, hitLoc);
-        splashArrows.get(arrow).cancel();
-        splashArrows.remove(arrow);
-        arrow.remove();
     }
 
     @EventHandler
