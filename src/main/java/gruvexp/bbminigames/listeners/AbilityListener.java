@@ -132,7 +132,7 @@ public class AbilityListener implements Listener {
             }
         } else if (e.getEntity() instanceof ThrownPotion potion) {
             if (potion.getItem().getType() == Material.LINGERING_POTION) {
-                LingeringPotionAbility.giveRandomEffect(potion.getItem());
+                LingeringPotionAbility.giveRandomEffect(potion);
             }
         }
     }
