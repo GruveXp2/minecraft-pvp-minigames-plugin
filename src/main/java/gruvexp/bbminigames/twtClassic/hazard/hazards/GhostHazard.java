@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
@@ -173,6 +174,7 @@ public class GhostHazard extends Hazard {
                 @Override
                 public void run() {
                     if (!p.isOnline() || ticks >= 40) {
+                        cancel();
                         bp.die(Component.text(p.getName(), bp.getTeamColor())
                                 .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
                         descendGhost(ghostLoc);
