@@ -42,19 +42,20 @@ public class ThunderBowAbility extends Ability {
         return isActive;
     }
 
-    public static void handleArrowHit(BotBowsPlayer attacker, Player defender) {
-        Location hitLoc = defender.getLocation();
+    public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
+        defender.handleHit(Component.text(" was thunderbowed by "), attacker);
+        Location hitLoc = defender.player.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
         for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, SPLASH_RADIUS, SPLASH_RADIUS, SPLASH_RADIUS, entity -> entity instanceof Player)) {
             Player p = (Player) entity;
-            if (p == defender) return;
+            if (p == defender.player) return;
             Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
             if (lobby != attacker.lobby) return;
             Main.WORLD.strikeLightningEffect(p.getLocation());
             createElectricArc(hitLoc, p.getLocation(), attackerTeamColor);
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.handleHit(Component.text(" was thunder bowed by "), attacker);
+            bp.handleHit(Component.text(" was electrobowed by "), attacker);
         }
     }
 
