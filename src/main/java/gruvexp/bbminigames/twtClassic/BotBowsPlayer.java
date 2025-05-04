@@ -458,17 +458,17 @@ public class BotBowsPlayer {
 
         player.addPotionEffect(new PotionEffect(randomEffect, 100, 1)); // 100 ticks = 5 seconds
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
-            int counter = 10;
+            int counter = 40;
             @Override
             public void accept(BukkitTask task) {
-                if (counter == 0) { // når antall sticks er 0 så settes en blaze rod istedet og loopsn stoppes
+                if (counter == 0) {
                     task.cancel();
                     return;
                 }
                 player.setGlowing(counter % 2 == 0);
                 counter--;
             }
-        }, 0, 1);
+        }, 0, 5);
 
         lobby.messagePlayers(Component.empty()
                 .append(player.name().color(team.color))
