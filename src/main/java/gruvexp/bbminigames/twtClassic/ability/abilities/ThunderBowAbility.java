@@ -47,14 +47,16 @@ public class ThunderBowAbility extends Ability {
         Location hitLoc = defender.player.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
         for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
-            Player p = (Player) entity;
-            if (p == defender.player) return;
-            Lobby lobby = BotBows.getLobby(p);
+            Player nearbyPlayer = (Player) entity;
+            if (nearbyPlayer == defender.player) return;
+            Lobby lobby = BotBows.getLobby(nearbyPlayer);
             if (lobby == null) return;
             if (lobby != attacker.lobby) return;
-            Main.WORLD.strikeLightningEffect(p.getLocation());
-            createElectricArc(hitLoc, p.getLocation(), attackerTeamColor, 1.0);
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+            BotBowsPlayer bp = lobby.getBotBowsPlayer(nearbyPlayer);
+            if (bp.getTeam() == attacker.getTeam()) continue;
+
+            Main.WORLD.strikeLightningEffect(nearbyPlayer.getLocation());
+            createElectricArc(hitLoc, nearbyPlayer.getLocation(), attackerTeamColor, 1.0);
             bp.handleHit(Component.text(" was electrobowed by "), attacker);
         }
     }
