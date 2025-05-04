@@ -446,7 +446,6 @@ public class BotBowsPlayer {
     public void getKarma() {
         PotionEffectType[] effects = {
             PotionEffectType.SLOWNESS,
-            PotionEffectType.NAUSEA,
             PotionEffectType.LEVITATION,
             PotionEffectType.BLINDNESS
         };

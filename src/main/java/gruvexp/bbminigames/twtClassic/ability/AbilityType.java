@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -238,7 +237,7 @@ public enum AbilityType {
         meta.customName(Component.text("Lingering potion"));
         meta.lore(List.of(
                 Component.text("Contains one of the following at random:"),
-                Component.text("Nausea", NamedTextColor.LIGHT_PURPLE),
+                Component.text("Growing", NamedTextColor.LIGHT_PURPLE),
                 Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
                 Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
                 Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
