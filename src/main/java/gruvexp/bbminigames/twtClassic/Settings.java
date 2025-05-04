@@ -85,6 +85,7 @@ public class Settings {
         switch (map) {
             case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
+            case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(team1), new TeamHoglin(team2));
         }
         team1.postTeamSwap();
         team2.postTeamSwap();
