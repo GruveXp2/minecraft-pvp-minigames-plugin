@@ -15,6 +15,7 @@ import java.util.Set;
 public class BabyPotionAbility extends PotionAbility {
 
     public static int DURATION = 10;
+    public static int AMPLIFIER = 4;
 
     public BabyPotionAbility(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot, AbilityType.BABY_POTION);
@@ -24,7 +25,7 @@ public class BabyPotionAbility extends PotionAbility {
     public void use(Set<Player> players) {
 
         players.forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4))); // 75% of the duration will be given to other players on the team
-        bp.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, 4));
+        bp.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, AMPLIFIER));
         new BukkitRunnable() {
             int i = 1;
             @Override
