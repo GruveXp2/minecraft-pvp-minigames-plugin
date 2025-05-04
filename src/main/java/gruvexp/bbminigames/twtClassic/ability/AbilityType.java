@@ -6,7 +6,6 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -23,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +49,7 @@ public enum AbilityType {
             "WOOL", AbilityCategory.DAMAGING),
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of opponents by making them glow"),
+            Component.empty(),
             getDurationInfo(RadarAbility.DURATION)),
             30, "BANNER", AbilityCategory.UTILITY),
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
@@ -63,7 +64,9 @@ public enum AbilityType {
             30, "CANDLE", AbilityCategory.POTION),
     CREEPER_TRAP(Menu.makeItem(Material.CREEPER_HEAD, Component.text("Creeper"),
             Component.text("Deploy a creeper mine"),
-            Component.text("to surprise your friends!")),
+            Component.text("to surprise your friends!"),
+            Component.empty(),
+            Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrapAbility.BLAST_RADIUS, NamedTextColor.YELLOW))),
             25, "CONCRETE_POWDER", AbilityCategory.TRAP),
     LINGERING_POTION(makeLingeringPotion(),
             LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
@@ -74,6 +77,8 @@ public enum AbilityType {
     public final AbilityCategory category;
 
     AbilityType(ItemStack item, int baseCooldown, String cooldownItemType, AbilityCategory category) {
+        appendCooldownInfo(item, category, baseCooldown);
+
         this.abilityItem = item;
         this.baseCooldown = baseCooldown;
         this.category = category;
@@ -82,6 +87,18 @@ public enum AbilityType {
         Material yellow = Material.getMaterial("YELLOW_" + cooldownItemType);
         Material green = Material.getMaterial("LIME_" + cooldownItemType);
         this.cooldownItems = new ItemStack[]{new ItemStack(red), new ItemStack(orange), new ItemStack(yellow), new ItemStack(green)};
+    }
+
+    private static void appendCooldownInfo(ItemStack item, AbilityCategory category, int baseCooldown) {
+        ItemMeta meta = item.getItemMeta();
+        Component cooldownComponent = category == AbilityCategory.DAMAGING ? Component.text("Cooldown: ", NamedTextColor.GOLD)
+                .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
+                : Component.text("Cooldown: ", NamedTextColor.GOLD)
+                .append(Component.text(baseCooldown + "s", NamedTextColor.YELLOW));
+        List<Component> lore = meta.hasLore() ? meta.lore() : new ArrayList<>();
+        lore.add(cooldownComponent.decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        item.setItemMeta(meta);
     }
 
     AbilityType(ItemStack item, String cooldownItemType, AbilityCategory category) {
@@ -145,19 +162,16 @@ public enum AbilityType {
                 .decoration(TextDecoration.ITALIC, false);
     }
 
-    private static final TextColor POTION_LABEL_COLOR = TextColor.color(0x0080ff);
-    private static final TextColor POTION_EFFECT_COLOR = TextColor.color(0x80c0ff);
-
     private static @NotNull TextComponent getDamageInfo(String damageType, int value, char unit) {
-        return Component.text("Damage: ", NamedTextColor.RED)
-                .append(Component.text(damageType, NamedTextColor.GOLD)).appendSpace()
-                .append(Component.text(value + "" + unit, NamedTextColor.YELLOW))
+        return Component.text("Damage: ", NamedTextColor.DARK_RED)
+                .append(Component.text(damageType, NamedTextColor.RED).appendSpace()
+                        .append(Component.text(value + "" + unit)))
                 .decoration(TextDecoration.ITALIC, false);
     }
 
     private static @NotNull TextComponent getPotionEffectInfo(String potionEffect) {
-        return Component.text("Potion effect: ", POTION_LABEL_COLOR)
-                .append(Component.text(potionEffect, POTION_EFFECT_COLOR))
+        return Component.text("Potion effect: ", NamedTextColor.DARK_AQUA)
+                .append(Component.text(potionEffect, NamedTextColor.AQUA))
                 .decoration(TextDecoration.ITALIC, false);
     }
 
@@ -167,7 +181,7 @@ public enum AbilityType {
 
         PotionEffect effect = new PotionEffect(PotionEffectType.INVISIBILITY, 5 * 20, 4);
         meta.addCustomEffect(effect, true);
-        meta.customName(Component.text("Invisibility potion"));
+        meta.customName(Component.text("Invisibility potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(getDurationInfo(5)));
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
@@ -180,7 +194,7 @@ public enum AbilityType {
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
         meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotionAbility.DURATION * 20, 4), true);
-        meta.customName(Component.text("Baby Potion"));
+        meta.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Makes you small and fast"),
                 Component.empty(),
@@ -199,7 +213,7 @@ public enum AbilityType {
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
         meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, ChargePotionAbility.DURATION * 20, 4), true);
-        meta.customName(Component.text("Charge Potion"));
+        meta.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Makes your cooldowns go faster"),
                 Component.empty(),
@@ -217,10 +231,10 @@ public enum AbilityType {
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
         meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true);
-        meta.customName(Component.text("Karma Potion"));
+        meta.customName(Component.text("Karma Potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
-                Component.text("Attacker gets glowing and", NamedTextColor.BLUE),
-                Component.text("slowness, levitation, nausea, or blindness", NamedTextColor.BLUE),
+                Component.text("Attacker gets glowing and"),
+                Component.text("slowness, levitation, nausea, or blindness"),
                 Component.empty(),
                 getPotionEffectInfo("karma"),
                 getDurationInfo(KarmaPotion.DURATION)
@@ -234,7 +248,7 @@ public enum AbilityType {
     private static ItemStack makeLingeringPotion() {
         ItemStack potion = new ItemStack(Material.LINGERING_POTION);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.customName(Component.text("Lingering potion"));
+        meta.customName(Component.text("Lingering potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Contains one of the following at random:"),
                 Component.text("Growing", NamedTextColor.LIGHT_PURPLE),
@@ -253,7 +267,7 @@ public enum AbilityType {
     private static ItemStack makeSplashBow() {
         ItemStack splashBow = new ItemStack(Material.BOW);
         ItemMeta meta = splashBow.getItemMeta();
-        meta.displayName(Component.text("Splash Bow"));
+        meta.displayName(Component.text("Splash Bow").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("A bow that shoots arrows exploding on impact"),
                 Component.empty(),
@@ -291,7 +305,7 @@ public enum AbilityType {
     private static ItemStack makeRiptideTrident() {
         ItemStack item = new ItemStack(Material.TRIDENT);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Trident"));
+        meta.displayName(Component.text("Trident").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Makes you fly thru the air"),
                 Component.text("and damage opponents in a 2m radius"),
