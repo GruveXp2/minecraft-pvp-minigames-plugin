@@ -26,7 +26,7 @@ public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
     public static boolean verboseDebugging = false;
-    public static boolean debugging = true;
+    public static boolean debugging = false;
     public static boolean test1 = false;
     public static boolean test2 = false;
     public static boolean testAbilities = false;
