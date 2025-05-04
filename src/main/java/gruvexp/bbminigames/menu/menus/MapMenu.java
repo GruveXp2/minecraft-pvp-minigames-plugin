@@ -40,11 +40,10 @@ public class MapMenu extends SettingsMenu {
             Component.text("Work in progress", NamedTextColor.YELLOW));
 
     public static final ItemStack PIGLIN_HIDEOUT = makeItem(Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
-            Component.text("Unnamed 2", NamedTextColor.GRAY)
+            Component.text("Piglin", NamedTextColor.GOLD)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
-                    .append(Component.text("Unnamed 3", NamedTextColor.GRAY)),
-            Component.text("A large volcano arena"),
-            Component.text("Work in progress", NamedTextColor.YELLOW));
+                    .append(Component.text("Hoglin", NamedTextColor.YELLOW)),
+            Component.text("A large volcano arena"));
 
     public MapMenu(Settings settings) {
         super(settings);
@@ -69,7 +68,8 @@ public class MapMenu extends SettingsMenu {
         switch (e.getCurrentItem().getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.ICY_RAVINE);
-            case STONE_BRICK_STAIRS, COPPER_BULB, MAGMA_BLOCK -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
+            case MAGMA_BLOCK -> settings.setMap(BotBowsMap.PIGLIN_HIDEOUT);
+            case STONE_BRICK_STAIRS, COPPER_BULB -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 4) {
                     settings.teamsMenu.open(clicker);
