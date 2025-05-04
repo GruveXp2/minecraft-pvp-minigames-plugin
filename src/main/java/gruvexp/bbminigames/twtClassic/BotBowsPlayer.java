@@ -22,6 +22,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -450,7 +451,12 @@ public class BotBowsPlayer {
             PotionEffectType.BLINDNESS
         };
 
-        PotionEffectType randomEffect = effects[BotBows.RANDOM.nextInt(effects.length)];
+        int effectID = BotBows.RANDOM.nextInt(effects.length + 1);
+        if (effectID == effects.length) {
+            growSize(10);
+            return;
+        }
+        PotionEffectType randomEffect = effects[effectID];
 
         player.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
@@ -470,5 +476,37 @@ public class BotBowsPlayer {
                 .append(player.name().color(team.color))
                 .append(Component.text(" got karma! ", NamedTextColor.RED))
                 .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
+    }
+
+    boolean isBig = false;
+
+    public void growSize(int duration) {
+        if (isBig) return;
+        isBig = true;
+        new BukkitRunnable() {
+            int i = 1;
+            final int totalAniTicks = 20;
+            @Override
+            public void run() {
+                if (i == totalAniTicks) {
+                    this.cancel();
+                }
+                player.getAttribute(Attribute.SCALE).setBaseValue(1.0 + 0.5/totalAniTicks * i);
+                i++;
+            }
+        }.runTaskTimer(Main.getPlugin(), 0L, 1L);
+        new BukkitRunnable() {
+            int i = 1;
+            final int totalAniTicks = 40;
+            @Override
+            public void run() {
+                if (i == totalAniTicks) {
+                    this.cancel();
+                    isBig = false;
+                }
+                player.getAttribute(Attribute.SCALE).setBaseValue(1.5 - 0.5/totalAniTicks * i);
+                i++;
+            }
+        }.runTaskTimer(Main.getPlugin(), duration * 20L, 1L);
     }
 }

@@ -15,11 +15,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -129,6 +128,24 @@ public class AbilityListener implements Listener {
         switch (type) {
             case INVIS_POTION, BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
         }
+    }
+
+    @EventHandler
+    public void onPotionSplash(LingeringPotionSplashEvent e) {
+        ThrownPotion potion = e.getEntity();
+        if (!(potion.getShooter() instanceof Player thrower)) return;
+
+        Lobby lobby = BotBows.getLobby(thrower);
+        if (lobby == null) return;
+        BotBowsPlayer throwerBp = lobby.getBotBowsPlayer(thrower);
+
+        boolean hasUnluck = potion.getEffects().stream()
+                .anyMatch(effect -> effect.getType() == PotionEffectType.UNLUCK);
+
+        if (!hasUnluck) return;
+
+        LingeringPotionAbility ability = (LingeringPotionAbility) throwerBp.getAbility(AbilityType.LINGERING_POTION);
+        ability.addSizeIncreaseAreaEffect(potion.getLocation());
     }
 
     @EventHandler
