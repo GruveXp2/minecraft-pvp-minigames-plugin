@@ -22,7 +22,7 @@ import java.util.List;
 public class ThunderBowAbility extends Ability {
 
     public static final ItemStack THUNDER_BOW = Menu.makeItem(Material.CROSSBOW, "thunder_bow", Component.text("ThunderBow"), Component.text("Shoots electric arrows"));
-    public static final double SPLASH_RADIUS = 6.0;
+    public static final double CHAIN_RADIUS = 6.0;
     public static final int DURATION = 10; // seconds
 
     private boolean isActive = false;
@@ -46,7 +46,7 @@ public class ThunderBowAbility extends Ability {
         defender.handleHit(Component.text(" was thunderbowed by "), attacker);
         Location hitLoc = defender.player.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
-        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, SPLASH_RADIUS, SPLASH_RADIUS, SPLASH_RADIUS, entity -> entity instanceof Player)) {
+        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
             Player p = (Player) entity;
             if (p == defender.player) return;
             Lobby lobby = BotBows.getLobby(p);

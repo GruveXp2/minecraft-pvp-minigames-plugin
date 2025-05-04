@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -82,7 +83,7 @@ public abstract class Menu implements InventoryHolder {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName);
+        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
         itemMeta.lore(List.of(lore));
 
         item.setItemMeta(itemMeta);
@@ -93,7 +94,7 @@ public abstract class Menu implements InventoryHolder {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName);
+        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
 
         item.setItemMeta(itemMeta);
         item.setAmount(amount);
@@ -101,13 +102,13 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public static ItemStack makeItem(String customModelData, TextComponent displayName, Component... lore) {
-        return makeItem(Material.FIREWORK_STAR, customModelData, displayName, lore);
+        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), lore);
     }
 
     public static ItemStack makeItem(Material material, String customModelData, TextComponent displayName, Component... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName);
+        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
         itemMeta.lore(List.of(lore));
 
         CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
@@ -122,7 +123,7 @@ public abstract class Menu implements InventoryHolder {
 
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.displayName(Component.text(p.getName(), teamColor));
+        itemMeta.displayName(Component.text(p.getName(), teamColor).decoration(TextDecoration.ITALIC, false));
         itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, p.getUniqueId().toString());
         itemMeta.setOwningPlayer(Bukkit.getPlayer(p.getName()));
 
