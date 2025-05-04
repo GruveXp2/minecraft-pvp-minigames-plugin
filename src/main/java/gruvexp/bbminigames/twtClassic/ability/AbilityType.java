@@ -54,7 +54,7 @@ public enum AbilityType {
             30, "BANNER", AbilityCategory.UTILITY),
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
             15, "CONCRETE", AbilityCategory.UTILITY),
-    INVIS_POTION(makePotion(PotionType.INVISIBILITY),
+    INVIS_POTION(makeInvisPotion(),
             25, "CANDLE", AbilityCategory.POTION),
     BABY_POTION(makeBabyPotion(),
             25, "CANDLE", AbilityCategory.POTION),
@@ -67,17 +67,7 @@ public enum AbilityType {
             Component.text("to surprise your friends!")),
             25, "CONCRETE_POWDER", AbilityCategory.TRAP),
     LINGERING_POTION(makeLingeringPotion(),
-            LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP),
-    FLOAT_SPELL(makeFloatSpellItem(),
-            10, "BUNDLE", AbilityCategory.UTILITY),
-    WIND_CHARGE(Menu.makeItem(Material.WIND_CHARGE, Component.text("Wind Charge"), 3),
-            15, "DYE", AbilityCategory.UTILITY),
-    SPEED_POTION(makePotion(PotionType.SWIFTNESS),
-            25, "CANDLE", AbilityCategory.POTION),
-    SHRINK(Menu.makeItem(Material.REDSTONE, Component.text("Shrink"),
-            Component.text("Makes you shrink to half the size"),
-            getDurationInfo(5)),
-            20, "BUNDLE", AbilityCategory.UTILITY);
+            LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
@@ -172,18 +162,13 @@ public enum AbilityType {
                 .decoration(TextDecoration.ITALIC, false);
     }
 
-    private static ItemStack makePotion(PotionType type) {
+    private static ItemStack makeInvisPotion() {
         ItemStack potion = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
-        PotionEffect effect = new PotionEffect(type.getPotionEffects().getFirst().getType(), 5 * 20, 4);
+        PotionEffect effect = new PotionEffect(PotionEffectType.INVISIBILITY, 5 * 20, 4);
         meta.addCustomEffect(effect, true);
-        String name = switch (type) {
-            case SWIFTNESS -> "Speed Potion 5";
-            case INVISIBILITY -> "Invisibility Potion";
-            default -> "Potion of unnamed 0";
-        };
-        meta.customName(Component.text(name));
+        meta.customName(Component.text("Invisibility potion"));
         meta.lore(List.of(getDurationInfo(5)));
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
@@ -282,12 +267,6 @@ public enum AbilityType {
         damageable.setDamage((short) 384);
         splashBow.setItemMeta(damageable);
         return splashBow;
-    }
-
-    private static ItemStack makeFloatSpellItem() {
-        ItemStack item = Menu.makeItem(Material.EGG, Component.text("Float Spell"));
-        item.lore(List.of(getDurationInfo(FloatSpellAbility.DURATION)));
-        return item;
     }
 
     private static ItemStack makeLongHandsItem() {
