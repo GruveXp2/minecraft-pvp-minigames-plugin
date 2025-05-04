@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class LingeringPotionAbility extends Ability {
 
-    public static final int DURATION = 15;
+    public static final int DURATION = 30;
 
     private static final PotionEffectType[] EFFECTS = {
             PotionEffectType.SLOWNESS,

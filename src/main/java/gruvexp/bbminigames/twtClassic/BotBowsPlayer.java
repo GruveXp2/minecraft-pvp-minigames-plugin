@@ -456,7 +456,7 @@ public class BotBowsPlayer {
 
         PotionEffectType randomEffect = effects[BotBows.RANDOM.nextInt(effects.length)];
 
-        player.addPotionEffect(new PotionEffect(randomEffect, 100, 1)); // 100 ticks = 5 seconds
+        player.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             int counter = 40;
             @Override
