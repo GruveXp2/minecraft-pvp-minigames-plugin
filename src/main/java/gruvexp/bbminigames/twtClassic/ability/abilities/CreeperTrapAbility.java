@@ -84,8 +84,8 @@ public class CreeperTrapAbility extends Ability {
     }
 
     public static void igniteAllCreepers() {
-        Set<Creeper> creeper = creeperOwners.keySet();
-        creeper.forEach(CreeperTrapAbility::ignite);
+        Set<Creeper> creepers = new HashSet<>(creeperOwners.keySet());
+        creepers.forEach(CreeperTrapAbility::ignite);
     }
 
     public static class CreeperTicker extends BukkitRunnable {
