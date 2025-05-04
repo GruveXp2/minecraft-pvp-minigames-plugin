@@ -61,7 +61,7 @@ public enum AbilityType {
     CHARGE_POTION(makeChargePotion(),
             25, "CANDLE", AbilityCategory.POTION),
     KARMA_POTION(makeKarmaPotion(),
-            25, "CANDLE", AbilityCategory.POTION),
+            30, "CANDLE", AbilityCategory.POTION),
     CREEPER_TRAP(Menu.makeItem(Material.CREEPER_HEAD, Component.text("Creeper"),
             Component.text("Deploy a creeper mine"),
             Component.text("to surprise your friends!")),
