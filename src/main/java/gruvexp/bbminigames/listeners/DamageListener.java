@@ -34,6 +34,11 @@ public class DamageListener implements Listener {
                 arrow.setKnockbackStrength(8);
                 BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
                 BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
+
+                if (AbilityListener.thunderArrows.containsKey(arrow)) {
+                    AbilityListener.thunderArrows.get(arrow).cancel();
+                    AbilityListener.thunderArrows.remove(arrow);
+                }
                 if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
                     arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
                     e.setCancelled(true);
@@ -42,8 +47,6 @@ public class DamageListener implements Listener {
                 e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
                 boolean hasKarma = defenderBp.hasKarmaEffect();
                 if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBowAbility) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
-                    AbilityListener.thunderArrows.get(arrow).cancel();
-                    AbilityListener.thunderArrows.remove(arrow);
                     ThunderBowAbility.handleArrowHitPlayer(attackerBp, defenderBp);
                 } else {
                     defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
