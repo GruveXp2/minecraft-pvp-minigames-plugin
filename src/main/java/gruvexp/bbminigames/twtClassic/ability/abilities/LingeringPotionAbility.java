@@ -26,7 +26,6 @@ public class LingeringPotionAbility extends Ability {
 
     private static final PotionEffectType[] EFFECTS = {
             PotionEffectType.SLOWNESS,
-            PotionEffectType.NAUSEA,
             PotionEffectType.LEVITATION,
             PotionEffectType.DARKNESS,
             PotionEffectType.UNLUCK
@@ -34,7 +33,6 @@ public class LingeringPotionAbility extends Ability {
 
     private static final Map<PotionEffectType, Color> EFFECT_COLORS = Map.of(
             PotionEffectType.SLOWNESS, Color.fromRGB(90, 90, 255),
-            PotionEffectType.NAUSEA, Color.fromRGB(128, 0, 128),
             PotionEffectType.LEVITATION, Color.fromRGB(255, 255, 255),
             PotionEffectType.BLINDNESS, Color.fromRGB(0, 0, 0),
             PotionEffectType.UNLUCK, Color.fromRGB(128, 100, 32)
