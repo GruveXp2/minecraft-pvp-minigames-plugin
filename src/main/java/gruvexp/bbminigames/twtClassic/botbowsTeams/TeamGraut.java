@@ -24,5 +24,4 @@ public class TeamGraut extends BotBowsTeam {
         this();
         players = otherTeam.players;
     }
-
 }
