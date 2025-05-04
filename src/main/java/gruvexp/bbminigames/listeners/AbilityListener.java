@@ -38,34 +38,13 @@ public class AbilityListener implements Listener {
         ItemStack abilityItem = e.getItem();
         AbilityType type = AbilityType.fromItem(abilityItem);
         if (type == null) return;
-        //BotBows.debugMessage("Used ability: " + type.name());
         if (!lobby.isGameActive() && !TestCommand.testAbilities) {
-            //BotBows.debugMessage("Game is not active: cancelling");
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;
         }
         BotBows.debugMessage("Ability gets used");
         switch (type) {
-            case ENDER_PEARL, SHRINK, RADAR, THUNDER_BOW, SALMON_SLAP, LINGERING_POTION -> bp.getAbility(type).use();
-            case WIND_CHARGE -> {
-                BotBows.debugMessage("Items in hand: " + abilityItem.getAmount());
-                bp.registerUsedAbilityItem(abilityItem.getAmount());
-            }
-            case FLOAT_SPELL -> {
-                bp.getAbility(type).use();
-                Block block = e.getClickedBlock();
-                if (block == null) return;
-                Chicken chicken = (Chicken) Main.WORLD.spawnEntity(block.getLocation().add(0.5, 1, 0.5), EntityType.CHICKEN);
-                FloatSpellAbility.animateChicken(chicken);
-                ((FloatSpellAbility) bp.getAbility(type)).handleUsage(chicken);
-                // Reduce the item count (simulate spawn egg usage)
-                if (abilityItem.getAmount() > 1) {
-                    abilityItem.setAmount(abilityItem.getAmount() - 1);
-                } else {
-                    p.getInventory().remove(abilityItem);
-                }
-                e.setCancelled(true); // gjør sånn at det ikke spawnes 2 stykker
-            }
+            case ENDER_PEARL, RADAR, THUNDER_BOW, SALMON_SLAP, LINGERING_POTION -> bp.getAbility(type).use();
             case BUBBLE_JET -> {
                 p.resetPlayerWeather();
                 p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
@@ -109,11 +88,7 @@ public class AbilityListener implements Listener {
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) return;
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        if (e.getEntity() instanceof WindCharge) {
-            if (!bp.hasAbilityEquipped(AbilityType.WIND_CHARGE)) return;
-            if (bp.getUsedAbilityItemAmount() != 1) return;
-            bp.getAbility(AbilityType.WIND_CHARGE).use();
-        } else if (e.getEntity() instanceof Arrow arrow) {
+        if (e.getEntity() instanceof Arrow arrow) {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
                     arrow.setColor(Color.RED);
@@ -152,7 +127,7 @@ public class AbilityListener implements Listener {
             return;
         }
         switch (type) {
-            case SPEED_POTION, INVIS_POTION, BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
+            case INVIS_POTION, BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
         }
     }
 
