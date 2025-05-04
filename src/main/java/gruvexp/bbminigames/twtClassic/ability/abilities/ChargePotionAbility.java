@@ -25,7 +25,10 @@ public class ChargePotionAbility extends PotionAbility {
         bp.setAbilityCooldownTickRate(10);
         players.stream()
                 .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
-                .forEach(p -> p.setAbilityCooldownTickRate(13));
+                .forEach(p -> {
+                    p.setAbilityCooldownTickRate(13);
+                    p.obtainWeaponAbilities();
+                });
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> {
             bp.setAbilityCooldownTickRate(20);

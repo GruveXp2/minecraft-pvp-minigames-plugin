@@ -433,6 +433,7 @@ public class BotBowsPlayer {
 
     public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
         for (Ability ability : abilities.values()) {
+            if (ability.getType() == AbilityType.CHARGE_POTION) continue; // charge potion wont affect itself
             ability.setTickRate(abilityCooldownTickRate);
         }
     }
