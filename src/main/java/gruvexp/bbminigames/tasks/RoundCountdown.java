@@ -13,22 +13,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class RoundCountdown extends BukkitRunnable {
 
     final BotBowsGame botBowsGame;
+    final int round;
     int time = 0;
 
-    public RoundCountdown(BotBowsGame botBowsGame) {
+    public RoundCountdown(BotBowsGame botBowsGame, int round) {
         this.botBowsGame = botBowsGame;
+        this.round = round;
     }
 
     @Override
     public void run() {
         switch (time) {
             case 0, 1, 2, 3, 4 ->
-                    botBowsGame.lobby.messagePlayers(Component.text("BotBows Classic ", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
-                            .append(Component.text("is starting in "))
+                    botBowsGame.lobby.messagePlayers(Component.text("Round " + round, Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                            .append(Component.text(" is starting in "))
                             .append(Component.text(String.valueOf(5 - time), NamedTextColor.GOLD)));
             case 5 -> {
-                botBowsGame.lobby.messagePlayers(Component.text("BotBows Classic ", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
-                        .append(Component.text("has started!")));
+                botBowsGame.lobby.messagePlayers(Component.text("Round " + round, Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                        .append(Component.text(" has started!")));
                 botBowsGame.canMove = true;
                 botBowsGame.canShoot = true;
 
@@ -38,7 +40,7 @@ public class RoundCountdown extends BukkitRunnable {
                     Main.WORLD.setStorm(true);
                     Bukkit.getOnlinePlayers().forEach(p -> p.setPlayerWeather(WeatherType.CLEAR));
                 }
-                cancel(); // stopper loopen
+                cancel();
             }
         }
         time++;
