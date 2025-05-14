@@ -102,7 +102,7 @@ public class BotBowsGame {
         canMove = false;
         canShoot = false;
         activeRound = true;
-        new RoundCountdown(this).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
+        new RoundCountdown(this, round).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         if (settings.getRoundDuration() != 0) {
             roundTimer = new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 200L, 20L);
         }
