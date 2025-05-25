@@ -67,7 +67,7 @@ public enum AbilityType {
             Component.text("to surprise your friends!"),
             Component.empty(),
             Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrapAbility.BLAST_RADIUS, NamedTextColor.YELLOW))),
-            25, "CONCRETE_POWDER", AbilityCategory.TRAP),
+            5, "CONCRETE_POWDER", AbilityCategory.TRAP),
     LINGERING_POTION(makeLingeringPotion(),
             LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
 
