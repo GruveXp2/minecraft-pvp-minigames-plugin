@@ -72,6 +72,7 @@ public class AbilityListener implements Listener {
         BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
         if (defenderBp == null) return;
         AbilityType type = AbilityType.fromItem(weapon);
+        if (attackerBp.getTeam() == defenderBp.getTeam()) return;
         if (type == AbilityType.LONG_ARMS) {
             attackerBp.getAbility(AbilityType.LONG_ARMS).use();
             defenderBp.handleHit(Component.text(" was long-slapped by "), attackerBp);
