@@ -6,6 +6,7 @@ import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.menu.menus.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -162,5 +163,17 @@ public class BotBows {
                 else Main.WORLD.setTime(start + (count++ * step));
             }
         }.runTaskTimer(Main.getPlugin(), 0, 1);
+    }
+
+    public static TextColor lighten(TextColor color, double factor) {
+        int r = color.red();
+        int g = color.green();
+        int b = color.blue();
+
+        r += (int)((255 - r) * factor);
+        g += (int)((255 - g) * factor);
+        b += (int)((255 - b) * factor);
+
+        return TextColor.color(r, g, b);
     }
 }

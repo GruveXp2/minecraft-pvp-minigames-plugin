@@ -302,11 +302,12 @@ public class BotBowsPlayer {
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
+        TextColor lightColor = BotBows.lighten(attacker.team.color, 0.5f);
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
             die(player.name().color(team.color)
-                    .append(hitActionMessage)
+                    .append(hitActionMessage.color(lightColor))
                     .append(attacker.player.name().color(attacker.team.color))
-                    .append(hitActionMessage2)
+                    .append(hitActionMessage2.color(lightColor))
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
             if (player.getGameMode() == GameMode.SPECTATOR) {
@@ -321,8 +322,8 @@ public class BotBowsPlayer {
                 .append(hitActionMessage)
                 .append(Component.text(attacker.player.getName(), attacker.team.color))
                 .append(hitActionMessage2)
-                .append(Component.text(";"))
-                .append(Component.text(hp + "hp left", team.color)));
+                .append(Component.text("; ", NamedTextColor.WHITE)
+                        .append(Component.text(hp + "hp left"))));
         // defender effects
         player.setGlowing(true);
         player.setInvulnerable(true);
