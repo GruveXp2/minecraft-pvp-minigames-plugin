@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrapAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
@@ -79,7 +80,8 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onDamaged(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player p && (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION)) {
+        if (!(e.getEntity() instanceof Player p)) return;
+        if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
             Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
             p.teleport(p.getLocation().add(0, 1, 0));
@@ -87,6 +89,12 @@ public class DamageListener implements Listener {
         } else if (e.getCause() == EntityDamageEvent.DamageCause.CAMPFIRE ||
                 e.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             e.setCancelled(true);
+        } else if (e.getCause() == EntityDamageEvent.DamageCause.LAVA) {
+            Lobby lobby = BotBows.getLobby(p);
+            if (lobby == null) return;
+            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+            bp.die(Component.text(p.getName(), bp.getTeamColor())
+                    .append(Component.text(" tried to swim in lava", NamedTextColor.GOLD)));
         }
     }
 }
