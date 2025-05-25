@@ -284,6 +284,10 @@ public class BotBowsPlayer {
         abilities.values().stream().filter(a -> a.getType().category == AbilityCategory.DAMAGING).forEach(Ability::obtain);
     }
 
+    public void unObtainWeaponAbilities() {
+        abilities.values().stream().filter(a -> a.getType().category == AbilityCategory.DAMAGING).forEach(Ability::unObtain);
+    }
+
     public int getTotalAbilities() {
         return abilities.size();
     }
