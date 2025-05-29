@@ -2,7 +2,7 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
-import gruvexp.bbminigames.twtClassic.botbowsGames.GrautWackyGame;
+import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -112,7 +112,7 @@ public class Lobby {
 
     private void startGame() {
         botBowsGame = switch (settings.currentMap) {
-            case ICY_RAVINE -> new GrautWackyGame(settings);
+            case ICY_RAVINE -> new IcyRavineGame(settings);
             default -> new BotBowsGame(settings);
         };
         botBowsGame.startGame();
