@@ -88,8 +88,7 @@ public class Util {
         return null;
     }
 
-    public static Set<Location> getOrthogonalLocations(Location center, BlockFace direction) {
-        Axis axis = getAxis(direction);
+    public static Set<Location> getOrthogonalLocations(Location center, Axis axis) {
 
         Set<BlockFace> orthogonals = EnumSet.noneOf(BlockFace.class);
         for (BlockFace face : BlockFace.values()) {
@@ -101,5 +100,22 @@ public class Util {
         Set<Location> locations = new HashSet<>();
         orthogonals.forEach(face -> locations.add(center.clone().add(face.getDirection())));
         return locations;
+    }
+
+    public static Set<Chunk> getChunksAround(Location location, int blockRadius) {
+        Set<Chunk> chunks = new HashSet<>();
+        World world = location.getWorld();
+
+        int minX = (location.getBlockX() - blockRadius) >> 4;
+        int maxX = (location.getBlockX() + blockRadius) >> 4;
+        int minZ = (location.getBlockZ() - blockRadius) >> 4;
+        int maxZ = (location.getBlockZ() + blockRadius) >> 4;
+
+        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
+            for (int chunkZ = minZ; chunkZ <= maxZ; chunkZ++) {
+                chunks.add(world.getChunkAt(chunkX, chunkZ));
+            }
+        }
+        return chunks;
     }
 }
