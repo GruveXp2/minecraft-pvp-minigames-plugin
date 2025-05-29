@@ -2,7 +2,6 @@ package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.tasks.GvwDungeonProximityScanner;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.DungeonGhoster;
 import gruvexp.bbminigames.twtClassic.Settings;
@@ -14,12 +13,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GrautWackyGame extends BotBowsGame {
+public class IcyRavineGame extends BotBowsGame {
 
     private static final Map<BotBowsPlayer, GvwDungeonProximityScanner> dungeonScanners = new HashMap<>();
     private static final Map<BotBowsPlayer, DungeonGhoster> dungeonGhosters = new HashMap<>();
 
-    public GrautWackyGame(Settings settings) {
+    public IcyRavineGame(Settings settings) {
         super(settings);
     }
 
