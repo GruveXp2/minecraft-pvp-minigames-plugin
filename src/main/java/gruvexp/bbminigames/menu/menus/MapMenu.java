@@ -33,9 +33,9 @@ public class MapMenu extends SettingsMenu {
             Component.text("Work in progress", NamedTextColor.YELLOW));
 
     public static final ItemStack STEAMPUNK = makeItem(Material.COPPER_BULB, Component.text("Steampunk", NamedTextColor.GOLD),
-            Component.text("Unnamed 0", NamedTextColor.GRAY)
+            Component.text("Blocc", NamedTextColor.GOLD)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
-                    .append(Component.text("Unnamed 1", NamedTextColor.GRAY)),
+                    .append(Component.text("Quicc", NamedTextColor.AQUA)),
             Component.text("A steampunk themed arena"),
             Component.text("Work in progress", NamedTextColor.YELLOW));
 
@@ -69,7 +69,8 @@ public class MapMenu extends SettingsMenu {
             case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);
             case SPRUCE_SAPLING -> settings.setMap(BotBowsMap.ICY_RAVINE);
             case MAGMA_BLOCK -> settings.setMap(BotBowsMap.PIGLIN_HIDEOUT);
-            case STONE_BRICK_STAIRS, COPPER_BULB -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
+            case COPPER_BULB -> settings.setMap(BotBowsMap.STEAMPUNK);
+            case STONE_BRICK_STAIRS -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 4) {
                     settings.teamsMenu.open(clicker);
