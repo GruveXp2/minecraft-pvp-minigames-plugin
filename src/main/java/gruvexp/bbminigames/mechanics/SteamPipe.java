@@ -9,6 +9,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.type.CopperBulb;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -27,19 +28,19 @@ public class SteamPipe {
     private final HashMap<Player, Integer> playerEdge = new HashMap<>();
 
     private int animationTick = 0;
-    private final List<CopperBulb> entryBulbs;
-    private final List<CopperBulb> exitBulbs;
+    private final List<Block> firstBulbs; // dette funker ikke engang pga man må faktisk ta setblockstate for at noesomhelst skal skje!
+    private final List<Block> secondBulbs;
 
     public SteamPipe(boolean isDualWay, List<Location> nodes, Axis entryAxis, Axis exitAxis) {
         this.isDualWay = isDualWay;
         this.nodes = nodes;
-        this.entryBulbs = Util.getOrthogonalLocations(nodes.getFirst(), entryAxis).stream()
-                .filter(location -> location.getBlock().getType().data.equals(CopperBulb.class))
-                .map(location -> (CopperBulb) (location.getBlock().getBlockData()))
+        this.firstBulbs = Util.getOrthogonalLocations(nodes.getFirst(), entryAxis).stream()
+                .map(Location::getBlock)
+                .filter(block -> block.getType().data.equals(CopperBulb.class))
                 .collect(Collectors.toList());
-        this.exitBulbs = Util.getOrthogonalLocations(nodes.getLast(), exitAxis).stream()
-                .filter(location -> location.getBlock().getType().data.equals(CopperBulb.class))
-                .map(location -> (CopperBulb) (location.getBlock().getBlockData()))
+        this.secondBulbs = Util.getOrthogonalLocations(nodes.getLast(), exitAxis).stream()
+                .map(Location::getBlock)
+                .filter(block -> block.getType().data.equals(CopperBulb.class))
                 .collect(Collectors.toList());
     }
 
@@ -55,13 +56,13 @@ public class SteamPipe {
         switch (status) {
             case ACTIVE -> {
                 pipeStatus = status;
-                entryBulbs.forEach(bulb -> bulb.setLit(true));
-                exitBulbs.forEach(bulb -> bulb.setPowered(true));
+                firstBulbs.forEach(bulb -> setLit(bulb,true));
+                secondBulbs.forEach(bulb -> setPowered(bulb, true));
             }
             case ACTIVE_REVERSED -> {
                 pipeStatus = status;
-                entryBulbs.forEach(bulb -> bulb.setPowered(true));
-                exitBulbs.forEach(bulb -> bulb.setLit(true));
+                firstBulbs.forEach(bulb -> setPowered(bulb, true));
+                secondBulbs.forEach(bulb -> setLit(bulb,true));
             }
             case INACTIVE -> {
                 shuttingDown = true;
@@ -69,15 +70,27 @@ public class SteamPipe {
                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
                     if (!playerEdge.isEmpty()) return;
                     pipeStatus = status;
-                    entryBulbs.forEach(bulb -> bulb.setPowered(false));
-                    entryBulbs.forEach(bulb -> bulb.setLit(false));
+                    firstBulbs.forEach(bulb -> setPowered(bulb, false));
+                    firstBulbs.forEach(bulb -> setLit(bulb, false));
 
-                    exitBulbs.forEach(bulb -> bulb.setPowered(false));
-                    exitBulbs.forEach(bulb -> bulb.setLit(false));
+                    secondBulbs.forEach(bulb -> setPowered(bulb, false));
+                    secondBulbs.forEach(bulb -> setLit(bulb, false));
                     shuttingDown = false;
                 }, 20L);
             }
         }
+    }
+
+    private static void setPowered(Block block, boolean powered) {
+        CopperBulb bulb = (CopperBulb) block.getBlockData();
+        bulb.setPowered(powered);
+        block.setBlockData(bulb);
+    }
+
+    private static void setLit(Block block, boolean lit) {
+        CopperBulb bulb = (CopperBulb) block.getBlockData();
+        bulb.setLit(lit);
+        block.setBlockData(bulb);
     }
 
     public void checkProximity(Player p) {
@@ -109,12 +122,11 @@ public class SteamPipe {
 
         playerEdge.forEach((p, lastNode) -> {
             int nextNode = pipeStatus == PipeStatus.ACTIVE ? lastNode + 1 : lastNode - 1;
-            //Bukkit.broadcast(Component.text("Next edg: " + nextNode));
+            Location currentNodeLoc = (lastNode < 0 || lastNode == nodes.size()) ? p.getLocation() : nodes.get(lastNode);
             Location nextNodeLoc = nodes.get(nextNode);
-            Vector a = nextNodeLoc.clone().subtract(p.getLocation()).toVector().normalize();
 
             boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? lastNode == -1 : lastNode == nodes.size();
-            a.multiply(isEntering ? new Vector(0.1, 0.3, 0.1) : new Vector(0.8, 0.7, 0.8));
+            boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
             if (isEntering) {
                 if (nextNodeLoc.clone().distanceSquared(p.getLocation()) > 12) {
                     playerEdge.put(p, -2); // the player exited and will be removed
@@ -127,10 +139,18 @@ public class SteamPipe {
                 scaleAttribute.setBaseValue(scale);
             }
 
-            Vector v = p.getVelocity().add(a);
+            Vector a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize();
+            Vector v = p.getVelocity();
+
+            if ((isEntering || v.lengthSquared() > 1) && !onLastNode) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
+                a.multiply(new Vector(0.1, 0.3, 0.1));
+            }
+            v.add(a);
             p.setVelocity(v);
-            if (p.getLocation().distanceSquared(nextNodeLoc) < 1) {
-                boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
+            double distanceToNextNode = p.getLocation().distanceSquared(nextNodeLoc);
+            boolean reachedNextNode = isEntering ? distanceToNextNode < 0.5 : distanceToNextNode < 1; // you must be closer to the first node to have reached it
+            // this secures that the player is actually inside the pipe
+            if (reachedNextNode) {
                 if (onLastNode) {
                     playerEdge.put(p, -2); // the player exited and will be removed
                     Bukkit.broadcast(Component.text("Player exited"));
@@ -150,15 +170,18 @@ public class SteamPipe {
         animationTick++;
         if (animationTick % 4 != 0) return;
 
+        List<Block> entryBulbs = pipeStatus == PipeStatus.ACTIVE ? firstBulbs : secondBulbs;
+        List<Block> exitBulbs = pipeStatus == PipeStatus.ACTIVE ? secondBulbs : firstBulbs;
+
         if (!entryBulbs.isEmpty()) {
-            entryBulbs.forEach(bulb -> bulb.setPowered(false));
+            entryBulbs.forEach(bulb -> setPowered(bulb, false));
             int entryBulb = (animationTick / 4) % entryBulbs.size();
-            entryBulbs.get(entryBulb).setPowered(true);
+            setPowered(entryBulbs.get(entryBulb), true);
         }
         if (!exitBulbs.isEmpty()) {
-            exitBulbs.forEach(bulb -> bulb.setLit(false));
+            exitBulbs.forEach(bulb -> setLit(bulb,false));
             int exitBulb = (animationTick / 4) % exitBulbs.size();
-            exitBulbs.get(exitBulb).setLit(true);
+            setLit(exitBulbs.get(exitBulb), true);
         }
     }
 
