@@ -26,11 +26,74 @@ public class SteamPunkGame extends BotBowsGame {
     public SteamPunkGame(Settings settings) {
         super(settings);
         World world = Main.WORLD;
-
+        // copper -> weathered
         registerSteamPipe(new SteamPipe(true, List.of(
-                new Location(world, -346.5, 17, -360.2),
+                new Location(world, -350.8, 17, -398.5),
+                new Location(world, -371.5, 17, -398.5),
+                new Location(world, -371.5, 17, -395.8)
+        ), Axis.X, Axis.Z));
+        // copper -> surface
+        registerSteamPipe(new SteamPipe(false, List.of(
+                new Location(world, -351.2, 17, -394.5),
+                new Location(world, -350.5, 17, -394.5),
+                new Location(world, -350.5, 17.9, -387.5),
+                new Location(world, -350.5, 25, -387.8),
+                new Location(world, -350.5, 25, -384.5),
+                new Location(world, -357.5, 25.5, -384.5),
+                new Location(world, -357.2, 26.9, -384.5)
+        ), Axis.X, Axis.Y));
+
+        // exposed -> exposed
+        registerSteamPipe(new SteamPipe(false, List.of(
+                new Location(world, -352.2,  18,  -368.5),
+                new Location(world, -340.5, 18, -368.5)
+        ), Axis.X, Axis.X));
+        // exposed -> weathered
+        registerSteamPipe(new SteamPipe(true, List.of(
+                new Location(world, -352.2,  18,  -370.5),
+                new Location(world, -350.5, 18, -370.5),
+                new Location(world, -350.5, 18, -379.5),
+                new Location(world, -361.2, 18, -379.5)
+        ), Axis.X, Axis.X));
+        // exposed -> oxidized
+        registerSteamPipe(new SteamPipe(true, List.of(
+                new Location(world, -346.5, 17.5, -360.2),
                 new Location(world, -346.5, 17, -353.5),
-                new Location(world, -365.2, 17, -353.5)
+                new Location(world, -365.2, 17.5, -353.5)
+        ), Axis.Z, Axis.X));
+        // exposed -> surface
+        registerSteamPipe(new SteamPipe(false, List.of(
+                new Location(world, -351.2, 17, -357.5),
+                new Location(world, -350.5, 17, -357.5),
+                new Location(world, -350.5, 17.9, -364.5),
+                new Location(world, -350.5, 25.5, -364.2),
+                new Location(world, -350.5, 25, -367.5),
+                new Location(world, -356.5, 25.5, -367.5),
+                new Location(world, -356.2, 26.9, -367.5)
+        ), Axis.X, Axis.Y));
+
+        // surface_copper -> gate_left
+        registerSteamPipe(new SteamPipe(false, List.of(
+                new Location(world, -333.8, 25, -369.5),
+                new Location(world, -338.3, 25, -369.5),
+                new Location(world, -338.2, 25, -367.5),
+                new Location(world, -342.5, 25, -367.5),
+                new Location(world, -343.5, 25, -361.5),
+                new Location(world, -342.5, 31.9, -361.2),
+                new Location(world, -342.5, 31, -358.5),
+                new Location(world, -347.5, 31, -358.5)
+        ), Axis.Z, Axis.X));
+
+        // surface_copper -> gate_right
+        registerSteamPipe(new SteamPipe(false, List.of(
+                new Location(world, -333.8, 25, -382.5),
+                new Location(world, -338.3, 25, -382.5),
+                new Location(world, -338.2, 25, -384.5),
+                new Location(world, -342.5, 25, -384.5),
+                new Location(world, -343.5, 25, -390.5),
+                new Location(world, -342.5, 31.9, -390.8),
+                new Location(world, -342.5, 31, -393.5),
+                new Location(world, -347.5, 31, -393.5)
         ), Axis.Z, Axis.X));
     }
 
