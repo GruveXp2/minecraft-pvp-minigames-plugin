@@ -106,8 +106,15 @@ public class SteamPipe {
     private boolean checkProximity(boolean firstEntry, Player p) {
         Location enterLocation = firstEntry ? nodes.getFirst() : nodes.getLast();
         if (enterLocation.distanceSquared(p.getLocation()) < 9) {
+            Vector playerEntryDir = enterLocation.clone().subtract(p.getLocation()).toVector();
+            Location nextNode = firstEntry ? nodes.get(1) : nodes.get(nodes.size() - 2);
+            Vector pipeEntryDir = nextNode.clone().subtract(enterLocation).toVector();
+            if (playerEntryDir.normalize().dot(pipeEntryDir.normalize()) < 0.6) return false; // if youre close to the entry point, but not standing at the front
+            // you wont get sucked in. this is to fix getting stuck at the back of the entry
+            // 0.6 here means around 55 deg, so if angle between player->entry and entry->nextnode is more than that its not gonna suck the player in
+
             playerEdge.put(p, firstEntry ? -1 : nodes.size());
-            Bukkit.broadcast(Component.text("Registerd enter"));
+            //Bukkit.broadcast(Component.text("Registerd enter"));
 
             if (firstEntry) setPipeStatus(PipeStatus.ACTIVE);
             else setPipeStatus(PipeStatus.ACTIVE_REVERSED);
