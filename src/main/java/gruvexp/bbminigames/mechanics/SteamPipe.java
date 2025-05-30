@@ -126,38 +126,47 @@ public class SteamPipe {
             Location nextNodeLoc = nodes.get(nextNode);
 
             boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? lastNode == -1 : lastNode == nodes.size();
+            boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == 0 : lastNode == nodes.size() - 1;
             boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
             if (isEntering) {
                 if (nextNodeLoc.clone().distanceSquared(p.getLocation()) > 12) {
                     playerEdge.put(p, -2); // the player exited and will be removed
-                    Bukkit.broadcast(Component.text("Player canceld"));
+                    //Bukkit.broadcast(Component.text("Player canceld"));
                 }
                 AttributeInstance scaleAttribute = p.getAttribute(Attribute.SCALE);
                 double scale = scaleAttribute.getBaseValue();
                 scale -= 0.05;
                 if (scale < 0.4) scale = 0.4;
                 scaleAttribute.setBaseValue(scale);
+            } else if (onFirstNode) {
+                AttributeInstance scaleAttribute = p.getAttribute(Attribute.SCALE);
+                scaleAttribute.setBaseValue(0.4);
             }
 
             Vector a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize();
             Vector v = p.getVelocity();
 
-            if ((isEntering || v.lengthSquared() > 1) && !onLastNode) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
+            double distanceToNextNode = p.getLocation().distanceSquared(nextNodeLoc);
+            if ((isEntering || v.lengthSquared() > 1)) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
                 a.multiply(new Vector(0.1, 0.3, 0.1));
+                if (isEntering) { // the closer you get to the entry, the stronger the pull
+                    double multiply = (9 - distanceToNextNode) / 6;
+                    a.multiply(new Vector(multiply, 1.5, multiply));
+                    //Bukkit.broadcast(Component.text(String.format("id: %d, pull: %.2f", id, multiply)));
+                }
             }
             v.add(a);
             p.setVelocity(v);
-            double distanceToNextNode = p.getLocation().distanceSquared(nextNodeLoc);
             boolean reachedNextNode = isEntering ? distanceToNextNode < 0.5 : distanceToNextNode < 1; // you must be closer to the first node to have reached it
             // this secures that the player is actually inside the pipe
             if (reachedNextNode) {
                 if (onLastNode) {
                     playerEdge.put(p, -2); // the player exited and will be removed
-                    Bukkit.broadcast(Component.text("Player exited"));
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0), 10L);
+                    //Bukkit.broadcast(Component.text("Player exited"));
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0), 2L);
                 } else {
                     playerEdge.put(p, nextNode);
-                    Bukkit.broadcast(Component.text("Player enters next node: " + nextNode + " (" + p.getLocation().distanceSquared(nextNodeLoc) + ")"));
+                    //Bukkit.broadcast(Component.text("Player enters next node: " + nextNode + " (" + p.getLocation().distanceSquared(nextNodeLoc) + ")"));
                 }
             }
         });
