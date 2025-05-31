@@ -6,13 +6,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Hatch {
 
@@ -64,7 +68,21 @@ public class Hatch {
     }
 
     public void open() {
+        // shoot up players that stand on the hatch when it opens
+        Set<Player> players = closedHitbox.iterator().next().getLocation().getNearbyEntities(4, 2, 3).stream()
+                .filter(entity -> entity instanceof Player)
+                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER)
+                .map(entity -> (Player) entity)
+                .collect(Collectors.toSet());
+
         closedHitbox.forEach(block -> block.setType(Material.AIR));
+        players.forEach(p -> {
+            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+                Vector v = p.getVelocity();
+                v.add(new Vector(0, 1, 0));
+                p.setVelocity(v);
+            }
+        });
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
                 openHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
