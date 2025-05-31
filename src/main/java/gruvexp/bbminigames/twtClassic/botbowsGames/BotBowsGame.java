@@ -180,7 +180,7 @@ public class BotBowsGame {
         }
     }
 
-    private void postRound(BotBowsTeam winningTeam, int winScore) {
+    protected void postRound(BotBowsTeam winningTeam, int winScore) {
         if (!activeRound) return;
         activeRound = false;
         CreeperTrapAbility.igniteAllCreepers();

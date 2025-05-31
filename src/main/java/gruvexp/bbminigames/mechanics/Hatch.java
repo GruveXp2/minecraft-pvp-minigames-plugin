@@ -25,8 +25,8 @@ public class Hatch {
 
     public Hatch(String displayTag, Vector closedHitboxOrigin, Vector closedHitboxSize, Vector openHitboxOrigin, Vector openHitboxSize) {
         this.displays = new HashSet<>();
-        this.openHitbox = new HashSet<>();
         this.closedHitbox = new HashSet<>();
+        this.openHitbox = new HashSet<>();
         Location hatchArea = new Location(Main.WORLD, openHitboxOrigin.getX(), openHitboxOrigin.getY(), openHitboxOrigin.getZ());
         for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
             if (!(nearbyEntity instanceof BlockDisplay display)) continue;
@@ -35,16 +35,6 @@ public class Hatch {
             displays.add(display);
             display.setRotation(display.getYaw(), 0);
         }
-        for (int x = (int) openHitboxOrigin.getX(); x < openHitboxOrigin.getX() + openHitboxSize.getX(); x++) {
-            for (int y = (int) openHitboxOrigin.getY(); y < openHitboxOrigin.getY() + openHitboxSize.getY(); y++) {
-                for (int z = (int) openHitboxOrigin.getZ(); z < openHitboxOrigin.getZ() + openHitboxSize.getZ(); z++) {
-                    Block block = Main.WORLD.getBlockAt(x, y, z);
-                    block.setType(Material.AIR);
-                    openHitbox.add(block);
-                }
-            }
-        }
-        Bukkit.broadcast(Component.text(displayTag + ": " + displays.size() + " displays"));
         for (int x = (int) closedHitboxOrigin.getX(); x < closedHitboxOrigin.getX() + closedHitboxSize.getX(); x++) {
             for (int y = (int) closedHitboxOrigin.getY(); y < closedHitboxOrigin.getY() + closedHitboxSize.getY(); y++) {
                 for (int z = (int) closedHitboxOrigin.getZ(); z < closedHitboxOrigin.getZ() + closedHitboxSize.getZ(); z++) {
@@ -54,6 +44,17 @@ public class Hatch {
                 }
             }
         }
+        Bukkit.broadcast(Component.text(displayTag + ": " + closedHitbox.size() + " closed blocks"));
+        for (int x = (int) openHitboxOrigin.getX(); x < openHitboxOrigin.getX() + openHitboxSize.getX(); x++) {
+            for (int y = (int) openHitboxOrigin.getY(); y < openHitboxOrigin.getY() + openHitboxSize.getY(); y++) {
+                for (int z = (int) openHitboxOrigin.getZ(); z < openHitboxOrigin.getZ() + openHitboxSize.getZ(); z++) {
+                    Block block = Main.WORLD.getBlockAt(x, y, z);
+                    block.setType(Material.AIR);
+                    openHitbox.add(block);
+                }
+            }
+        }
+        Bukkit.broadcast(Component.text(displayTag + ": " + openHitbox.size() + " open blocks"));
     }
 
     public void toggle() {

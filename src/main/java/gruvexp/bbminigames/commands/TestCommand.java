@@ -3,19 +3,27 @@ package gruvexp.bbminigames.commands;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.extras.StickSlap;
+import gruvexp.bbminigames.mechanics.RotatingStructure;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +38,7 @@ public class TestCommand implements CommandExecutor {
     public static boolean test1 = false;
     public static boolean test2 = false;
     public static boolean testAbilities = false;
+    public static RotatingStructure rotatingStructure;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
 
     @Override
@@ -44,17 +53,72 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "init_wheel" -> {
+                    float x = Float.parseFloat(args[1]);
+                    float y = Float.parseFloat(args[2]);
+                    float z = Float.parseFloat(args[3]);
+                    Location centerLocation = new Location(p.getWorld(), x, y, z);
+                    rotatingStructure = new RotatingStructure(centerLocation);
+                    p.sendMessage(Component.text("Made a weel at that location"));
+                }
+                case "register_blocks" -> {
+                    int firstX = Integer.parseInt(args[1]);
+                    int firstY = Integer.parseInt(args[2]);
+                    int firstZ = Integer.parseInt(args[3]);
+                    int secondX = Integer.parseInt(args[4]);
+                    int secondY = Integer.parseInt(args[5]);
+                    int secondZ = Integer.parseInt(args[6]);
+
+                    int x0 = Math.min(firstX, secondX);
+                    int x1 = Math.max(firstX, secondX);
+                    int y0 = Math.min(firstY, secondY);
+                    int y1 = Math.max(firstY, secondY);
+                    int z0 = Math.min(firstZ, secondZ);
+                    int z1 = Math.max(firstZ, secondZ);
+
+                    int totalAdded = 0;
+                    String tag = args[7];
+                    if (tag == null) tag = "rotasjon";
+                    for (int x = x0; x < x1 + 1; x++) {
+                        for (int y = y0; y < y1 + 1; y++) {
+                            for (int z = z0; z < z1 + 1; z++) {
+                                Block block = Main.WORLD.getBlockAt(x, y, z);
+                                //p.sendMessage(Component.text("Block at " + x + " " + y + " " + z + ": " + block.getType()));
+                                if (block.getType() != Material.AIR) {
+                                    BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(new Location(Main.WORLD, x, y, z), EntityType.BLOCK_DISPLAY);
+                                    BlockData blockData = block.getBlockData();
+                                    display.setBlock(blockData);
+                                    display.addScoreboardTag(tag);
+                                    rotatingStructure.addDisplay(display);
+                                    block.setType(Material.AIR);
+                                    totalAdded++;
+                                }
+                            }
+                        }
+                    }
+                    p.sendMessage(Component.text("Registerd a total of " + totalAdded + " blocks"));
+                }
                 case "w" -> {
-                    BotBows.getLobby(0).joinGame(Bukkit.getPlayer("GruveXp"));
-                    BotBows.getLobby(0).joinGame(Bukkit.getPlayer("Spionagent54"));
-                    BotBows.getLobby(0).settings.setMap(BotBowsMap.ICY_RAVINE);
-                    BotBows.getLobby(0).settings.setWinScoreThreshold(0);
+                    Player gruveXp = Bukkit.getPlayer("GruveXp");
+                    Player judith = Bukkit.getPlayer("Spionagent54");
+                    Lobby lobby = BotBows.getLobby(0);
+                    lobby.joinGame(gruveXp);
+                    lobby.joinGame(judith);
+                    lobby.settings.setMap(BotBowsMap.STEAMPUNK);
+                    lobby.settings.stormHazard.setChance(HazardChance.DISABLED);
+                    lobby.settings.earthquakeHazard.setChance(HazardChance.DISABLED);
+                    lobby.settings.ghostHazard.setChance(HazardChance.DISABLED);
+                    BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
+                    BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
+                    gruveBp.setReady(true, 4);
+                    judithBp.setReady(true, 4);
+
                     //BotBows.getLobby(0).settings.healthMenu.enableCustomHP();
                     //Player judithP = Bukkit.getPlayer("Spionagent54");
                     //BotBowsPlayer judith = BotBows.getLobby(judithP).getBotBowsPlayer(judithP);
 
                     //judith.setMaxHP(20);
-                    Bukkit.dispatchCommand(Objects.requireNonNull(Bukkit.getPlayer("GruveXp")), "botbows:start");  // tester om dungeonen funker
+                    //Bukkit.dispatchCommand(Objects.requireNonNull(Bukkit.getPlayer("GruveXp")), "botbows:start");  // tester om dungeonen funker
                 }
                 case "q" -> {
                     Lobby lobby  = BotBows.getLobby(Bukkit.getPlayer("GruveXp"));
