@@ -126,27 +126,27 @@ public class SteamPunkGame extends BotBowsGame {
         //copper
         hatches.add(new Hatch("steampunk_hatch_copper",
                 new Vector(-356, 21, -396),
-                new Vector(4, 3, 0),
+                new Vector(4, 1, 3),
                 new Vector(-357, 22, -396),
-                new Vector(0, 4, 3)));
+                new Vector(1, 4, 3)));
         //weathered
         hatches.add(new Hatch("steampunk_hatch_weathered",
                 new Vector(-362, 21, -396),
-                new Vector(4, 3, 0),
+                new Vector(4, 1, 3),
                 new Vector(-358, 22, -396),
-                new Vector(0, 4, 3)));
+                new Vector(1, 4, 3)));
         //exposed
         hatches.add(new Hatch("steampunk_hatch_exposed",
                 new Vector(-356, 21, -359),
-                new Vector(4, 3, 0),
+                new Vector(4, 1, 3),
                 new Vector(-357, 22, -359),
-                new Vector(0, 4, 3)));
+                new Vector(1, 4, 3)));
         //oxidized
         hatches.add(new Hatch("steampunk_hatch_oxidized",
                 new Vector(-362, 21, -359),
-                new Vector(4, 3, 0),
+                new Vector(4, 1, 3),
                 new Vector(-358, 22, -359),
-                new Vector(0, 4, 3)));
+                new Vector(1, 4, 3)));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
