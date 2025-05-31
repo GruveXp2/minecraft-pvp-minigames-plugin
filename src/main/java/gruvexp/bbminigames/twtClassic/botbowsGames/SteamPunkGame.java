@@ -43,8 +43,8 @@ public class SteamPunkGame extends BotBowsGame {
                 new Location(world, -350.5, 17.9, -387.5),
                 new Location(world, -350.5, 25, -387.8),
                 new Location(world, -350.5, 25, -384.5),
-                new Location(world, -357.5, 25.5, -384.5),
-                new Location(world, -357.2, 26.9, -384.5)
+                new Location(world, -357.5, 25, -384.5),
+                new Location(world, -357.5, 26.9, -384.5)
         ), Axis.X, Axis.Y));
 
         // exposed -> exposed
@@ -72,8 +72,8 @@ public class SteamPunkGame extends BotBowsGame {
                 new Location(world, -350.5, 17.9, -364.5),
                 new Location(world, -350.5, 25.5, -364.2),
                 new Location(world, -350.5, 25, -367.5),
-                new Location(world, -356.5, 25.5, -367.5),
-                new Location(world, -356.2, 26.9, -367.5)
+                new Location(world, -356.5, 25, -367.5),
+                new Location(world, -356.5, 26.9, -367.5)
         ), Axis.X, Axis.Y));
 
         // surface_copper -> gate_left
