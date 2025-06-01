@@ -101,6 +101,10 @@ public class TestCommand implements CommandExecutor {
                 case "w" -> {
                     Player gruveXp = Bukkit.getPlayer("GruveXp");
                     Player judith = Bukkit.getPlayer("Spionagent54");
+                    if (judith == null) {
+                        p.sendMessage(Component.text("Error! Judiths bruker ække inne på serveren! Join med skolepcen"));
+                        return true;
+                    }
                     Lobby lobby = BotBows.getLobby(0);
                     lobby.joinGame(gruveXp);
                     lobby.joinGame(judith);

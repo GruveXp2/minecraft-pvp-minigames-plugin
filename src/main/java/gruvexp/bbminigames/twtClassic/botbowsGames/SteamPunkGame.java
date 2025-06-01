@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.mechanics.Hatch;
+import gruvexp.bbminigames.mechanics.Spinner;
 import gruvexp.bbminigames.mechanics.SteamPipe;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
@@ -19,12 +20,16 @@ import java.util.*;
 
 public class SteamPunkGame extends BotBowsGame {
 
-    private final HashSet<SteamPipe> steamPipes = new HashSet<>();
-    private final HashMap<Chunk, Set<SteamPipe>> pipeChunks = new HashMap<>();
+    private final Set<SteamPipe> steamPipes = new HashSet<>();
+    private final Map<Chunk, Set<SteamPipe>> pipeChunks = new HashMap<>();
     private SteamPipeMotor steamPipeMotor; // responsible for powering the pipes by giving them 20 ticks/s
 
     private final Set<Hatch> hatches = new HashSet<>();
     private final Map<Hatch, HatchMotor> hatchMotors = new HashMap<>();
+
+    private final Set<Spinner> spinners = new HashSet<>();
+    private final Map<Chunk, Set<Spinner>> spinnerChunks = new HashMap<>();
+    private SpinnerMotor spinnerMotor; // responsible for powering the pipes by giving them 20 ticks/s
 
     public SteamPunkGame(Settings settings) {
         super(settings);
@@ -122,31 +127,45 @@ public class SteamPunkGame extends BotBowsGame {
                 new Location(world, -366.5, 31, -393.5)
         ), Axis.Z, Axis.X));
 
-        //hatches
-        //copper
+        // hatches
+        // copper
         hatches.add(new Hatch("steampunk_hatch_copper",
                 new Vector(-356, 21, -396),
                 new Vector(4, 1, 3),
                 new Vector(-357, 22, -396),
                 new Vector(1, 4, 3)));
-        //weathered
+        // weathered
         hatches.add(new Hatch("steampunk_hatch_weathered",
                 new Vector(-362, 21, -396),
                 new Vector(4, 1, 3),
                 new Vector(-358, 22, -396),
                 new Vector(1, 4, 3)));
-        //exposed
+        // exposed
         hatches.add(new Hatch("steampunk_hatch_exposed",
                 new Vector(-356, 21, -359),
                 new Vector(4, 1, 3),
                 new Vector(-357, 22, -359),
                 new Vector(1, 4, 3)));
-        //oxidized
+        // oxidized
         hatches.add(new Hatch("steampunk_hatch_oxidized",
                 new Vector(-362, 21, -359),
                 new Vector(4, 1, 3),
                 new Vector(-358, 22, -359),
                 new Vector(1, 4, 3)));
+
+        // spinners
+        // oxidized
+        registerSpinner(new Spinner("steampunk_spinner_oxidized",
+                new Location(Main.WORLD, -370.5, 17, -380.5),
+                2));
+        // center
+        registerSpinner(new Spinner("steampunk_spinner_center",
+                new Location(Main.WORLD, -370.5, 17, -386.5),
+                -4));
+        // pipe
+        registerSpinner(new Spinner("steampunk_spinner_pipe",
+                new Location(Main.WORLD, -370.5, 17, -391.5),
+                4));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
@@ -154,6 +173,14 @@ public class SteamPunkGame extends BotBowsGame {
         Set<Chunk> chunks = steamPipe.getTickedChunks();
         for (Chunk chunk : chunks) {
             pipeChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(steamPipe);
+        }
+    }
+
+    private void registerSpinner(Spinner spinner) {
+        spinners.add(spinner);
+        Set<Chunk> chunks = spinner.getTickedChunks();
+        for (Chunk chunk : chunks) {
+            spinnerChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(spinner);
         }
     }
 
@@ -166,6 +193,8 @@ public class SteamPunkGame extends BotBowsGame {
             hatchMotors.put(hatch, new HatchMotor(hatch));
             scheduleHatch(hatch);
         });
+        spinnerMotor = new SpinnerMotor(spinners);
+        spinnerMotor.runTaskTimer(Main.getPlugin(), 200L, 1L);
     }
 
     @Override
@@ -174,6 +203,8 @@ public class SteamPunkGame extends BotBowsGame {
         steamPipeMotor = null;
         hatchMotors.values().forEach(BukkitRunnable::cancel);
         hatchMotors.clear();
+        spinnerMotor.cancel();
+        spinnerMotor = null;
         super.postRound(winningTeam, winScore);
     }
 
@@ -182,9 +213,15 @@ public class SteamPunkGame extends BotBowsGame {
         super.handleMovement(e);
         Player p = e.getPlayer();
         Chunk chunk = p.getChunk();
+
         Set<SteamPipe> pipes = pipeChunks.get(chunk);
         if (pipes != null) {
             pipes.forEach(pipe -> pipe.checkProximity(p));
+        }
+
+        Set<Spinner> spinners = spinnerChunks.get(chunk);
+        if (spinners != null) {
+            spinners.forEach(spinner -> spinner.checkProximity(p));
         }
     }
 
@@ -198,9 +235,9 @@ public class SteamPunkGame extends BotBowsGame {
 
     private static class SteamPipeMotor extends BukkitRunnable {
 
-        public final HashSet<SteamPipe> steamPipes;
+        public final Set<SteamPipe> steamPipes;
 
-        public SteamPipeMotor(HashSet<SteamPipe> steamPipes) {
+        public SteamPipeMotor(Set<SteamPipe> steamPipes) {
             this.steamPipes = steamPipes;
         }
 
@@ -222,6 +259,20 @@ public class SteamPunkGame extends BotBowsGame {
         public void run() {
             hatch.toggle();
             scheduleHatch(hatch);
+        }
+    }
+
+    private static class SpinnerMotor extends BukkitRunnable {
+
+        public final Set<Spinner> spinners;
+
+        public SpinnerMotor(Set<Spinner> spinners) {
+            this.spinners = spinners;
+        }
+
+        @Override
+        public void run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
+            spinners.forEach(Spinner::tick);
         }
     }
 }
