@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.mechanics.Gate;
 import gruvexp.bbminigames.mechanics.Hatch;
 import gruvexp.bbminigames.mechanics.Spinner;
 import gruvexp.bbminigames.mechanics.SteamPipe;
@@ -13,12 +14,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.joml.Vector3i;
 
 import java.util.*;
 
 public class SteamPunkGame extends BotBowsGame {
+
+    private static final int DOOR_TOGGLE_DELAY = 15 * 20;
 
     private final Set<SteamPipe> steamPipes = new HashSet<>();
     private final Map<Chunk, Set<SteamPipe>> pipeChunks = new HashMap<>();
@@ -30,6 +35,9 @@ public class SteamPunkGame extends BotBowsGame {
     private final Set<Spinner> spinners = new HashSet<>();
     private final Map<Chunk, Set<Spinner>> spinnerChunks = new HashMap<>();
     private SpinnerMotor spinnerMotor; // responsible for powering the pipes by giving them 20 ticks/s
+
+    private final Set<Gate> gates = new HashSet<>();
+    private GateMotor gateMotor;
 
     public SteamPunkGame(Settings settings) {
         super(settings);
@@ -156,16 +164,31 @@ public class SteamPunkGame extends BotBowsGame {
         // spinners
         // oxidized
         registerSpinner(new Spinner("steampunk_spinner_oxidized",
-                new Location(Main.WORLD, -370.5, 17, -380.5),
+                new Location(world, -370.5, 17, -380.5),
                 2));
         // center
         registerSpinner(new Spinner("steampunk_spinner_center",
-                new Location(Main.WORLD, -370.5, 17, -386.5),
+                new Location(world, -370.5, 17, -386.5),
                 -4));
         // pipe
         registerSpinner(new Spinner("steampunk_spinner_pipe",
-                new Location(Main.WORLD, -370.5, 17, -391.5),
+                new Location(world, -370.5, 17, -391.5),
                 4));
+
+        // gates
+        Vector3i gateSize = new Vector3i(3, 7, 7);
+        Location gateFramesSrc = new Location(world, -400, 1, -327);
+        // copper
+        gates.add(new Gate(gateFramesSrc                             , 3, gateSize, new Location(world, -347, 22, -397), 2, true));
+
+        // exposed
+        gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false));
+
+        // weathered
+        gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false));
+
+        // oxidized
+        gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
@@ -187,14 +210,17 @@ public class SteamPunkGame extends BotBowsGame {
     @Override
     public void startRound() {
         super.startRound();
+        Plugin plugin = Main.getPlugin();
         steamPipeMotor = new SteamPipeMotor(steamPipes);
-        steamPipeMotor.runTaskTimer(Main.getPlugin(), 200L, 1L);
+        steamPipeMotor.runTaskTimer(plugin, 200, 1);
         hatches.forEach(hatch -> {
             hatchMotors.put(hatch, new HatchMotor(hatch));
             scheduleHatch(hatch);
         });
         spinnerMotor = new SpinnerMotor(spinners);
-        spinnerMotor.runTaskTimer(Main.getPlugin(), 200L, 1L);
+        spinnerMotor.runTaskTimer(plugin, 200, 1);
+        gateMotor = new GateMotor(gates);
+        gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
     }
 
     @Override
@@ -205,6 +231,8 @@ public class SteamPunkGame extends BotBowsGame {
         hatchMotors.clear();
         spinnerMotor.cancel();
         spinnerMotor = null;
+        gateMotor.cancel();
+        gateMotor = null;
         super.postRound(winningTeam, winScore);
     }
 
@@ -273,6 +301,20 @@ public class SteamPunkGame extends BotBowsGame {
         @Override
         public void run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
             spinners.forEach(Spinner::tick);
+        }
+    }
+
+    private static class GateMotor extends BukkitRunnable {
+
+        public final Set<Gate> gates;
+
+        public GateMotor(Set<Gate> gates) {
+            this.gates = gates;
+        }
+
+        @Override
+        public void run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
+            gates.forEach(Gate::toggle);
         }
     }
 }
