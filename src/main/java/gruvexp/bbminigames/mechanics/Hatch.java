@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,7 +47,6 @@ public class Hatch {
                 }
             }
         }
-        Bukkit.broadcast(Component.text(displayTag + ": " + closedHitbox.size() + " closed blocks"));
         for (int x = (int) openHitboxOrigin.getX(); x < openHitboxOrigin.getX() + openHitboxSize.getX(); x++) {
             for (int y = (int) openHitboxOrigin.getY(); y < openHitboxOrigin.getY() + openHitboxSize.getY(); y++) {
                 for (int z = (int) openHitboxOrigin.getZ(); z < openHitboxOrigin.getZ() + openHitboxSize.getZ(); z++) {
@@ -58,7 +56,6 @@ public class Hatch {
                 }
             }
         }
-        Bukkit.broadcast(Component.text(displayTag + ": " + openHitbox.size() + " open blocks"));
     }
 
     public void toggle() {
@@ -85,6 +82,7 @@ public class Hatch {
         });
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
                 openHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
+        // rotate them upwards
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             final float jaw = displays.iterator().next().getYaw();
             float pitch = 0;
