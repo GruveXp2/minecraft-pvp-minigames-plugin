@@ -23,7 +23,7 @@ import java.util.*;
 
 public class SteamPunkGame extends BotBowsGame {
 
-    private static final int DOOR_TOGGLE_DELAY = 15 * 20;
+    public static final int DOOR_TOGGLE_DELAY = 15 * 20;
 
     private final Set<SteamPipe> steamPipes = new HashSet<>();
     private final Map<Chunk, Set<SteamPipe>> pipeChunks = new HashMap<>();
@@ -179,16 +179,20 @@ public class SteamPunkGame extends BotBowsGame {
         Vector3i gateSize = new Vector3i(3, 7, 7);
         Location gateFramesSrc = new Location(world, -400, 1, -327);
         // copper
-        gates.add(new Gate(gateFramesSrc                             , 3, gateSize, new Location(world, -347, 22, -397), 2, true));
+        gates.add(new Gate(gateFramesSrc                             , 3, gateSize, new Location(world, -347, 22, -397), 2, true,
+                Map.of("steampunk_gate_copper_cog1", 25f, "steampunk_gate_copper_cog2", 25f, "steampunk_gate_copper_cog3", -12f)));
 
         // exposed
-        gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false));
+        gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false,
+                Map.of("steampunk_gate_exposed_cog1", 16f, "steampunk_gate_exposed_cog2", 16f, "steampunk_gate_exposed_cog3", -8f)));
 
         // weathered
-        gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false));
+        gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false,
+                Map.of("steampunk_gate_weathered_cog1", 9f, "steampunk_gate_weathered_cog2", 9f, "steampunk_gate_weathered_cog3", -4.5f)));
 
         // oxidized
-        gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true));
+        gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
+                Map.of("steampunk_gate_oxidized_cog1", 5f, "steampunk_gate_oxidized_cog2", 5f, "steampunk_gate_oxidized_cog3", -2.5f)));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
