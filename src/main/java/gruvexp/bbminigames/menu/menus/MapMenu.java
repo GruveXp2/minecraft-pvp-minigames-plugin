@@ -36,8 +36,7 @@ public class MapMenu extends SettingsMenu {
             Component.text("Blocc", NamedTextColor.GOLD)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
                     .append(Component.text("Quicc", NamedTextColor.AQUA)),
-            Component.text("A steampunk themed arena"),
-            Component.text("Work in progress", NamedTextColor.YELLOW));
+            Component.text("A steampunk themed arena"));
 
     public static final ItemStack PIGLIN_HIDEOUT = makeItem(Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
             Component.text("Piglin", NamedTextColor.GOLD)
