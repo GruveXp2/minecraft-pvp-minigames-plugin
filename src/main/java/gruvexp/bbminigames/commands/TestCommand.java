@@ -53,10 +53,34 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "add_spinning" -> {
+                    String tag = args[1];
+                    Location s0 = p.getLocation().add(-1, -1, -1);
+                    Location s1 = p.getLocation().add(1, -1, 1);
+                    Location center = p.getLocation().add(0, -1, 0).toCenterLocation();
+
+                    rotatingStructure = new RotatingStructure(center);
+                    for (int x = s0.getBlockX(); x < s1.getBlockX() + 1; x++) {
+                        for (int y = s0.getBlockY(); y < s1.getBlockY() + 1; y++) {
+                            for (int z = s0.getBlockZ(); z < s1.getBlockZ() + 1; z++) {
+                                Block block = Main.WORLD.getBlockAt(x, y, z);
+                                //p.sendMessage(Component.text("Block at " + x + " " + y + " " + z + ": " + block.getType()));
+                                if (block.getType() != Material.AIR) {
+                                    BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(new Location(Main.WORLD, x, y, z), EntityType.BLOCK_DISPLAY);
+                                    BlockData blockData = block.getBlockData();
+                                    display.setBlock(blockData);
+                                    display.addScoreboardTag(tag);
+                                    rotatingStructure.addDisplay(display);
+                                    block.setType(Material.AIR);
+                                }
+                            }
+                        }
+                    }
+                }
                 case "init_wheel" -> {
-                    float x = Float.parseFloat(args[1]);
-                    float y = Float.parseFloat(args[2]);
-                    float z = Float.parseFloat(args[3]);
+                    float x = Float.parseFloat(args[1]) + 0.5f;
+                    float y = Float.parseFloat(args[2]) + 0.5f;
+                    float z = Float.parseFloat(args[3]) + 0.5f;
                     Location centerLocation = new Location(p.getWorld(), x, y, z);
                     rotatingStructure = new RotatingStructure(centerLocation);
                     p.sendMessage(Component.text("Made a weel at that location"));
