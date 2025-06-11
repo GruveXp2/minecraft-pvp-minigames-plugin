@@ -13,7 +13,7 @@ import org.bukkit.Material;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BotBowsTeam {
+public class BotBowsTeam {
     public final String name;
     public final TextColor color;
     public final DyeColor dyeColor;
@@ -29,6 +29,19 @@ public abstract class BotBowsTeam {
         this.dyeColor = dyeColor;
         this.spawnPos = spawnPos;
         this.tribunePos = tribunePos;
+    }
+
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location spawnPos, Location tribunePos) {
+        this.name = name;
+        this.color = color;
+        this.dyeColor = dyeColor;
+        this.spawnPos = new Location[] {spawnPos, spawnPos, spawnPos, spawnPos, spawnPos};
+        this.tribunePos = tribunePos;
+    }
+
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location spawnPos, Location tribunePos, BotBowsTeam otherTeam) {
+        this(name, color, dyeColor, spawnPos, tribunePos);
+        this.players = otherTeam.players;
     }
 
     public BotBowsTeam getOppositeTeam() {return oppositeTeam;}
