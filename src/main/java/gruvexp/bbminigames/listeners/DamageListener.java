@@ -32,7 +32,6 @@ public class DamageListener implements Listener {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
             if (e.getEntity() instanceof Player defender) {
                 if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
-                arrow.setKnockbackStrength(8);
                 BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
                 BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
 
