@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
@@ -9,7 +10,9 @@ import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -87,6 +90,26 @@ public class Settings {
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
             case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(team1), new TeamHoglin(team2));
             case STEAMPUNK -> setNewTeams(new TeamBlocc(team1), new TeamQuicc(team2));
+            case INSIDE_BOTBASE -> setNewTeams(
+                    new BotBowsTeam("Corner", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY,
+                            new Location(Main.WORLD, -58.5, 30, -212.5, 180, -10), new Location(Main.WORLD, -29.5, 27, -211, 180, 10), team1),
+                    new BotBowsTeam("Core", NamedTextColor.GREEN, DyeColor.LIME,
+                            new Location(Main.WORLD, -6.5, 6, -264.5, 45, 30), new Location(Main.WORLD, -29.5, 27, -273, 0, -10), team2));
+            case OUTSIDE_BOTBASE -> setNewTeams(
+                    new BotBowsTeam("Core", NamedTextColor.GREEN, DyeColor.LIME,
+                            new Location(Main.WORLD, -75.5, 26, -259.5, 45, -20), new Location(Main.WORLD, -67.5, 24.5, -267.5, -315, 15), team1),
+                    new BotBowsTeam("Mountain", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE,
+                            new Location(Main.WORLD, -106, 15.50, -205, 180, 0), new Location(Main.WORLD, -109.5, 28, -220.5, -150, 15), team2));
+            case ROCKET_FOREST -> setNewTeams(
+                    new BotBowsTeam("Door", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY,
+                            new Location(Main.WORLD, -75, 4, -201.5, 0, 10), new Location(Main.WORLD, -70.5, 15, -197, -25, 33), team1),
+                    new BotBowsTeam("Tunnel", NamedTextColor.DARK_GREEN, DyeColor.GREEN,
+                            new Location(Main.WORLD, -34, 11.5, -197, 33, 0), new Location(Main.WORLD, -18.5, 29, -193.5, 55, 15), team2));
+            case ROCKET -> setNewTeams(
+                    new BotBowsTeam("Dropper", NamedTextColor.BLACK, DyeColor.BLACK,
+                            new Location(Main.WORLD, 4.5, 74, 18.5, 0, 60), new Location(Main.WORLD, 1.5, 58, 20.5, -40, 17), team1),
+                    new BotBowsTeam("Engine", NamedTextColor.RED, DyeColor.RED,
+                            new Location(Main.WORLD, 2.5, 47, 36.5, 135, 10), new Location(Main.WORLD, -5.5, 50, 39.5, -130, 15), team2));
         }
         team1.postTeamSwap();
         team2.postTeamSwap();
