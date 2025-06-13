@@ -13,6 +13,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -57,9 +58,16 @@ public class AbilityListener implements Listener {
                 }, 60L);
             }
             case CREEPER_TRAP -> {
-                Block block = Util.getTargetBlock(p, 5);
-                if (block.getType() == Material.AIR) return;
-                Location placeLoc = block.getLocation().add(0.5, 1, 0.5);
+                Block clickedBlock = e.getClickedBlock();
+                if (clickedBlock == null) return;
+                BlockFace face = e.getBlockFace();
+                Block spawnBlock = clickedBlock.getRelative(face);
+                if (spawnBlock.getRelative(BlockFace.UP).getType().isSolid()) return;
+                while (!spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                    spawnBlock = spawnBlock.getRelative(BlockFace.DOWN);
+                }
+                Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
+
                 CreeperTrapAbility creeperTrapAbility = (CreeperTrapAbility) bp.getAbility(type);
                 creeperTrapAbility.use(placeLoc);
             }
