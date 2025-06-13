@@ -37,9 +37,11 @@ public class RightClickListener implements Listener {
         } else if (item.isSimilar(Lobby.READY)) {
             BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
             bp.setReady(false, inv.getHeldItemSlot());
-        } else if (e.getClickedBlock() != null && e.getClickedBlock().getType().data == TrapDoor.class && e.getClickedBlock().getType().name().contains("COPPER")) {
+        } else if (e.getClickedBlock() != null && e.getClickedBlock().getType().data == TrapDoor.class) {
             // toggling copper trapdoors is not allowed ingame, they should behave like other metal trapdoors like iron
-            if (BotBows.getLobby(p).isGameActive()) e.setCancelled(true);
+            Lobby lobby = BotBows.getLobby(p);
+            if (lobby == null) return;
+            if (lobby.isGameActive()) e.setCancelled(true);
         } else {
             AbilityListener.onAbilityUse(e);
         }
