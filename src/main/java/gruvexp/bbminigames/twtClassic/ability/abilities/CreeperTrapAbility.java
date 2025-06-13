@@ -132,9 +132,10 @@ public class CreeperTrapAbility extends Ability {
             }
             for (Entity entity : Main.WORLD.getNearbyEntities(creeper.getLocation(), BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
                 Player p = (Player) entity;
+                if (!p.hasLineOfSight(creeper)) continue;
                 Lobby lobby = BotBows.getLobby(p);
-                if (lobby == null) return;
-                if (lobby != owner.lobby) return;
+                if (lobby == null) continue;
+                if (lobby != owner.lobby) continue;
                 BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
                 if (bp.getTeam() == owner.getTeam() && bp.player.getLocation().distanceSquared(creeper.getLocation()) > 1) continue;
                 hitPlayers.add(bp);
