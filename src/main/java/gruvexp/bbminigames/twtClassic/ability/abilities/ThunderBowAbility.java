@@ -48,6 +48,7 @@ public class ThunderBowAbility extends Ability {
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
         for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
             Player nearbyPlayer = (Player) entity;
+            if (nearbyPlayer.getLocation().distanceSquared(hitLoc) > CHAIN_RADIUS * CHAIN_RADIUS) continue;
             if (nearbyPlayer == defender.player) continue;
             Lobby lobby = BotBows.getLobby(nearbyPlayer);
             if (lobby == null) continue;
