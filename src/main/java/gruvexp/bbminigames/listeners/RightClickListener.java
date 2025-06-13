@@ -3,6 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,11 +32,14 @@ public class RightClickListener implements Listener {
         } else if (item.isSimilar(BotBows.SETTINGS_ITEM)) {
             BotBows.accessSettings(p);
         } else if (item.isSimilar(Lobby.NOT_READY)) {
-            BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
+            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
             bp.setReady(true, inv.getHeldItemSlot());
         } else if (item.isSimilar(Lobby.READY)) {
-            BotBowsPlayer bp = BotBows.getLobby(p).getBotBowsPlayer(p);
+            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
             bp.setReady(false, inv.getHeldItemSlot());
+        } else if (e.getClickedBlock() != null && e.getClickedBlock().getType().data == TrapDoor.class && e.getClickedBlock().getType().name().contains("COPPER")) {
+            // toggling copper trapdoors is not allowed ingame, they should behave like other metal trapdoors like iron
+            if (BotBows.getLobby(p).isGameActive()) e.setCancelled(true);
         } else {
             AbilityListener.onAbilityUse(e);
         }
