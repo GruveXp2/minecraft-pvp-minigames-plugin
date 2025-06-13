@@ -21,7 +21,7 @@ public class ChargePotionAbility extends PotionAbility {
     }
 
     @Override
-    protected void use(Set<Player> players) {
+    protected void applyPotionEffect(Set<Player> players) {
         bp.setAbilityCooldownTickRate(10);
         players.stream()
                 .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
@@ -33,7 +33,7 @@ public class ChargePotionAbility extends PotionAbility {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> {
             bp.setAbilityCooldownTickRate(20);
             players.stream()
-                    .map(p -> BotBows.getLobby(p).getBotBowsPlayer(p))
+                    .map(BotBows::getBotBowsPlayer)
                     .forEach(p -> p.setAbilityCooldownTickRate(20));
         }, 20L * DURATION);
     }

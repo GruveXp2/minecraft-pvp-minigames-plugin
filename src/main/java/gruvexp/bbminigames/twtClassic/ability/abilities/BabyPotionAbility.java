@@ -22,7 +22,7 @@ public class BabyPotionAbility extends PotionAbility {
     }
 
     @Override
-    public void use(Set<Player> players) {
+    public void applyPotionEffect(Set<Player> players) {
 
         players.forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4))); // 75% of the duration will be given to other players on the team
         bp.player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, AMPLIFIER));

@@ -22,11 +22,11 @@ public abstract class PotionAbility extends Ability {
         Set<Player> players = Main.WORLD.getNearbyEntities(bp.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
                 .stream().map(p -> (Player) p)
                 .filter(p -> BotBows.getLobby(p) != null)
-                .filter(p -> BotBows.getLobby(p).getBotBowsPlayer(p).getTeam() == bp.getTeam())
+                .filter(p -> BotBows.getBotBowsPlayer(p).getTeam() == bp.getTeam())
                 .collect(Collectors.toSet());
         players.remove(bp.player);
-        use(players);
+        applyPotionEffect(players);
     }
 
-    protected abstract void use(Set<Player> players);
+    protected abstract void applyPotionEffect(Set<Player> players);
 }
