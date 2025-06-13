@@ -22,7 +22,7 @@ import java.util.List;
 public class ThunderBowAbility extends Ability {
 
     public static final ItemStack THUNDER_BOW = Menu.makeItem(Material.CROSSBOW, "thunder_bow", Component.text("ThunderBow"), Component.text("Shoots electric arrows"));
-    public static final double CHAIN_RADIUS = 10;
+    public static final double CHAIN_RADIUS = 8;
     public static final int DURATION = 10; // seconds
 
     private boolean isActive = false;

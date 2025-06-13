@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public abstract class PotionAbility extends Ability {
 
-    public static final int RADIUS = 5;
+    public static final int RADIUS = 4;
 
     protected PotionAbility(BotBowsPlayer bp, int hotBarSlot, AbilityType type) {
         super(bp, hotBarSlot, type);
