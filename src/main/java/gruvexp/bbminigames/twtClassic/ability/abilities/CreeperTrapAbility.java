@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -32,6 +33,16 @@ public class CreeperTrapAbility extends Ability {
     public static double BLAST_RADIUS = 4;
 
     protected static HashMap<Creeper, BotBowsPlayer> creeperOwners = new HashMap<>();
+
+    public static void glowCreepers(BotBowsTeam team, int seconds) {
+        Set<Creeper> creepers = creeperOwners.entrySet().stream()
+                .filter(entry -> entry.getValue().getTeam() == team)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        creepers.forEach(creeper -> creeper.setGlowing(true));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> creepers.forEach(creeper -> creeper.setGlowing(false)), 20L * seconds);
+    }
 
     Creeper creeper;
     CreeperTicker creeperTicker;

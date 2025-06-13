@@ -129,7 +129,9 @@ public class BotBowsPlayer {
     }
 
     public void useRadarAbility() {
-        team.getOppositeTeam().glow(RadarAbility.DURATION);
+        BotBowsTeam opponentTeam = team.getOppositeTeam();
+        opponentTeam.glow(RadarAbility.DURATION);
+        CreeperTrapAbility.glowCreepers(opponentTeam, RadarAbility.DURATION);
     }
 
     public int getMaxHP() {return maxHP;}
