@@ -2,7 +2,6 @@ package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -27,7 +26,7 @@ public class SteamPipe {
     private final List<Location> nodes;
     private final HashMap<Player, Integer> playerEdge = new HashMap<>();
 
-    private int animationTick = 0;
+    private int tick = 0;
     private final List<Block> firstBulbs; // dette funker ikke engang pga man må faktisk ta setblockstate for at noesomhelst skal skje!
     private final List<Block> secondBulbs;
 
@@ -126,19 +125,32 @@ public class SteamPipe {
 
     public void tick() {
         if (pipeStatus == PipeStatus.INACTIVE) return;
+        tick++;
 
         playerEdge.forEach((p, lastNode) -> {
             int nextNode = pipeStatus == PipeStatus.ACTIVE ? lastNode + 1 : lastNode - 1;
             Location currentNodeLoc = (lastNode < 0 || lastNode == nodes.size()) ? p.getLocation() : nodes.get(lastNode);
             Location nextNodeLoc = nodes.get(nextNode);
+            Location pLoc = p.getLocation();
+
+            int nodeX = currentNodeLoc.getBlockX();
+            int nodeY = currentNodeLoc.getBlockY();
+            int nodeZ = currentNodeLoc.getBlockZ();
+            if (tick % 5 == 0) { // if the player goes outside of the pipe bounds, they exited
+                if ((nodeX == nextNodeLoc.getBlockX() && Math.abs(pLoc.getBlockX() - nodeX) > 1)
+                 || (nodeY == nextNodeLoc.getBlockY() && Math.abs(pLoc.getBlockY() - nodeY) > 1)
+                 || (nodeZ == nextNodeLoc.getBlockZ() && Math.abs(pLoc.getBlockZ() - nodeZ) > 1)) {
+                    exitPlayer(p);
+                    return;
+                }
+            }
 
             boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? lastNode == -1 : lastNode == nodes.size();
             boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == 0 : lastNode == nodes.size() - 1;
             boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
             if (isEntering) {
-                if (nextNodeLoc.clone().distanceSquared(p.getLocation()) > 12) {
+                if (nextNodeLoc.clone().distanceSquared(pLoc) > 12) {
                     playerEdge.put(p, -2); // the player exited and will be removed
-                    //Bukkit.broadcast(Component.text("Player canceld"));
                 }
                 AttributeInstance scaleAttribute = p.getAttribute(Attribute.SCALE);
                 double scale = scaleAttribute.getBaseValue();
@@ -153,13 +165,12 @@ public class SteamPipe {
             Vector a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize();
             Vector v = p.getVelocity();
 
-            double distanceToNextNode = p.getLocation().distanceSquared(nextNodeLoc);
+            double distanceToNextNode = pLoc.distanceSquared(nextNodeLoc);
             if ((isEntering || v.lengthSquared() > 1)) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
                 a.multiply(new Vector(0.1, 0.3, 0.1));
                 if (isEntering) { // the closer you get to the entry, the stronger the pull
                     double multiply = (9 - distanceToNextNode) / 6;
                     a.multiply(new Vector(multiply, 1.5, multiply));
-                    //Bukkit.broadcast(Component.text(String.format("id: %d, pull: %.2f", id, multiply)));
                 }
             }
             v.add(a);
@@ -168,35 +179,36 @@ public class SteamPipe {
             // this secures that the player is actually inside the pipe
             if (reachedNextNode) {
                 if (onLastNode) {
-                    playerEdge.put(p, -2); // the player exited and will be removed
-                    //Bukkit.broadcast(Component.text("Player exited"));
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0), 2L);
+                    exitPlayer(p);
                 } else {
                     playerEdge.put(p, nextNode);
-                    //Bukkit.broadcast(Component.text("Player enters next node: " + nextNode + " (" + p.getLocation().distanceSquared(nextNodeLoc) + ")"));
                 }
             }
         });
         playerEdge.entrySet().removeIf(entry -> entry.getValue() == -2);
         if (playerEdge.isEmpty() && !shuttingDown) setPipeStatus(PipeStatus.INACTIVE);
-        updateAnimation();
+        if (tick % 4 == 0) {
+            updateAnimation();
+        }
+    }
+
+    void exitPlayer(Player p) {
+        playerEdge.put(p, -2); // the player exited and will be removed
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0), 2L);
     }
 
     void updateAnimation() {
-        animationTick++;
-        if (animationTick % 4 != 0) return;
-
         List<Block> entryBulbs = pipeStatus == PipeStatus.ACTIVE ? firstBulbs : secondBulbs;
         List<Block> exitBulbs = pipeStatus == PipeStatus.ACTIVE ? secondBulbs : firstBulbs;
 
         if (!entryBulbs.isEmpty()) {
             entryBulbs.forEach(bulb -> setPowered(bulb, false));
-            int entryBulb = (animationTick / 4) % entryBulbs.size();
+            int entryBulb = (tick / 4) % entryBulbs.size();
             setPowered(entryBulbs.get(entryBulb), true);
         }
         if (!exitBulbs.isEmpty()) {
             exitBulbs.forEach(bulb -> setLit(bulb,false));
-            int exitBulb = (animationTick / 4) % exitBulbs.size();
+            int exitBulb = (tick / 4) % exitBulbs.size();
             setLit(exitBulbs.get(exitBulb), true);
         }
     }
