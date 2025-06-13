@@ -6,7 +6,9 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -41,7 +43,6 @@ public class AbilityListener implements Listener {
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;
         }
-        BotBows.debugMessage("Ability gets used");
         switch (type) {
             case ENDER_PEARL, RADAR, THUNDER_BOW, SALMON_SLAP, LINGERING_POTION -> bp.getAbility(type).use();
             case BUBBLE_JET -> {
@@ -61,6 +62,23 @@ public class AbilityListener implements Listener {
                 Location placeLoc = block.getLocation().add(0.5, 1, 0.5);
                 CreeperTrapAbility creeperTrapAbility = (CreeperTrapAbility) bp.getAbility(type);
                 creeperTrapAbility.use(placeLoc);
+            }
+            default -> {
+                if (type.category == AbilityCategory.POTION) {
+                    int particleCount = 200;
+                    int radius = PotionAbility.RADIUS;
+                    Location loc = p.getLocation().add(0, 0.1, 0);
+                    double y = loc.getY();
+                    for (int i = 0; i < particleCount; i++) {
+                        double θ = 2 * Math.PI * i / particleCount;
+                        double x = loc.getX() + radius * Math.cos(θ);
+                        double z = loc.getZ() + radius * Math.sin(θ);
+
+                        Location particleLoc = new Location(loc.getWorld(), x, y, z);
+                        Main.WORLD.spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
+                                new Particle.DustOptions(bp.getTeam().dyeColor.getColor(), 2.5f));
+                    }
+                }
             }
         }
     }
@@ -95,7 +113,8 @@ public class AbilityListener implements Listener {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
                     arrow.setColor(Color.RED);
-                    BukkitTask arrowTrail = new SplashBowAbility.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
+                    BukkitTask arrowTrail = new SplashBowAbility.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
                     arrow.getVelocity().multiply(0.5f);
                     splashArrows.put(arrow, arrowTrail);
                     bp.getAbility(AbilityType.SPLASH_BOW).use();
@@ -105,7 +124,8 @@ public class AbilityListener implements Listener {
                  if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
                          && ((ThunderBowAbility) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                     arrow.setColor(Color.AQUA);
-                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor()).runTaskTimer(Main.getPlugin(), 1L, 1L);
+                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
                     thunderArrows.put(arrow, arrowTrail);
                     BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
                 }
