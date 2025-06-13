@@ -65,6 +65,12 @@ public class BotBows {
         return players.get(p);
     }
 
+    public static BotBowsPlayer getBotBowsPlayer(Player p) { // gets the BotBowsPlayer that is used by the lobby the player is in
+        Lobby lobby = getLobby(p);
+        if (lobby == null) return null;
+        return lobby.getBotBowsPlayer(p);
+    }
+
     public static Lobby[] getLobbies() {
         return lobbies;
     }
