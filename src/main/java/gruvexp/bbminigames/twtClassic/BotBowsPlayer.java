@@ -304,26 +304,28 @@ public class BotBowsPlayer {
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
-        TextColor lightColor = BotBows.lighten(attacker.team.color, 0.5f);
+        TextColor defenderColor = team.color;
+        TextColor attackerColor = attacker.team.color;
+        TextColor lightColor = BotBows.lighten(attackerColor, 0.5f);
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
-            die(player.name().color(team.color)
+            die(player.name().color(defenderColor)
                     .append(hitActionMessage.color(lightColor))
-                    .append(attacker.player.name().color(attacker.team.color))
+                    .append(attacker.player.name().color(attackerColor))
                     .append(hitActionMessage2.color(lightColor))
-                    .append(Component.text(" and got"))
+                    .append(Component.text(" and got", lightColor))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
             if (player.getGameMode() == GameMode.SPECTATOR) {
                 player.setSpectatorTarget(attacker.player);
                 player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                        .append(attacker.player.name().color(attacker.team.color)));
+                        .append(attacker.player.name().color(attackerColor)));
             }
             return;
         }
         setHP(hp - attacker.attackDamage);
-        lobby.messagePlayers(Component.text(player.getName(), team.color)
-                .append(hitActionMessage)
-                .append(Component.text(attacker.player.getName(), attacker.team.color))
-                .append(hitActionMessage2)
+        lobby.messagePlayers(Component.text(player.getName(), defenderColor)
+                .append(hitActionMessage.color(lightColor))
+                .append(attacker.player.name().color(attackerColor))
+                .append(hitActionMessage2.color(lightColor))
                 .append(Component.text("; ", NamedTextColor.WHITE)
                         .append(Component.text(hp + "hp left"))));
         // defender effects
