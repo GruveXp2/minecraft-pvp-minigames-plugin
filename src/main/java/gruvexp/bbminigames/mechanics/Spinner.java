@@ -45,7 +45,6 @@ public class Spinner {
 
         if (p.getLocation().distanceSquared(centerLocation) < 9) {
             players.add(p);
-            Bukkit.broadcast(Component.text("A player came near"));
         }
     }
 
@@ -73,7 +72,6 @@ public class Spinner {
             // make into interval [0,90)
             pJaw = (pJaw + 720) % 90;
             if (rotationSpeed > 0 ? pJaw < 20 : pJaw > 70) { // they hit the spinner and will get pushed
-                Bukkit.broadcast(Component.text("A player pushed(" + (int)pJaw + "), "));
                 double divide = 5 + (rotationSpeed > 0 ? pJaw : 90 - pJaw) * 7;
                 Vector push = relDir.crossProduct(new Vector(0, -rotationSpeed, 0)).multiply(r/(divide)); // retning x up||down = vel from hitting the bl8d
 
@@ -83,17 +81,13 @@ public class Spinner {
                 v.subtract(pushDir.multiply(vAlongPushDir)).add(push); // the part of v in the direction pushed gets completly replaced with the push value
                 p.setVelocity(v);
             } else if (rotationSpeed > 0 ? pJaw > 70 : pJaw < 20) { // they hit the spinner and will get pushed
-                Bukkit.broadcast(Component.text("A player hits(" + (int)pJaw + ")"));
                 Vector dv = relDir.crossProduct(new Vector(0, rotationSpeed, 0)).multiply(r/25); // retning x up||down = vel from hitting the bl8d
                 Vector v = p.getVelocity();
                 v.add(dv);
                 p.setVelocity(v);
-            } else {
-                Bukkit.broadcast(Component.text("A player not(" + (int)pJaw + ")"));
             }
             if (r > 3.1) {
                 players.remove(p);
-                Bukkit.broadcast(Component.text("A player left"));
             }
         });
     }
