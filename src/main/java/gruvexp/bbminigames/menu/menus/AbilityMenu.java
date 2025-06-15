@@ -211,9 +211,10 @@ public class AbilityMenu extends SettingsMenu {
     private void handleAbilityClick(InventoryClickEvent e, Player clicker, ItemStack clickedItem) {
         AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
         if (abilityType == null) return;
+
         BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
         BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
-        if (p.canToggleAbilities()) {
+        if (p.isToggleAbilityMode()) {
             settings.toggleAbility(abilityType);
         } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
             if (settings.abilityAllowed(abilityType)) {

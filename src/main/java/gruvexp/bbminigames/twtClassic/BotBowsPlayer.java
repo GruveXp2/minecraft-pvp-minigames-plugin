@@ -42,7 +42,7 @@ public class BotBowsPlayer {
 
     private int maxAbilities;
     private float abilityCooldownMultiplier;
-    private boolean canToggleAbilities = false;
+    private boolean toggleAbilityMode = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
