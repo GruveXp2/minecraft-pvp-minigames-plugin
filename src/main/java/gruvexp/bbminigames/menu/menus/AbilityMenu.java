@@ -141,6 +141,10 @@ public class AbilityMenu extends SettingsMenu {
                 }
             }
             case PLAYER_HEAD -> {
+                if (PlainTextComponentSerializer.plainText().serialize(clickedItem.displayName()).contains("Laser")) {
+                    handleAbilityClick(e, clicker, clickedItem);
+                    return;
+                }
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
@@ -200,33 +204,36 @@ public class AbilityMenu extends SettingsMenu {
                 e.setCancelled(false);
                 p.equipAbility(e.getSlot(), type);
             }
-            default -> { // clicked ON ability in inventory
-                AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
-                if (abilityType == null) return;
-                BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
-                BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
-                if (p.canToggleAbilities()) {
-                    settings.toggleAbility(abilityType);
-                } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
-                    if (settings.abilityAllowed(abilityType)) {
-                        if (p.hasAbilityEquipped(abilityType)) {
-                            p.unequipAbility(abilityType);
-                        } else {
-                            if (e.getSlot() > 36 && e.getSlot() < 45) {
-                                ItemStack cursorItem = clickedItem.clone();
-                                ItemMeta meta = cursorItem.getItemMeta();
-                                Component cooldownComponent = getCooldownComponent(p, abilityType);
-                                List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
-                                lore.set(lore.size() - 1, cooldownComponent);
-                                meta.lore(lore);
-                                cursorItem.setItemMeta(meta);
-                                p.player.setItemOnCursor(cursorItem);
-                            }
-                        }
-                    } else {
-                        clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
+            default -> handleAbilityClick(e, clicker, clickedItem); // clicked ON ability in inventory
+        }
+    }
+
+    private void handleAbilityClick(InventoryClickEvent e, Player clicker, ItemStack clickedItem) {
+        AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
+        if (abilityType == null) return;
+        BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
+        BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
+        if (p.canToggleAbilities()) {
+            settings.toggleAbility(abilityType);
+        } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
+            if (settings.abilityAllowed(abilityType)) {
+                if (p.hasAbilityEquipped(abilityType)) {
+                    p.unequipAbility(abilityType);
+                } else {
+                    BotBows.debugMessage("not equipped: " + abilityType.name(), TestCommand.test2);
+                    if (e.getSlot() > 36 && e.getSlot() < 45) {
+                        ItemStack cursorItem = clickedItem.clone();
+                        ItemMeta meta = cursorItem.getItemMeta();
+                        Component cooldownComponent = getCooldownComponent(p, abilityType);
+                        List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
+                        lore.set(lore.size() - 1, cooldownComponent);
+                        meta.lore(lore);
+                        cursorItem.setItemMeta(meta);
+                        p.player.setItemOnCursor(cursorItem);
                     }
                 }
+            } else {
+                clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
             }
         }
     }
