@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CreeperTrapAbility extends Ability {
+public class CreeperTrap extends Ability {
 
     public static final float BLOCK_PX = 0.0625f;
     protected static final float CREEPER_SCALE = 0.75f;
@@ -47,7 +47,7 @@ public class CreeperTrapAbility extends Ability {
     Creeper creeper;
     CreeperTicker creeperTicker;
 
-    public CreeperTrapAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public CreeperTrap(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.CREEPER_TRAP);
     }
 
@@ -56,7 +56,7 @@ public class CreeperTrapAbility extends Ability {
         // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
         Set<Creeper> creepers = creeperOwners.entrySet().stream().filter(entry -> entry.getValue() == bp)
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
-        creepers.forEach(CreeperTrapAbility::ignite);
+        creepers.forEach(CreeperTrap::ignite);
 
         creeper = (Creeper) Main.WORLD.spawnEntity(loc, EntityType.CREEPER);
         creeper.setAI(false);
@@ -90,13 +90,13 @@ public class CreeperTrapAbility extends Ability {
             creeper.ignite();
             return;
         }
-        CreeperTrapAbility ability = (CreeperTrapAbility) creeperOwners.get(creeper).getAbility(AbilityType.CREEPER_TRAP);
+        CreeperTrap ability = (CreeperTrap) creeperOwners.get(creeper).getAbility(AbilityType.CREEPER_TRAP);
         ability.creeperTicker.ignite();
     }
 
     public static void igniteAllCreepers() {
         Set<Creeper> creepers = new HashSet<>(creeperOwners.keySet());
-        creepers.forEach(CreeperTrapAbility::ignite);
+        creepers.forEach(CreeperTrap::ignite);
     }
 
     public static class CreeperTicker extends BukkitRunnable {

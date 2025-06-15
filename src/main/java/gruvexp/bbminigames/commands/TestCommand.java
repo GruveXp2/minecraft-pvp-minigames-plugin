@@ -9,7 +9,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import net.kyori.adventure.text.Component;
@@ -27,8 +27,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class TestCommand implements CommandExecutor {
 
@@ -197,7 +195,7 @@ public class TestCommand implements CommandExecutor {
                     }
                     Location loc1 = Util.toLocation(Main.WORLD, args[1], args[2], args[3]);
                     Location loc2 = Util.toLocation(Main.WORLD, args[4], args[5], args[6]);
-                    ThunderBowAbility.createElectricArc(loc1, loc2, Color.RED, 1.0);
+                    ThunderBow.createElectricArc(loc1, loc2, Color.RED, 1.0);
                 }
                 case "inv" -> p.openInventory(testInv);
                 case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);

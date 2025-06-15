@@ -68,8 +68,8 @@ public class AbilityListener implements Listener {
                 }
                 Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
 
-                CreeperTrapAbility creeperTrapAbility = (CreeperTrapAbility) bp.getAbility(type);
-                creeperTrapAbility.use(placeLoc);
+                CreeperTrap creeperTrap = (CreeperTrap) bp.getAbility(type);
+                creeperTrap.use(placeLoc);
             }
             default -> {
                 if (type.category == AbilityCategory.POTION) {
@@ -121,7 +121,7 @@ public class AbilityListener implements Listener {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
                     arrow.setColor(Color.RED);
-                    BukkitTask arrowTrail = new SplashBowAbility.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+                    BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
                             .runTaskTimer(Main.getPlugin(), 1L, 1L);
                     arrow.getVelocity().multiply(0.5f);
                     splashArrows.put(arrow, arrowTrail);
@@ -130,9 +130,9 @@ public class AbilityListener implements Listener {
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
                  if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
-                         && ((ThunderBowAbility) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
+                         && ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                     arrow.setColor(Color.AQUA);
-                    BukkitTask arrowTrail = new ThunderBowAbility.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+                    BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
                             .runTaskTimer(Main.getPlugin(), 1L, 1L);
                     thunderArrows.put(arrow, arrowTrail);
                     BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
@@ -140,7 +140,7 @@ public class AbilityListener implements Listener {
             }
         } else if (e.getEntity() instanceof ThrownPotion potion) {
             if (potion.getItem().getType() == Material.LINGERING_POTION) {
-                LingeringPotionAbility.giveRandomEffect(potion);
+                LingeringPotionTrap.giveRandomEffect(potion);
             }
         }
     }
@@ -176,7 +176,7 @@ public class AbilityListener implements Listener {
 
         if (!hasUnluck) return;
 
-        LingeringPotionAbility ability = (LingeringPotionAbility) throwerBp.getAbility(AbilityType.LINGERING_POTION);
+        LingeringPotionTrap ability = (LingeringPotionTrap) throwerBp.getAbility(AbilityType.LINGERING_POTION);
         ability.addSizeIncreaseAreaEffect(potion.getLocation());
     }
 
@@ -204,14 +204,14 @@ public class AbilityListener implements Listener {
             } else {
                 hitLoc = e.getHitBlock().getLocation();
             }
-            SplashBowAbility.handleArrowHit(attacker, hitLoc);
+            SplashBow.handleArrowHit(attacker, hitLoc);
             splashArrows.get(arrow).cancel();
             splashArrows.remove(arrow);
             arrow.remove();
         } else if (thunderArrows.containsKey(arrow)) {
             if (e.getHitEntity() != null) return; // det handles på et ant sted
             Location hitLoc = e.getHitBlock().getLocation();
-            ThunderBowAbility.handleArrowHitBlock(hitLoc);
+            ThunderBow.handleArrowHitBlock(hitLoc);
             thunderArrows.get(arrow).cancel();
             thunderArrows.remove(arrow);
             arrow.remove();

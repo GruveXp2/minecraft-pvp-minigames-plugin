@@ -130,8 +130,8 @@ public class BotBowsPlayer {
 
     public void useRadarAbility() {
         BotBowsTeam opponentTeam = team.getOppositeTeam();
-        opponentTeam.glow(RadarAbility.DURATION);
-        CreeperTrapAbility.glowCreepers(opponentTeam, RadarAbility.DURATION);
+        opponentTeam.glow(Radar.DURATION);
+        CreeperTrap.glowCreepers(opponentTeam, Radar.DURATION);
     }
 
     public int getMaxHP() {return maxHP;}
@@ -229,17 +229,17 @@ public class BotBowsPlayer {
     public void equipAbility(int slot, AbilityType type) {
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
-            case INVIS_POTION -> abilities.put(type, new InvisPotionAbility(this, slot));
-            case RADAR -> abilities.put(type, new RadarAbility(this, slot));
-            case SPLASH_BOW -> abilities.put(type, new SplashBowAbility(this, slot));
-            case THUNDER_BOW -> abilities.put(type, new ThunderBowAbility(this, slot));
+            case INVIS_POTION -> abilities.put(type, new InvisPotion(this, slot));
+            case RADAR -> abilities.put(type, new Radar(this, slot));
+            case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
+            case THUNDER_BOW -> abilities.put(type, new ThunderBow(this, slot));
             case LONG_ARMS -> abilities.put(type, new Ability(this, slot, AbilityType.LONG_ARMS));
-            case SALMON_SLAP -> abilities.put(type, new SalmonSlapAbility(this, slot));
-            case BUBBLE_JET -> abilities.put(type, new BubbleJetAbility(this, slot));
-            case CREEPER_TRAP -> abilities.put(type, new CreeperTrapAbility(this, slot));
-            case BABY_POTION -> abilities.put(type, new BabyPotionAbility(this, slot));
-            case LINGERING_POTION -> abilities.put(type, new LingeringPotionAbility(this, slot));
-            case CHARGE_POTION -> abilities.put(type, new ChargePotionAbility(this, slot));
+            case SALMON_SLAP -> abilities.put(type, new SalmonSlap(this, slot));
+            case BUBBLE_JET -> abilities.put(type, new BubbleJet(this, slot));
+            case CREEPER_TRAP -> abilities.put(type, new CreeperTrap(this, slot));
+            case BABY_POTION -> abilities.put(type, new BabyPotion(this, slot));
+            case LINGERING_POTION -> abilities.put(type, new LingeringPotionTrap(this, slot));
+            case CHARGE_POTION -> abilities.put(type, new ChargePotion(this, slot));
             case KARMA_POTION -> abilities.put(type, new KarmaPotion(this, slot));
             default -> throw new IllegalStateException("Error, contact Gruve: he forgot to connect this ability type to a java class");
         }

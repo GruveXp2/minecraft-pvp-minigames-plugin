@@ -4,11 +4,11 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 
-public class RadarAbility extends Ability {
+public class Radar extends Ability {
 
     public static final int DURATION = 4; // seconds
 
-    public RadarAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public Radar(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.RADAR);
     }
 

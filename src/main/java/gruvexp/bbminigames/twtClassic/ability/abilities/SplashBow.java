@@ -18,11 +18,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
  import org.bukkit.util.Vector;
 
-public class SplashBowAbility extends Ability {
+public class SplashBow extends Ability {
 
     public static final double BLAST_RADIUS = 3.0;
 
-    public SplashBowAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public SplashBow(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.SPLASH_BOW);
         bp.player.getInventory().setItem(18, new ItemStack(Material.ARROW, 64));
     }

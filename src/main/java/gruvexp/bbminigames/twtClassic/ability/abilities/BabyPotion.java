@@ -12,12 +12,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
 
-public class BabyPotionAbility extends PotionAbility {
+public class BabyPotion extends PotionAbility {
 
     public static int DURATION = 10;
     public static int AMPLIFIER = 4;
 
-    public BabyPotionAbility(BotBowsPlayer player, int hotBarSlot) {
+    public BabyPotion(BotBowsPlayer player, int hotBarSlot) {
         super(player, hotBarSlot, AbilityType.BABY_POTION);
     }
 

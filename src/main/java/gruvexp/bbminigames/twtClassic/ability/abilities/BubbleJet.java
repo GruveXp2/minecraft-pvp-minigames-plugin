@@ -14,13 +14,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class BubbleJetAbility extends Ability {
+public class BubbleJet extends Ability {
 
     public static final double DAMAGE_RADIUS = 2.0;
 
     BukkitRunnable riptideTask;
 
-    public BubbleJetAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public BubbleJet(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.BUBBLE_JET);
     }
 

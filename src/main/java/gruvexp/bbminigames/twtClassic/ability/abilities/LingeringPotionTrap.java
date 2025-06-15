@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 
-public class LingeringPotionAbility extends Ability {
+public class LingeringPotionTrap extends Ability {
 
     public static final int DURATION = 30;
     public static final int LINGERING_POTION_RADIUS = 3;
@@ -38,7 +38,7 @@ public class LingeringPotionAbility extends Ability {
             PotionEffectType.UNLUCK, Color.fromRGB(128, 100, 32)
     );
 
-    public LingeringPotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public LingeringPotionTrap(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.LINGERING_POTION);
     }
 

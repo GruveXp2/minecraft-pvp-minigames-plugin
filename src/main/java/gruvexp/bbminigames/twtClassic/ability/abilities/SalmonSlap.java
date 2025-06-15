@@ -8,12 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class SalmonSlapAbility extends Ability {
+public class SalmonSlap extends Ability {
 
     public static final int DURATION = 5; // seconds
     public static final ItemStack SALMON = new ItemStack(Material.SALMON);
 
-    public SalmonSlapAbility(BotBowsPlayer bp, int slot) {
+    public SalmonSlap(BotBowsPlayer bp, int slot) {
         super(bp, slot, AbilityType.SALMON_SLAP);
     }
 
