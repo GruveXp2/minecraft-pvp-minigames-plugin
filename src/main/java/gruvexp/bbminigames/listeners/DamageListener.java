@@ -5,8 +5,8 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrapAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBowAbility;
+import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
+import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -25,7 +25,7 @@ public class DamageListener implements Listener {
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Creeper creeper) {
             e.setDamage(0.01);
-            CreeperTrapAbility.ignite(creeper);
+            CreeperTrap.ignite(creeper);
             return;
         }
         if ((e.getDamager() instanceof Arrow arrow)) {
@@ -46,8 +46,8 @@ public class DamageListener implements Listener {
                 }
                 e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
                 boolean hasKarma = defenderBp.hasKarmaEffect();
-                if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBowAbility) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
-                    ThunderBowAbility.handleArrowHitPlayer(attackerBp, defenderBp);
+                if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBow) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
+                    ThunderBow.handleArrowHitPlayer(attackerBp, defenderBp);
                 } else {
                     defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit

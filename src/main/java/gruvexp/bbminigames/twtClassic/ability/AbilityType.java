@@ -35,7 +35,7 @@ public enum AbilityType {
             Component.text("When hitting an opponent, damage chains to nearby enemies"),
             Component.empty(),
             getDamageInfo("chain", 6, 'r'),
-            getDurationInfo(ThunderBowAbility.DURATION)),
+            getDurationInfo(ThunderBow.DURATION)),
             "TERRACOTTA", AbilityCategory.DAMAGING),
     BUBBLE_JET(makeRiptideTrident(),
             "CANDLE", AbilityCategory.DAMAGING),
@@ -45,12 +45,12 @@ public enum AbilityType {
             Component.text("Give your opponents a salmon slap"),
             Component.empty(),
             getDamageInfo("punch", 3, 'm'),
-            getDurationInfo(SalmonSlapAbility.DURATION)),
+            getDurationInfo(SalmonSlap.DURATION)),
             "WOOL", AbilityCategory.DAMAGING),
     RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of opponents by making them glow"),
             Component.empty(),
-            getDurationInfo(RadarAbility.DURATION)),
+            getDurationInfo(Radar.DURATION)),
             30, "BANNER", AbilityCategory.UTILITY),
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
             15, "CONCRETE", AbilityCategory.UTILITY),
@@ -69,7 +69,7 @@ public enum AbilityType {
             Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrapAbility.BLAST_RADIUS, NamedTextColor.YELLOW))),
             5, "CONCRETE_POWDER", AbilityCategory.TRAP),
     LINGERING_POTION(makeLingeringPotion(),
-            LingeringPotionAbility.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
+            LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
 
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
@@ -193,14 +193,14 @@ public enum AbilityType {
         ItemStack potion = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotionAbility.DURATION * 20, 4), true);
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, 4), true);
         meta.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Makes you small and fast"),
                 Component.empty(),
                 getPotionEffectInfo("2x Speed"),
                 getPotionEffectInfo("-30% Size"),
-                getDurationInfo(BabyPotionAbility.DURATION)
+                getDurationInfo(BabyPotion.DURATION)
         ));
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
@@ -212,13 +212,13 @@ public enum AbilityType {
         ItemStack potion = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
 
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, ChargePotionAbility.DURATION * 20, 4), true);
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, ChargePotion.DURATION * 20, 4), true);
         meta.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("Makes your cooldowns go faster"),
                 Component.empty(),
                 getPotionEffectInfo("2x cooldown speed"),
-                getDurationInfo(ChargePotionAbility.DURATION)
+                getDurationInfo(ChargePotion.DURATION)
         ));
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
@@ -255,7 +255,7 @@ public enum AbilityType {
                 Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
                 Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
                 Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
-                getDurationInfo(LingeringPotionAbility.DURATION)
+                getDurationInfo(LingeringPotionTrap.DURATION)
         ));
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         meta.setColor(Color.fromRGB(100, 62, 46));

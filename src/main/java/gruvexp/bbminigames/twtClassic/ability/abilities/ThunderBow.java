@@ -19,7 +19,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThunderBowAbility extends Ability {
+public class ThunderBow extends Ability {
 
     public static final ItemStack THUNDER_BOW = Menu.makeItem(Material.CROSSBOW, "thunder_bow", Component.text("ThunderBow"), Component.text("Shoots electric arrows"));
     public static final double CHAIN_RADIUS = 8;
@@ -27,7 +27,7 @@ public class ThunderBowAbility extends Ability {
 
     private boolean isActive = false;
 
-    public ThunderBowAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public ThunderBow(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.THUNDER_BOW);
     }
 

@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class ChargePotionAbility extends PotionAbility {
+public class ChargePotion extends PotionAbility {
 
     public static final int DURATION = 20;
 
-    public ChargePotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public ChargePotion(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
         this.type = AbilityType.CHARGE_POTION;
         this.baseCooldown = type.getBaseCooldown();

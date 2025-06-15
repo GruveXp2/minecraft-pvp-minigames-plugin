@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-public class InvisPotionAbility extends Ability {
+public class InvisPotion extends Ability {
 
-    public InvisPotionAbility(BotBowsPlayer bp, int hotBarSlot) {
+    public InvisPotion(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.INVIS_POTION);
     }
 
