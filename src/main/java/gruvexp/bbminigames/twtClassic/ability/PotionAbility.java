@@ -3,6 +3,8 @@ package gruvexp.bbminigames.twtClassic.ability;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -26,7 +28,17 @@ public abstract class PotionAbility extends Ability {
                 .collect(Collectors.toSet());
         players.remove(bp.player);
         applyPotionEffect(players);
+
+        players.forEach(p -> p.sendMessage(Component.text("Got ", NamedTextColor.GREEN)
+                .append(Component.text(getEffectDuration()))
+                .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
+                .append(Component.text(" effect from "))
+                .append(bp.player.name())));
     }
 
     protected abstract void applyPotionEffect(Set<Player> players);
+
+    protected abstract String getEffectName();
+
+    protected abstract int getEffectDuration();
 }

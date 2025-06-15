@@ -51,4 +51,14 @@ public class BabyPotionAbility extends PotionAbility {
             }
         }.runTaskTimer(Main.getPlugin(), 200L, 1L);
     }
+
+    @Override
+    protected String getEffectName() {
+        return "Baby";
+    }
+
+    @Override
+    protected int getEffectDuration() {
+        return (int) (DURATION * 0.75);
+    }
 }

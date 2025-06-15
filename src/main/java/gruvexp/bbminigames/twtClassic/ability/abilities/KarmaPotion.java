@@ -30,4 +30,14 @@ public class KarmaPotion extends PotionAbility {
                 .map(BotBows::getBotBowsPlayer)
                 .forEach(p -> p.setKarmaEffect(false)), 15L * DURATION);
     }
+
+    @Override
+    protected String getEffectName() {
+        return "Karma";
+    }
+
+    @Override
+    protected int getEffectDuration() {
+        return (int) (DURATION * 0.75);
+    }
 }
