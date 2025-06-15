@@ -37,4 +37,14 @@ public class ChargePotionAbility extends PotionAbility {
                     .forEach(p -> p.setAbilityCooldownTickRate(20));
         }, 20L * DURATION);
     }
+
+    @Override
+    protected String getEffectName() {
+        return "Charge";
+    }
+
+    @Override
+    protected int getEffectDuration() {
+        return (int) (DURATION * 0.75);
+    }
 }
