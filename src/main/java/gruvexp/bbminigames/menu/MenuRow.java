@@ -50,7 +50,7 @@ public class MenuRow {
         goTo(currentPage);
     }
 
-    public void updatePage() {
+    public void displayRow() {
         goTo(currentPage);
     }
 
@@ -100,18 +100,18 @@ public class MenuRow {
     public void addItem(ItemStack item) {
         itemList.add(item);
         if (isVisible && currentPage == getTotalPages()) {
-            updatePage();
+            displayRow();
         }
     }
 
     public void removeItem(ItemStack item) {
         itemList.remove(item);
-        updatePage();
+        if (isVisible) displayRow();
     }
 
     public void show() {
         isVisible = true;
-        updatePage();
+        displayRow();
     }
 
     public void hide() {

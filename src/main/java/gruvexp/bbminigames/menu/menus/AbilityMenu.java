@@ -388,7 +388,7 @@ public class AbilityMenu extends SettingsMenu {
         ItemStack headItem = maxAbilitiesRow.getItem(p);
         headItem.setAmount(Math.max(p.getMaxAbilities(), 1)); // oppdaterer head count
         if (individualMaxAbilities) {
-            maxAbilitiesRow.updatePage();
+            maxAbilitiesRow.displayRow();
         }
     }
 
@@ -403,7 +403,7 @@ public class AbilityMenu extends SettingsMenu {
         ItemMeta meta = headItem.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         headItem.setItemMeta(meta);
-        cooldownMultiplierRow.updatePage();
+        cooldownMultiplierRow.displayRow();
     }
 
     public void updateAbilityStatus(AbilityType type) {
