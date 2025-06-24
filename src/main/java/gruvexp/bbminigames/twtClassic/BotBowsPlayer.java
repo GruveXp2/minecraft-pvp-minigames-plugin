@@ -440,8 +440,10 @@ public class BotBowsPlayer {
         this.ready = ready;
         player.getInventory().setItem(itemIndex, Lobby.LOADING);
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(itemIndex, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
-        lobby.handlePlayerReady(this);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+            player.getInventory().setItem(itemIndex, ready ? Lobby.READY : Lobby.NOT_READY);
+            lobby.handlePlayerReady(this);
+        }, 2L);
     }
 
     public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
