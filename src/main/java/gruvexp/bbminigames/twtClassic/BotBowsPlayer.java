@@ -206,24 +206,24 @@ public class BotBowsPlayer {
 
     public void disableAbilityToggle() {
         player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_DISABLED);
-        canToggleAbilities = false;
+        toggleAbilityMode = false;
     }
 
     public void enableAbilityToggle() {
         player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_ENABLED);
-        canToggleAbilities = true;
+        toggleAbilityMode = true;
     }
 
     public void toggleAbilityToggle() {
-        if (canToggleAbilities) {
+        if (toggleAbilityMode) {
             disableAbilityToggle();
         } else {
             enableAbilityToggle();
         }
     }
 
-    public boolean canToggleAbilities() {
-        return canToggleAbilities;
+    public boolean isToggleAbilityMode() {
+        return toggleAbilityMode;
     }
 
     public void equipAbility(int slot, AbilityType type) {
