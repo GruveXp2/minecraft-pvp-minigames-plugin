@@ -1,11 +1,7 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.menu.AbilityMenuRow;
-import gruvexp.bbminigames.menu.MenuSlider;
-import gruvexp.bbminigames.menu.PlayerMenuRow;
-import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.menu.*;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
@@ -102,6 +98,7 @@ public class AbilityMenu extends SettingsMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
+        BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(clicker);
         ItemStack clickedItem = e.getCurrentItem();
         if (clickedItem == null) {
             clickedItem = new ItemStack(Material.AIR);
@@ -142,24 +139,24 @@ public class AbilityMenu extends SettingsMenu {
             }
             case PLAYER_HEAD -> {
                 if (PlainTextComponentSerializer.plainText().serialize(clickedItem.displayName()).contains("Laser")) {
-                    handleAbilityClick(e, clicker, clickedItem);
+                    handleAbilityClick(e, bp, clickedItem);
                     return;
                 }
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
+                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(p);
                 if (e.getSlot() < 9) {
-                    int maxAbilities = bp.getMaxAbilities(); // oppdaterer max abilities
+                    int maxAbilities = headBp.getMaxAbilities(); // oppdaterer max abilities
                     maxAbilities++;
                     if (maxAbilities > 3) maxAbilities = 1;
-                    bp.setMaxAbilities(maxAbilities);
+                    headBp.setMaxAbilities(maxAbilities);
                 } else if (e.getSlot() <=27) {
-                    float cooldownMultiplier = bp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
+                    float cooldownMultiplier = headBp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
                     String prev = String.format(Locale.US, "%.2fx", cooldownMultiplier);
                     String next = cooldownMultiplierSlider.getNext(prev);
                     float newCooldownMultiplier = Float.parseFloat(next.substring(0, next.length() - 1));
-                    bp.setAbilityCooldownMultiplier(newCooldownMultiplier);
+                    headBp.setAbilityCooldownMultiplier(newCooldownMultiplier);
                 }
             }
             case FIREWORK_STAR -> {
@@ -180,61 +177,87 @@ public class AbilityMenu extends SettingsMenu {
                 p.toggleAbilityToggle();
             }
             case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
-            case AIR -> { // clicked WITH ability in cursor
-                ItemStack cursorItem = e.getCursor();
-                if (cursorItem.getType() == Material.AIR) return;
-                AbilityType type = AbilityType.fromItem(cursorItem);
-                if (type == null) return;
-                Inventory clickedInventory = e.getClickedInventory();
-                if (clickedInventory == null) return;
-                if (clickedInventory.equals(inventory)) {
-                    BotBows.debugMessage("prøvde å plassere tilbakei menuet", TestCommand.test2);
-                    clicker.setItemOnCursor(null);
-                    return;
-                }
-                if (e.getSlot() > 8 || e.getSlot() == 0) {
-                    BotBows.debugMessage("prøvde å sette ned på feil sted i inventoriet", TestCommand.test2);
-                    clicker.setItemOnCursor(null);
-                    return;
-                }
-                BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
-                if (p.getTotalAbilities() == p.getMaxAbilities()) {
-                    return;
-                }
-                e.setCancelled(false);
-                p.equipAbility(e.getSlot(), type);
-            }
-            default -> handleAbilityClick(e, clicker, clickedItem); // clicked ON ability in inventory
+            default -> handleAbilityClick(e, bp, clickedItem);
         }
     }
 
-    private void handleAbilityClick(InventoryClickEvent e, Player clicker, ItemStack clickedItem) {
-        AbilityType abilityType = AbilityType.fromItem(e.getCurrentItem());
-        if (abilityType == null) return;
+    private void handleAbilityClick(InventoryClickEvent e, BotBowsPlayer bp, ItemStack clickedItem) {
+        Player p = bp.player;
+        ItemStack cursorItem = e.getCursor();
+        AbilityType cursorAbility = AbilityType.fromItem(cursorItem);
+        AbilityType clickedAbility = AbilityType.fromItem(clickedItem);
 
-        BotBows.debugMessage("clicked on ability: " + abilityType.name(), TestCommand.test2);
-        BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
-        if (p.isToggleAbilityMode()) {
-            settings.toggleAbility(abilityType);
-        } else { // playeren plukker opp itemet (uten at det forsvinner fra menuet) og kan plassere det hvor som helst i inventoriet sitt
-            if (settings.abilityAllowed(abilityType)) {
-                if (p.hasAbilityEquipped(abilityType)) {
-                    p.unequipAbility(abilityType);
-                } else {
-                    BotBows.debugMessage("not equipped: " + abilityType.name(), TestCommand.test2);
-                    if (e.getSlot() > 36 && e.getSlot() < 45) {
-                        ItemStack cursorItem = clickedItem.clone();
-                        ItemMeta meta = cursorItem.getItemMeta();
-                        Component cooldownComponent = getCooldownComponent(p, abilityType);
+        if (cursorAbility == null && clickedAbility == null) return;
+
+        Inventory menuInventory = inventory;
+        if (e.getClickedInventory() == menuInventory) {
+            if (cursorAbility != null) {
+                p.setItemOnCursor(null);
+                if (bp.hasAbilityEquipped(cursorAbility)) {
+                    bp.unequipAbility(cursorAbility);
+                }
+            } else {
+                if (bp.isToggleAbilityMode()) {
+                    settings.toggleAbility(clickedAbility);
+                    return;
+                }
+                if (cursorItem.getType() != Material.AIR) return;
+
+                if (!settings.abilityAllowed(clickedAbility)) {
+                    p.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
+                    return;
+                }
+
+                if (bp.hasAbilityEquipped(clickedAbility)) {
+                    bp.unequipAbility(clickedAbility);
+                } else { // picking up ability from menu
+                    boolean clickedOnMenuAbilityRow = e.getSlot() > 36 && e.getSlot() < 45;
+                    if (clickedOnMenuAbilityRow) {
+                        if (bp.getTotalAbilities() == bp.getMaxAbilities()) {
+                            if (bp.getMaxAbilities() == 0) {
+                                p.sendMessage(Component.text("The mod has disabled abilities for you", NamedTextColor.RED));
+                            } else {
+                                p.sendMessage(Component.text("Ability limit reached", NamedTextColor.RED));
+                            }
+                            return;
+                        }
+
+                        ItemStack abilityItem = clickedItem.clone();
+                        ItemMeta meta = abilityItem.getItemMeta();
+
+                        Component cooldownComponent = getCooldownComponent(bp, clickedAbility);
                         List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
                         lore.set(lore.size() - 1, cooldownComponent);
                         meta.lore(lore);
-                        cursorItem.setItemMeta(meta);
-                        p.player.setItemOnCursor(cursorItem);
+
+                        abilityItem.setItemMeta(meta);
+                        p.setItemOnCursor(abilityItem);
                     }
                 }
-            } else {
-                clicker.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
+            }
+        } else { // clicked in player inventory
+            if (cursorItem.getType() == Material.AIR) {
+                if (bp.hasAbilityEquipped(clickedAbility)) { // picks up ability to move it around
+                    e.setCancelled(false);
+                    bp.equipAbility(-1, clickedAbility);
+                }
+            } else { // places ability down in that slot
+                if (bp.getTotalAbilities() == bp.getMaxAbilities() && !bp.hasAbilityEquipped(cursorAbility)) return;
+
+                if (e.getSlot() >= 9) { // clicks somewhere else than hotbar
+                    p.setItemOnCursor(null);
+                    if (bp.hasAbilityEquipped(cursorAbility)) {
+                        bp.unequipAbility(cursorAbility);
+                    }
+                    return;
+                }
+
+                e.setCancelled(false);
+                bp.equipAbility(e.getSlot(), cursorAbility);
+
+                if (clickedAbility != null) {
+                    bp.equipAbility(-1, clickedAbility);
+                }
             }
         }
     }

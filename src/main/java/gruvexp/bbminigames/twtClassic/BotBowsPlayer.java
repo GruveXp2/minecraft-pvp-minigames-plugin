@@ -227,6 +227,7 @@ public class BotBowsPlayer {
     }
 
     public void equipAbility(int slot, AbilityType type) {
+        boolean abilityAlreadyEquipped = hasAbilityEquipped(type);
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
             case INVIS_POTION -> abilities.put(type, new InvisPotion(this, slot));
@@ -243,8 +244,10 @@ public class BotBowsPlayer {
             case KARMA_POTION -> abilities.put(type, new KarmaPotion(this, slot));
             default -> throw new IllegalStateException("Error, contact Gruve: he forgot to connect this ability type to a java class");
         }
+        if (abilityAlreadyEquipped) return;
+
         int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
-        if (relativeAbilitySlot > 0) {
+        if (relativeAbilitySlot > 0) { // slot -1 means cursor
             player.getInventory().setItem(relativeAbilitySlot + 9, AbilityMenu.ABILITY_EQUIPPED);
             BotBows.debugMessage("Setting equip item at " + relativeAbilitySlot);
         }
@@ -264,7 +267,11 @@ public class BotBowsPlayer {
         Inventory inv = player.getInventory();
         Ability ability = abilities.get(type);
         ability.resetCooldown();
-        inv.setItem(ability.getHotBarSlot(), null);
+
+        int hotBarSlot = ability.getHotBarSlot();
+        if (hotBarSlot > 0) {
+            inv.setItem(hotBarSlot, null);
+        }
         int abilityEquipSlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
             inv.setItem(abilityEquipSlot + 9, null);
