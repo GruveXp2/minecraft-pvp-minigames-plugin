@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
+import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -115,6 +116,7 @@ public class Lobby {
         botBowsGame = switch (settings.currentMap) {
             case ICY_RAVINE -> new IcyRavineGame(settings);
             case STEAMPUNK -> new SteamPunkGame(settings);
+            case SPACE_STATION -> new SpaceStationGame(settings);
             default -> new BotBowsGame(settings);
         };
         botBowsGame.startGame();

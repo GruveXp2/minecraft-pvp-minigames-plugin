@@ -20,6 +20,7 @@ public final class Main extends JavaPlugin {
 
     private static Main PLUGIN;
     public static World WORLD;
+    public static World WORLD_END;
     private static final int PORT = 25566; // Port used to communicate with the discord bot
     public static Main getPlugin() {
         return PLUGIN;
@@ -46,6 +47,7 @@ public final class Main extends JavaPlugin {
         getCommand("test").setExecutor(new TestCommand());
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
+        WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end");
         BotBows.init();
         BotBowsPlayer.armorInit();
         new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
