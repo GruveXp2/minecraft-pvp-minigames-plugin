@@ -85,7 +85,7 @@ public class MapMenu extends SettingsMenu {
     public static final ItemStack SPACE_STATION = makeItem(Material.GLASS, Component.text("Space Station", NamedTextColor.AQUA),
             Component.text("Warm", NamedTextColor.RED)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
-                    .append(Component.text("COLD", NamedTextColor.AQUA)),
+                    .append(Component.text("Cold", NamedTextColor.AQUA)),
             Component.text("At the space station where you can"),
             Component.text("traverse space tubes in low gravity"));
 

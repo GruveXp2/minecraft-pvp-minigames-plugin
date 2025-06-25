@@ -110,6 +110,7 @@ public class Settings {
                             new Location(Main.WORLD, 4.5, 74, 18.5, 0, 60), new Location(Main.WORLD, 1.5, 58, 20.5, -40, 17), team1),
                     new BotBowsTeam("Engine", NamedTextColor.RED, DyeColor.RED,
                             new Location(Main.WORLD, 2.5, 47, 36.5, 135, 10), new Location(Main.WORLD, -5.5, 50, 39.5, -130, 15), team2));
+            case SPACE_STATION -> setNewTeams(new TeamCold(team1), new TeamWarm(team2));
         }
         team1.postTeamSwap();
         team2.postTeamSwap();
