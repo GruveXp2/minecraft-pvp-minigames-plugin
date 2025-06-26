@@ -55,6 +55,7 @@ public class ThunderBow extends Ability {
             if (lobby == null) continue;
             if (lobby != attacker.lobby) continue;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(nearbyPlayer);
+            if (!bp.isAlive()) continue;
             if (bp.getTeam() == attacker.getTeam()) continue;
 
             world.strikeLightningEffect(nearbyPlayer.getLocation());
