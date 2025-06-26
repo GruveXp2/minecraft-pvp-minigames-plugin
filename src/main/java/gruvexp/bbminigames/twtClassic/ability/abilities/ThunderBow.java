@@ -46,7 +46,8 @@ public class ThunderBow extends Ability {
         defender.handleHit(Component.text(" was thunderbowed by "), attacker);
         Location hitLoc = defender.player.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
-        for (Entity entity : Main.WORLD.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
+        World world = attacker.player.getWorld();
+        for (Entity entity : world.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
             Player nearbyPlayer = (Player) entity;
             if (nearbyPlayer.getLocation().distanceSquared(hitLoc) > CHAIN_RADIUS * CHAIN_RADIUS) continue;
             if (nearbyPlayer == defender.player) continue;
@@ -56,7 +57,7 @@ public class ThunderBow extends Ability {
             BotBowsPlayer bp = lobby.getBotBowsPlayer(nearbyPlayer);
             if (bp.getTeam() == attacker.getTeam()) continue;
 
-            Main.WORLD.strikeLightningEffect(nearbyPlayer.getLocation());
+            world.strikeLightningEffect(nearbyPlayer.getLocation());
             createElectricArc(hitLoc, nearbyPlayer.getLocation(), attackerTeamColor, 1.0);
             bp.handleHit(Component.text(" was electrobowed by "), attacker);
         }
@@ -100,8 +101,8 @@ public class ThunderBow extends Ability {
             Vector rayDiff = locations.get(i).multiply(-1).add(locations.get(i + 1)).multiply(0.1);
             for (int j = 0; j < 10; j++) {
                 loc1.add(rayDiff);
-                if (j % 2 == 0) Main.WORLD.spawnParticle(Particle.DUST, loc1, 1, 0.1, 0.1, 0.1, 10, new Particle.DustOptions(color, 0.8f));
-                Main.WORLD.spawnParticle(Particle.DUST, loc1, 5, 0.05, 0.05, 0.05, 0.1, new Particle.DustOptions(Color.WHITE, 0.5f));
+                if (j % 2 == 0) loc1.getWorld().spawnParticle(Particle.DUST, loc1, 1, 0.1, 0.1, 0.1, 10, new Particle.DustOptions(color, 0.8f));
+                loc1.getWorld().spawnParticle(Particle.DUST, loc1, 5, 0.05, 0.05, 0.05, 0.1, new Particle.DustOptions(Color.WHITE, 0.5f));
             }
         }
     }
@@ -131,8 +132,8 @@ public class ThunderBow extends Ability {
 
         @Override
         public void run() {
-            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.5, new Particle.DustOptions(Color.WHITE, 1), true);
-            Main.WORLD.spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.3, new Particle.DustOptions(color, 0.5f), true);
+            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.5, new Particle.DustOptions(Color.WHITE, 1), true);
+            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.3, new Particle.DustOptions(color, 0.5f), true);
             arrow.getVelocity().add(new Vector(0, 0.03, 0));
             Vector spark = getRandomPerpendicular(arrow.getVelocity()).multiply(1 + Math.random() * 2);
             Location sparkLocation = arrow.getLocation().add(spark);

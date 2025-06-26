@@ -58,7 +58,7 @@ public class CreeperTrap extends Ability {
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
         creepers.forEach(CreeperTrap::ignite);
 
-        creeper = (Creeper) Main.WORLD.spawnEntity(loc, EntityType.CREEPER);
+        creeper = (Creeper) bp.player.getWorld().spawnEntity(loc, EntityType.CREEPER);
         creeper.setAI(false);
         creeper.getAttribute(Attribute.SCALE).setBaseValue(0.75);
         creeperOwners.put(creeper, bp);
@@ -130,7 +130,7 @@ public class CreeperTrap extends Ability {
                 cancel();
                 explode();
             }
-            for (Entity entity : Main.WORLD.getNearbyEntities(creeper.getLocation(), BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
+            for (Entity entity : creeper.getWorld().getNearbyEntities(creeper.getLocation(), BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
                 Player p = (Player) entity;
                 if (!p.hasLineOfSight(creeper)) continue;
                 Lobby lobby = BotBows.getLobby(p);
@@ -155,9 +155,10 @@ public class CreeperTrap extends Ability {
 
         public void explode() {
             Color attackerTeamColor = owner.getTeam().dyeColor.getColor();
-            Main.WORLD.spawnParticle(Particle.EXPLOSION_EMITTER, creeper.getLocation(), 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
-            Main.WORLD.spawnParticle(Particle.DUST, creeper.getLocation(), 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
-            for (Entity entity : Main.WORLD.getNearbyEntities(creeper.getLocation(), BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
+            World world = creeper.getWorld();
+            world.spawnParticle(Particle.EXPLOSION_EMITTER, creeper.getLocation(), 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
+            world.spawnParticle(Particle.DUST, creeper.getLocation(), 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
+            for (Entity entity : world.getNearbyEntities(creeper.getLocation(), BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
                 Player p = (Player) entity;
                 Lobby lobby = BotBows.getLobby(p);
                 if (lobby == null) return;

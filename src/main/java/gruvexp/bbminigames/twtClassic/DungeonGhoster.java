@@ -94,7 +94,7 @@ public class DungeonGhoster {
 
     private ArmorStand spawnArmorStand(Location location) {
         //debugMessage(STR."Armor stand was spawned: \{BotBowsManager.getTeam(PLAYER)}");
-        ArmorStand AS = Main.WORLD.spawn(location, ArmorStand.class);
+        ArmorStand AS = p.getWorld().spawn(location, ArmorStand.class);
         AS.setArms(true);
         AS.setBasePlate(false);
         AS.setGravity(false);

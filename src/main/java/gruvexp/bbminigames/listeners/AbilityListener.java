@@ -83,7 +83,7 @@ public class AbilityListener implements Listener {
                         double z = loc.getZ() + radius * Math.sin(θ);
 
                         Location particleLoc = new Location(loc.getWorld(), x, y, z);
-                        Main.WORLD.spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
+                        p.getWorld().spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
                                 new Particle.DustOptions(bp.getTeam().dyeColor.getColor(), 2.5f));
                     }
                 }

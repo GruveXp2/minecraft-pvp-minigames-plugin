@@ -306,7 +306,7 @@ public class AbilityMenu extends SettingsMenu {
         for (int i = 9; i < 18; i++) {
             if (inv.getItem(i) != null) {
                 BotBows.debugMessage("Dropping item:" + inv.getItem(i).getType().name() + ", slot=" + i);
-                var item = Main.WORLD.dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
+                var item = p.getWorld().dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
                 item.getVelocity().add(new Vector(1, 2, 1));
                 inv.setItem(i, null);
             }
