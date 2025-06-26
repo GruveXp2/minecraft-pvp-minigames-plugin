@@ -30,9 +30,11 @@ public class SplashBow extends Ability {
         for (Entity entity : attacker.getWorld().getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
             Player p = (Player) entity;
             Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) return;
-            if (lobby != BotBows.getLobby(attacker)) return;
+            if (lobby == null) continue;
+            if (lobby != BotBows.getLobby(attacker)) continue;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+            if (!bp.isAlive()) continue;
+
             bp.handleHit(Component.text(" was splash bowed by "), lobby.getBotBowsPlayer(attacker));
         }
     }
