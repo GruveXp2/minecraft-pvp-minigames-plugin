@@ -21,7 +21,7 @@ public abstract class PotionAbility extends Ability {
     @Override
     public void use() {
         super.use();
-        Set<Player> players = Main.WORLD.getNearbyEntities(bp.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
+        Set<Player> players = bp.player.getWorld().getNearbyEntities(bp.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
                 .stream().map(p -> (Player) p)
                 .filter(p -> BotBows.getLobby(p) != null)
                 .filter(p -> BotBows.getBotBowsPlayer(p).getTeam() == bp.getTeam())
