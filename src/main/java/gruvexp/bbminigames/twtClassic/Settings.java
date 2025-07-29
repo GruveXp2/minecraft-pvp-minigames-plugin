@@ -36,7 +36,7 @@ public class Settings {
     public final EarthquakeHazard earthquakeHazard; // holder styr på innstillinger og utførelse av storm logikk
     public final GhostHazard ghostHazard;
     // abilities
-    private int maxAbilities = 2;
+    private int maxAbilities = 0;
     private float abilityCooldownMultiplier = 1.0f;
     private final Map<AbilityType, Boolean> abilityStates = new HashMap<>();
     public int rain = 0;
@@ -46,7 +46,7 @@ public class Settings {
     public TeamsMenu teamsMenu;
     public WinConditionMenu winConditionMenu;
     public HazardMenu hazardMenu;
-    public AbilityMenu abilityMenu;
+    public Map<BotBowsPlayer, AbilityMenu> abilityMenus;
 
     private BotBowsPlayer modPlayer;
 
@@ -78,8 +78,8 @@ public class Settings {
         hazardMenu = new HazardMenu(this);
         hazardMenu.initMenu();
 
-        abilityMenu = new AbilityMenu(this);
-        abilityMenu.disableAbilities();
+        abilityMenus = new HashMap<>();
+        players.forEach(bp -> abilityMenus.put(bp, new AbilityMenu(this, bp)));
     }
 
     public void setMap(BotBowsMap map) {
@@ -139,7 +139,8 @@ public class Settings {
         }
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
-        abilityMenu.addPlayer(bp);
+        abilityMenus.put(bp, new AbilityMenu(this, bp));
+        abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
 
         if (getPlayers().size() == 1) {
             modPlayer = bp;
@@ -151,23 +152,23 @@ public class Settings {
         }
     }
 
-    public void leaveGame(BotBowsPlayer p) {
-        if (!players.contains(p)) {
-            p.player.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
+    public void leaveGame(BotBowsPlayer bp) {
+        if (!players.contains(bp)) {
+            bp.player.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
             return;
         }
-        p.leaveGame();
-        players.remove(p);
+        bp.leaveGame();
+        players.remove(bp);
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
-        abilityMenu.removePlayer(p);
-        if (playerIsMod(p) && !players.isEmpty()) {
+        abilityMenus.values().forEach(menu -> menu.removePlayer(bp));
+        if (playerIsMod(bp) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
         }
 
-        p.player.setGameMode(GameMode.SPECTATOR);
-        p.player.sendMessage(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
-        lobby.messagePlayers(Component.text(p.player.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
+        bp.player.setGameMode(GameMode.SPECTATOR);
+        bp.player.sendMessage(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
+        lobby.messagePlayers(Component.text(bp.player.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
@@ -180,15 +181,15 @@ public class Settings {
                 .orElse(false);
     }
 
-    public void setModPlayer(BotBowsPlayer p) {
+    public void setModPlayer(BotBowsPlayer bp) {
         String first = modPlayer == null ? "" : "new ";
-        modPlayer = p;
-        lobby.messagePlayers(p.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
+        modPlayer = bp;
+        lobby.messagePlayers(bp.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
     }
 
-    public boolean playerIsMod(BotBowsPlayer p) {
-        boolean isPlayerMod = p == modPlayer;
-        if (!isPlayerMod) p.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
+    public boolean playerIsMod(BotBowsPlayer bp) {
+        boolean isPlayerMod = bp == modPlayer;
+        if (!isPlayerMod) bp.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
         return isPlayerMod;
     }
 
@@ -241,13 +242,16 @@ public class Settings {
     }
 
     public void setMaxAbilities(int maxAbilities) {
-        if (this.maxAbilities == 0) {
+        if (this.maxAbilities == 0 && maxAbilities > 0) { // if max abilities was increased from 0, abilities gets enabled, so update the ui
             this.maxAbilities = maxAbilities;
-            abilityMenu.enableAbilities();
+            abilityMenus.values().forEach(AbilityMenu::updateAbilityUIState);
         }
         this.maxAbilities = maxAbilities;
         players.forEach(p -> p.setMaxAbilities(maxAbilities));
-        abilityMenu.updateMaxAbilities();
+        if (maxAbilities == 0) { // if max abilities is set to 0, abilities gets disabled, so update the ui
+            abilityMenus.values().forEach(AbilityMenu::updateAbilityUIState);
+        }
+        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilities);
     }
 
     public int getMaxAbilities() {
@@ -257,7 +261,7 @@ public class Settings {
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         abilityCooldownMultiplier = cooldownMultiplier;
         players.forEach(p -> p.setAbilityCooldownMultiplier(cooldownMultiplier));
-        abilityMenu.updateCooldownMultiplier();
+        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplier);
     }
 
     public float getAbilityCooldownMultiplier() {
@@ -266,12 +270,12 @@ public class Settings {
 
     public void allowAbility(AbilityType type) {
         abilityStates.put(type, true);
-        abilityMenu.updateAbilityStatus(type);
+        abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
     }
 
     public void disableAbility(AbilityType type) {
         abilityStates.put(type, false);
-        abilityMenu.updateAbilityStatus(type);
+        abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
         players.forEach(p -> p.unequipAbility(type));
     }
 

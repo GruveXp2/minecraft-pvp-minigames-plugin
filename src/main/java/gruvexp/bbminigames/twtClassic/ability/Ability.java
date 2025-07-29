@@ -6,7 +6,6 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 public class Ability {
 

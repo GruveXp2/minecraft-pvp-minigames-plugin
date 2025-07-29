@@ -21,7 +21,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -58,16 +57,18 @@ public class AbilityMenu extends SettingsMenu {
     private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
     Component.text("When enabled, you can toggle"), Component.text("which abilities will be allowed"));
 
-    public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot", Component.empty());
-    public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot", Component.empty());
+    public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot_covered", Component.empty());
+    public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot_covered", Component.empty());
     public static final ItemStack ABILITY_DISABLED = makeItem("disabled_slot_covered", Component.empty());
-    public static final ItemStack ABILITY_EQUIPPED = makeItem("enabled_slot", Component.empty());
+    public static final ItemStack ABILITY_EQUIPPED = makeItem("enabled_slot_covered", Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
             Component.text("Click this to randomize your abilities"), Component.text("from the allowed abilities"));
 
     private static final ItemStack INDIVIDUAL_PLAYER_ABILITIES = makeItem("gear", Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
             Component.text("Edit the allowed abilities"), Component.text("for each individual player"));
+
+    private final BotBowsPlayer bp;
 
     private MenuSlider maxAbilitiesSlider;
     private MenuSlider cooldownMultiplierSlider;
@@ -76,8 +77,16 @@ public class AbilityMenu extends SettingsMenu {
     private PlayerMenuRow cooldownMultiplierRow;
     private AbilityMenuRow abilityRow;
 
-    public AbilityMenu(Settings settings) {
+    public AbilityMenu(Settings settings, BotBowsPlayer bp) {
         super(settings);
+        this.bp = bp;
+        updateMaxAbilities();
+        if (settings.getMaxAbilities() > 0) {
+            updateAbilityStatuses();
+            updateCooldownMultiplier();
+        } else {
+            updateAbilityUIState();
+        }
     }
 
     @Override
@@ -109,8 +118,11 @@ public class AbilityMenu extends SettingsMenu {
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
-                    case 0 -> disableIndividualMaxAbilities();
-                    case 8 -> disableAbilities();
+                    case 0 -> {
+                        disableIndividualMaxAbilities();
+                        settings.setMaxAbilities(2);
+                    }
+                    case 8 -> settings.setMaxAbilities(0);
                     case 18 -> disableIndividualCooldownMultiplier();
                 }
             }
@@ -120,7 +132,7 @@ public class AbilityMenu extends SettingsMenu {
 
                 switch (e.getSlot()) {
                     case 0 -> enableIndividualMaxAbilities();
-                    case 8 -> enableAbilities();
+                    case 8 -> settings.setMaxAbilities(2);
                     case 18 -> enableIndividualCooldownMultiplier();
                 }
             }
@@ -238,7 +250,6 @@ public class AbilityMenu extends SettingsMenu {
         } else { // clicked in player inventory
             if (cursorItem.getType() == Material.AIR) {
                 if (bp.hasAbilityEquipped(clickedAbility)) { // picks up ability to move it around
-                    e.setCancelled(false);
                     bp.equipAbility(-1, clickedAbility);
                 }
             } else { // places ability down in that slot
@@ -251,8 +262,6 @@ public class AbilityMenu extends SettingsMenu {
                     }
                     return;
                 }
-
-                e.setCancelled(false);
                 bp.equipAbility(e.getSlot(), cursorAbility);
 
                 if (clickedAbility != null) {
@@ -298,54 +307,34 @@ public class AbilityMenu extends SettingsMenu {
         abilityRow = new AbilityMenuRow(inventory, 37, 8, this);
         setFillerVoid();
     }
-    
-    @Override
-    public void open(Player p) {
-        super.open(p);
-        Inventory inv = p.getInventory();
-        for (int i = 9; i < 18; i++) {
-            if (inv.getItem(i) != null) {
-                BotBows.debugMessage("Dropping item:" + inv.getItem(i).getType().name() + ", slot=" + i);
-                var item = p.getWorld().dropItem(p.getLocation().add(0, 5, 0), inv.getItem(i));
-                item.getVelocity().add(new Vector(1, 2, 1));
-                inv.setItem(i, null);
-            }
-        }
-        BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
-        bp.disableAbilityToggle();
-        bp.getAbilities().forEach(ability ->  {
-            int abilityEquipSlot = getRelativeAbilitySlot(ability.getType());
-            if (abilityEquipSlot > 0) {
-                inv.setItem(abilityEquipSlot + 9, ABILITY_EQUIPPED);
-            }
-        });
-    }
 
-    public void enableAbilities() {
-        inventory.setItem(8, ABILITIES_ENABLED);
-        if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
-        if (individualCooldownMultipliers) enableIndividualCooldownMultiplier(); else disableIndividualCooldownMultiplier();
-        abilityRow.show();
-        inventory.setItem(36, MOD_TOGGLE);
-        inventory.setItem(45, RANDOMIZE_ABILITIES);
-        inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES);
-    }
-
-    public void disableAbilities() {
-        abilityRow.hide();
-        maxAbilitiesRow.hide();
-        cooldownMultiplierRow.hide();
-        inventory.setItem(8, ABILITIES_DISABLED);
-        // fyller med gråe glassvinduer der settings var
-        disableIndividualMaxAbilities();
-        settings.setMaxAbilities(0);
-        inventory.setItem(0, DISABLED);
-        inventory.setItem(18, DISABLED);
-        for (int i = 20; i < 27; i++) {
-            inventory.setItem(i, DISABLED);
-        }
-        for (int i = 36; i < 45; i++) {
-            inventory.setItem(i, DISABLED);
+    public void updateAbilityUIState() {
+        if (settings.getMaxAbilities() > 0) {
+            inventory.setItem(8, ABILITIES_ENABLED);
+            if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
+            if (individualCooldownMultipliers) enableIndividualCooldownMultiplier(); else disableIndividualCooldownMultiplier();
+            abilityRow.show();
+            inventory.setItem(36, MOD_TOGGLE);
+            inventory.setItem(45, RANDOMIZE_ABILITIES);
+            inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES);
+        } else {
+            abilityRow.hide();
+            maxAbilitiesRow.hide();
+            cooldownMultiplierRow.hide();
+            inventory.setItem(8, ABILITIES_DISABLED);
+            // fyller med gråe glassvinduer der settings var
+            disableIndividualMaxAbilities();
+            inventory.setItem(0, DISABLED);
+            inventory.setItem(18, DISABLED);
+            for (int i = 20; i < 27; i++) {
+                inventory.setItem(i, DISABLED);
+            }
+            for (int i = 27; i < 36; i++) {
+                inventory.setItem(i, VOID);
+            }
+            for (int i = 36; i < 45; i++) {
+                inventory.setItem(i, DISABLED);
+            }
         }
     }
 
@@ -359,7 +348,6 @@ public class AbilityMenu extends SettingsMenu {
     public void disableIndividualMaxAbilities() {
         inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
         individualMaxAbilities = false;
-        settings.setMaxAbilities(2);
         maxAbilitiesRow.hide();
         inventory.setItem(5, VOID);
         inventory.setItem(6, VOID);
@@ -379,7 +367,9 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateMaxAbilities() {
-        if (!individualMaxAbilities) {
+        if (individualMaxAbilities) {
+            settings.getPlayers().forEach(this::updateMaxAbilities);
+        } else {
             maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities()); // oppdaterer slideren
         }
     }
@@ -393,7 +383,9 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateCooldownMultiplier() {
-        if (!individualCooldownMultipliers) { // oppdaterer slideren
+        if (individualCooldownMultipliers) {
+            settings.getPlayers().forEach(this::updateCooldownMultiplier);
+        } else {
             cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
         }
     }
@@ -420,10 +412,14 @@ public class AbilityMenu extends SettingsMenu {
             int abilitySlot = abilityRow.startSlot + i;
             ItemStack abilityItem = inventory.getItem(abilitySlot);
             AbilityType abilityType = AbilityType.fromItem(abilityItem);
-            if (abilityType == null || settings.abilityAllowed(abilityType)) {
+            if (abilityType == null) {
                 inventory.setItem(abilitySlot - 9, VOID);
-            } else {
+            } else if (bp.hasAbilityEquipped(abilityType)) {
+                inventory.setItem(abilitySlot - 9, ABILITY_EQUIPPED);
+            } else if (!settings.abilityAllowed(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
+            } else {
+                inventory.setItem(abilitySlot - 9, VOID);
             }
         }
     }

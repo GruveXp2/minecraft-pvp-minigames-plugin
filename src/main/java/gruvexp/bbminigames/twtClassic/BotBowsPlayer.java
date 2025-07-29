@@ -167,6 +167,10 @@ public class BotBowsPlayer {
         return attackDamage;
     }
 
+    private AbilityMenu getAbilityMenu() {
+        return lobby.settings.abilityMenus.get(this);
+    }
+
     public Collection<Ability> getAbilities() {
         return abilities.values();
     }
@@ -177,7 +181,7 @@ public class BotBowsPlayer {
 
     public void setMaxAbilities(int maxAbilities) {
         this.maxAbilities = maxAbilities;
-        lobby.settings.abilityMenu.updateMaxAbilities(this);
+        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateMaxAbilities(this));
         if (getTotalAbilities() > maxAbilities) {
             int excess = getTotalAbilities() - maxAbilities;
             for (int i = 0; i < excess; i++) {
@@ -197,7 +201,7 @@ public class BotBowsPlayer {
 
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         this.abilityCooldownMultiplier = cooldownMultiplier;
-        lobby.settings.abilityMenu.updateCooldownMultiplier(this);
+        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateCooldownMultiplier(this));
     }
 
     public float getAbilityCooldownMultiplier() {
@@ -205,12 +209,12 @@ public class BotBowsPlayer {
     }
 
     public void disableAbilityToggle() {
-        player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_DISABLED);
+        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_DISABLED);
         toggleAbilityMode = false;
     }
 
     public void enableAbilityToggle() {
-        player.getInventory().setItem(9, AbilityMenu.MOD_TOGGLE_ENABLED);
+        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_ENABLED);
         toggleAbilityMode = true;
     }
 
@@ -246,9 +250,9 @@ public class BotBowsPlayer {
         }
         if (abilityAlreadyEquipped) return;
 
-        int relativeAbilitySlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
+        int relativeAbilitySlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (relativeAbilitySlot > 0) { // slot -1 means cursor
-            player.getInventory().setItem(relativeAbilitySlot + 9, AbilityMenu.ABILITY_EQUIPPED);
+            getAbilityMenu().getInventory().setItem(relativeAbilitySlot + 27, AbilityMenu.ABILITY_EQUIPPED);
             BotBows.debugMessage("Setting equip item at " + relativeAbilitySlot);
         }
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
@@ -272,9 +276,13 @@ public class BotBowsPlayer {
         if (hotBarSlot > 0) {
             inv.setItem(hotBarSlot, null);
         }
-        int abilityEquipSlot = lobby.settings.abilityMenu.getRelativeAbilitySlot(type);
+        int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
-            inv.setItem(abilityEquipSlot + 9, null);
+            if (lobby.settings.abilityAllowed(type)) {
+                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
+            } else {
+                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
+            }
         }
         abilities.remove(type);
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--;

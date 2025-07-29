@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
@@ -63,7 +64,8 @@ public class HazardMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
-        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(clicker);
+        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(bp)) return;
 
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
@@ -122,7 +124,7 @@ public class HazardMenu extends SettingsMenu {
                 if (e.getSlot() == getSlots() - 6) {
                     settings.winConditionMenu.open(clicker);
                 } else if (e.getSlot() == getSlots() - 4) {
-                    settings.abilityMenu.open(clicker);
+                    settings.abilityMenus.get(bp).open(clicker);
                 }
             }
         }
