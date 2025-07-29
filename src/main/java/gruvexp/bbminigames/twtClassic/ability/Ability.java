@@ -60,7 +60,7 @@ public class Ability {
         inv.setItem(hotBarSlot, type.getAbilityItem());
     }
 
-    public void unObtain() {
+    public void lose() {
         Inventory inv = bp.player.getInventory();
         if (type.category == AbilityCategory.DAMAGING) {
             inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
@@ -80,7 +80,7 @@ public class Ability {
         if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return; // null check used when testing ability outside of match
 
         if (type.category == AbilityCategory.DAMAGING) {
-            bp.unObtainWeaponAbilities();
+            bp.loseWeaponAbilities();
         } else {
             cooldownTimer = new CooldownTimer(bp, effectiveCooldown);
             cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
