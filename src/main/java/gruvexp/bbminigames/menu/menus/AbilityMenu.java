@@ -2,7 +2,6 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.*;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
@@ -119,11 +118,11 @@ public class AbilityMenu extends SettingsMenu {
 
                 switch (e.getSlot()) {
                     case 0 -> {
-                        disableIndividualMaxAbilities();
+                        settings.disableIndividualMaxAbilities();
                         settings.setMaxAbilities(2);
                     }
                     case 8 -> settings.setMaxAbilities(0);
-                    case 18 -> disableIndividualCooldownMultiplier();
+                    case 18 -> settings.disableIndividualCooldownMultiplier();
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
@@ -131,9 +130,9 @@ public class AbilityMenu extends SettingsMenu {
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
-                    case 0 -> enableIndividualMaxAbilities();
+                    case 0 -> settings.enableIndividualMaxAbilities();
                     case 8 -> settings.setMaxAbilities(2);
-                    case 18 -> enableIndividualCooldownMultiplier();
+                    case 18 -> settings.enableIndividualCooldownMultiplier();
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
@@ -311,8 +310,8 @@ public class AbilityMenu extends SettingsMenu {
     public void updateAbilityUIState() {
         if (settings.getMaxAbilities() > 0) {
             inventory.setItem(8, ABILITIES_ENABLED);
-            if (individualMaxAbilities) enableIndividualMaxAbilities(); else disableIndividualMaxAbilities();
-            if (individualCooldownMultipliers) enableIndividualCooldownMultiplier(); else disableIndividualCooldownMultiplier();
+            updateMaxAbilitiesUIState();
+            updateCooldownMultiplierUIState();
             abilityRow.show();
             inventory.setItem(36, MOD_TOGGLE);
             inventory.setItem(45, RANDOMIZE_ABILITIES);
@@ -323,7 +322,7 @@ public class AbilityMenu extends SettingsMenu {
             cooldownMultiplierRow.hide();
             inventory.setItem(8, ABILITIES_DISABLED);
             // fyller med gråe glassvinduer der settings var
-            disableIndividualMaxAbilities();
+            updateMaxAbilitiesUIState();
             inventory.setItem(0, DISABLED);
             inventory.setItem(18, DISABLED);
             for (int i = 20; i < 27; i++) {
@@ -338,36 +337,35 @@ public class AbilityMenu extends SettingsMenu {
         }
     }
 
-    public void enableIndividualMaxAbilities() {
-        inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_ENABLED);
-        individualMaxAbilities = true;
-        if (settings.getMaxAbilities() == 0) settings.setMaxAbilities(2);
-        maxAbilitiesRow.show();
+    public void updateMaxAbilitiesUIState() {
+        if (settings.individualMaxAbilitiesOn()) {
+            inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_ENABLED);
+            individualMaxAbilities = true;
+            maxAbilitiesRow.show();
+        } else {
+            inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
+            individualMaxAbilities = false;
+            maxAbilitiesRow.hide();
+            inventory.setItem(5, VOID);
+            inventory.setItem(6, VOID);
+        }
     }
 
-    public void disableIndividualMaxAbilities() {
-        inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
-        individualMaxAbilities = false;
-        maxAbilitiesRow.hide();
-        inventory.setItem(5, VOID);
-        inventory.setItem(6, VOID);
-    }
-
-    public void enableIndividualCooldownMultiplier() {
-        inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED);
-        individualCooldownMultipliers = true;
-        cooldownMultiplierRow.show();
-    }
-
-    public void disableIndividualCooldownMultiplier() {
-        inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
-        individualCooldownMultipliers = false;
-        settings.setAbilityCooldownMultiplier(1.0f);
-        cooldownMultiplierRow.hide();
+    public void updateCooldownMultiplierUIState() {
+        if (settings.individualCooldownMultiplierOn()) {
+            inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED);
+            individualCooldownMultipliers = true;
+            cooldownMultiplierRow.show();
+        } else {
+            inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
+            individualCooldownMultipliers = false;
+            settings.setAbilityCooldownMultiplier(1.0f);
+            cooldownMultiplierRow.hide();
+        }
     }
 
     public void updateMaxAbilities() {
-        if (individualMaxAbilities) {
+        if (settings.individualMaxAbilitiesOn()) {
             settings.getPlayers().forEach(this::updateMaxAbilities);
         } else {
             maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities()); // oppdaterer slideren
@@ -375,6 +373,7 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateMaxAbilities(BotBowsPlayer p) {
+        if (!individualMaxAbilities) return;
         ItemStack headItem = maxAbilitiesRow.getItem(p);
         headItem.setAmount(Math.max(p.getMaxAbilities(), 1)); // oppdaterer head count
         if (individualMaxAbilities) {
@@ -391,6 +390,7 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateCooldownMultiplier(BotBowsPlayer p) {
+        if (!individualCooldownMultipliers) return;
         ItemStack headItem = cooldownMultiplierRow.getItem(p);
         ItemMeta meta = headItem.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
