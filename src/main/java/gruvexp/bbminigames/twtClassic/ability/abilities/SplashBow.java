@@ -39,6 +39,11 @@ public class SplashBow extends Ability {
         }
     }
 
+    @Override
+    public void unequip() {
+        bp.player.getInventory().remove(Material.ARROW);
+    }
+
     public static class SplashArrowTrailGenerator extends BukkitRunnable {
 
         private final Arrow arrow;
