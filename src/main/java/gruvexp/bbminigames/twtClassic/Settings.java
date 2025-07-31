@@ -141,8 +141,10 @@ public class Settings {
         }
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
-        abilityMenus.put(bp, new AbilityMenu(this, bp));
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
+        AbilityMenu newMenu = new AbilityMenu(this, bp);
+        abilityMenus.put(bp, newMenu);
+        players.forEach(newMenu::addPlayer);
 
         if (getPlayers().size() == 1) {
             modPlayer = bp;
