@@ -37,7 +37,9 @@ public class Settings {
     public final GhostHazard ghostHazard;
     // abilities
     private int maxAbilities = 0;
+    private boolean isIndividualMaxAbilities = false;
     private float abilityCooldownMultiplier = 1.0f;
+    private boolean isIndividualCooldownMultiplier = false;
     private final Map<AbilityType, Boolean> abilityStates = new HashMap<>();
     public int rain = 0;
     // menus
@@ -258,6 +260,20 @@ public class Settings {
         return maxAbilities;
     }
 
+    public void enableIndividualMaxAbilities() {
+        isIndividualMaxAbilities = true;
+        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilitiesUIState);
+    }
+
+    public void disableIndividualMaxAbilities() {
+        isIndividualMaxAbilities = false;
+        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilitiesUIState);
+    }
+
+    public boolean individualMaxAbilitiesOn() {
+        return isIndividualMaxAbilities;
+    }
+
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
         abilityCooldownMultiplier = cooldownMultiplier;
         players.forEach(p -> p.setAbilityCooldownMultiplier(cooldownMultiplier));
@@ -266,6 +282,20 @@ public class Settings {
 
     public float getAbilityCooldownMultiplier() {
         return abilityCooldownMultiplier;
+    }
+
+    public void enableIndividualCooldownMultiplier() {
+        isIndividualCooldownMultiplier = true;
+        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplierUIState);
+    }
+
+    public void disableIndividualCooldownMultiplier() {
+        isIndividualCooldownMultiplier = false;
+        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplierUIState);
+    }
+
+    public boolean individualCooldownMultiplierOn() {
+        return isIndividualCooldownMultiplier;
     }
 
     public void allowAbility(AbilityType type) {
