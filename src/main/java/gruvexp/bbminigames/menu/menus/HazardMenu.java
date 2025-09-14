@@ -5,10 +5,8 @@ import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -17,21 +15,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class HazardMenu extends SettingsMenu {
 
     private static final List<String> PERCENT = HazardChance.getPercentStrings();
-    private StormHazard stormHazard;
-    private EarthquakeHazard earthquakeHazard;
-    private GhostHazard ghostHazard;
+    private final HashMap<HazardType, Hazard> hazards;
+    private final ArrayList<HazardType> hazardsSorted = new ArrayList<>();
 
-    private MenuSlider stormSlider;
-    private MenuSlider earthQuakeSlider;
-    private MenuSlider ghostSlider;
+    private final HashMap<HazardType, MenuSlider> hazardSliders = new HashMap<>();
 
     public HazardMenu(Settings settings) {
         super(settings);
+        hazards = settings.getHazards();
     }
 
     private ItemStack getHazardItem(Hazard hazard) {
@@ -73,52 +72,25 @@ public class HazardMenu extends SettingsMenu {
                 assert c != null;
                 String s = PlainTextComponentSerializer.plainText().serialize(c);
                 HazardChance chance = HazardChance.of(s);
-                if (e.getSlot() < 9) {
-                    if (stormHazard.getChance() != chance) {
-                        stormHazard.setChance(chance);
-                        updateStormBar();
-                    }
-                } else if (e.getSlot() < 18) {
-                    if (earthquakeHazard.getChance() != chance) {
-                        earthquakeHazard.setChance(chance);
-                        updateEarthquakeBar();
-                    }
-                } else if (e.getSlot() < 27) {
-                    if (ghostHazard.getChance() != chance) {
-                        ghostHazard.setChance(chance);
-                        updateGhostBar();
-                    }
+                int row = e.getSlot() / 9;
+                HazardType hazardType = hazardsSorted.get(row);
+                Hazard hazard = hazards.get(hazardType);
+                if (hazard.getChance() != chance) {
+                    hazard.setChance(chance);
+                    updateBar(hazardType, row);
                 }
             } case RED_STAINED_GLASS_PANE -> {
-                switch (e.getSlot()) {
-                    case 0 -> {
-                        stormHazard.setChance(HazardChance.TEN);
-                        updateStormBar();
-                    }
-                    case 9 -> {
-                        earthquakeHazard.setChance(HazardChance.TEN);
-                        updateEarthquakeBar();
-                    }
-                    case 18 -> {
-                        ghostHazard.setChance(HazardChance.TEN);
-                        updateGhostBar();
-                    }
-                }
+                int row = e.getSlot() / 9;
+                HazardType hazardType = hazardsSorted.get(row);
+                Hazard hazard = hazards.get(hazardType);
+                hazard.setChance(HazardChance.TEN);
+                updateBar(hazardType, row);
             } case LIME_STAINED_GLASS_PANE -> {
-                switch (e.getSlot()) {
-                    case 0 -> {
-                        stormHazard.setChance(HazardChance.DISABLED);
-                        updateStormBar();
-                    }
-                    case 9 -> {
-                        earthquakeHazard.setChance(HazardChance.DISABLED);
-                        updateEarthquakeBar();
-                    }
-                    case 18 -> {
-                        ghostHazard.setChance(HazardChance.DISABLED);
-                        updateGhostBar();
-                    }
-                }
+                int row = e.getSlot() / 9;
+                HazardType hazardType = hazardsSorted.get(row);
+                Hazard hazard = hazards.get(hazardType);
+                hazard.setChance(HazardChance.DISABLED);
+                updateBar(hazardType, row);
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
@@ -132,40 +104,45 @@ public class HazardMenu extends SettingsMenu {
 
     @Override
     public void setMenuItems() {
-        stormSlider = new MenuSlider(inventory, 2, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, PERCENT, "Storm chance");
-        earthQuakeSlider = new MenuSlider(inventory, 11, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, PERCENT, "Earthquake chance");
-        ghostSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, PERCENT, "Ghost chance");
         setPageButtons(3, true, true);
         setFillerVoid();
     }
 
-    public void initMenu() {
-        stormHazard = settings.stormHazard;
-        updateStormBar();
-        earthquakeHazard = settings.earthquakeHazard;
-        updateEarthquakeBar();
-        ghostHazard = settings.ghostHazard;
-        updateGhostBar();
+    void updateBar(HazardType hazardType, int row) {
+        inventory.setItem(row * 9, getHazardItem(hazards.get(hazardType)));
+        hazardSliders.get(hazardType).setProgress(hazards.get(hazardType).getChance().toString());
     }
 
-    void updateStormBar() { // Hvordan menu skal se ut når storm mode er enabla
-        inventory.setItem(0, getHazardItem(stormHazard));
-        inventory.setItem(1, VOID);
-        stormSlider.setProgress(stormHazard.getChance().toString());
-        inventory.setItem(8, VOID);
-    }
+    public void updateHazards() {
+        List<HazardType> updated = Arrays.stream(HazardType.values())
+                .filter(hazards::containsKey)
+                .toList();
 
-    void updateEarthquakeBar() { // Hvordan menu skal se ut når storm mode er enabla
-        inventory.setItem(9, getHazardItem(earthquakeHazard));
-        inventory.setItem(10, VOID);
-        earthQuakeSlider.setProgress(earthquakeHazard.getChance().toString());
-        inventory.setItem(17, VOID);
-    }
+        hazardsSorted.stream()
+                .filter(ht -> !updated.contains(ht))
+                .forEach(hazardSliders::remove);
 
-    void updateGhostBar() { // Hvordan menu skal se ut når storm mode er enabla
-        inventory.setItem(18, getHazardItem(ghostHazard));
-        inventory.setItem(19, VOID);
-        ghostSlider.setProgress(ghostHazard.getChance().toString());
-        inventory.setItem(26, VOID);
+        hazardsSorted.clear();
+        hazardsSorted.addAll(updated);
+
+        // Add sliders for newly compatible hazards and recalculate the order they show in
+        for (HazardType hazardType : hazardsSorted) {
+            MenuSlider slider = hazardSliders.computeIfAbsent(hazardType, h ->
+                    new MenuSlider(
+                            inventory,
+                            2 + hazardsSorted.indexOf(h) * 9,
+                            h.menuFillItem,
+                            h.textColor,
+                            PERCENT,
+                            h.name + " chance"
+                    )
+            );
+            slider.setStartSlot(2 + hazardsSorted.indexOf(hazardType) * 9);
+            updateBar(hazardType, hazardsSorted.indexOf(hazardType));
+        }
+
+        for (int i = hazards.size() * 9; i < getSlots() - 9; i++) {
+            inventory.setItem(i, VOID);
+        }
     }
 }

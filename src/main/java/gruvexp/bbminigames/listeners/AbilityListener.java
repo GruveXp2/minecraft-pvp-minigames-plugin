@@ -10,6 +10,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -50,7 +51,7 @@ public class AbilityListener implements Listener {
                 p.resetPlayerWeather();
                 p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                    if (!bp.lobby.settings.stormHazard.isActive()) {
+                    if (!bp.lobby.settings.getHazard(HazardType.STORM).isActive()) {
                         p.setPlayerWeather(WeatherType.CLEAR);
                     } else {
                         p.resetPlayerWeather();
@@ -240,7 +241,7 @@ public class AbilityListener implements Listener {
 
         if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            if (!attackerBp.lobby.settings.stormHazard.isActive()) {
+            if (!attackerBp.lobby.settings.getHazard(HazardType.STORM).isActive()) {
                 attacker.setPlayerWeather(WeatherType.CLEAR);
             } else {
                 attacker.resetPlayerWeather();

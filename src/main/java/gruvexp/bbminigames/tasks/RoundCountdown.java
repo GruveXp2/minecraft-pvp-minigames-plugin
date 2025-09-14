@@ -2,6 +2,7 @@ package gruvexp.bbminigames.tasks;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -36,7 +37,7 @@ public class RoundCountdown extends BukkitRunnable {
 
                 botBowsGame.triggerHazards();
 
-                if (botBowsGame.settings.rain > 0 && !botBowsGame.settings.stormHazard.isActive()) {
+                if (botBowsGame.settings.rain > 0 && !botBowsGame.settings.getHazard(HazardType.STORM).isActive()) {
                     Main.WORLD.setStorm(true);
                     Bukkit.getOnlinePlayers().forEach(p -> p.setPlayerWeather(WeatherType.CLEAR));
                 }

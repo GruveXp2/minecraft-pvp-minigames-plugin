@@ -130,14 +130,14 @@ public class TestCommand implements CommandExecutor {
                     Lobby lobby = BotBows.getLobby(0);
                     lobby.joinGame(gruveXp);
                     lobby.joinGame(judith);
-                    lobby.settings.setMap(BotBowsMap.STEAMPUNK);
-                    lobby.settings.stormHazard.setChance(HazardChance.DISABLED);
-                    lobby.settings.earthquakeHazard.setChance(HazardChance.DISABLED);
-                    lobby.settings.ghostHazard.setChance(HazardChance.DISABLED);
+                    lobby.settings.setMap(BotBowsMap.CLASSIC_ARENA);
+                    lobby.settings.getHazards().values().forEach(h -> h.setChance(HazardChance.DISABLED));
                     BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
-                    gruveBp.setReady(true, 4);
+                    gruveBp.equipAbility(1, AbilityType.LASER_TRAP);
+                    judithBp.equipAbility(1, AbilityType.CREEPER_TRAP);
                     judithBp.setReady(true, 4);
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> gruveBp.setReady(true, 4), 10);
 
                     //BotBows.getLobby(0).settings.healthMenu.enableCustomHP();
                     //Player judithP = Bukkit.getPlayer("Spionagent54");
