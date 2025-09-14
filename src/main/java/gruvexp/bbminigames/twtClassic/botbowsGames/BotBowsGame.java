@@ -7,9 +7,7 @@ import gruvexp.bbminigames.tasks.RoundTimer;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Set;
 
 import gruvexp.bbminigames.twtClassic.BarManager;
@@ -35,9 +34,8 @@ public class BotBowsGame {
     protected final Set<BotBowsPlayer> players;
     public final BoardManager boardManager;
     public final BarManager barManager;
-    protected final StormHazard stormHazard;
-    protected final EarthquakeHazard earthquakeHazard;
-    protected final GhostHazard ghostHazard;
+    protected final Collection<Hazard> hazards;
+
     public boolean canMove = true;
     public boolean canShoot = false;
     public boolean activeRound = false;
@@ -50,9 +48,7 @@ public class BotBowsGame {
         this.team1 = settings.team1;
         this.team2 = settings.team2;
         this.players = settings.getPlayers();
-        this.stormHazard = settings.stormHazard;
-        this.earthquakeHazard = settings.earthquakeHazard;
-        this.ghostHazard = settings.ghostHazard;
+        this.hazards = settings.getHazards().values();
         this.boardManager = new BoardManager(lobby);
         this.barManager = new BarManager(lobby);
     }
@@ -78,8 +74,7 @@ public class BotBowsGame {
         Cooldowns.CoolDownInit(players);
         boardManager.createBoard();
         startRound();
-        stormHazard.init();
-        earthquakeHazard.init();
+        hazards.forEach(Hazard::init);
 
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
@@ -109,9 +104,7 @@ public class BotBowsGame {
     }
 
     public void triggerHazards() {
-        stormHazard.triggerOnChance();
-        earthquakeHazard.triggerOnChance();
-        ghostHazard.triggerOnChance();
+        hazards.forEach(Hazard::triggerOnChance);
     }
 
     public void handleMovement(PlayerMoveEvent e) {
@@ -198,9 +191,9 @@ public class BotBowsGame {
             Main.WORLD.setStorm(false);
             Bukkit.getOnlinePlayers().forEach(Player::resetPlayerWeather);
         }
-        if (stormHazard.isActive()) stormHazard.end();
-        if (earthquakeHazard.isActive()) earthquakeHazard.end();
-        if (ghostHazard.isActive()) ghostHazard.end();
+        hazards.stream()
+                .filter(Hazard::isActive)
+                .forEach(Hazard::end);
 
         if (winningTeam == null) {
             lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
@@ -283,9 +276,9 @@ public class BotBowsGame {
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
         }
-        if (stormHazard.isActive()) stormHazard.end();
-        if (earthquakeHazard.isActive()) earthquakeHazard.end();
-        if (ghostHazard.isActive()) ghostHazard.end();
+        hazards.stream()
+                .filter(Hazard::isActive)
+                .forEach(Hazard::end);
 
         if (team1.getPoints() == team2.getPoints()) {
             postGame(null);

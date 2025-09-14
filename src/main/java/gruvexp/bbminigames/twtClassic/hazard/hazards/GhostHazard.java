@@ -36,6 +36,9 @@ public class GhostHazard extends Hazard {
     }
 
     @Override
+    public void init() {}
+
+    @Override
     protected void trigger() {
         lobby.messagePlayers(Component.text("HAUNTED ARENA", NamedTextColor.DARK_RED)
                 .append(Component.text(" Stay in motion!", NamedTextColor.RED)));

@@ -35,6 +35,8 @@ public abstract class Hazard {
         return isActive;
     }
 
+    public abstract void init();
+
     protected abstract void trigger(); // hazarden starter
 
     public abstract String getName();

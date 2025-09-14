@@ -13,7 +13,7 @@ import java.util.List;
 public class MenuSlider {
 
     protected final Inventory inventory;
-    protected final int startSlot;
+    protected int startSlot;
     protected final Material filledTrackMaterial;
     protected final NamedTextColor filledTrackColor;
     private static final Material EMPTY_TRACK_MATERIAL = Material.WHITE_STAINED_GLASS_PANE;
@@ -53,6 +53,10 @@ public class MenuSlider {
 
     public int getStartSlot() {
         return startSlot;
+    }
+
+    public void setStartSlot(int startSlot) {
+        this.startSlot = startSlot;
     }
 
     public String getNext(String step) {

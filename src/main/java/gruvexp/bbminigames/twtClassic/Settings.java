@@ -4,9 +4,8 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import gruvexp.bbminigames.twtClassic.hazard.Hazard;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -21,7 +20,7 @@ public class Settings {
 
     public final Lobby lobby;
 
-    public BotBowsMap currentMap = BotBowsMap.CLASSIC_ARENA; // default map
+    public BotBowsMap currentMap; // default map
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
@@ -32,9 +31,7 @@ public class Settings {
     private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
     private int roundDuration = 5;
     // hazards
-    public final StormHazard stormHazard; // holder styr på innstillinger og utførelse av storm logikk
-    public final EarthquakeHazard earthquakeHazard; // holder styr på innstillinger og utførelse av storm logikk
-    public final GhostHazard ghostHazard;
+    private final HashMap<HazardType, Hazard> hazards = new HashMap<>();
     // abilities
     private int maxAbilities = 0;
     private boolean isIndividualMaxAbilities = false;
@@ -54,11 +51,6 @@ public class Settings {
 
     public Settings(Lobby lobby) {
         this.lobby = lobby;
-        this.stormHazard = new StormHazard(lobby);
-        this.earthquakeHazard = new EarthquakeHazard(lobby);
-        this.ghostHazard = new GhostHazard(lobby);
-        team1.setOppositeTeam(team2); // sånn at hvert team holder styr på hvilket team som er motstanderteamet
-        team2.setOppositeTeam(team1);
     }
 
     public void initMenus() {
@@ -78,10 +70,11 @@ public class Settings {
         winConditionMenu.updateRoundDuration();
 
         hazardMenu = new HazardMenu(this);
-        hazardMenu.initMenu();
 
         abilityMenus = new HashMap<>();
         players.forEach(bp -> abilityMenus.put(bp, new AbilityMenu(this, bp)));
+
+        setMap(BotBowsMap.CLASSIC_ARENA);
     }
 
     public void setMap(BotBowsMap map) {
@@ -119,6 +112,11 @@ public class Settings {
         teamsMenu.registerTeams();
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
+
+        hazards.keySet().retainAll(map.allowedHazards); // remove hazards not compatible with the new map
+        map.allowedHazards.forEach(newH -> hazards.computeIfAbsent(newH, h -> h.createHazard(lobby))); // add hazards compatible with the new map
+        hazardMenu.updateHazards();
+
         String mapName = map.name().charAt(0) + map.name().substring(1).toLowerCase().replace('_', ' ');
         lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
     }
@@ -128,6 +126,14 @@ public class Settings {
         team2 = newTeam2;
         team1.setOppositeTeam(team2);
         team2.setOppositeTeam(team1);
+    }
+
+    public HashMap<HazardType, Hazard> getHazards() {
+        return hazards;
+    }
+
+    public Hazard getHazard(HazardType type) {
+        return hazards.get(type);
     }
 
     public void joinGame(Player p) {
