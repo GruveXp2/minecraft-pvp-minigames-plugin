@@ -226,7 +226,7 @@ public class AbilityMenu extends SettingsMenu {
                 }
                 if (cursorItem.getType() != Material.AIR) return;
 
-                if (!settings.abilityAllowed(clickedAbility)) {
+                if (!settings.isAbilityAllowed(clickedAbility)) {
                     p.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
                     return;
                 }
@@ -412,7 +412,7 @@ public class AbilityMenu extends SettingsMenu {
 
     public void updateAbilityStatus(AbilityType type) {
         int slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
-        if (settings.abilityAllowed(type)) {
+        if (settings.isAbilityAllowed(type)) {
             inventory.setItem(slot - 9, VOID);
         } else {
             inventory.setItem(slot - 9, ABILITY_DISABLED);
@@ -428,7 +428,7 @@ public class AbilityMenu extends SettingsMenu {
                 inventory.setItem(abilitySlot - 9, VOID);
             } else if (bp.hasAbilityEquipped(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_EQUIPPED);
-            } else if (!settings.abilityAllowed(abilityType)) {
+            } else if (!settings.isAbilityAllowed(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
             } else {
                 inventory.setItem(abilitySlot - 9, VOID);
