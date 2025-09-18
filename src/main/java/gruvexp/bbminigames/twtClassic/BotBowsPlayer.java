@@ -118,6 +118,7 @@ public class BotBowsPlayer {
 
     public void readyAbilities() {
         abilities.values().forEach(Ability::obtain);
+        abilities.values().forEach(Ability::reset);
     }
 
     public void registerUsedAbilityItem(int abilityItemAmount) {
@@ -246,6 +247,7 @@ public class BotBowsPlayer {
             case LINGERING_POTION -> abilities.put(type, new LingeringPotionTrap(this, slot));
             case CHARGE_POTION -> abilities.put(type, new ChargePotion(this, slot));
             case KARMA_POTION -> abilities.put(type, new KarmaPotion(this, slot));
+            case LASER_TRAP -> abilities.put(type, new LaserTrap(this, slot));
             default -> throw new IllegalStateException("Error, contact Gruve: he forgot to connect this ability type to a java class");
         }
         if (abilityAlreadyEquipped) return;
@@ -271,6 +273,7 @@ public class BotBowsPlayer {
         Inventory inv = player.getInventory();
         Ability ability = abilities.get(type);
         ability.resetCooldown();
+        ability.unequip();
 
         int hotBarSlot = ability.getHotBarSlot();
         if (hotBarSlot > 0) {
@@ -319,6 +322,7 @@ public class BotBowsPlayer {
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
+        player.damage(0.001);
         TextColor defenderColor = team.color;
         TextColor attackerColor = attacker.team.color;
         TextColor lightColor = BotBows.lighten(attackerColor, 0.5f);

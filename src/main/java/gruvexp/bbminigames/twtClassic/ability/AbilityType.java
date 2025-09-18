@@ -1,8 +1,12 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
+import io.papermc.paper.block.BlockPredicate;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,9 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public enum AbilityType {
 
@@ -66,7 +68,9 @@ public enum AbilityType {
             Component.text("Deploy a creeper mine"),
             Component.text("to surprise your friends!"),
             Component.empty(),
-            Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrapAbility.BLAST_RADIUS, NamedTextColor.YELLOW))),
+            Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrap.BLAST_RADIUS, NamedTextColor.YELLOW))),
+            5, "CONCRETE_POWDER", AbilityCategory.TRAP),
+    LASER_TRAP(makeLaser(),
             5, "CONCRETE_POWDER", AbilityCategory.TRAP),
     LINGERING_POTION(makeLingeringPotion(),
             LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
@@ -317,5 +321,20 @@ public enum AbilityType {
 
         item.setItemMeta(meta);
         return item;
+    }
+
+    private static ItemStack makeLaser() {
+        ItemStack laserHead = Util.playerHead("dispenser");
+        ItemMeta meta = laserHead.getItemMeta();
+        meta.displayName(Component.text("Laser").decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(
+                Component.text("Emits a laser that damages enemies"),
+                Component.text("unlimited range"),
+                Component.empty(),
+                getDamageInfo("laser", 1, 'r')
+        ));
+        laserHead.setItemMeta(meta);
+        laserHead.setData(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().addPredicate(BlockPredicate.predicate().build()));
+        return laserHead;
     }
 }
