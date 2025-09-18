@@ -318,14 +318,14 @@ public class Settings {
     }
 
     public void toggleAbility(AbilityType type) {
-        if (abilityAllowed(type)) {
+        if (isAbilityAllowed(type)) {
             disableAbility(type);
         } else {
             allowAbility(type);
         }
     }
 
-    public boolean abilityAllowed(AbilityType type) {
+    public boolean isAbilityAllowed(AbilityType type) {
         return abilityStates.getOrDefault(type, true); // Default to enabled
     }
 }

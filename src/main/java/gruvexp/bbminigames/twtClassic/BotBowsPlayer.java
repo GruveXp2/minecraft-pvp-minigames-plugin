@@ -291,7 +291,7 @@ public class BotBowsPlayer {
         }
         int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
-            if (lobby.settings.abilityAllowed(type)) {
+            if (lobby.settings.isAbilityAllowed(type)) {
                 getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
             } else {
                 getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
