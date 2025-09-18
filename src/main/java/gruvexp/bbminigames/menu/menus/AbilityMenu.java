@@ -187,7 +187,19 @@ public class AbilityMenu extends SettingsMenu {
 
                 p.toggleAbilityToggle();
             }
-            case TARGET -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
+            case TARGET -> {
+                new HashSet<>(bp.getAbilities()).forEach(ability -> bp.unequipAbility(ability.getType(), true));
+
+                List<AbilityType> abilityTypes = new ArrayList<>(List.of(AbilityType.values()));
+                Collections.shuffle(abilityTypes);
+                for (AbilityType abilityType : abilityTypes) {
+                    if (bp.getTotalAbilities() == bp.getMaxAbilities()) break;
+                    if (settings.isAbilityAllowed(abilityType)) bp.equipAbility(abilityType);
+                }
+            }
+            case ARROW -> {
+                if (e.getClickedInventory() != inventory) e.setCancelled(true);
+            }
             default -> handleAbilityClick(e, bp, clickedItem);
         }
     }
