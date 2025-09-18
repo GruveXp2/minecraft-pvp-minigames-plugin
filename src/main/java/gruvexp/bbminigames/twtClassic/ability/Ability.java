@@ -113,6 +113,10 @@ public class Ability {
 
     }
 
+    public void reset() {
+
+    }
+
     private class CooldownTimer extends BukkitRunnable {
         int currentCooldown;
         ItemStack cooldownItem = getCooldownItem(currentCooldown);
