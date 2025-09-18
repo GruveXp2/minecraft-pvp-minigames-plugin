@@ -231,6 +231,16 @@ public class BotBowsPlayer {
         return toggleAbilityMode;
     }
 
+    public void equipAbility(AbilityType type) {
+        PlayerInventory inv = player.getInventory();
+        for (int slot = 1; slot < 9; slot++) {
+            if (inv.getItem(slot) == null) {
+                equipAbility(slot, type);
+                break;
+            }
+        }
+    }
+
     public void equipAbility(int slot, AbilityType type) {
         boolean abilityAlreadyEquipped = hasAbilityEquipped(type);
         switch (type) {
