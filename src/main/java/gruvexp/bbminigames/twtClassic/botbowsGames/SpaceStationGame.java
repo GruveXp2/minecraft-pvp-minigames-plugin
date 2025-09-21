@@ -39,6 +39,7 @@ public class SpaceStationGame extends BotBowsGame {
     public void startRound() {
         super.startRound();
         doors.forEach(door -> {
+            door.open();
             doorMotors.put(door, new DoorMotor(door));
             scheduleDoor(door);
         });

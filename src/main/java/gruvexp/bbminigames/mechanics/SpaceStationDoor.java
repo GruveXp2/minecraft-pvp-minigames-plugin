@@ -49,26 +49,14 @@ public class SpaceStationDoor {
     }
 
     public void toggle() {
-        open = !open;
-        setShulkerBoxes();
-        setOutline();
         if (open) close();
         else open();
     }
 
     public void open() {
-        new BukkitRunnable() {
-            int step = 0;
-            @Override
-            public void run() {
-                cloneBlocks(step);
-                step++;
-                if (step == ANIMATION_STEPS) cancel();
-            }
-        }.runTaskTimer(Main.getPlugin(), 0, ANIMATION_STEP_TICKS);
-    }
-
-    public void close() {
+        open = true;
+        setShulkerBoxes();
+        setOutline();
         new BukkitRunnable() {
             int step = ANIMATION_STEPS - 1;
             @Override
@@ -76,6 +64,21 @@ public class SpaceStationDoor {
                 cloneBlocks(step);
                 step--;
                 if (step < 0) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 0, ANIMATION_STEP_TICKS);
+    }
+
+    public void close() {
+        open = false;
+        setShulkerBoxes();
+        setOutline();
+        new BukkitRunnable() {
+            int step = 0;
+            @Override
+            public void run() {
+                cloneBlocks(step);
+                step++;
+                if (step == ANIMATION_STEPS) cancel();
             }
         }.runTaskTimer(Main.getPlugin(), 0, ANIMATION_STEP_TICKS);
     }
