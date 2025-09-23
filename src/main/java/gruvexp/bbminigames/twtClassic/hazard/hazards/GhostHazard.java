@@ -135,7 +135,6 @@ public class GhostHazard extends Hazard {
                 if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
                     ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD);
                     if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
-                        if (TestCommand.test2 && p.getName().equals("Spionagent54")) return;
                         killPlayer(bp);
                     }
                 } else {
