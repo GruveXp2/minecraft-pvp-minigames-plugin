@@ -332,6 +332,7 @@ public class BotBowsPlayer {
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
+        if (player.getGameMode() != GameMode.ADVENTURE) return;
         player.damage(0.001);
         TextColor defenderColor = team.color;
         TextColor attackerColor = attacker.team.color;

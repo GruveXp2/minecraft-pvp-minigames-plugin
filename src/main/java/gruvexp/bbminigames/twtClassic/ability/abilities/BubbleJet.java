@@ -7,7 +7,6 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -42,7 +41,6 @@ public class BubbleJet extends Ability {
                 for (Entity entity : Main.WORLD.getNearbyEntities(p.getLocation(), DAMAGE_RADIUS, DAMAGE_RADIUS, DAMAGE_RADIUS, entity -> entity instanceof Player)) {
                     Player defender = (Player) entity;
                     if (defender == p) continue;
-                    if (defender.getGameMode() == GameMode.SPECTATOR) continue;
                     Lobby lobby = BotBows.getLobby(defender);
                     if (lobby == null) continue;
                     if (lobby != BotBows.getLobby(p)) continue;
