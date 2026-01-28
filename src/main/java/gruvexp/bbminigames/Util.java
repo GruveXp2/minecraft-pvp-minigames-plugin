@@ -7,13 +7,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 import org.joml.Vector3i;
 
-import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public class Util {
 
@@ -47,34 +46,32 @@ public class Util {
         return vec.x + " " + vec.y + " " + vec.z;
     }
 
-    public static ItemStack customHead(String base64) {
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-
-        try {
-            Class<?> profileClass = Class.forName("com.mojang.authlib.GameProfile");
-            Object profile = profileClass.getConstructor(UUID.class, String.class)
-                    .newInstance(UUID.randomUUID(), null);
-
-            Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
-            Object texturesProperty = propertyClass
-                    .getConstructor(String.class, String.class)
-                    .newInstance("textures", base64);
-
-            Object properties = profileClass.getMethod("getProperties").invoke(profile);
-            properties.getClass().getMethod("put", Object.class, Object.class)
-                    .invoke(properties, "textures", texturesProperty);
-
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        head.setItemMeta(meta);
-        return head;
+    public static String print(Vector vec) {
+        return String.format("%.1f %.1f %.1f", vec.getX(), vec.getY(), vec.getZ());
     }
+
+    public static ItemStack playerHead(String playerName) {
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) skull.getItemMeta();
+        OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
+        meta.setOwningPlayer(player);
+        skull.setItemMeta(meta);
+        return skull;
+    }
+
+    /*private static PlayerProfile getProfile(String url) {
+        PlayerProfile profile = Bukkit.createPlayerProfile("RANDOM_UUID"); // Get a new player profile
+        PlayerTextures textures = profile.getTextures();
+        URL urlObject;
+        try {
+            urlObject = new URL(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException("Invalid URL", exception);
+        }
+        textures.setSkin(urlObject); // Set the skin of the player profile to the URL
+        profile.setTextures(textures); // Set the textures back to the profile
+        return profile;
+    }*/
 
     public static Axis getAxis(BlockFace face) {
         int x = face.getModX();
