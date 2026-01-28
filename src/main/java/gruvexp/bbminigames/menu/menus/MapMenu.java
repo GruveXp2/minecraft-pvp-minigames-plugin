@@ -4,7 +4,9 @@ import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -126,7 +128,15 @@ public class MapMenu extends SettingsMenu {
             }
             case MAGMA_BLOCK -> settings.setMap(BotBowsMap.PIGLIN_HIDEOUT);
             case COPPER_BULB -> settings.setMap(BotBowsMap.STEAMPUNK);
-            case STONE_BRICK_STAIRS, RED_SAND -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
+            case STONE_BRICK_STAIRS -> {
+                if (settings.useExperimentalFeatures) {
+                    settings.setMap(BotBowsMap.ROYAL_MAP);
+                } else {
+                    clicker.sendMessage(Component.text("This map is not fully added yet. To play on it, run ", NamedTextColor.YELLOW).append(Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED))
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/test toggle_experimental")));
+                }
+            }
+            case RED_SAND -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
 
             case GREEN_GLAZED_TERRACOTTA -> settings.setMap(BotBowsMap.INSIDE_BOTBASE);
             case GRASS_BLOCK -> settings.setMap(BotBowsMap.OUTSIDE_BOTBASE);

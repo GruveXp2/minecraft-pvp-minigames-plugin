@@ -19,6 +19,7 @@ import java.util.*;
 public class Settings {
 
     public final Lobby lobby;
+    public boolean useExperimentalFeatures = false;
 
     public BotBowsMap currentMap; // default map
 
@@ -83,6 +84,7 @@ public class Settings {
         switch (map) {
             case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
+            case ROYAL_MAP -> setNewTeams(new TeamKjødd(team1), new TeamGoofy(team2));
             case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(team1), new TeamHoglin(team2));
             case STEAMPUNK -> setNewTeams(new TeamBlocc(team1), new TeamQuicc(team2));
             case INSIDE_BOTBASE -> setNewTeams(
