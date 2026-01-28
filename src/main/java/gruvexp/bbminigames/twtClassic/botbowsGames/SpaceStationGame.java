@@ -54,7 +54,7 @@ public class SpaceStationGame extends BotBowsGame {
     }
 
     private void scheduleDoor(SpaceStationDoor door) {
-        int randomDelay = BotBows.RANDOM.nextInt(5) + 5 + ((int) Main.WORLD_END.getFullTime() % 300 / 10); // they toggle each 5-10 - 35-40 seconds
+        int randomDelay = BotBows.RANDOM.nextInt(5) + 1 + ((int) Main.WORLD_END.getFullTime() % 150 / 10); // they toggle each 5-10 - 35-40 seconds
         if (door.isOpen()) { // the game switches between times when the doors are open ≈85% of the time and ≈15% of the time
             randomDelay = 45 - randomDelay;
         }
