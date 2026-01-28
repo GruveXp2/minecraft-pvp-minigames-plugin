@@ -51,5 +51,5 @@ public abstract class Hazard {
         }
         hazardTimers.clear();
         isActive = false;
-    }; // stopper hazarden
+    } // stopper hazarden
 }
