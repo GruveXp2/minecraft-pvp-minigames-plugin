@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -30,14 +31,16 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         PLUGIN = this;
         getLogger().info("BotBows plugin enabled!");
-        getServer().getPluginManager().registerEvents(new MenuListener(), this);
-        getServer().getPluginManager().registerEvents(new DamageListener(), this);
-        getServer().getPluginManager().registerEvents(new MovementListener(), this);
-        getServer().getPluginManager().registerEvents(new JoinLeaveListener(), this);
-        getServer().getPluginManager().registerEvents(new RightClickListener(), this);
-        getServer().getPluginManager().registerEvents(new ShiftListener(), this);
-        getServer().getPluginManager().registerEvents(new SwitchSpectator(), this);
-        getServer().getPluginManager().registerEvents(new AbilityListener(), this);
+        registerListeners(
+                new MenuListener(),
+                new DamageListener(),
+                new MovementListener(),
+                new JoinLeaveListener(),
+                new RightClickListener(),
+                new ShiftListener(),
+                new SwitchSpectator(),
+                new AbilityListener()
+        );
 
         getCommand("menu").setExecutor(new MenuCommand());
         getCommand("settings").setExecutor(new SettingsCommand());
@@ -65,6 +68,13 @@ public final class Main extends JavaPlugin {
             }
         }
 
+    }
+
+    private void registerListeners(Listener... listeners) {
+        var pm = getServer().getPluginManager();
+        for (Listener listener : listeners) {
+            pm.registerEvents(listener, this);
+        }
     }
 
     private void startSocketServer() {
