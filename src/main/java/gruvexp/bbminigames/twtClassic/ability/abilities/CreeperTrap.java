@@ -29,7 +29,7 @@ public class CreeperTrap extends Ability {
     protected static final float CREEPER_SCALE = 0.75f;
     protected static final float CREEPER_PX = BLOCK_PX * CREEPER_SCALE;
 
-    public static int ACTIVATION_DELAY  = 5;
+    public static int ACTIVATION_DELAY  = 3;
     public static double BLAST_RADIUS = 4;
 
     protected static HashMap<Creeper, BotBowsPlayer> creeperOwners = new HashMap<>();
