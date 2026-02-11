@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -69,7 +70,7 @@ public class AbilityListener implements Listener {
                 Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
 
                 CreeperTrap creeperTrap = (CreeperTrap) bp.getAbility(type);
-                creeperTrap.use(placeLoc);
+                creeperTrap.trigger(new AbilityContext.Place(placeLoc));
             }
             case LASER_TRAP -> {
                 Block clickedBlock = e.getClickedBlock();
@@ -79,7 +80,7 @@ public class AbilityListener implements Listener {
                 if (spawnBlock.getType() != Material.AIR) {
                     e.setCancelled(true);
                     return;
-                };
+                }
                 LaserTrap laserAbility = (LaserTrap) bp.getAbility(AbilityType.LASER_TRAP);
 
                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> laserAbility.use(spawnBlock, face), 1);
