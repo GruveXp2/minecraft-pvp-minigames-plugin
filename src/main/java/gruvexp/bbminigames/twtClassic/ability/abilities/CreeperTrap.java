@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.ability.AbilityContext;
+import gruvexp.bbminigames.api.ability.AbilityTrigger;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -23,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CreeperTrap extends Ability {
+public class CreeperTrap extends Ability implements AbilityTrigger.PlaceableAbility {
 
     public static final float BLOCK_PX = 0.0625f;
     protected static final float CREEPER_SCALE = 0.75f;
@@ -51,8 +53,23 @@ public class CreeperTrap extends Ability {
         super(bp, hotBarSlot, AbilityType.CREEPER_TRAP);
     }
 
-    public void use(Location loc) {
-        super.use();
+    public static void ignite(Creeper creeper) {
+        if (!creeperOwners.containsKey(creeper)) {
+            creeper.ignite();
+            return;
+        }
+        CreeperTrap ability = (CreeperTrap) creeperOwners.get(creeper).getAbility(AbilityType.CREEPER_TRAP);
+        ability.creeperTicker.ignite();
+    }
+
+    public static void igniteAllCreepers() {
+        Set<Creeper> creepers = new HashSet<>(creeperOwners.keySet());
+        creepers.forEach(CreeperTrap::ignite);
+    }
+
+    @Override
+    public void trigger(AbilityContext.Place ctx) {
+        Location loc = ctx.loc();
         // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
         Set<Creeper> creepers = creeperOwners.entrySet().stream().filter(entry -> entry.getValue() == bp)
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
@@ -83,20 +100,8 @@ public class CreeperTrap extends Ability {
 
         creeperTicker = new CreeperTicker(creeper, lampDisplay, glassDisplay, bp);
         creeperTicker.runTaskTimer(Main.getPlugin(), ACTIVATION_DELAY * 20L, 5);
-    }
 
-    public static void ignite(Creeper creeper) {
-        if (!creeperOwners.containsKey(creeper)) {
-            creeper.ignite();
-            return;
-        }
-        CreeperTrap ability = (CreeperTrap) creeperOwners.get(creeper).getAbility(AbilityType.CREEPER_TRAP);
-        ability.creeperTicker.ignite();
-    }
-
-    public static void igniteAllCreepers() {
-        Set<Creeper> creepers = new HashSet<>(creeperOwners.keySet());
-        creepers.forEach(CreeperTrap::ignite);
+        use();
     }
 
     public static class CreeperTicker extends BukkitRunnable {
