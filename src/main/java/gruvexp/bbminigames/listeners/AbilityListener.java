@@ -2,16 +2,17 @@ package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.ability.AbilityContext;
+import gruvexp.bbminigames.api.ability.AbilityTrigger;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -116,11 +117,9 @@ public class AbilityListener implements Listener {
             e.setCancelled(true);
             return;
         }
-        if (type == AbilityType.LONG_ARMS) {
-            attackerBp.getAbility(AbilityType.LONG_ARMS).use();
-            defenderBp.handleHit(Component.text(" was long-slapped by "), attackerBp);
-        } else if (weapon.getType() == Material.SALMON) {
-            defenderBp.handleHit(Component.text(" was slapped by "), attackerBp);
+        Ability ability = attackerBp.getAbility(type);
+        if (ability instanceof AbilityTrigger.OnMelee) {
+            ((AbilityTrigger.OnMelee) ability).trigger(new AbilityContext.Melee(defenderBp));
         }
         e.setCancelled(true);
     }
