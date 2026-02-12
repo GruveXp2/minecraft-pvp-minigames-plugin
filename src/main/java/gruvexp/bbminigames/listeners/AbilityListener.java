@@ -24,14 +24,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.HashMap;
 
 public class AbilityListener implements Listener {
-
-    public static HashMap<Arrow, BukkitTask> thunderArrows = new HashMap<>();
-    public static HashMap<Arrow, BukkitTask> splashArrows = new HashMap<>();
 
     public static void onAbilityUse(PlayerInteractEvent e) {
         if (e.getItem() == null) return;
@@ -139,11 +133,7 @@ public class AbilityListener implements Listener {
                 arrow.setGravity(false);
                  if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
                          && ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
-                    arrow.setColor(Color.AQUA);
-                    BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
-                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
-                    thunderArrows.put(arrow, arrowTrail);
-                    BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
+                     ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).onLaunch(new AbilityContext.Launch(arrow));
                 }
             }
         } else if (e.getEntity() instanceof ThrownPotion potion) {
@@ -204,7 +194,7 @@ public class AbilityListener implements Listener {
     public void onArrowHit(ProjectileHitEvent e) {
         Projectile projectile = e.getEntity();
         if (!(projectile instanceof Arrow arrow)) return;
-        if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
+        if (!(arrow.getShooter() instanceof Player)) {return;} // den som skøyt
 
         if (projectile.hasMetadata("botbows_ability")) {
             Object value = projectile.getMetadata("botbows_ability").get(0).value();
@@ -212,16 +202,6 @@ public class AbilityListener implements Listener {
             if (value instanceof AbilityTrigger.OnProjectileHit handler) {
                 handler.onHit(e);
             }
-        }
-
-        if (splashArrows.containsKey(arrow)) {
-        } else if (thunderArrows.containsKey(arrow)) {
-            if (e.getHitEntity() != null) return; // det handles på et ant sted
-            Location hitLoc = e.getHitBlock().getLocation();
-            ThunderBow.handleArrowHitBlock(hitLoc);
-            thunderArrows.get(arrow).cancel();
-            thunderArrows.remove(arrow);
-            arrow.remove();
         }
     }
 

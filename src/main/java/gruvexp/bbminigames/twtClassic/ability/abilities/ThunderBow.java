@@ -1,6 +1,9 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.ability.AbilityContext;
+import gruvexp.bbminigames.api.ability.AbilityTrigger;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -9,23 +12,29 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class ThunderBow extends Ability {
+public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
 
     public static final ItemStack THUNDER_BOW = Menu.makeItem(Material.CROSSBOW, "thunder_bow", Component.text("ThunderBow"), Component.text("Shoots electric arrows"));
     public static final double CHAIN_RADIUS = 8;
     public static final int DURATION = 10; // seconds
 
     private boolean isActive = false;
+    public static HashMap<Arrow, BukkitTask> activeArrows = new HashMap<>();
 
     public ThunderBow(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.THUNDER_BOW);
@@ -119,6 +128,33 @@ public class ThunderBow extends Ability {
         double angle = Math.random() * 2 * Math.PI;
 
         return perpendicular.rotateAroundAxis(diff, angle);
+    }
+
+    @Override
+    public void onLaunch(AbilityContext.Launch ctx) {
+        Arrow arrow = (Arrow) ctx.projectile();
+        arrow.setColor(Color.AQUA);
+        BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+                .runTaskTimer(Main.getPlugin(), 1L, 1L);
+        activeArrows.put(arrow, arrowTrail);
+        arrow.setMetadata("botbows_ability", new FixedMetadataValue(Main.getPlugin(), this));
+        BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
+    }
+
+    @Override
+    public void onHit(ProjectileHitEvent e) {
+        Arrow arrow = (Arrow) e.getEntity();
+        Block hitBlock = e.getHitBlock();
+        if (hitBlock != null) {
+            Location hitLoc = e.getHitBlock().getLocation();
+            ThunderBow.handleArrowHitBlock(hitLoc);
+        }else if (e.getHitEntity() instanceof Player p) {
+            ThunderBow.handleArrowHitPlayer(bp, BotBows.getBotBowsPlayer(p));
+        }
+
+        activeArrows.get(arrow).cancel();
+        activeArrows.remove(arrow);
+        arrow.remove();
     }
 
     public static class ThunderArrowTrailGenerator extends BukkitRunnable {

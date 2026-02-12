@@ -13,6 +13,6 @@ public interface AbilityTrigger {
         void onLaunch(AbilityContext.Launch ctx);
     }
     interface OnProjectileHit {
-        void onHit(ProjectileHitEvent event);
+        void onHit(ProjectileHitEvent e);
     }
 }
