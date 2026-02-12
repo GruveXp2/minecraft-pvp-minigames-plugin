@@ -133,12 +133,7 @@ public class AbilityListener implements Listener {
         if (e.getEntity() instanceof Arrow arrow) {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
-                    arrow.setColor(Color.RED);
-                    BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
-                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
-                    arrow.getVelocity().multiply(0.5f);
-                    splashArrows.put(arrow, arrowTrail);
-                    bp.getAbility(AbilityType.SPLASH_BOW).use();
+                    ((SplashBow) bp.getAbility(AbilityType.SPLASH_BOW)).onLaunch(new AbilityContext.Launch(arrow));
                 }
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
@@ -210,17 +205,16 @@ public class AbilityListener implements Listener {
         Projectile projectile = e.getEntity();
         if (!(projectile instanceof Arrow arrow)) return;
         if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
-        if (splashArrows.containsKey(arrow)) {
-            Location hitLoc;
-            if (e.getHitEntity() != null) {
-                hitLoc = e.getHitEntity().getLocation();
-            } else {
-                hitLoc = e.getHitBlock().getLocation();
+
+        if (projectile.hasMetadata("botbows_ability")) {
+            Object value = projectile.getMetadata("botbows_ability").get(0).value();
+
+            if (value instanceof AbilityTrigger.OnProjectileHit handler) {
+                handler.onHit(e);
             }
-            SplashBow.handleArrowHit(attacker, hitLoc);
-            splashArrows.get(arrow).cancel();
-            splashArrows.remove(arrow);
-            arrow.remove();
+        }
+
+        if (splashArrows.containsKey(arrow)) {
         } else if (thunderArrows.containsKey(arrow)) {
             if (e.getHitEntity() != null) return; // det handles på et ant sted
             Location hitLoc = e.getHitBlock().getLocation();
