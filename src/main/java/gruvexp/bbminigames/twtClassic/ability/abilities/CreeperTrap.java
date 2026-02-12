@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CreeperTrap extends Ability implements AbilityTrigger.PlaceableAbility {
+public class CreeperTrap extends Ability implements AbilityTrigger.OnPlace {
 
     public static final float BLOCK_PX = 0.0625f;
     protected static final float CREEPER_SCALE = 0.75f;
@@ -69,6 +69,8 @@ public class CreeperTrap extends Ability implements AbilityTrigger.PlaceableAbil
 
     @Override
     public void trigger(AbilityContext.Place ctx) {
+        use();
+
         Location loc = ctx.loc();
         // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
         Set<Creeper> creepers = creeperOwners.entrySet().stream().filter(entry -> entry.getValue() == bp)
@@ -100,8 +102,6 @@ public class CreeperTrap extends Ability implements AbilityTrigger.PlaceableAbil
 
         creeperTicker = new CreeperTicker(creeper, lampDisplay, glassDisplay, bp);
         creeperTicker.runTaskTimer(Main.getPlugin(), ACTIVATION_DELAY * 20L, 5);
-
-        use();
     }
 
     public static class CreeperTicker extends BukkitRunnable {

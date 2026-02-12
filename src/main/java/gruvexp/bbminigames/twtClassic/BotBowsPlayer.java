@@ -249,7 +249,7 @@ public class BotBowsPlayer {
             case RADAR -> abilities.put(type, new Radar(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
             case THUNDER_BOW -> abilities.put(type, new ThunderBow(this, slot));
-            case LONG_ARMS -> abilities.put(type, new Ability(this, slot, AbilityType.LONG_ARMS));
+            case LONG_ARMS -> abilities.put(type, new LongArms(this, slot));
             case SALMON_SLAP -> abilities.put(type, new SalmonSlap(this, slot));
             case BUBBLE_JET -> abilities.put(type, new BubbleJet(this, slot));
             case CREEPER_TRAP -> abilities.put(type, new CreeperTrap(this, slot));

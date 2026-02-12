@@ -1,7 +1,10 @@
 package gruvexp.bbminigames.api.ability;
 
 public interface AbilityTrigger {
-    interface PlaceableAbility {
+    interface OnPlace {
         void trigger(AbilityContext.Place ctx);
+    }
+    interface OnMelee {
+        void trigger(AbilityContext.Melee ctx);
     }
 }
