@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.ability.AbilityContext;
+import gruvexp.bbminigames.api.ability.AbilityTrigger;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
@@ -18,7 +20,7 @@ import org.bukkit.util.VoxelShape;
 
 import java.util.List;
 
-public class LaserTrap extends Ability {
+public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
 
     private LaserEmitter emitter;
 
@@ -26,11 +28,14 @@ public class LaserTrap extends Ability {
         super(bp, hotBarSlot, AbilityType.LASER_TRAP);
     }
 
-    public void use(Block block, BlockFace face) {
-        if (emitter != null) emitter.remove();
-        emitter = new LaserEmitter(block, face);
-        emitter.runTaskTimer(Main.getPlugin(), 0, 1);
-        use();
+    @Override
+    public void onPlace(AbilityContext.BlockPlace ctx) {
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+            if (emitter != null) emitter.remove();
+            emitter = new LaserEmitter(ctx.block(), ctx.face());
+            emitter.runTaskTimer(Main.getPlugin(), 0, 1);
+            use();
+        }, 1);
     }
 
     @Override

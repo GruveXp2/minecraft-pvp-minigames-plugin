@@ -65,7 +65,7 @@ public class AbilityListener implements Listener {
                 Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
 
                 CreeperTrap creeperTrap = (CreeperTrap) bp.getAbility(type);
-                creeperTrap.trigger(new AbilityContext.Place(placeLoc));
+                creeperTrap.trigger(new AbilityContext.EntityPlace(placeLoc));
             }
             case LASER_TRAP -> {
                 Block clickedBlock = e.getClickedBlock();
@@ -76,9 +76,7 @@ public class AbilityListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                LaserTrap laserAbility = (LaserTrap) bp.getAbility(AbilityType.LASER_TRAP);
-
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> laserAbility.use(spawnBlock, face), 1);
+                ((LaserTrap) bp.getAbility(AbilityType.LASER_TRAP)).onPlace(new AbilityContext.BlockPlace(spawnBlock, face));
             }
             default -> {
                 if (type.category == AbilityCategory.POTION) {
