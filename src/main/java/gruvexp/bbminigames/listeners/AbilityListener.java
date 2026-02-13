@@ -24,14 +24,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.HashMap;
 
 public class AbilityListener implements Listener {
-
-    public static HashMap<Arrow, BukkitTask> thunderArrows = new HashMap<>();
-    public static HashMap<Arrow, BukkitTask> splashArrows = new HashMap<>();
 
     public static void onAbilityUse(PlayerInteractEvent e) {
         if (e.getItem() == null) return;
@@ -133,22 +127,13 @@ public class AbilityListener implements Listener {
         if (e.getEntity() instanceof Arrow arrow) {
             if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
                 if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
-                    arrow.setColor(Color.RED);
-                    BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
-                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
-                    arrow.getVelocity().multiply(0.5f);
-                    splashArrows.put(arrow, arrowTrail);
-                    bp.getAbility(AbilityType.SPLASH_BOW).use();
+                    ((SplashBow) bp.getAbility(AbilityType.SPLASH_BOW)).onLaunch(new AbilityContext.Launch(arrow));
                 }
             } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
                  if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
                          && ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
-                    arrow.setColor(Color.AQUA);
-                    BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
-                            .runTaskTimer(Main.getPlugin(), 1L, 1L);
-                    thunderArrows.put(arrow, arrowTrail);
-                    BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
+                     ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).onLaunch(new AbilityContext.Launch(arrow));
                 }
             }
         } else if (e.getEntity() instanceof ThrownPotion potion) {
@@ -209,25 +194,14 @@ public class AbilityListener implements Listener {
     public void onArrowHit(ProjectileHitEvent e) {
         Projectile projectile = e.getEntity();
         if (!(projectile instanceof Arrow arrow)) return;
-        if (!(arrow.getShooter() instanceof Player attacker)) {return;} // den som skøyt
-        if (splashArrows.containsKey(arrow)) {
-            Location hitLoc;
-            if (e.getHitEntity() != null) {
-                hitLoc = e.getHitEntity().getLocation();
-            } else {
-                hitLoc = e.getHitBlock().getLocation();
+        if (!(arrow.getShooter() instanceof Player)) {return;} // den som skøyt
+
+        if (projectile.hasMetadata("botbows_ability")) {
+            Object value = projectile.getMetadata("botbows_ability").get(0).value();
+
+            if (value instanceof AbilityTrigger.OnProjectileHit handler) {
+                handler.onHit(e);
             }
-            SplashBow.handleArrowHit(attacker, hitLoc);
-            splashArrows.get(arrow).cancel();
-            splashArrows.remove(arrow);
-            arrow.remove();
-        } else if (thunderArrows.containsKey(arrow)) {
-            if (e.getHitEntity() != null) return; // det handles på et ant sted
-            Location hitLoc = e.getHitBlock().getLocation();
-            ThunderBow.handleArrowHitBlock(hitLoc);
-            thunderArrows.get(arrow).cancel();
-            thunderArrows.remove(arrow);
-            arrow.remove();
         }
     }
 
