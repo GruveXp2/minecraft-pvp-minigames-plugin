@@ -112,11 +112,11 @@ public class AbilityListener implements Listener {
         BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
         BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
         if (defenderBp == null) return;
-        AbilityType type = AbilityType.fromItem(weapon);
         if (attackerBp.getTeam() == defenderBp.getTeam()) {
             e.setCancelled(true);
             return;
         }
+        AbilityType type = AbilityType.fromItem(weapon);
         Ability ability = attackerBp.getAbility(type);
         if (ability instanceof AbilityTrigger.OnMelee) {
             ((AbilityTrigger.OnMelee) ability).trigger(new AbilityContext.Melee(defenderBp));
