@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 public class BotBowsPlayer {
 
     public final Player player;
+    public BotBowsAvatar avatar;
     public final Lobby lobby;
     private BotBowsTeam team;
     private int hp;
@@ -49,6 +51,7 @@ public class BotBowsPlayer {
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
+        // this.avatar = avatar
         lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;
@@ -66,8 +69,10 @@ public class BotBowsPlayer {
 
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {
-            player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
-            player.setHealth(maxHP * 2);
+            avatar.setMaxHP(maxHP * 2);
+
+            avatar.revive(); // ? er dette for å sette adventure mode?
+            // /\ ?? \/
             player.setGameMode(GameMode.ADVENTURE);
         } else {
             this.team.leave(this);
@@ -85,35 +90,24 @@ public class BotBowsPlayer {
 
     public void leaveGame() {
         team.leave(this);
-        player.setGameMode(GameMode.SPECTATOR);
-        player.getInventory().remove(BotBows.BOTBOW);
+        avatar.remove();
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
-        player.getInventory().setItem(0, BotBows.MENU_ITEM);
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
         setHP(maxHP);
+        avatar.revive();
         isDamaged = false;
-        player.setGameMode(GameMode.ADVENTURE);
     }
 
     public void reset() {
-        player.setScoreboard(lobby.botBowsGame.boardManager.manager.getNewScoreboard());
-        player.getInventory().setArmorContents(new ItemStack[]{});
-        player.setGlowing(false);
-        player.setInvulnerable(false);
-        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+        avatar.reset();
         hasKarmaEffect = false;
-        player.setGameMode(GameMode.SPECTATOR);
-        lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
-        if (Cooldowns.sneakRunnables.containsKey(player)) {
-            Cooldowns.sneakRunnables.get(player).cancel();
-        }
     }
 
     public void initBattle() {
+        avatar.readyBattle();
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
-        player.getInventory().remove(Lobby.READY.clone()); // removes ready up item
     }
 
     public void readyAbilities() {
@@ -139,8 +133,7 @@ public class BotBowsPlayer {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(2 * maxHP);
-        player.setHealth(2 * maxHP);
+        avatar.setMaxHP(maxHP);
     }
 
     public int getHP() {return hp;}
