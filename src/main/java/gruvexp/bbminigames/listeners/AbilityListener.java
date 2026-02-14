@@ -109,8 +109,8 @@ public class AbilityListener implements Listener {
         }
         AbilityType type = AbilityType.fromItem(weapon);
         Ability ability = attackerBp.getAbility(type);
-        if (ability instanceof AbilityTrigger.OnMelee) {
-            ((AbilityTrigger.OnMelee) ability).trigger(new AbilityContext.Melee(defenderBp));
+        if (ability instanceof AbilityTrigger.OnMelee meleeAbility) {
+            meleeAbility.trigger(new AbilityContext.Melee(defenderBp));
         }
         e.setCancelled(true);
     }
@@ -122,11 +122,10 @@ public class AbilityListener implements Listener {
         if (lobby == null) return;
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
         if (e.getEntity() instanceof Arrow arrow) {
-            if (p.getInventory().getItemInMainHand().getType() == Material.BOW) {
-                if (bp.hasAbilityEquipped(AbilityType.SPLASH_BOW)) {
-                    ((SplashBow) bp.getAbility(AbilityType.SPLASH_BOW)).onLaunch(new AbilityContext.Launch(arrow));
-                }
-            } else if (p.getInventory().getItemInMainHand().getType() == Material.CROSSBOW) {
+            ItemStack itemInMainHand = p.getInventory().getItemInMainHand();
+            if (AbilityType.fromItem(itemInMainHand) == AbilityType.SPLASH_BOW) {
+                ((SplashBow) bp.getAbility(AbilityType.SPLASH_BOW)).onLaunch(new AbilityContext.Launch(arrow));
+            } else if (itemInMainHand.getType() == Material.CROSSBOW) {
                 arrow.setGravity(false);
                  if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
                          && ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
@@ -194,7 +193,7 @@ public class AbilityListener implements Listener {
         if (!(arrow.getShooter() instanceof Player)) {return;} // den som skøyt
 
         if (projectile.hasMetadata("botbows_ability")) {
-            Object value = projectile.getMetadata("botbows_ability").get(0).value();
+            Object value = projectile.getMetadata("botbows_ability").getFirst().value();
 
             if (value instanceof AbilityTrigger.OnProjectileHit handler) {
                 handler.onHit(e);
