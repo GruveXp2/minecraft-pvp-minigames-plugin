@@ -3,8 +3,8 @@ package gruvexp.bbminigames.api.ability;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 public interface AbilityTrigger {
-    interface OnPlace {
-        void trigger(AbilityContext.Place ctx);
+    interface OnEntityPlace {
+        void trigger(AbilityContext.EntityPlace ctx);
     }
     interface OnMelee {
         void trigger(AbilityContext.Melee ctx);
@@ -14,5 +14,8 @@ public interface AbilityTrigger {
     }
     interface OnProjectileHit {
         void onHit(ProjectileHitEvent e);
+    }
+    interface OnBlockPlace {
+        void onPlace(AbilityContext.BlockPlace ctx);
     }
 }

@@ -64,8 +64,7 @@ public class AbilityListener implements Listener {
                 }
                 Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
 
-                CreeperTrap creeperTrap = (CreeperTrap) bp.getAbility(type);
-                creeperTrap.trigger(new AbilityContext.Place(placeLoc));
+                ((CreeperTrap) bp.getAbility(type)).trigger(new AbilityContext.EntityPlace(placeLoc));
             }
             case LASER_TRAP -> {
                 Block clickedBlock = e.getClickedBlock();
@@ -76,9 +75,7 @@ public class AbilityListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                LaserTrap laserAbility = (LaserTrap) bp.getAbility(AbilityType.LASER_TRAP);
-
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> laserAbility.use(spawnBlock, face), 1);
+                ((LaserTrap) bp.getAbility(type)).onPlace(new AbilityContext.BlockPlace(spawnBlock, face));
             }
             default -> {
                 if (type.category == AbilityCategory.POTION) {
@@ -106,11 +103,11 @@ public class AbilityListener implements Listener {
         BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
         BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
         if (defenderBp == null) return;
-        AbilityType type = AbilityType.fromItem(weapon);
         if (attackerBp.getTeam() == defenderBp.getTeam()) {
             e.setCancelled(true);
             return;
         }
+        AbilityType type = AbilityType.fromItem(weapon);
         Ability ability = attackerBp.getAbility(type);
         if (ability instanceof AbilityTrigger.OnMelee meleeAbility) {
             meleeAbility.trigger(new AbilityContext.Melee(defenderBp));
@@ -196,7 +193,7 @@ public class AbilityListener implements Listener {
         if (!(arrow.getShooter() instanceof Player)) {return;} // den som skøyt
 
         if (projectile.hasMetadata("botbows_ability")) {
-            Object value = projectile.getMetadata("botbows_ability").get(0).value();
+            Object value = projectile.getMetadata("botbows_ability").getFirst().value();
 
             if (value instanceof AbilityTrigger.OnProjectileHit handler) {
                 handler.onHit(e);
