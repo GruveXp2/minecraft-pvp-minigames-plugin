@@ -64,8 +64,7 @@ public class AbilityListener implements Listener {
                 }
                 Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
 
-                CreeperTrap creeperTrap = (CreeperTrap) bp.getAbility(type);
-                creeperTrap.trigger(new AbilityContext.EntityPlace(placeLoc));
+                ((CreeperTrap) bp.getAbility(type)).trigger(new AbilityContext.EntityPlace(placeLoc));
             }
             case LASER_TRAP -> {
                 Block clickedBlock = e.getClickedBlock();
@@ -76,7 +75,7 @@ public class AbilityListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                ((LaserTrap) bp.getAbility(AbilityType.LASER_TRAP)).onPlace(new AbilityContext.BlockPlace(spawnBlock, face));
+                ((LaserTrap) bp.getAbility(type)).onPlace(new AbilityContext.BlockPlace(spawnBlock, face));
             }
             default -> {
                 if (type.category == AbilityCategory.POTION) {
