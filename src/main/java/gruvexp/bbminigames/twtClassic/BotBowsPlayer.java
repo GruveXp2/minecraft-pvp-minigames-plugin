@@ -7,23 +7,19 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -33,6 +29,8 @@ public class BotBowsPlayer {
 
     public final Player player;
     public BotBowsAvatar avatar;
+    private final Component name;
+
     public final Lobby lobby;
     private BotBowsTeam team;
     private int hp;
@@ -40,7 +38,7 @@ public class BotBowsPlayer {
     private int attackDamage;
     private boolean isDamaged = false; // cooldown når playeren er hitta
     private boolean ready = false; // om playeren er klar for å spille
-    private static final List<List<Set<Integer>>> PLAYER_HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
+    public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
 
     private int maxAbilities;
     private float abilityCooldownMultiplier;
@@ -51,7 +49,8 @@ public class BotBowsPlayer {
 
     public BotBowsPlayer(Player player, Settings settings) {
         this.player = player;
-        // this.avatar = avatar
+        avatar = new PlayerAvatar(player, this);
+        name = player.name();
         lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;
@@ -67,13 +66,15 @@ public class BotBowsPlayer {
         return NamedTextColor.WHITE;
     }
 
+    public Component getName() {
+        return name.color(getTeamColor());
+    }
+
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {
             avatar.setMaxHP(maxHP * 2);
 
-            avatar.revive(); // ? er dette for å sette adventure mode?
-            // /\ ?? \/
-            player.setGameMode(GameMode.ADVENTURE);
+            avatar.revive();
         } else {
             this.team.leave(this);
         }
@@ -140,12 +141,7 @@ public class BotBowsPlayer {
 
     private void setHP(int hp) { // heile hjerter
         this.hp = hp;
-        if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
-            player.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
-        } else {
-            player.setHealth(hp * 2); // halve hjerter
-            updateArmor();
-        }
+        avatar.setHP(hp);
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
     }
 
@@ -225,13 +221,8 @@ public class BotBowsPlayer {
     }
 
     public void equipAbility(AbilityType type) {
-        PlayerInventory inv = player.getInventory();
-        for (int slot = 1; slot < 9; slot++) {
-            if (inv.getItem(slot) == null) {
-                equipAbility(slot, type);
-                break;
-            }
-        }
+        int slot = avatar.getNextFreeSlot();
+        equipAbility(slot, type);
     }
 
     public void equipAbility(int slot, AbilityType type) {
@@ -263,7 +254,7 @@ public class BotBowsPlayer {
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
-        player.sendMessage(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+        avatar.message(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
     }
 
     public void unequipAbility(AbilityType type) {
@@ -273,15 +264,11 @@ public class BotBowsPlayer {
     public void unequipAbility(AbilityType type, boolean hideMessage) {
         if (!abilities.containsKey(type)) return;
 
-        Inventory inv = player.getInventory();
         Ability ability = abilities.get(type);
         ability.resetCooldown();
         ability.unequip();
+        avatar.removeAbility(ability);
 
-        int hotBarSlot = ability.getHotBarSlot();
-        if (hotBarSlot > 0) {
-            inv.setItem(hotBarSlot, null);
-        }
         int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
             if (lobby.settings.isAbilityAllowed(type)) {
@@ -295,7 +282,7 @@ public class BotBowsPlayer {
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         if (!hideMessage) {
-            player.sendMessage(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+            avatar.message(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
         }
     }
 
@@ -325,97 +312,46 @@ public class BotBowsPlayer {
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
-        if (player.getGameMode() != GameMode.ADVENTURE) return;
-        player.damage(0.001);
-        TextColor defenderColor = team.color;
+        if (!isAlive()) return;
+        avatar.damage();
         TextColor attackerColor = attacker.team.color;
         TextColor lightColor = BotBows.lighten(attackerColor, 0.5f);
         if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
-            die(player.name().color(defenderColor)
+            die(getName()
                     .append(hitActionMessage.color(lightColor))
-                    .append(attacker.player.name().color(attackerColor))
+                    .append(attacker.getName())
                     .append(hitActionMessage2.color(lightColor))
                     .append(Component.text(" and got", lightColor))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
-            if (player.getGameMode() == GameMode.SPECTATOR) {
-                player.setSpectatorTarget(attacker.player);
-                player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                        .append(attacker.player.name().color(attackerColor)));
+            if (!isAlive() && avatar instanceof PlayerAvatar playerAvatar) {
+                playerAvatar.spectate(attacker.avatar);
             }
             return;
         }
         setHP(hp - attacker.attackDamage);
-        lobby.messagePlayers(Component.text(player.getName(), defenderColor)
+        lobby.messagePlayers(getName()
                 .append(hitActionMessage.color(lightColor))
-                .append(attacker.player.name().color(attackerColor))
+                .append(attacker.getName())
                 .append(hitActionMessage2.color(lightColor))
                 .append(Component.text("; ", NamedTextColor.WHITE)
                         .append(Component.text(hp + "hp left"))));
         // defender effects
-        player.setGlowing(true);
-        player.setInvulnerable(true);
-        isDamaged = true;
-        PlayerInventory inv = player.getInventory();
-        for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
-            if (inv.getItem(i) == null) continue;
-            AbilityType abilityType = AbilityType.fromItem(inv.getItem(i));
-            if (abilityType != null && abilityType.category != AbilityCategory.DAMAGING) continue;
-
-            inv.setItem(i + 27, inv.getItem(i));
-            inv.setItem(i, new ItemStack(Material.BARRIER));
-        }
         abilities.values().forEach(Ability::hit);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            player.setGlowing(false);
-            player.setInvulnerable(false);
-            isDamaged = false;
-            for (int i = 0; i < 9; i++) { // flytter items tilbake
-                ItemStack item = inv.getItem(i + 27);
-                if (item != null && item.getType() == Material.RED_STAINED_GLASS_PANE) continue;
-                inv.setItem(i, item);
-                inv.setItem(i + 27, new ItemStack(Material.RED_STAINED_GLASS_PANE));
-            }
-        }, BotBows.HIT_DISABLED_ITEM_TICKS);
+        isDamaged = true;
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
     }
 
     public void die(Component deathMessage) { // gjør at spilleren dauer
         setHP(0);
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
-        player.setGameMode(GameMode.SPECTATOR);
+        avatar.eliminate();
         abilities.values().forEach(a -> a.setTickRate(20));
         hasKarmaEffect = false;
         lobby.check4Elimination(this);
     }
 
-    public void updateArmor() { // updates the armor pieces of the player
-        if (hp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            player.getInventory().setArmorContents(new ItemStack[] {
-                    getArmorPiece(Material.LEATHER_BOOTS),
-                    getArmorPiece(Material.LEATHER_LEGGINGS),
-                    getArmorPiece(Material.LEATHER_CHESTPLATE),
-                    getArmorPiece(Material.LEATHER_HELMET)});
-            return;
-        }
-        Set<Integer> slots;
-        if (maxHP > 5) {
-            float d = (float) maxHP / 5;
-            int i = (int) Math.ceil((maxHP - hp) / d);
-            slots = PLAYER_HEALTH_ARMOR.get(3).get(i - 1);
-        } else {
-            slots = PLAYER_HEALTH_ARMOR.get(maxHP - 2).get(maxHP - hp - 1);
-        }
-
-        for (Integer slot : slots) {
-            switch (slot) {
-                case 0 -> player.getInventory().setBoots(null);
-                case 1 -> player.getInventory().setLeggings(null);
-                case 2 -> player.getInventory().setChestplate(null);
-                case 3 -> player.getInventory().setHelmet(null);
-            }
-        }
-    }
-
+    @Deprecated(since = "DungeonGhoster will soon use avatars")
     public ItemStack getArmorPiece(Material material) { // makes armor pieces
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
@@ -441,10 +377,10 @@ public class BotBowsPlayer {
         hp5.add(new HashSet<>(List.of(0)));
         hp5.add(new HashSet<>(List.of(3)));
         hp5.add(new HashSet<>()); // hvis man har fler liv enn 5 så blir denne calla, men da skal det ikke skje noe
-        PLAYER_HEALTH_ARMOR.add(hp2);
-        PLAYER_HEALTH_ARMOR.add(hp3);
-        PLAYER_HEALTH_ARMOR.add(hp4);
-        PLAYER_HEALTH_ARMOR.add(hp5);
+        HEALTH_ARMOR.add(hp2);
+        HEALTH_ARMOR.add(hp3);
+        HEALTH_ARMOR.add(hp4);
+        HEALTH_ARMOR.add(hp5);
     }
 
     public boolean isReady() {
@@ -454,12 +390,9 @@ public class BotBowsPlayer {
     public void setReady(boolean ready, int itemIndex) {
         if (this.ready == ready) return;
         this.ready = ready;
-        player.getInventory().setItem(itemIndex, Lobby.LOADING);
+        avatar.setReady(ready, itemIndex);
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            player.getInventory().setItem(itemIndex, ready ? Lobby.READY : Lobby.NOT_READY);
-            lobby.handlePlayerReady(this);
-        }, 2L);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> lobby.handlePlayerReady(this), 3L);
     }
 
     public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
@@ -491,22 +424,23 @@ public class BotBowsPlayer {
         }
         PotionEffectType randomEffect = effects[effectID];
 
-        player.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
+        avatar.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             int counter = 40;
             @Override
             public void accept(BukkitTask task) {
                 if (counter == 0) {
                     task.cancel();
+                    avatar.setColor(getTeamColor());
                     return;
                 }
-                player.setGlowing(counter % 2 == 0);
+                avatar.setGlowing(counter % 2 == 0);
                 counter--;
             }
         }, 0, 5);
 
         lobby.messagePlayers(Component.empty()
-                .append(player.name().color(team.color))
+                .append(getName())
                 .append(Component.text(" got karma! ", NamedTextColor.RED))
                 .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
     }
@@ -516,30 +450,10 @@ public class BotBowsPlayer {
     public void growSize(int duration) {
         if (isBig) return;
         isBig = true;
-        new BukkitRunnable() {
-            int i = 1;
-            final int totalAniTicks = 20;
-            @Override
-            public void run() {
-                if (i == totalAniTicks) {
-                    this.cancel();
-                }
-                player.getAttribute(Attribute.SCALE).setBaseValue(1.0 + 0.5/totalAniTicks * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), 0L, 1L);
-        new BukkitRunnable() {
-            int i = 1;
-            final int totalAniTicks = 40;
-            @Override
-            public void run() {
-                if (i == totalAniTicks) {
-                    this.cancel();
-                    isBig = false;
-                }
-                player.getAttribute(Attribute.SCALE).setBaseValue(1.5 - 0.5/totalAniTicks * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), duration * 20L, 1L);
+        avatar.growSize(1.5, 20);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+            avatar.growSize(1, 40);
+            isBig = false;
+        }, duration * 20L);
     }
 }
