@@ -200,12 +200,11 @@ public class AbilityMenu extends SettingsMenu {
             case ARROW -> {
                 if (e.getClickedInventory() != inventory) e.setCancelled(true);
             }
-            default -> handleAbilityClick(e, bp, clickedItem);
+            default -> handleAbilityClick(e, clicker, bp, clickedItem);
         }
     }
 
-    private void handleAbilityClick(InventoryClickEvent e, BotBowsPlayer bp, ItemStack clickedItem) {
-        Player p = bp.player;
+    private void handleAbilityClick(InventoryClickEvent e, Player p, BotBowsPlayer bp, ItemStack clickedItem) {
         ItemStack cursorItem = e.getCursor();
         AbilityType cursorAbility = AbilityType.fromItem(cursorItem);
         AbilityType clickedAbility = AbilityType.fromItem(clickedItem);
