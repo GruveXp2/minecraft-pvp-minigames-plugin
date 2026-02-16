@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CreeperTrap extends Ability implements AbilityTrigger.OnPlace {
+public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace {
 
     public static final float BLOCK_PX = 0.0625f;
     protected static final float CREEPER_SCALE = 0.75f;
@@ -68,7 +68,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnPlace {
     }
 
     @Override
-    public void trigger(AbilityContext.Place ctx) {
+    public void trigger(AbilityContext.EntityPlace ctx) {
         use();
 
         Location loc = ctx.loc();
