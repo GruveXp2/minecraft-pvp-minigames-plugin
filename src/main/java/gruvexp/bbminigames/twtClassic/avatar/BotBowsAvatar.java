@@ -7,6 +7,8 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.UUID;
+
 public interface BotBowsAvatar {
     void message(Component component);
     Entity getEntity();
@@ -26,4 +28,5 @@ public interface BotBowsAvatar {
     void addPotionEffect(PotionEffect effect);
     void setColor(TextColor color);
     void growSize(double scale, int duration);
+    UUID getUUID();
 }

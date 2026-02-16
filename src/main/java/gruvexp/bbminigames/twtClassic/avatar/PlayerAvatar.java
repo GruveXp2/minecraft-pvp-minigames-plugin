@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
+import java.util.UUID;
 
 public class PlayerAvatar implements BotBowsAvatar{
 
@@ -185,6 +186,11 @@ public class PlayerAvatar implements BotBowsAvatar{
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 1L);
+    }
+
+    @Override
+    public UUID getUUID() {
+        return player.getUniqueId();
     }
 
     private void updateArmor(int hp) { // updates the armor pieces of the player

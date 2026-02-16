@@ -150,7 +150,7 @@ public class AbilityMenu extends SettingsMenu {
             }
             case PLAYER_HEAD -> {
                 if (PlainTextComponentSerializer.plainText().serialize(clickedItem.displayName()).contains("Laser")) {
-                    handleAbilityClick(e, bp, clickedItem);
+                    handleAbilityClick(e, clicker, bp, clickedItem);
                     return;
                 }
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
