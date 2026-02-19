@@ -8,11 +8,11 @@ import org.bukkit.Location;
 public class TeamGoofy extends BotBowsTeam {
 
     private static final Location[] SPAWN_POSITIONS = {
-            new Location(Main.WORLD, -270.5, 22.0, -396.5, -45, 10),
-            new Location(Main.WORLD, -272.5, 22.0, -395.5, -45, 10),
-            new Location(Main.WORLD, -269.5, 22.0, -398.5, -45, 10),
-            new Location(Main.WORLD, -272.5, 22.0, -397.5, -45, 10),
-            new Location(Main.WORLD, -271.5, 22.0, -398.5, -45, 10)
+            new Location(Main.WORLD, -268.5, 22.0, -377.5, -90, 10),
+            new Location(Main.WORLD, -268.5, 22.0, -374.5, -90, 10),
+            new Location(Main.WORLD, -270.5, 22.0, -379.5, -90, 10),
+            new Location(Main.WORLD, -270.5, 22.0, -372.5, -90, 10),
+            new Location(Main.WORLD, -271.3, 22.0, -376.0, -90, 10)
     };
 
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26.0, -417.5, 0, 10);

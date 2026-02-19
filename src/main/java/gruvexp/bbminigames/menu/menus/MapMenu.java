@@ -41,8 +41,7 @@ public class MapMenu extends SettingsMenu {
             Component.text("Kjødd", NamedTextColor.DARK_AQUA)
                     .append(Component.text(" vs ", NamedTextColor.WHITE))
                     .append(Component.text("Goofy", NamedTextColor.DARK_GREEN)),
-            Component.text("A castle themed arena"),
-            Component.text("Work in progress", NamedTextColor.YELLOW));
+            Component.text("A castle themed arena"));
 
     public static final ItemStack STEAMPUNK = makeItem(Material.COPPER_BULB, Component.text("Steampunk", NamedTextColor.GOLD),
             Component.text("Blocc", NamedTextColor.GOLD)
@@ -128,14 +127,7 @@ public class MapMenu extends SettingsMenu {
             }
             case MAGMA_BLOCK -> settings.setMap(BotBowsMap.PIGLIN_HIDEOUT);
             case COPPER_BULB -> settings.setMap(BotBowsMap.STEAMPUNK);
-            case STONE_BRICK_STAIRS -> {
-                if (settings.useExperimentalFeatures) {
-                    settings.setMap(BotBowsMap.ROYAL_MAP);
-                } else {
-                    clicker.sendMessage(Component.text("This map is not fully added yet. To play on it, run ", NamedTextColor.YELLOW).append(Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED))
-                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/test toggle_experimental")));
-                }
-            }
+            case STONE_BRICK_STAIRS -> settings.setMap(BotBowsMap.ROYAL_MAP);
             case RED_SAND -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED));
 
             case GREEN_GLAZED_TERRACOTTA -> settings.setMap(BotBowsMap.INSIDE_BOTBASE);
@@ -152,6 +144,11 @@ public class MapMenu extends SettingsMenu {
                 }
             }
         }
+    }
+
+    private void sendExperimentalLockedMessage(Player player) {
+        player.sendMessage(Component.text("This map is not fully added yet. To play on it, run ", NamedTextColor.YELLOW).append(Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED))
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/test toggle_experimental")));
     }
 
     public void updateMenu() {
