@@ -12,6 +12,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
@@ -39,6 +40,7 @@ public class TestCommand implements CommandExecutor {
     public static boolean debugging = true;
     public static boolean test1 = false;
     public static boolean test2 = false;
+    public static boolean test3 = false;
     public static boolean testAbilities = false;
     public static RotatingStructure rotatingStructure;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
@@ -196,8 +198,15 @@ public class TestCommand implements CommandExecutor {
                     Bukkit.getPlayer("GruveXp").give(item1, item2);
                 }
                 case "q" -> {
-                    Lobby lobby  = BotBows.getLobby(Bukkit.getPlayer("GruveXp"));
-                    lobby.joinGame(Bukkit.getPlayer("Spionagent54"));
+                    Player gruveXp = Bukkit.getPlayer("GruveXp");
+                    Player judith = Bukkit.getPlayer("Spionagent54");
+
+                    Lobby lobby  = BotBows.getLobby(0);
+                    lobby.settings.getHazard(HazardType.STORM).setChance(HazardChance.DISABLED);
+                    lobby.joinGame(gruveXp);
+                    lobby.joinGame(judith);
+                    BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
+                    judithBp.setReady(true, 4);
                 }
                 case "a" -> {
                     rotation = !rotation;
@@ -228,6 +237,10 @@ public class TestCommand implements CommandExecutor {
                 case "t2" -> {
                     test2 = !test2;
                     BotBows.debugMessage("Test2 set to: " + test2);
+                }
+                case "t3" -> {
+                    test3 = !test3;
+                    BotBows.debugMessage("Test3 set to: " + test3);
                 }
                 case "ta", "d" -> {
                     testAbilities = !testAbilities;

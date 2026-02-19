@@ -29,4 +29,6 @@ public interface BotBowsAvatar {
     void setColor(TextColor color);
     void growSize(double scale, int duration);
     UUID getUUID();
+    boolean isSneaking();
+    void updateSneakStamina(float progress);
 }

@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
 
-import gruvexp.bbminigames.twtClassic.BarManager;
 import org.bukkit.scheduler.BukkitTask;
 
 public class BotBowsGame {
@@ -33,7 +32,6 @@ public class BotBowsGame {
     protected final BotBowsTeam team2;
     protected final Set<BotBowsPlayer> players;
     public final BoardManager boardManager;
-    public final BarManager barManager;
     protected final Collection<Hazard> hazards;
 
     public boolean canMove = true;
@@ -50,28 +48,14 @@ public class BotBowsGame {
         this.players = settings.getPlayers();
         this.hazards = settings.getHazards().values();
         this.boardManager = new BoardManager(lobby);
-        this.barManager = new BarManager(lobby);
     }
 
     public void leaveGame(BotBowsPlayer p) {
-        // stuff
         settings.leaveGame(p);
         boardManager.removePlayerScore(p);
-        if (barManager.sneakBars.containsKey(p.player)) {
-            barManager.sneakBars.get(p.player).setVisible(false);
-            barManager.sneakBars.get(p.player).removeAll();
-            barManager.sneakBars.remove(p.player);
-        }
-        Cooldowns.sneakCooldowns.remove(p.player);
-        if (Cooldowns.sneakRunnables.containsKey(p.player)) {
-            Cooldowns.sneakRunnables.get(p.player).cancel();
-            Cooldowns.sneakRunnables.remove(p.player);
-        }
     }
 
     public void startGame() {
-        barManager.sneakBarInit();
-        Cooldowns.CoolDownInit(players);
         boardManager.createBoard();
         startRound();
         hazards.forEach(Hazard::init);
@@ -82,6 +66,7 @@ public class BotBowsGame {
             boardManager.updatePlayerScore(q);
         }
         boardManager.updateTeamScores();
+        players.forEach(BotBowsPlayer::start);
         new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
     }
     public void startRound() {
@@ -251,9 +236,6 @@ public class BotBowsGame {
         boardManager.resetTeams();
         team1.reset();
         team2.reset();
-        barManager.sneakBars.clear();
-        Cooldowns.sneakCooldowns.clear();
-        Cooldowns.sneakRunnables.clear();
         lobby.reset();
     }
 

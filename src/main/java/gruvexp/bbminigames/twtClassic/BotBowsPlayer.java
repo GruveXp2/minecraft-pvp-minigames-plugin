@@ -39,6 +39,7 @@ public class BotBowsPlayer {
     private boolean isDamaged = false; // cooldown når playeren er hitta
     private boolean ready = false; // om playeren er klar for å spille
     public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
+    private SneakManager sneakManager;
 
     private int maxAbilities;
     private float abilityCooldownMultiplier;
@@ -72,7 +73,7 @@ public class BotBowsPlayer {
 
     public void joinTeam(BotBowsTeam team) {
         if (this.team == null) {
-            avatar.setMaxHP(maxHP * 2);
+            avatar.setMaxHP(maxHP);
 
             avatar.revive();
         } else {
@@ -95,6 +96,10 @@ public class BotBowsPlayer {
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
     }
 
+    public void start() {
+        sneakManager = new SneakManager(avatar);
+    }
+
     public void revive() { // resetter for å gjør klar til en ny runde
         setHP(maxHP);
         avatar.revive();
@@ -102,6 +107,7 @@ public class BotBowsPlayer {
     }
 
     public void reset() {
+        sneakManager.destroy();
         avatar.reset();
         hasKarmaEffect = false;
     }
@@ -455,5 +461,9 @@ public class BotBowsPlayer {
             avatar.growSize(1, 40);
             isBig = false;
         }, duration * 20L);
+    }
+
+    public boolean isSneakingExhausted() {
+        return sneakManager.isSneakingExhausted();
     }
 }

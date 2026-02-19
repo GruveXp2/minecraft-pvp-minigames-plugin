@@ -1,13 +1,14 @@
 package gruvexp.bbminigames.twtClassic.avatar;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Cooldowns;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -30,10 +31,12 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     public final Player player;
     public final BotBowsPlayer bp;
+    private final BossBar sneakBar;
 
     public PlayerAvatar(Player player, BotBowsPlayer bp) {
         this.player = player;
         this.bp = bp;
+        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
     }
 
     @Override
@@ -87,15 +90,11 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void reset() {
         player.setScoreboard(bp.lobby.botBowsGame.boardManager.manager.getNewScoreboard());
-        bp.lobby.botBowsGame.barManager.sneakBars.get(player).setVisible(false);
         player.getInventory().setArmorContents(new ItemStack[]{});
         player.setGlowing(false);
         player.setInvulnerable(false);
         player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         player.setGameMode(GameMode.SPECTATOR);
-        if (Cooldowns.sneakRunnables.containsKey(player)) {
-            Cooldowns.sneakRunnables.get(player).cancel();
-        }
     }
 
     @Override
@@ -191,6 +190,23 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public UUID getUUID() {
         return player.getUniqueId();
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return player.isSneaking();
+    }
+
+    @Override
+    public void updateSneakStamina(float progress) {
+        boolean isExhausted = bp.isSneakingExhausted();
+        sneakBar.progress(progress);
+        BotBows.debugMessage("Progress: " + progress, TestCommand.test3);
+        if (progress > 0) player.showBossBar(sneakBar); else player.hideBossBar(sneakBar);
+        BotBows.debugMessage("Show it: " + (progress > 0), TestCommand.test3);
+        sneakBar.color(isExhausted ? BossBar.Color.RED : BossBar.Color.YELLOW);
+        sneakBar.name(Component.text ("Sneaking", isExhausted ? NamedTextColor.RED : NamedTextColor.YELLOW));
+        if (progress >= 1) player.setSneaking(false);
     }
 
     private void updateArmor(int hp) { // updates the armor pieces of the player
