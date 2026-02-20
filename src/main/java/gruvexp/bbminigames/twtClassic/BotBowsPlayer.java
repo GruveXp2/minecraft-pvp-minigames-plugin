@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -69,6 +70,10 @@ public class BotBowsPlayer {
 
     public Component getName() {
         return name.color(getTeamColor());
+    }
+
+    public String getPlainName() {
+        return PlainTextComponentSerializer.plainText().serialize(getName());
     }
 
     public void joinTeam(BotBowsTeam team) {

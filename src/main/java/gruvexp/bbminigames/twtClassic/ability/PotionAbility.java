@@ -33,7 +33,7 @@ public abstract class PotionAbility extends Ability {
                 .append(Component.text(getEffectDuration()))
                 .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
                 .append(Component.text(" effect from "))
-                .append(bp.player.name())));
+                .append(bp.getName())));
     }
 
     protected abstract void applyPotionEffect(Set<Player> players);
