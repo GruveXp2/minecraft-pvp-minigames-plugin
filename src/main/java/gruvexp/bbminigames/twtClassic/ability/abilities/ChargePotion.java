@@ -30,7 +30,7 @@ public class ChargePotion extends PotionAbility {
                     p.obtainWeaponAbilities();
                 });
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> {
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> {
             bp.setAbilityCooldownTickRate(20);
             players.stream()
                     .map(BotBows::getBotBowsPlayer)
