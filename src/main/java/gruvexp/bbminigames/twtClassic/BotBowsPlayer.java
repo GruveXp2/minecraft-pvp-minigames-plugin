@@ -473,4 +473,9 @@ public class BotBowsPlayer {
     public void reloadBotBow() {
         avatar.setItem(0, BotBows.BOTBOW);
     }
+
+    public void setInvis(int ticks) {
+        avatar.setInvis(true);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> avatar.setInvis(false), ticks);
+    }
 }

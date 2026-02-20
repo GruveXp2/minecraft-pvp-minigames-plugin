@@ -32,4 +32,5 @@ public interface BotBowsAvatar {
     void updateSneakStamina(float progress);
     ItemStack getHeadItem();
     void setItem(int index, ItemStack item);
+    void setInvis(boolean invis);
 }

@@ -35,6 +35,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     private final Player player;
     private final BotBowsPlayer bp;
     private final BossBar sneakBar;
+    private int visualHp;
 
     public PlayerAvatar(Player player, BotBowsPlayer bp) {
         this.player = player;
@@ -69,11 +70,12 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     @Override
     public void setHP(int hp) {
+        visualHp = hp;
         if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
             player.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
         } else {
             player.setHealth(hp * 2); // halve hjerter
-            updateArmor(hp);
+            updateArmor();
         }
     }
 
@@ -217,9 +219,18 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.getInventory().setItem(index, item);
     }
 
-    private void updateArmor(int hp) { // updates the armor pieces of the player
+    @Override
+    public void setInvis(boolean invis) { // will temporarily move armor content out of inventory and
+        if (invis) {
+            player.getInventory().setArmorContents(new ItemStack[] {null, null, null, null});
+        } else {
+            updateArmor();
+        }
+    }
+
+    private void updateArmor() { // updates the armor pieces of the player
         int maxHP = bp.getMaxHP();
-        if (hp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
+        if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
             player.getInventory().setArmorContents(new ItemStack[] {
                     getArmorPiece(Material.LEATHER_BOOTS),
                     getArmorPiece(Material.LEATHER_LEGGINGS),
@@ -230,10 +241,10 @@ public class PlayerAvatar implements BotBowsAvatar{
         Set<Integer> slots;
         if (maxHP > 5) {
             float d = (float) maxHP / 5;
-            int i = (int) Math.ceil((maxHP - hp) / d);
+            int i = (int) Math.ceil((maxHP - visualHp) / d);
             slots = BotBowsPlayer.HEALTH_ARMOR.get(3).get(i - 1);
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR.get(maxHP - 2).get(maxHP - hp - 1);
+            slots = BotBowsPlayer.HEALTH_ARMOR.get(maxHP - 2).get(maxHP - visualHp - 1);
         }
 
         for (Integer slot : slots) {
