@@ -12,9 +12,11 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
@@ -22,6 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -209,6 +213,18 @@ public class PlayerAvatar implements BotBowsAvatar{
         sneakBar.color(isExhausted ? BossBar.Color.RED : BossBar.Color.YELLOW);
         sneakBar.name(Component.text ("Sneaking", isExhausted ? NamedTextColor.RED : NamedTextColor.YELLOW));
         if (progress >= 1) player.setSneaking(false);
+    }
+
+    @Override
+    public ItemStack getHeadItem() {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
+        itemMeta.displayName(bp.getName().decoration(TextDecoration.ITALIC, false));
+        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, player.getUniqueId().toString());
+        itemMeta.setOwningPlayer(Bukkit.getPlayer(player.getName()));
+
+        item.setItemMeta(itemMeta);
+        return item;
     }
 
     private void updateArmor(int hp) { // updates the armor pieces of the player

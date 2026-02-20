@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.UUID;
@@ -31,4 +32,5 @@ public interface BotBowsAvatar {
     UUID getUUID();
     boolean isSneaking();
     void updateSneakStamina(float progress);
+    ItemStack getHeadItem();
 }

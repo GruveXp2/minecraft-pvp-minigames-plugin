@@ -1,22 +1,17 @@
 package gruvexp.bbminigames.menu;
 
-import gruvexp.bbminigames.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -114,18 +109,6 @@ public abstract class Menu implements InventoryHolder {
         CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
         customModelDataComponent.setStrings(List.of(customModelData));
         itemMeta.setCustomModelDataComponent(customModelDataComponent);
-
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-
-    public ItemStack makeHeadItem(Player p, TextColor teamColor) {
-
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.displayName(Component.text(p.getName(), teamColor).decoration(TextDecoration.ITALIC, false));
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, p.getUniqueId().toString());
-        itemMeta.setOwningPlayer(Bukkit.getPlayer(p.getName()));
 
         item.setItemMeta(itemMeta);
         return item;
