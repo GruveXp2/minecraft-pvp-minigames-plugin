@@ -29,8 +29,8 @@ import java.util.UUID;
 
 public class PlayerAvatar implements BotBowsAvatar{
 
-    public final Player player;
-    public final BotBowsPlayer bp;
+    private final Player player;
+    private final BotBowsPlayer bp;
     private final BossBar sneakBar;
 
     public PlayerAvatar(Player player, BotBowsPlayer bp) {

@@ -1,11 +1,12 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,9 +22,9 @@ public class SwitchSpectator implements Listener {
         if (!isOwnTeam) {
             team = team.getOppositeTeam();
         }
-        List<Player> alivePlayers = team.getPlayers().stream() // lager liste med alle de levende playersene
-                .map(q -> q.player)
-                .filter(q -> q.getGameMode() == GameMode.ADVENTURE)
+        List<Entity> alivePlayers = team.getPlayers().stream() // lager liste med alle de levende playersene
+                .filter(BotBowsPlayer::isAlive)
+                .map(q -> q.avatar.getEntity())
                 .toList();
 
         if (alivePlayers.isEmpty()) {
@@ -37,7 +38,7 @@ public class SwitchSpectator implements Listener {
             return;
         }
         if (team.hasPlayer(BotBows.getLobby(p).getBotBowsPlayer((Player) p.getSpectatorTarget()))) {
-            int i = alivePlayers.indexOf((Player) p.getSpectatorTarget());
+            int i = alivePlayers.indexOf(p.getSpectatorTarget());
             if (i == alivePlayers.size() - 1) {
                 i = -1;
             }
@@ -55,7 +56,8 @@ public class SwitchSpectator implements Listener {
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) return;
         if (!lobby.isGameActive()) return;
-        if (p.getGameMode() != GameMode.SPECTATOR) return;
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+        if (!bp.isAlive()) return;
         Action a = e.getAction();
 
         //p.sendMessage(ChatColor.GRAY + "You clicked a button: ");
