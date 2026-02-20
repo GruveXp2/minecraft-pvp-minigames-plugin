@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface BotBowsAvatar {
     void message(Component component);
-    Entity getEntity();
+    LivingEntity getEntity();
     BotBowsPlayer getBotBowsPlayer();
     void eliminate();
     void revive();

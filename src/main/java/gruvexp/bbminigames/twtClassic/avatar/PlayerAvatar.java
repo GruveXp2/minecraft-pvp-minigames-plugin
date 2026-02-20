@@ -19,7 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -51,7 +51,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public Entity getEntity() {
+    public LivingEntity getEntity() {
         return player;
     }
 
