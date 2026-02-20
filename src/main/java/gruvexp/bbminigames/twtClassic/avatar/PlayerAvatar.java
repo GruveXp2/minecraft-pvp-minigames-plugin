@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,7 +78,7 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     @Override
     public void setMaxHP(int maxHP) {
-        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
+        getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
         player.setHealth(maxHP * 2);
     }
 
@@ -93,7 +95,7 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.getInventory().setArmorContents(new ItemStack[]{});
         player.setGlowing(false);
         player.setInvulnerable(false);
-        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+        getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         player.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -175,13 +177,13 @@ public class PlayerAvatar implements BotBowsAvatar{
     public void growSize(double scale, int duration) {
         new BukkitRunnable() {
             int i = 1;
-            final double scale0 = player.getAttribute(Attribute.SCALE).getBaseValue();
+            final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
             @Override
             public void run() {
                 if (i == duration) {
                     this.cancel();
                 }
-                player.getAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
+                getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
                 i++;
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 1L);
@@ -251,5 +253,12 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.setSpectatorTarget(avatar.getEntity());
         player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
                 .append(avatar.getBotBowsPlayer().getName()));
+    }
+
+    private AttributeInstance getRequiredAttribute(Attribute attribute) {
+        return Objects.requireNonNull( // it should always exist but if not throw
+                player.getAttribute(attribute),
+                () -> "Missing attribute " + attribute + " for player " + player.getName()
+        );
     }
 }
