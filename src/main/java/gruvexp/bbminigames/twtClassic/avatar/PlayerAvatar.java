@@ -5,9 +5,6 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -127,14 +124,6 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void removeAbility(Ability ability) {
-        int slot = ability.getHotBarSlot();
-        if (slot > 0) {
-            player.getInventory().setItem(slot, null);
-        }
-    }
-
-    @Override
     public void damage() {
         player.damage(0.001);
         player.setGlowing(true);
@@ -225,6 +214,11 @@ public class PlayerAvatar implements BotBowsAvatar{
 
         item.setItemMeta(itemMeta);
         return item;
+    }
+
+    @Override
+    public void setItem(int index, ItemStack item) {
+        player.getInventory().setItem(index, item);
     }
 
     private void updateArmor(int hp) { // updates the armor pieces of the player

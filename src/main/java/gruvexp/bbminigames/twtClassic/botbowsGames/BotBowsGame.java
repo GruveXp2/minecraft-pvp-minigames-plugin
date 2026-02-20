@@ -14,7 +14,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -232,7 +231,6 @@ public class BotBowsGame {
         Main.WORLD.setClearWeatherDuration(10000);
 
         players.forEach(BotBowsPlayer::reset);
-        players.forEach(p -> p.player.getInventory().remove(Material.ARROW));
         boardManager.resetTeams();
         team1.reset();
         team2.reset();

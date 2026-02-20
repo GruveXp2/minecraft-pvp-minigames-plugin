@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.avatar;
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.LivingEntity;
@@ -23,7 +22,6 @@ public interface BotBowsAvatar {
     void readyBattle();
     void setReady(boolean ready, int itemIndex);
     int getNextFreeSlot();
-    void removeAbility(Ability ability);
     void damage();
     void setGlowing(boolean flag);
     void addPotionEffect(PotionEffect effect);
@@ -33,4 +31,5 @@ public interface BotBowsAvatar {
     boolean isSneaking();
     void updateSneakStamina(float progress);
     ItemStack getHeadItem();
+    void setItem(int index, ItemStack item);
 }

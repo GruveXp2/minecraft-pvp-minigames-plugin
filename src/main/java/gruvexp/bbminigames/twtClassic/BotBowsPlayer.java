@@ -273,7 +273,10 @@ public class BotBowsPlayer {
         Ability ability = abilities.get(type);
         ability.resetCooldown();
         ability.unequip();
-        avatar.removeAbility(ability);
+        int slot = ability.getHotBarSlot();
+        if (slot > 0) {
+            avatar.setItem(slot, null);
+        }
 
         int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
@@ -465,5 +468,9 @@ public class BotBowsPlayer {
 
     public boolean isSneakingExhausted() {
         return sneakManager.isSneakingExhausted();
+    }
+
+    public void reloadBotBow() {
+        avatar.setItem(0, BotBows.BOTBOW);
     }
 }
