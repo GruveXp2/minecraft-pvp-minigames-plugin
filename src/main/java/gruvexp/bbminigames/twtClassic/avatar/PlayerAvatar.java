@@ -93,7 +93,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void reset() {
         player.setScoreboard(bp.lobby.botBowsGame.boardManager.manager.getNewScoreboard());
-        player.getInventory().setArmorContents(new ItemStack[]{});
+        player.getInventory().clear();
         player.setGlowing(false);
         player.setInvulnerable(false);
         getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
@@ -132,8 +132,6 @@ public class PlayerAvatar implements BotBowsAvatar{
         PlayerInventory inv = player.getInventory();
         for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
             if (inv.getItem(i) == null) continue;
-            AbilityType abilityType = AbilityType.fromItem(inv.getItem(i));
-            if (abilityType != null && abilityType.category != AbilityCategory.DAMAGING) continue;
 
             inv.setItem(i + 27, inv.getItem(i));
             inv.setItem(i, new ItemStack(Material.BARRIER));
@@ -144,9 +142,7 @@ public class PlayerAvatar implements BotBowsAvatar{
             player.setInvulnerable(false);
             for (int i = 0; i < 9; i++) { // flytter items tilbake
                 ItemStack item = inv.getItem(i + 27);
-                if (item != null && item.getType() == Material.RED_STAINED_GLASS_PANE) continue;
                 inv.setItem(i, item);
-                inv.setItem(i + 27, new ItemStack(Material.RED_STAINED_GLASS_PANE));
             }
         }, BotBows.HIT_DISABLED_ITEM_TICKS);
     }
