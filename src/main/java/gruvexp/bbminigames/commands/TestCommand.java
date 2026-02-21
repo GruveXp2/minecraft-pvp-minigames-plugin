@@ -59,6 +59,13 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "tb" -> {
+                    Lobby lobby = BotBows.getLobby(0);
+                    lobby.joinGame(Bukkit.getPlayer("GruveXp"));
+                    lobby.addBot();
+                    lobby.startGame(p);
+                }
+                case "add_bot" -> BotBows.getLobby(0).addBot();
                 case "toggle_experimental" -> {
                     Lobby lobby = BotBows.getLobby(p);
                     if (lobby == null) {

@@ -71,9 +71,13 @@ public class BotBows {
     }
 
     public static BotBowsPlayer getBotBowsPlayer(Player p) { // gets the BotBowsPlayer that is used by the lobby the player is in
-        Lobby lobby = getLobby(p);
+        return getBotBowsPlayer(p.getUniqueId());
+    }
+
+    public static BotBowsPlayer getBotBowsPlayer(UUID playerId) { // gets the BotBowsPlayer that is used by the lobby the player is in
+        Lobby lobby = getLobby(playerId);
         if (lobby == null) return null;
-        return lobby.getBotBowsPlayer(p);
+        return lobby.getBotBowsPlayer(playerId);
     }
 
     public static Lobby[] getLobbies() {
@@ -82,6 +86,13 @@ public class BotBows {
 
     public static boolean isPlayerJoined(Player p) {
         return getLobby(p) != null;
+    }
+
+    public static void replacePlayerId(UUID oldId, UUID newId) {
+        Lobby lobby = getLobby(oldId);
+        players.remove(oldId);
+        players.put(newId, lobby);
+        lobby.replacePlayerId(oldId, newId);
     }
 
     private static ItemStack getBotBow() {

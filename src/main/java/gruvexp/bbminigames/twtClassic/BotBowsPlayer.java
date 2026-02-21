@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
+import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -47,9 +49,22 @@ public class BotBowsPlayer {
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
 
+    private static int botId = 0;
+
     public BotBowsPlayer(Player player, Settings settings) {
         avatar = new PlayerAvatar(player, this);
         name = player.name();
+        lobby = settings.lobby;
+        maxHP = settings.getMaxHP();
+        hp = maxHP;
+        attackDamage = 1;
+        maxAbilities = settings.getMaxAbilities();
+        abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
+    }
+
+    public BotBowsPlayer(Mannequin mannequin, Settings settings) {
+        avatar = new NpcAvatar(mannequin, this);
+        name = mannequin.name().append(Component.text(" " + botId++));
         lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;
@@ -74,11 +89,7 @@ public class BotBowsPlayer {
     }
 
     public void joinTeam(BotBowsTeam team) {
-        if (this.team == null) {
-            avatar.setMaxHP(maxHP);
-
-            avatar.revive();
-        } else {
+        if (this.team != null) {
             this.team.leave(this);
         }
         this.team = team;

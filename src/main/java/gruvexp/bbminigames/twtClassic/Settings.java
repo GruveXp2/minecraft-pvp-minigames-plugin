@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -147,6 +148,7 @@ public class Settings {
             team2.join(bp);
         }
         teamsMenu.recalculateTeam();
+        bp.setMaxHP(maxHP);
         healthMenu.updateMenu();
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
         AbilityMenu newMenu = new AbilityMenu(this, bp);
@@ -161,6 +163,21 @@ public class Settings {
         } else {
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")"));
         }
+    }
+
+    public void joinGame(Mannequin mannequin) {
+        BotBowsPlayer bp = new BotBowsPlayer(mannequin, this);
+        lobby.registerBotBowsPlayer(bp);
+        players.add(bp);
+        if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
+            team1.join(bp);
+        } else {
+            team2.join(bp);
+        }
+        teamsMenu.recalculateTeam();
+        healthMenu.updateMenu();
+        abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
+        Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
     }
 
     public void leaveGame(BotBowsPlayer bp) {

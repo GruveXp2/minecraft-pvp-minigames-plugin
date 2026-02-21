@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,9 +31,9 @@ public class DamageListener implements Listener {
         }
         if ((e.getDamager() instanceof Arrow arrow)) {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
-            if (e.getEntity() instanceof Player defender) {
-                BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
-                BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender);
+            BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
+            if (e.getEntity() instanceof LivingEntity defender) {
+                BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender.getUniqueId());
                 if (attackerBp == null || defenderBp == null) return;
 
                 if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {

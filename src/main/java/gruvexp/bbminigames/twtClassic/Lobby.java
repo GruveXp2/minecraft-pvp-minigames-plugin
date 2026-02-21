@@ -1,14 +1,18 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -64,6 +68,15 @@ public class Lobby {
         p.getInventory().setItem(4, NOT_READY);
     }
 
+    public void addBot() {
+        Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
+        mannequin.customName(Component.text("BotBowBot"));
+        mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
+        settings.joinGame(mannequin);
+        BotBows.lobbyMenu.updateLobbyItem(this);
+        BotBows.registerPlayerLobby(mannequin.getUniqueId(), this);
+    }
+
     public void leaveGame(UUID playerId) {
         BotBowsPlayer bp = getBotBowsPlayer(playerId);
         if (activeGame) {
@@ -83,6 +96,12 @@ public class Lobby {
             return;
         }
         leaveGame(playerId);
+    }
+
+    public void replacePlayerId(UUID oldId, UUID newId) {
+        BotBowsPlayer bp = players.get(oldId);
+        players.remove(oldId);
+        players.put(newId, bp);
     }
 
     public BotBowsPlayer getBotBowsPlayer(Player p) {
