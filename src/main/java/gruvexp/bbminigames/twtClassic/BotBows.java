@@ -62,15 +62,18 @@ public class BotBows {
         return lobbies[ID];
     }
 
+    public static Lobby getLobby(Player p) {
+        return getLobby(p.getUniqueId());
+    }
+
     public static Lobby getLobby(UUID playerId) {
         return players.get(playerId);
     }
 
     public static BotBowsPlayer getBotBowsPlayer(Player p) { // gets the BotBowsPlayer that is used by the lobby the player is in
-        UUID playerId = p.getUniqueId();
-        Lobby lobby = getLobby(playerId);
+        Lobby lobby = getLobby(p);
         if (lobby == null) return null;
-        return lobby.getBotBowsPlayer(playerId);
+        return lobby.getBotBowsPlayer(p);
     }
 
     public static Lobby[] getLobbies() {
@@ -78,7 +81,7 @@ public class BotBows {
     }
 
     public static boolean isPlayerJoined(Player p) {
-        return getLobby(p.getUniqueId()) != null;
+        return getLobby(p) != null;
     }
 
     private static ItemStack getBotBow() {
@@ -106,7 +109,7 @@ public class BotBows {
     }
 
     public static void accessSettings(Player p) {
-        Lobby lobby = BotBows.getLobby(p.getUniqueId());
+        Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) {
             p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED));
             return;

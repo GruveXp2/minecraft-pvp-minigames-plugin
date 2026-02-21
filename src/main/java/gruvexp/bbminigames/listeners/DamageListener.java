@@ -77,9 +77,8 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onDamaged(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player p)) return;
-        UUID playerId = p.getUniqueId();
         if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
-            Lobby lobby = BotBows.getLobby(playerId);
+            Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
             p.teleport(p.getLocation().add(0, 1, 0));
             e.setCancelled(true);
@@ -87,9 +86,9 @@ public class DamageListener implements Listener {
                 e.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             e.setCancelled(true);
         } else if (e.getCause() == EntityDamageEvent.DamageCause.LAVA) {
-            Lobby lobby = BotBows.getLobby(playerId);
+            Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(playerId);
+            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
             bp.die(Component.text(p.getName(), bp.getTeamColor())
                     .append(Component.text(" tried to swim in lava", NamedTextColor.GOLD)));
         }

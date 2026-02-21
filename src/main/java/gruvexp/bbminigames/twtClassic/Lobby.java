@@ -50,17 +50,16 @@ public class Lobby {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
             return;
         }
-        UUID playerId = p.getUniqueId();
-        if (BotBows.getLobby(playerId) != null) {
-            if (BotBows.getLobby(playerId) == this) {
+        if (BotBows.getLobby(p) != null) {
+            if (BotBows.getLobby(p) == this) {
                 p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
                 return;
             }
-            BotBows.getLobby(playerId).leaveGame(p); // leaver den forrige lobbien for å joine denne
+            BotBows.getLobby(p).leaveGame(p); // leaver den forrige lobbien for å joine denne
         }
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.registerPlayerLobby(playerId, this);
+        BotBows.registerPlayerLobby(p.getUniqueId(), this);
         p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
         p.getInventory().setItem(4, NOT_READY);
     }
@@ -86,8 +85,8 @@ public class Lobby {
         leaveGame(playerId);
     }
 
-    public boolean isPlayerJoined(Player p) {
-        return players.containsKey(p.getUniqueId());
+    public BotBowsPlayer getBotBowsPlayer(Player p) {
+        return getBotBowsPlayer(p.getUniqueId());
     }
 
     public BotBowsPlayer getBotBowsPlayer(UUID playerId) {
