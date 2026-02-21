@@ -133,7 +133,7 @@ public class Lobby {
 
     public void messagePlayers(Component message) {
         for (BotBowsPlayer p : settings.getPlayers()) {
-            p.player.sendMessage(message);
+            p.avatar.message(message);
         }
     }
 

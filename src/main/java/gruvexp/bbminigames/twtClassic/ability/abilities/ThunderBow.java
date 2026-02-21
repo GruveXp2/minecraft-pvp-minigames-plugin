@@ -53,7 +53,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
 
     public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
         defender.handleHit(Component.text(" was thunderbowed by "), attacker);
-        Location hitLoc = defender.player.getLocation();
+        Location hitLoc = defender.avatar.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
         World world = attacker.player.getWorld();
         for (Entity entity : world.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {

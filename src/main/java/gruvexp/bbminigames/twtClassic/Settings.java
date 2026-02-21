@@ -166,7 +166,7 @@ public class Settings {
 
     public void leaveGame(BotBowsPlayer bp) {
         if (!players.contains(bp)) {
-            bp.player.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
+            bp.avatar.message(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
             return;
         }
         bp.leaveGame();
@@ -178,9 +178,9 @@ public class Settings {
             setModPlayer(players.iterator().next());
         }
 
-        bp.player.setGameMode(GameMode.SPECTATOR);
-        bp.player.sendMessage(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
-        lobby.messagePlayers(Component.text(bp.player.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
+        bp.reset();
+        bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
+        lobby.messagePlayers(Component.text(bp.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
@@ -201,7 +201,7 @@ public class Settings {
 
     public boolean playerIsMod(BotBowsPlayer bp) {
         boolean isPlayerMod = bp == modPlayer;
-        if (!isPlayerMod) bp.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
+        if (!isPlayerMod) bp.avatar.message(Component.text("Only mods can do this action", NamedTextColor.RED));
         return isPlayerMod;
     }
 

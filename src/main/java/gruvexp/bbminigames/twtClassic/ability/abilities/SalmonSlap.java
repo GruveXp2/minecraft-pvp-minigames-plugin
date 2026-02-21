@@ -22,7 +22,7 @@ public class SalmonSlap extends Ability implements AbilityTrigger.OnMelee {
 
     @Override
     public void use() {
-        bp.player.getInventory().setItem(getHotBarSlot(), SALMON);
+        bp.avatar.setItem(getHotBarSlot(), SALMON);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), super::use, 20 * DURATION);
     }
 

@@ -77,7 +77,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
         creepers.forEach(CreeperTrap::ignite);
 
-        creeper = (Creeper) bp.player.getWorld().spawnEntity(loc, EntityType.CREEPER);
+        creeper = (Creeper) bp.avatar.getLocation().getWorld().spawnEntity(loc, EntityType.CREEPER);
         creeper.setAI(false);
         creeper.getAttribute(Attribute.SCALE).setBaseValue(0.75);
         creeperOwners.put(creeper, bp);
@@ -142,7 +142,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
                 if (lobby == null) continue;
                 if (lobby != owner.lobby) continue;
                 BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-                if (bp.getTeam() == owner.getTeam() && bp.player.getLocation().distanceSquared(creeper.getLocation()) > 1) continue;
+                if (bp.getTeam() == owner.getTeam() && bp.avatar.getLocation().distanceSquared(creeper.getLocation()) > 1) continue;
                 if (!bp.isAlive()) continue;
 
                 hitPlayers.add(bp);

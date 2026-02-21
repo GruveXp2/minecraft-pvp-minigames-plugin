@@ -106,7 +106,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
         @Override
         public void run() {
             for (BotBowsPlayer defender : opponents) {
-                Location proximity = defender.player.getLocation().add(0, 1, 0).subtract(center);
+                Location proximity = defender.avatar.getLocation().add(0, 1, 0).subtract(center);
                 if (Math.abs(proximity.getX()) < offset.getX() + 0.5 &&
                         Math.abs(proximity.getY()) < offset.getY() + 1 &&
                         Math.abs(proximity.getZ()) < offset.getZ() + 0.5) {
