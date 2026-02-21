@@ -40,9 +40,6 @@ public class StormHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        lobby.messagePlayers(Component.text("STORM INCOMING!", NamedTextColor.DARK_RED)
-                .append(Component.text(" Seek shelter immediately!", NamedTextColor.RED)));
-        lobby.titlePlayers(ChatColor.RED + "STORM INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : lobby.getPlayers()) {
                 PlayerStormTimer stormTimer = new PlayerStormTimer(p, bars.get(p));
@@ -53,6 +50,11 @@ public class StormHazard extends Hazard {
             Main.WORLD.setStorm(true);
             Main.WORLD.setThunderDuration(12000); //10min
         }, 100L); // 5 sekunder
+    }
+
+    @Override
+    protected HazardMessage getAnnounceMessage() {
+        return new HazardMessage("STORM INCOMING!", "Seek shelter immediately!", "STORM INCOMING");
     }
 
     @Override

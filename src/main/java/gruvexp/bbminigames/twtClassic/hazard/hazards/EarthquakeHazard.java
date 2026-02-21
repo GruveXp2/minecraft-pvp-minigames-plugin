@@ -41,9 +41,6 @@ public class EarthquakeHazard extends Hazard {
     }
     @Override
     protected void trigger() {
-        lobby.messagePlayers(Component.text("EARTHQUAKE INCOMING!", NamedTextColor.DARK_RED)
-                .append(Component.text(" Stay above ground!", NamedTextColor.RED)));
-        lobby.titlePlayers(ChatColor.RED + "EARTHQUAKE INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer p : lobby.getPlayers()) {
                 PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(p, bars.get(p));
@@ -51,6 +48,11 @@ public class EarthquakeHazard extends Hazard {
                 hazardTimers.put(p.player, earthQuakeTimer);
             }
         }, 100L); // 5 sekunder
+    }
+
+    @Override
+    protected HazardMessage getAnnounceMessage() {
+        return new HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING");
     }
 
     @Override

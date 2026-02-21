@@ -7,11 +7,13 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,9 +139,10 @@ public class Lobby {
         }
     }
 
-    public void titlePlayers(String title, int duration) {
+    public void titlePlayers(Component component, int duration) {
         for (BotBowsPlayer p : players.values()) {
-            p.player.sendTitle(title, null, 2, duration, 5);
+            p.player.showTitle(Title.title(component, Component.text(""),
+                    Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(duration), Duration.ofMillis(250))));
         }
     }
 

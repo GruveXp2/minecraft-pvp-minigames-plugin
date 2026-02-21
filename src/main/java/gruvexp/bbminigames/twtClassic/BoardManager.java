@@ -189,7 +189,7 @@ public class BoardManager {
         }
     }
 
-    public static ChatColor toChatColor(NamedTextColor textColor) {
+    private static ChatColor toChatColor(NamedTextColor textColor) {
         if (textColor == NamedTextColor.RED) return ChatColor.RED;
         if (textColor == NamedTextColor.BLUE) return ChatColor.BLUE;
         if (textColor == NamedTextColor.GREEN) return ChatColor.GREEN;

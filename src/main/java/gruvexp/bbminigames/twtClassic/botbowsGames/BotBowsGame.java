@@ -180,13 +180,13 @@ public class BotBowsGame {
                 .forEach(Hazard::end);
 
         if (winningTeam == null) {
-            lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
+            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 40);
             canShoot = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
             return;
         }
 
-        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
+        lobby.titlePlayers(Component.text(winningTeam.name + " +" + winScore, winningTeam.color), 40);
         boardManager.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {

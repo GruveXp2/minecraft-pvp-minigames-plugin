@@ -40,17 +40,13 @@ public class GhostHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        lobby.messagePlayers(Component.text("HAUNTED ARENA", NamedTextColor.DARK_RED)
-                .append(Component.text(" Stay in motion!", NamedTextColor.RED)));
-        lobby.titlePlayers(ChatColor.RED + "HAUNTED ARENA", 80);
-
         for (BotBowsPlayer p : lobby.getPlayers()) {
             PlayerGhostMover ghostMover = new PlayerGhostMover(p);
             ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L);
             hazardTimers.put(p.player, ghostMover);
 
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                ghostMover.ascendGhost(p.player.getLocation());
+                ghostMover.ascendGhost(p.avatar.getLocation());
 
                 float randomPitch = 0.8f + (float) Math.random() * 0.4f;
                 Main.WORLD.playSound(lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
@@ -59,6 +55,11 @@ public class GhostHazard extends Hazard {
         }
 
         BotBows.setTimeSmooth(6000, 18000, 5);
+    }
+
+    @Override
+    protected HazardMessage getAnnounceMessage() {
+        return new HazardMessage("HAUNTED ARENA", "Stay in motion!", "HAUNTED ARENA");
     }
 
     @Override
