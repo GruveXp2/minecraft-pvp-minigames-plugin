@@ -136,10 +136,8 @@ public class EarthquakeHazard extends Hazard {
                     fallingAnvil.setDropItem(false);
                     time = 0; // resetter
                     bar.setProgress(0);
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                        bp.die(bp.getName()
-                                .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
-                    }, 20L);
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.die(bp.getName()
+                            .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD))), 20L);
                     Location anvilLoc = bp.getLocation().toBlockLocation();
                     while (anvilLoc.getBlock().getType() == Material.AIR) {
                         anvilLoc.subtract(0, 1, 0);
