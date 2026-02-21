@@ -57,7 +57,7 @@ public class SwitchSpectator implements Listener {
         if (lobby == null) return;
         if (!lobby.isGameActive()) return;
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        if (!bp.isAlive()) return;
+        if (bp.isAlive()) return;
         Action a = e.getAction();
 
         //p.sendMessage(ChatColor.GRAY + "You clicked a button: ");
