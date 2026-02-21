@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -226,6 +227,11 @@ public class PlayerAvatar implements BotBowsAvatar{
         } else {
             updateArmor();
         }
+    }
+
+    @Override
+    public void showTitle(Title title) {
+        player.showTitle(title);
     }
 
     private void updateArmor() { // updates the armor pieces of the player

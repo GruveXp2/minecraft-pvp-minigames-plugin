@@ -141,7 +141,7 @@ public class Lobby {
 
     public void titlePlayers(Component component, int duration) {
         for (BotBowsPlayer p : players.values()) {
-            p.player.showTitle(Title.title(component, Component.text(""),
+            p.avatar.showTitle(Title.title(component, Component.text(""),
                     Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(duration), Duration.ofMillis(250))));
         }
     }

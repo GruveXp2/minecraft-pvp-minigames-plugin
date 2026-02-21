@@ -243,11 +243,11 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
+            p.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
+            p.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
     }

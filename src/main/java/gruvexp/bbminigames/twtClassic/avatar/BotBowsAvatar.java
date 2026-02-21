@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.avatar;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -37,4 +38,5 @@ public interface BotBowsAvatar {
     void setInvis(boolean invis);
     default Location getLocation() {return getEntity().getLocation();}
     default void teleport(Location location) {getEntity().teleport(location);}
+    void showTitle(Title title);
 }
