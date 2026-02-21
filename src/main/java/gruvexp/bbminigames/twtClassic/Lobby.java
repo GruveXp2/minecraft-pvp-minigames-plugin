@@ -183,7 +183,7 @@ public class Lobby {
         long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
         int totalPlayers = Math.max(players.size(), 2);
 
-        messagePlayers(Component.text(p.getName() +
+        messagePlayers(Component.text(p.getPlainName() +
                 (ready ? " has readied up " : " is no longer ready ") +
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
         if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {

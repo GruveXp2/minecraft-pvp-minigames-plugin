@@ -157,11 +157,11 @@ public class Settings {
 
         if (getPlayers().size() == 1) {
             modPlayer = bp;
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
-                    " and will be the settings moderator"));
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
+                    " and will be the settings moderator")));
             mapMenu.open(p);
         } else {
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")"));
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
         }
     }
 
@@ -196,7 +196,7 @@ public class Settings {
 
         bp.reset();
         bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
-        lobby.messagePlayers(Component.text(bp.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
+        lobby.messagePlayers(Component.text(bp.getPlainName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
