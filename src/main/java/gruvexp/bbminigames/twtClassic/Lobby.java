@@ -159,10 +159,10 @@ public class Lobby {
         }
     }
 
-    public void titlePlayers(Component component, int duration) {
+    public void titlePlayers(Component component, int seconds) {
         for (BotBowsPlayer p : players.values()) {
             p.avatar.showTitle(Title.title(component, Component.text(""),
-                    Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(duration), Duration.ofMillis(250))));
+                    Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
         }
     }
 
