@@ -10,18 +10,18 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class Lobby {
 
     public final int ID;
-    private final HashMap<Player, BotBowsPlayer> players = new HashMap<>(); // liste med alle players som er i gamet
+    private final HashMap<UUID, BotBowsPlayer> players = new HashMap<>(); // liste med alle players som er i gamet
     public Settings settings;
     public BotBowsGame botBowsGame;
     private boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
@@ -50,51 +50,53 @@ public class Lobby {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
             return;
         }
-        if (BotBows.getLobby(p) != null) {
-            if (BotBows.getLobby(p) == this) {
+        UUID playerId = p.getUniqueId();
+        if (BotBows.getLobby(playerId) != null) {
+            if (BotBows.getLobby(playerId) == this) {
                 p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
                 return;
             }
-            BotBows.getLobby(p).leaveGame(p); // leaver den forrige lobbien for å joine denne
+            BotBows.getLobby(playerId).leaveGame(p); // leaver den forrige lobbien for å joine denne
         }
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.registerPlayerLobby(p, this);
+        BotBows.registerPlayerLobby(playerId, this);
         p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
         p.getInventory().setItem(4, NOT_READY);
     }
 
-    public void leaveGame(Player p) {
-        BotBowsPlayer bp = getBotBowsPlayer(p);
-        if (!settings.isPlayerJoined(p)) {
-            p.sendMessage("Nothing happened, you werent in the game in the first place");
-            return;
-        }
+    public void leaveGame(UUID playerId) {
+        BotBowsPlayer bp = getBotBowsPlayer(playerId);
         if (activeGame) {
             botBowsGame.leaveGame(bp);
         } else {
             settings.leaveGame(bp);
         }
-        players.remove(p);
+        players.remove(playerId);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.unRegisterPlayerLobby(p);
-        Inventory inv = p.getInventory();
-        for (int i = 1; i < 9; i++) {
-            inv.setItem(i, null); // fjerner abilities
+        BotBows.unRegisterPlayerLobby(playerId);
+    }
+
+    public void leaveGame(Player p) {
+        UUID playerId = p.getUniqueId();
+        if (!settings.isPlayerJoined(playerId)) {
+            p.sendMessage("Nothing happened, you werent in the game in the first place");
+            return;
         }
+        leaveGame(playerId);
     }
 
     public boolean isPlayerJoined(Player p) {
-        return players.containsKey(p);
+        return players.containsKey(p.getUniqueId());
     }
 
-    public BotBowsPlayer getBotBowsPlayer(Player p) {
-        return players.get(p);
+    public BotBowsPlayer getBotBowsPlayer(UUID playerId) {
+        return players.get(playerId);
     }
 
     public void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (players.containsKey(p.player)) return;
-        players.put(p.player, p);
+        if (players.containsKey(p.avatar.getUUID())) return;
+        players.put(p.avatar.getUUID(), p);
     }
 
     public Collection<BotBowsPlayer> getPlayers() {

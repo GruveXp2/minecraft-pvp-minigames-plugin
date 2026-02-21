@@ -6,12 +6,12 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.DungeonGhoster;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class IcyRavineGame extends BotBowsGame {
 
@@ -47,9 +47,9 @@ public class IcyRavineGame extends BotBowsGame {
     @Override
     public void handleMovement(PlayerMoveEvent e) {
         super.handleMovement(e);
-        Player p = e.getPlayer();
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        if (settings.isPlayerJoined(p) && isInDungeon(bp)) {
+        UUID playerId = e.getPlayer().getUniqueId();
+        BotBowsPlayer bp = lobby.getBotBowsPlayer(playerId);
+        if (settings.isPlayerJoined(playerId) && isInDungeon(bp)) {
             handleDungeonMovement(bp);
         }
     }

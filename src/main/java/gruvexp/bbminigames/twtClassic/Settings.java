@@ -187,8 +187,8 @@ public class Settings {
         return Collections.unmodifiableSet(players);
     }
 
-    public boolean isPlayerJoined(Player p) {
-        return Optional.ofNullable(lobby.getBotBowsPlayer(p))
+    public boolean isPlayerJoined(UUID playerId) {
+        return Optional.ofNullable(lobby.getBotBowsPlayer(playerId))
                 .map(players::contains)
                 .orElse(false);
     }

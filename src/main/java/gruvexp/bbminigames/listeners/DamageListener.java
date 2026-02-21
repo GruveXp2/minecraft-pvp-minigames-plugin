@@ -19,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 public class DamageListener implements Listener {
 
     @EventHandler
@@ -31,9 +33,9 @@ public class DamageListener implements Listener {
         if ((e.getDamager() instanceof Arrow arrow)) {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
             if (e.getEntity() instanceof Player defender) {
-                if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
-                BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
-                BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
+                BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
+                BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender);
+                if (attackerBp == null || defenderBp == null) return;
 
                 if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
                     arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
@@ -75,8 +77,9 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onDamaged(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player p)) return;
+        UUID playerId = p.getUniqueId();
         if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
-            Lobby lobby = BotBows.getLobby(p);
+            Lobby lobby = BotBows.getLobby(playerId);
             if (lobby == null) return;
             p.teleport(p.getLocation().add(0, 1, 0));
             e.setCancelled(true);
@@ -84,9 +87,9 @@ public class DamageListener implements Listener {
                 e.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             e.setCancelled(true);
         } else if (e.getCause() == EntityDamageEvent.DamageCause.LAVA) {
-            Lobby lobby = BotBows.getLobby(p);
+            Lobby lobby = BotBows.getLobby(playerId);
             if (lobby == null) return;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+            BotBowsPlayer bp = lobby.getBotBowsPlayer(playerId);
             bp.die(Component.text(p.getName(), bp.getTeamColor())
                     .append(Component.text(" tried to swim in lava", NamedTextColor.GOLD)));
         }
