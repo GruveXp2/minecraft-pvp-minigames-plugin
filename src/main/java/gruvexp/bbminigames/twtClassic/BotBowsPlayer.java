@@ -501,4 +501,12 @@ public class BotBowsPlayer {
     public void teleport(Location location) {
         avatar.teleport(location);
     }
+
+    public void setInvulnerable(boolean invulnerable) {
+        avatar.setInvulnerable(invulnerable);
+    }
+
+    public boolean isOnGround() {
+        return  avatar.isOnGround();
+    }
 }

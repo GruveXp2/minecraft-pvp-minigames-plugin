@@ -37,6 +37,8 @@ public interface BotBowsAvatar {
     ItemStack getHeadItem();
     void setItem(int index, ItemStack item);
     void setInvis(boolean invis);
+    default boolean isOnGround() {return getEntity().isOnGround();}
+    default void setInvulnerable(boolean invulnerable) {getEntity().setInvulnerable(invulnerable);}
     default Location getLocation() {return getEntity().getLocation();}
     default void teleport(Location location) {getEntity().teleport(location);}
     void showTitle(Title title);
