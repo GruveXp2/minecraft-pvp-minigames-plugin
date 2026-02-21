@@ -16,10 +16,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -365,16 +362,6 @@ public class BotBowsPlayer {
         abilities.values().forEach(a -> a.setTickRate(20));
         hasKarmaEffect = false;
         lobby.check4Elimination(this);
-    }
-
-    @Deprecated(since = "DungeonGhoster will soon use avatars")
-    public ItemStack getArmorPiece(Material material) { // makes armor pieces
-        ItemStack armor = new ItemStack(material);
-        LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
-        assert meta != null;
-        meta.setColor(team.dyeColor.getColor());
-        armor.setItemMeta(meta);
-        return armor;
     }
 
     public static void armorInit() { // definerer hvilke armor som skal mistes når playeren har x antall liv. 0=boots, 1=leggings, 2=chestplate, 3=helmet
