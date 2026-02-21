@@ -5,6 +5,7 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,15 +25,14 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerAvatar implements BotBowsAvatar{
 
     private final Player player;
     private final BotBowsPlayer bp;
     private final BossBar sneakBar;
+    private final Map<HazardType, BossBar> hazardBars = new EnumMap<>(HazardType.class);
     private int visualHp;
 
     public PlayerAvatar(Player player, BotBowsPlayer bp) {
@@ -240,6 +240,23 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void playSound(Location location, String sound, float volume, float pitch) {
         player.playSound(location, sound, volume, pitch);
+    }
+
+    @Override
+    public void initHazardBar(HazardType hazardType, BossBar bar) {
+        if (hazardBars.containsKey(hazardType)) throw new IllegalStateException("That hazardbar already exists");
+        hazardBars.put(hazardType, bar);
+        bar.addViewer(player);
+    }
+
+    @Override
+    public void setHazardBarProgress(HazardType hazardType, float progress) {
+        BossBar bar = hazardBars.get(hazardType);
+        if (progress == 0) {
+            bar.removeViewer(player);
+            return;
+        }
+        bar.progress(progress);
     }
 
     private void updateArmor() { // updates the armor pieces of the player

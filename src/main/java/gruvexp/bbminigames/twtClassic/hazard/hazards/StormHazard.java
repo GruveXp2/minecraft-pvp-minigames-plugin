@@ -5,22 +5,16 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-
 public class StormHazard extends Hazard {
-
-    final HashMap<BotBowsPlayer, BossBar> bars = new HashMap<>(3);
 
     public StormHazard(Lobby lobby) {
         super(lobby);
@@ -29,11 +23,8 @@ public class StormHazard extends Hazard {
     public void init() { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer bp : lobby.getPlayers()) {
-            BossBar bar = Bukkit.createBossBar(ChatColor.AQUA + "Lightning timer", BarColor.BLUE, BarStyle.SEGMENTED_6);
-            bar.addPlayer(bp.player);
-            bar.setProgress(0d);
-            bar.setVisible(false);
-            bars.put(bp, bar);
+            BossBar bar = BossBar.bossBar(Component.text("Lightning timer", NamedTextColor.AQUA), 0, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_6);
+            bp.avatar.initHazardBar(HazardType.STORM, bar);
         }
     }
 
@@ -41,7 +32,7 @@ public class StormHazard extends Hazard {
     protected void trigger() {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer bp : lobby.getPlayers()) {
-                PlayerStormTimer stormTimer = new PlayerStormTimer(bp, bars.get(bp));
+                PlayerStormTimer stormTimer = new PlayerStormTimer(bp);
                 stormTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
                 hazardTimers.put(bp, stormTimer);
             }
@@ -76,10 +67,6 @@ public class StormHazard extends Hazard {
     @Override
     public void end() {
         super.end();
-        for (BossBar bossBar : bars.values()) { // resett storm baren og skjul den
-            bossBar.setVisible(false);
-            bossBar.setProgress(0d);
-        }
         // resett været
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);
@@ -93,11 +80,9 @@ public class StormHazard extends Hazard {
         static final int SECONDS = 6; // hvor lenge man kan stå før man blir tatt av lightning
 
         final BotBowsPlayer bp;
-        final BossBar bar;
         int time = 0;
-        public PlayerStormTimer(BotBowsPlayer bp, BossBar bar) {
+        public PlayerStormTimer(BotBowsPlayer bp) {
             this.bp = bp;
-            this.bar = bar;
         }
 
         private boolean isPlayerExposed() {
@@ -123,27 +108,21 @@ public class StormHazard extends Hazard {
                 if (time < SECONDS*40) { // 40 = run().frekvens*hvor_mye
                     time += 4; // tida går opp 4x så kjapt som når cooldownen går ned. Altså går tida opp 1s/s
                     if (time >= SECONDS*40) {
-                        bar.setProgress(1.0d);
+                        bp.avatar.setHazardBarProgress(HazardType.STORM, 1);
                     } else {
-                        bar.setProgress(time/(SECONDS*40d));
-                    }
-                    if (time >= 4) { // baren vises bare når det er nødvendig, hvis den er 0 så er man i sikkerhet, men om den er over 0 betyr det enten at man er i fare eller så kan man se hvor lenge er igjen av timeren
-                        bar.setVisible(true);
+                        bp.avatar.setHazardBarProgress(HazardType.STORM, (float) time /(SECONDS*40));
                     }
                 } else {
                     Main.WORLD.strikeLightningEffect(bp.getLocation());
                     time = 0; // resetter
-                    bar.setProgress(0);
+                    bp.avatar.setHazardBarProgress(HazardType.STORM, 0);
                     bp.die(bp.getName()
                             .append(Component.text(" was electrocuted to a crisp!", NamedTextColor.AQUA)));
                 }
             } else {
                 if (time > 0) {
                     time--; // cooldownen går ned 0.25s/s
-                    bar.setProgress(time/(SECONDS*40d));
-                    if (time == 0) {
-                        bar.setVisible(false);
-                    }
+                    bp.avatar.setHazardBarProgress(HazardType.STORM, (float) time /(SECONDS*40));
                 }
             }
         }

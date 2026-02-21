@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.avatar;
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
@@ -43,5 +45,8 @@ public interface BotBowsAvatar {
     default void teleport(Location location) {getEntity().teleport(location);}
     void showTitle(Title title);
     void playSound(Location location, String sound, float volume, float pitch);
+    void initHazardBar(HazardType hazardType, BossBar bar);
+    void setHazardBarProgress(HazardType hazardType, float progress);
+
     record ArmorSet(ItemStack boots, ItemStack leggings, ItemStack chestplate, ItemStack helmet) {}
 }

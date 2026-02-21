@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 public class BotBowsPlayer {
 
-    public final Player player;
     public BotBowsAvatar avatar;
     private final Component name;
 
@@ -49,7 +48,6 @@ public class BotBowsPlayer {
     private boolean hasKarmaEffect = false;
 
     public BotBowsPlayer(Player player, Settings settings) {
-        this.player = player;
         avatar = new PlayerAvatar(player, this);
         name = player.name();
         lobby = settings.lobby;
