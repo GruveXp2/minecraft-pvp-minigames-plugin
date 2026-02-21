@@ -72,7 +72,7 @@ public class IcyRavineGame extends BotBowsGame {
 
     private void startScanners() {
         for (BotBowsPlayer p : players) {
-            GvwDungeonProximityScanner scanner = new GvwDungeonProximityScanner(p.player);
+            GvwDungeonProximityScanner scanner = new GvwDungeonProximityScanner(p);
             dungeonScanners.put(p, scanner);
             scanner.runTaskTimer(Main.getPlugin(), 140L, 5L);
         }
