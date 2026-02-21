@@ -36,4 +36,5 @@ public interface BotBowsAvatar {
     void setItem(int index, ItemStack item);
     void setInvis(boolean invis);
     default Location getLocation() {return getEntity().getLocation();}
+    default void teleport(Location location) {getEntity().teleport(location);}
 }
