@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class BotBowsPlayer {
 
@@ -482,5 +483,13 @@ public class BotBowsPlayer {
     public void setInvis(int ticks) {
         avatar.setInvis(true);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> avatar.setInvis(false), ticks);
+    }
+
+    public Set<BotBowsPlayer> getNearbyPlayers(double radius) {
+        return avatar.getLocation().getWorld().getNearbyEntities(avatar.getLocation(), radius, radius, radius, entity -> entity instanceof Player)
+                .stream().map(p -> (Player) p)
+                .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
+                .filter(BotBowsPlayer::isAlive)
+                .collect(Collectors.toSet());
     }
 }

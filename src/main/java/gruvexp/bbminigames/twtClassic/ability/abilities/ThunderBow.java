@@ -7,14 +7,12 @@ import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +24,8 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
 
@@ -55,21 +55,14 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
         defender.handleHit(Component.text(" was thunderbowed by "), attacker);
         Location hitLoc = defender.avatar.getLocation();
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
-        World world = attacker.player.getWorld();
-        for (Entity entity : world.getNearbyEntities(hitLoc, CHAIN_RADIUS, CHAIN_RADIUS, CHAIN_RADIUS, entity -> entity instanceof Player)) {
-            Player nearbyPlayer = (Player) entity;
-            if (nearbyPlayer.getLocation().distanceSquared(hitLoc) > CHAIN_RADIUS * CHAIN_RADIUS) continue;
-            if (nearbyPlayer == defender.player) continue;
-            Lobby lobby = BotBows.getLobby(nearbyPlayer);
-            if (lobby == null) continue;
-            if (lobby != attacker.lobby) continue;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(nearbyPlayer);
-            if (!bp.isAlive()) continue;
-            if (bp.getTeam() == attacker.getTeam()) continue;
-
-            world.strikeLightningEffect(nearbyPlayer.getLocation());
-            createElectricArc(hitLoc, nearbyPlayer.getLocation(), attackerTeamColor, 1.0);
-            bp.handleHit(Component.text(" was electrobowed by "), attacker);
+        Set<BotBowsPlayer> nearbyPlayers = attacker.getNearbyPlayers(CHAIN_RADIUS).stream()
+                .filter(p -> p.getTeam() != attacker.getTeam())
+                .collect(Collectors.toSet());
+        World world = attacker.avatar.getLocation().getWorld();
+        for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
+            world.strikeLightningEffect(nearbyPlayer.avatar.getLocation());
+            createElectricArc(hitLoc, nearbyPlayer.avatar.getLocation(), attackerTeamColor, 1.0);
+            nearbyPlayer.handleHit(Component.text(" was electrobowed by "), attacker);
         }
     }
 

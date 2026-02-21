@@ -21,22 +21,20 @@ public abstract class PotionAbility extends Ability {
     @Override
     public void use() {
         super.use();
-        Set<Player> players = bp.player.getWorld().getNearbyEntities(bp.player.getLocation(), RADIUS, RADIUS, RADIUS, entity -> entity instanceof Player)
-                .stream().map(p -> (Player) p)
-                .filter(p -> BotBows.getLobby(p) != null)
-                .filter(p -> BotBows.getBotBowsPlayer(p).getTeam() == bp.getTeam())
+        Set<BotBowsPlayer> players = bp.getNearbyPlayers(RADIUS).stream()
+                .filter(p -> p.getTeam() == bp.getTeam())
                 .collect(Collectors.toSet());
-        players.remove(bp.player);
+        players.remove(bp);
         applyPotionEffect(players);
 
-        players.forEach(p -> p.sendMessage(Component.text("Got ", NamedTextColor.GREEN)
+        players.forEach(p -> p.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
                 .append(Component.text(getEffectDuration()))
                 .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
                 .append(Component.text(" effect from "))
                 .append(bp.getName())));
     }
 
-    protected abstract void applyPotionEffect(Set<Player> players);
+    protected abstract void applyPotionEffect(Set<BotBowsPlayer> players);
 
     protected abstract String getEffectName();
 

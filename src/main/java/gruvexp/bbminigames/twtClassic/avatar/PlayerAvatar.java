@@ -165,7 +165,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void growSize(double scale, int duration) {
+    public void growSize(double scale, int duration, int delay) {
         new BukkitRunnable() {
             int i = 1;
             final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
@@ -177,7 +177,7 @@ public class PlayerAvatar implements BotBowsAvatar{
                 getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
                 i++;
             }
-        }.runTaskTimer(Main.getPlugin(), 0L, 1L);
+        }.runTaskTimer(Main.getPlugin(), delay, 1L);
     }
 
     @Override

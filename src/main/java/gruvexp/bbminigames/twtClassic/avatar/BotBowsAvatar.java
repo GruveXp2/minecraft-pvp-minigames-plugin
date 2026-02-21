@@ -27,7 +27,8 @@ public interface BotBowsAvatar {
     void setGlowing(boolean flag);
     void addPotionEffect(PotionEffect effect);
     void setColor(TextColor color);
-    void growSize(double scale, int duration);
+    void growSize(double scale, int duration, int delay);
+    default void growSize(double scale, int duration) {growSize(scale, duration, 0);}
     UUID getUUID();
     boolean isSneaking();
     void updateSneakStamina(float progress);
