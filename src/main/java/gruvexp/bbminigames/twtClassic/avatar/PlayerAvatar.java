@@ -39,6 +39,7 @@ public class PlayerAvatar implements BotBowsAvatar{
         this.player = player;
         this.bp = bp;
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
+        player.setGameMode(GameMode.ADVENTURE);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void setMaxHP(int maxHP) {
         getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
-        player.setHealth(maxHP * 2);
+        setHP(maxHP);
     }
 
     @Override
@@ -288,7 +289,7 @@ public class PlayerAvatar implements BotBowsAvatar{
         }
     }
 
-    public ItemStack getArmorPiece(Material material) { // makes armor pieces
+    private ItemStack getArmorPiece(Material material) { // makes armor pieces
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
