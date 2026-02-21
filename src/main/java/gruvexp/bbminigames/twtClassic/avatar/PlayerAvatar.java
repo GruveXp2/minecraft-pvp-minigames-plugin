@@ -246,7 +246,6 @@ public class PlayerAvatar implements BotBowsAvatar{
     public void initHazardBar(HazardType hazardType, BossBar bar) {
         if (hazardBars.containsKey(hazardType)) throw new IllegalStateException("That hazardbar already exists");
         hazardBars.put(hazardType, bar);
-        bar.addViewer(player);
     }
 
     @Override
@@ -256,6 +255,7 @@ public class PlayerAvatar implements BotBowsAvatar{
             bar.removeViewer(player);
             return;
         }
+        bar.addViewer(player);
         bar.progress(progress);
     }
 
