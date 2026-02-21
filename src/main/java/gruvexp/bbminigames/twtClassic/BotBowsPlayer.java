@@ -15,6 +15,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -491,5 +492,9 @@ public class BotBowsPlayer {
                 .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
                 .filter(BotBowsPlayer::isAlive)
                 .collect(Collectors.toSet());
+    }
+
+    public Location getLocation() {
+        return avatar.getLocation();
     }
 }

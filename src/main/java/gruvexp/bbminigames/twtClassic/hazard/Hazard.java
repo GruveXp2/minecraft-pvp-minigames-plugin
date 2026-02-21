@@ -1,9 +1,9 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public abstract class Hazard {
 
     public void setChance(HazardChance chance) {hazardChance = chance;}
 
-    public Map<Player, BukkitRunnable> hazardTimers = new HashMap<>();
+    public Map<BotBowsPlayer, BukkitRunnable> hazardTimers = new HashMap<>();
 
     public void triggerOnChance() {
         if (hazardChance.occurs()) {

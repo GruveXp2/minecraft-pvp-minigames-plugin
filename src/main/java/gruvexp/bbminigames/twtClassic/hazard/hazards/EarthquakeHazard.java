@@ -13,7 +13,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -42,10 +41,10 @@ public class EarthquakeHazard extends Hazard {
     @Override
     protected void trigger() {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            for (BotBowsPlayer p : lobby.getPlayers()) {
-                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(p, bars.get(p));
+            for (BotBowsPlayer bp : lobby.getPlayers()) {
+                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(bp, bars.get(bp));
                 earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
-                hazardTimers.put(p.player, earthQuakeTimer);
+                hazardTimers.put(bp, earthQuakeTimer);
             }
         }, 100L); // 5 sekunder
     }
@@ -94,22 +93,21 @@ public class EarthquakeHazard extends Hazard {
         static final int UPPER_BOUND = 29;
         static final int SECONDS = 6; // hvor lenge man kan stå før Einstein kommer p
 
-        final Player p;
         final BotBowsPlayer bp;
         final BossBar bar;
         int time = 0;
         public PlayerEarthQuakeTimer(BotBowsPlayer bp, BossBar bar) {
-            this.p = bp.player;
             this.bp = bp;
             this.bar = bar;
         }
 
-        private boolean isPlayerUnderground(Player p) {
-            if (p.getLocation().getY() >= GROUND_LEVEL) {return false;}
+        private boolean isPlayerUnderground() {
+            Location loc = bp.getLocation();
+            if (loc.getY() >= GROUND_LEVEL) {return false;}
 
-            int x = (int) Math.floor(p.getLocation().getX());
-            int y = (int) Math.floor(p.getLocation().getY());
-            int z = (int) Math.floor(p.getLocation().getZ());
+            int x = (int) Math.floor(loc.getX());
+            int y = (int) Math.floor(loc.getY());
+            int z = (int) Math.floor(loc.getZ());
             //p.sendMessage(ChatColor.GRAY + "======== [DEBUG] ========\np_coord = " + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
             for (int i = y + 2; i < UPPER_BOUND + 2; i++) {
                 //p.sendMessage(ChatColor.GRAY + "" + x + ", " + y + ", " + z + " : " + world.getBlockAt(x, y, z).getType());
@@ -120,8 +118,8 @@ public class EarthquakeHazard extends Hazard {
 
         @Override
         public void run() { // annehver tick = 10Hz
-            if (p.getGameMode() == GameMode.SPECTATOR) return; // if the player is dead, dont do anything
-            if (isPlayerUnderground(p)) {
+            if (!bp.isAlive()) return; // if the player is dead, dont do anything
+            if (isPlayerUnderground()) {
                 if (time < SECONDS*40) { // 40 = run().frekvens*hvor_mye
                     time += 4; // tida går opp 4x så kjapt som når cooldownen går ned. Altså går tida opp 1s/s
                     if (time >= SECONDS*40) {
@@ -133,17 +131,16 @@ public class EarthquakeHazard extends Hazard {
                         bar.setVisible(true);
                     }
                 } else {
-                    FallingBlock fallingAnvil = Main.WORLD.spawnFallingBlock(p.getLocation().add(0, 3.9, 0), Material.ANVIL.createBlockData());
+                    FallingBlock fallingAnvil = Main.WORLD.spawnFallingBlock(bp.getLocation().add(0, 3.9, 0), Material.ANVIL.createBlockData());
                     fallingAnvil.setHurtEntities(true);
                     fallingAnvil.setDropItem(false);
                     time = 0; // resetter
                     bar.setProgress(0);
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                        p.damage(1); // sånn
-                        bp.die(Component.text(p.getName(), bp.getTeamColor())
+                        bp.die(bp.getName()
                                 .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
                     }, 20L);
-                    Location anvilLoc = p.getLocation().toBlockLocation();
+                    Location anvilLoc = bp.getLocation().toBlockLocation();
                     while (anvilLoc.getBlock().getType() == Material.AIR) {
                         anvilLoc.subtract(0, 1, 0);
                     }
