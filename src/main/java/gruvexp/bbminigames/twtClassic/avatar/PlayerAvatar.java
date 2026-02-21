@@ -11,10 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
@@ -84,6 +81,12 @@ public class PlayerAvatar implements BotBowsAvatar{
     public void setMaxHP(int maxHP) {
         getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
         player.setHealth(maxHP * 2);
+    }
+
+    @Override
+    public ArmorSet getArmor() {
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        return new ArmorSet(armor[0], armor[1], armor[2], armor[3]);
     }
 
     @Override
@@ -232,6 +235,11 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void showTitle(Title title) {
         player.showTitle(title);
+    }
+
+    @Override
+    public void playSound(Location location, String sound, float volume, float pitch) {
+        player.playSound(location, sound, volume, pitch);
     }
 
     private void updateArmor() { // updates the armor pieces of the player

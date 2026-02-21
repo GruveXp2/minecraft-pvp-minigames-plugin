@@ -4,18 +4,17 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -40,13 +39,13 @@ public class GhostHazard extends Hazard {
 
     @Override
     protected void trigger() {
-        for (BotBowsPlayer p : lobby.getPlayers()) {
-            PlayerGhostMover ghostMover = new PlayerGhostMover(p);
+        for (BotBowsPlayer bp : lobby.getPlayers()) {
+            PlayerGhostMover ghostMover = new PlayerGhostMover(bp);
             ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L);
-            hazardTimers.put(p.player, ghostMover);
+            hazardTimers.put(bp, ghostMover);
 
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                ghostMover.ascendGhost(p.avatar.getLocation());
+                ghostMover.ascendGhost(bp.getLocation());
 
                 float randomPitch = 0.8f + (float) Math.random() * 0.4f;
                 Main.WORLD.playSound(lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
@@ -99,21 +98,20 @@ public class GhostHazard extends Hazard {
 
     public static class PlayerGhostMover extends BukkitRunnable {
 
-        final Player p;
         final BotBowsPlayer bp;
         final ArrayDeque<Location> movementHistory = new ArrayDeque<>(HISTORY_SIZE);
         private boolean isClose = false;
         final ArmorStand ghost;
         public PlayerGhostMover(BotBowsPlayer bp) {
-            this.p = bp.player;
             this.bp = bp;
             ghost = spawnGhost();
         }
 
         @Override
         public void run() {
+            Location pLoc = bp.getLocation();
             if (bp.isAlive() && bp.lobby.botBowsGame.canMove) {
-                movementHistory.add(p.getLocation());
+                movementHistory.add(pLoc);
             }
             if (movementHistory.size() < HISTORY_SIZE && bp.isAlive()) return;
             if (movementHistory.isEmpty()) return;
@@ -121,21 +119,21 @@ public class GhostHazard extends Hazard {
             Location ghostLoc = movementHistory.poll();
             ghost.teleport(ghostLoc);
             if (BotBows.RANDOM.nextInt(5) == 0) { // randomly gjør at ghostene blinker for å gjøre det litt scary
-                ItemStack[] armor = p.getInventory().getArmorContents();
-                ghost.getEquipment().setArmorContents(armor);
+                BotBowsAvatar.ArmorSet armor = bp.avatar.getArmor();
+                ghost.getEquipment().setArmorContents(new ItemStack[]{armor.boots(), armor.leggings(), armor.chestplate(), armor.helmet()});
             } else {
                 ghost.getEquipment().setArmorContents(new ItemStack[]{});
             }
-            if (p.getLocation().distanceSquared(ghost.getLocation()) < 36) {
-                ghost.lookAt(p.getLocation(), LookAnchor.EYES);
+            if (pLoc.distanceSquared(ghostLoc) < 36) {
+                ghost.lookAt(pLoc, LookAnchor.EYES);
                 if (!isClose) {
                     float randomPitch = 0.7f + (float) Math.random() * 0.2f;
-                    p.playSound(ghostLoc, "minecraft:botbows.ghost_approach", 1.0f, randomPitch);
+                    bp.avatar.playSound(ghostLoc, "minecraft:botbows.ghost_approach", 1.0f, randomPitch);
                     isClose = true;
                 }
-                if (p.getLocation().distanceSquared(ghost.getLocation()) < 9) {
+                if (pLoc.distanceSquared(ghostLoc) < 9) {
                     ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD);
-                    if (p.getLocation().distanceSquared(ghost.getLocation()) < 1) {
+                    if (pLoc.distanceSquared(ghostLoc) < 1) {
                         killPlayer(bp);
                     }
                 } else {
@@ -147,7 +145,8 @@ public class GhostHazard extends Hazard {
         }
 
         private ArmorStand spawnGhost() {
-            ArmorStand ghost = p.getWorld().spawn(p.getLocation(), ArmorStand.class);
+            Location pLoc = bp.getLocation();
+            ArmorStand ghost = pLoc.getWorld().spawn(pLoc, ArmorStand.class);
             ghost.setInvisible(true);
             ghost.setGravity(false);
             ghost.setMarker(true); // ingen hitbox
@@ -159,20 +158,19 @@ public class GhostHazard extends Hazard {
         private void killPlayer(BotBowsPlayer bp) {
             cancel();
             movementHistory.clear();
-            Player p = bp.player;
-            Location playerLoc = p.getLocation();
-            Vector dir = playerLoc.getDirection().multiply(-1).setY(0).normalize();
+            Location pLoc = bp.getLocation();
+            Vector dir = pLoc.getDirection().multiply(-1).setY(0).normalize();
 
-            Location ghostLoc = playerLoc.clone().add(dir); // 0.5 blocks behind the player
+            Location ghostLoc = pLoc.clone().add(dir); // 0.5 blocks behind the player
             ghostLoc.add(dir.crossProduct(new Vector(0, 1, 0)).normalize().multiply(0.5)); // 0.5 blocks left of the player
             ghost.teleport(ghostLoc);
 
-            ghost.setRotation(playerLoc.getYaw(), playerLoc.getPitch());
+            ghost.setRotation(pLoc.getYaw(), pLoc.getPitch());
             ghost.setItem(EquipmentSlot.HAND, GHOST_SWORD_NETHERITE);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 60, 0, false, false));
+            bp.avatar.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 60, 0, false, false));
 
             new BukkitRunnable() {
-                final Location oldLocation = p.getLocation();
+                final Location oldLocation = pLoc;
                 int ticks = 0;
                 final BotBowsGame game = bp.lobby.botBowsGame;
                 @Override
@@ -182,17 +180,17 @@ public class GhostHazard extends Hazard {
                         descendGhost(ghostLoc);
                         return;
                     }
-                    if (!p.isOnline() || ticks >= 40) {
+                    if (!bp.isAlive() || ticks >= 40) {
                         cancel();
-                        bp.die(Component.text(p.getName(), bp.getTeamColor())
+                        bp.die(bp.getName()
                                 .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
                         descendGhost(ghostLoc);
                         return;
                     }
-                    oldLocation.setYaw(p.getLocation().getYaw());
-                    oldLocation.setPitch(p.getLocation().getPitch());
+                    oldLocation.setYaw(bp.getLocation().getYaw());
+                    oldLocation.setPitch(bp.getLocation().getPitch());
 
-                    p.teleport(oldLocation);
+                    bp.teleport(oldLocation);
                     ticks++;
                 }
             }.runTaskTimer(Main.getPlugin(), 0L, 1L);

@@ -497,4 +497,8 @@ public class BotBowsPlayer {
     public Location getLocation() {
         return avatar.getLocation();
     }
+
+    public void teleport(Location location) {
+        avatar.teleport(location);
+    }
 }

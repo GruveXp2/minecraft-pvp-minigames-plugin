@@ -19,6 +19,7 @@ public interface BotBowsAvatar {
     void revive();
     void setHP(int hp);
     void setMaxHP(int maxHP);
+    ArmorSet getArmor();
     void remove(); // removes the player from the game
     void reset(); // its like removing and recreating this avatar, but reusing the object
     void readyBattle();
@@ -39,4 +40,6 @@ public interface BotBowsAvatar {
     default Location getLocation() {return getEntity().getLocation();}
     default void teleport(Location location) {getEntity().teleport(location);}
     void showTitle(Title title);
+    void playSound(Location location, String sound, float volume, float pitch);
+    record ArmorSet(ItemStack boots, ItemStack leggings, ItemStack chestplate, ItemStack helmet) {}
 }
