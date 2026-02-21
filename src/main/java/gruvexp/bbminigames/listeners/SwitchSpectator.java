@@ -6,7 +6,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +22,7 @@ public class SwitchSpectator implements Listener {
         if (!isOwnTeam) {
             team = team.getOppositeTeam();
         }
-        List<Entity> alivePlayers = team.getPlayers().stream() // lager liste med alle de levende playersene
+        List<LivingEntity> alivePlayers = team.getPlayers().stream() // lager liste med alle de levende playersene
                 .filter(BotBowsPlayer::isAlive)
                 .map(q -> q.avatar.getEntity())
                 .toList();
@@ -38,7 +38,7 @@ public class SwitchSpectator implements Listener {
             return;
         }
         if (team.hasPlayer(BotBows.getLobby(p).getBotBowsPlayer((Player) p.getSpectatorTarget()))) {
-            int i = alivePlayers.indexOf(p.getSpectatorTarget());
+            int i = alivePlayers.indexOf((LivingEntity) p.getSpectatorTarget());
             if (i == alivePlayers.size() - 1) {
                 i = -1;
             }

@@ -19,8 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
-
 public class DamageListener implements Listener {
 
     @EventHandler
