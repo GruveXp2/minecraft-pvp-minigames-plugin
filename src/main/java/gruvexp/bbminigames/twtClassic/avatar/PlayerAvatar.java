@@ -88,7 +88,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void remove() {
         eliminate();
-        player.getInventory().remove(BotBows.BOTBOW);
+        reset();
         player.getInventory().setItem(0, BotBows.MENU_ITEM);
     }
 

@@ -50,11 +50,6 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
     }
 
     @Override
-    public void unequip() {
-        bp.player.getInventory().remove(Material.ARROW);
-    }
-
-    @Override
     public void onLaunch(AbilityContext.Launch ctx) {
         if (ctx.projectile() instanceof Arrow arrow) {
             use();
