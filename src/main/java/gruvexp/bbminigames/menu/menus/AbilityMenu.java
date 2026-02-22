@@ -10,7 +10,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -155,8 +154,9 @@ public class AbilityMenu extends SettingsMenu {
                 }
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
-                Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
-                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(p);
+                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
                 if (e.getSlot() < 9) {
                     int maxAbilities = headBp.getMaxAbilities(); // oppdaterer max abilities
                     maxAbilities++;
