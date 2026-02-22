@@ -105,6 +105,8 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.setInvulnerable(false);
         getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         player.setGameMode(GameMode.SPECTATOR);
+        hazardBars.values().forEach(bar -> bar.removeViewer(player));
+        sneakBar.removeViewer(player);
     }
 
     @Override
