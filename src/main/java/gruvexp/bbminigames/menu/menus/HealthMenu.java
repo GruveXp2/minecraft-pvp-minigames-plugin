@@ -8,7 +8,6 @@ import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HealthMenu extends SettingsMenu {
@@ -89,8 +89,9 @@ public class HealthMenu extends SettingsMenu {
             }
             case PLAYER_HEAD -> {
                 ItemStack head = e.getCurrentItem();
-                Player p = Bukkit.getPlayer(UUID.fromString(head.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
+                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
                 int slot = e.getSlot();
                 if (slot < 9) {
                     int maxHP = head.getAmount();
