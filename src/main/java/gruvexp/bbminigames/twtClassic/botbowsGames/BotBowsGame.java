@@ -229,7 +229,6 @@ public class BotBowsGame {
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(10000);
 
-        players.forEach(BotBowsPlayer::reset);
         boardManager.resetTeams();
         team1.reset();
         team2.reset();

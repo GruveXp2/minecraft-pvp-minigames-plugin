@@ -23,7 +23,6 @@ public class SneakManager {
     public void destroy() {
         sneakCooldown.cancel();
         sneakCooldown = null;
-        avatar.updateSneakStamina(0);
     }
 
     private class SneakCooldown extends BukkitRunnable {
