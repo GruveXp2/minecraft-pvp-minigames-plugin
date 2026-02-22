@@ -200,7 +200,7 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void setInvis(boolean invis) {
         if (invis) {
-            mannequin.getEquipment().setArmorContents(new ItemStack[] {null, null, null, null});
+            mannequin.getEquipment().setArmorContents(new ItemStack[4]);
         } else {
             updateArmor();
         }
