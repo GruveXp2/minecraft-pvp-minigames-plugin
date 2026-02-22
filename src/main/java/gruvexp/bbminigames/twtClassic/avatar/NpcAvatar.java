@@ -184,8 +184,9 @@ public class NpcAvatar implements BotBowsAvatar{
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
         itemMeta.displayName(bp.getName().decoration(TextDecoration.ITALIC, false));
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, mannequin.getUniqueId().toString());
-        itemMeta.setOwningPlayer(Bukkit.getPlayer("Robotagz"));
+        NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+        itemMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, mannequin.getUniqueId().toString());
+        itemMeta.setOwningPlayer(Bukkit.getOfflinePlayer("Robotagz"));
 
         item.setItemMeta(itemMeta);
         return item;
