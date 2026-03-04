@@ -63,9 +63,9 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
         Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
         World world = attacker.getLocation().getWorld();
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
-            Location nearbyPlayerLoc = nearbyPlayer.getLocation();
+            Location nearbyPlayerLoc = nearbyPlayer.getLocation().add(0, 1, 0); // the arc will hit the middle of the player
             world.strikeLightningEffect(nearbyPlayerLoc);
-            createElectricArc(defender.getLocation(), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
+            createElectricArc(defender.getLocation().add(0, 1, 0), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
             nearbyPlayer.handleHit(Component.text(" was electrobowed by "), attacker);
             handledPlayers.add(nearbyPlayer);
         }
