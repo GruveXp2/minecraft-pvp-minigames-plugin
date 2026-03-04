@@ -264,7 +264,8 @@ public class TestCommand implements CommandExecutor {
                     }
                     Location loc1 = Util.toLocation(Main.WORLD, args[1], args[2], args[3]);
                     Location loc2 = Util.toLocation(Main.WORLD, args[4], args[5], args[6]);
-                    ThunderBow.createElectricArc(loc1, loc2, Color.RED, 1.0);
+                    boolean strong = args.length > 7 && Objects.equals(args[7], "strong");
+                    ThunderBow.createElectricArc(loc1, loc2, Color.RED, 1.0, strong);
                 }
                 case "inv" -> p.openInventory(testInv);
                 case "set_blaze_rod_cooldown" -> StickSlap.cooldown = Integer.parseInt(args[1]);

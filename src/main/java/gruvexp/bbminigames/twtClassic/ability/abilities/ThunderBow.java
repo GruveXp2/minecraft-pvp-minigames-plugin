@@ -20,10 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
@@ -52,16 +49,28 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
 
     public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
         defender.handleHit(Component.text(" was thunderbowed by "), attacker);
-        Location hitLoc = defender.avatar.getLocation();
-        Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
-        Set<BotBowsPlayer> nearbyPlayers = attacker.getNearbyPlayers(CHAIN_RADIUS).stream()
-                .filter(p -> p.getTeam() != attacker.getTeam())
+        Set<BotBowsPlayer> handledPlayers = new HashSet<>();
+        handledPlayers.add(defender);
+        handleChain(attacker, defender, handledPlayers);
+    }
+
+    private static void handleChain(BotBowsPlayer attacker, BotBowsPlayer defender, Set<BotBowsPlayer> handledPlayers) {
+        Set<BotBowsPlayer> nearbyPlayers = defender.getNearbyPlayers(CHAIN_RADIUS).stream()
+                .filter(p -> p.getTeam() != attacker.getTeam() && !handledPlayers.contains(p))
                 .collect(Collectors.toSet());
-        World world = attacker.avatar.getLocation().getWorld();
+        if (nearbyPlayers.isEmpty()) return;
+
+        Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
+        World world = attacker.getLocation().getWorld();
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
-            world.strikeLightningEffect(nearbyPlayer.avatar.getLocation());
-            createElectricArc(hitLoc, nearbyPlayer.avatar.getLocation(), attackerTeamColor, 1.0);
+            Location nearbyPlayerLoc = nearbyPlayer.getLocation();
+            world.strikeLightningEffect(nearbyPlayerLoc);
+            createElectricArc(defender.getLocation(), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
             nearbyPlayer.handleHit(Component.text(" was electrobowed by "), attacker);
+            handledPlayers.add(nearbyPlayer);
+        }
+        for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
+            handleChain(attacker, nearbyPlayer, handledPlayers);
         }
     }
 
@@ -73,12 +82,12 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
             Vector randomVec = new Vector(x, y, z);
             Location arcLoc = hitLoc.clone().add(randomVec);
             if (arcLoc.getBlock().getType() != Material.AIR) {
-                createElectricArc(hitLoc, arcLoc, Color.AQUA, 2.0);
+                createElectricArc(hitLoc, arcLoc, Color.AQUA, 2.0, false);
             }
         }
     }
 
-    public static void createElectricArc(Location loc1, Location loc2, Color color, double frequencyMultiplier) {
+    public static void createElectricArc(Location loc1, Location loc2, Color color, double frequencyMultiplier, boolean strong) {
         double length = loc1.distance(loc2);
         Vector diff = new Vector(
                 loc2.getX() - loc1.getX(),
@@ -99,12 +108,18 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
             locations.add(vecI);
         }
         locations.add(end);
+        float coloredOffset = strong ? 0.5f : 0.1f;
+        int coloredAmount = strong ? 5 : 1;
+        Particle.DustOptions whiteDust = new Particle.DustOptions(Color.WHITE, strong ? 1.5f : 0.5f);
+        Particle.DustOptions coloredDust = new Particle.DustOptions(color, strong ? 1f : 0.8f);
         for (int i = 0; i < locations.size() - 1; i++) {
             Vector rayDiff = locations.get(i).multiply(-1).add(locations.get(i + 1)).multiply(0.1);
             for (int j = 0; j < 10; j++) {
                 loc1.add(rayDiff);
-                if (j % 2 == 0) loc1.getWorld().spawnParticle(Particle.DUST, loc1, 1, 0.1, 0.1, 0.1, 10, new Particle.DustOptions(color, 0.8f));
-                loc1.getWorld().spawnParticle(Particle.DUST, loc1, 5, 0.05, 0.05, 0.05, 0.1, new Particle.DustOptions(Color.WHITE, 0.5f));
+                if (j % 2 == 0) {
+                    loc1.getWorld().spawnParticle(Particle.DUST, loc1, coloredAmount, coloredOffset , coloredOffset , coloredOffset, 10 , coloredDust);
+                }
+                loc1.getWorld().spawnParticle(Particle.DUST, loc1, 5, 0.05, 0.05, 0.05, 0.1, whiteDust);
             }
         }
     }
@@ -171,7 +186,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
             Vector spark = getRandomPerpendicular(arrow.getVelocity()).multiply(1 + Math.random() * 2);
             Location sparkLocation = arrow.getLocation().add(spark);
             if (BotBows.RANDOM.nextInt(3) == 0 && sparkLocation.getBlock().getType() != Material.AIR) {
-                createElectricArc(arrow.getLocation(), sparkLocation, Color.AQUA, 2.0);
+                createElectricArc(arrow.getLocation(), sparkLocation, Color.AQUA, 2.0, false);
             }
         }
     }
