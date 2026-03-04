@@ -191,15 +191,13 @@ public class BotBowsPlayer {
     public void setMaxAbilities(int maxAbilities) {
         this.maxAbilities = maxAbilities;
         lobby.settings.abilityMenus.values().forEach(menu -> menu.updateMaxAbilities(this));
-        if (getTotalAbilities() > maxAbilities) {
-            int excess = getTotalAbilities() - maxAbilities;
-            for (int i = 0; i < excess; i++) {
-                for (AbilityType type : AbilityType.values()) {
-                    if (hasAbilityEquipped(type)) {
-                        unequipAbility(type);
-                        break;
-                    }
-                }
+        if (getTotalAbilities() <= maxAbilities) return;
+        int excess = getTotalAbilities() - maxAbilities;
+        for (int i = 0; i < excess; i++) {
+            for (AbilityType type : AbilityType.values()) {
+                if (!hasAbilityEquipped(type)) continue;
+                unequipAbility(type);
+                break;
             }
         }
     }
