@@ -519,8 +519,8 @@ public class BotBowsPlayer {
     }
 
     public Set<BotBowsPlayer> getNearbyPlayers(double radius) {
-        return avatar.getLocation().getWorld().getNearbyEntities(avatar.getLocation(), radius, radius, radius, entity -> entity instanceof Player)
-                .stream().map(p -> (Player) p)
+        return avatar.getLocation().getWorld().getNearbyEntities(avatar.getLocation(), radius, radius, radius).stream()
+                .map(Entity::getUniqueId)
                 .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
                 .filter(BotBowsPlayer::isAlive)
                 .collect(Collectors.toSet());

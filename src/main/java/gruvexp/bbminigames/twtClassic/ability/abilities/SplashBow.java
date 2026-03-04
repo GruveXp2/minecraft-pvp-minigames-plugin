@@ -5,7 +5,6 @@ import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import net.kyori.adventure.text.Component;
@@ -21,6 +20,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
 
@@ -37,16 +37,13 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
         Color attackerTeamColor = BotBows.getLobby(attacker).getBotBowsPlayer(attacker).getTeam().dyeColor.getColor();
         attacker.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
         attacker.getWorld().spawnParticle(Particle.DUST, hitLoc, 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
-        for (Entity entity : attacker.getWorld().getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS, entity -> entity instanceof Player)) {
-            Player p = (Player) entity;
-            Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) continue;
-            if (lobby != BotBows.getLobby(attacker)) continue;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            if (!bp.isAlive()) continue;
-
-            bp.handleHit(Component.text(" was splash bowed by "), lobby.getBotBowsPlayer(attacker));
-        }
+        BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
+        if (attackerBp == null) return;
+        hitLoc.getWorld().getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS).stream()
+                .map(Entity::getUniqueId)
+                .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
+                .filter(BotBowsPlayer::isAlive)
+                .forEach(bp -> bp.handleHit(Component.text(" was splash bowed by "), attackerBp));
     }
 
     @Override
