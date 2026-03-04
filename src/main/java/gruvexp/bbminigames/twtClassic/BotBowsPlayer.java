@@ -71,6 +71,7 @@ public class BotBowsPlayer {
         attackDamage = 1;
         maxAbilities = settings.getMaxAbilities();
         abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
+        setReady(true, 4); // bots are always ready for match
     }
 
     public BotBowsTeam getTeam() {return team;}
