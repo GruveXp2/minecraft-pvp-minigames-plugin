@@ -15,6 +15,6 @@ public class LongArms extends Ability implements AbilityTrigger.OnMelee {
     @Override
     public void trigger(AbilityContext.Melee ctx) {
         use();
-        ctx.defender().handleHit(Component.text(" was long-slapped by "), bp);
+        ctx.defender().handleHit(Component.text(" was slapped with cool rod of "), bp);
     }
 }
