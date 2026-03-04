@@ -55,7 +55,7 @@ public class BotBowsTeam {
 
     public void tpPlayersToSpawn() {
         for (int i = 0; i < players.size(); i++) {
-            players.get(i).teleport(spawnPos[i]);
+            players.get(i).teleport(spawnPos[Math.min(i, 4)]);
         }
     }
 
