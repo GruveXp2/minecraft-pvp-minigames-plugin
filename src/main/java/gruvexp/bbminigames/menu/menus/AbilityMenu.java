@@ -272,7 +272,7 @@ public class AbilityMenu extends SettingsMenu {
                     }
                     return;
                 }
-                bp.equipAbility(e.getSlot(), cursorAbility);
+                bp.equipAbility(e.getSlot(), cursorAbility, false);
 
                 if (clickedAbility != null) {
                     bp.equipAbility(-1, clickedAbility);
