@@ -33,6 +33,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class TestCommand implements CommandExecutor {
 
     public static boolean rotation = true;
@@ -65,11 +67,25 @@ public class TestCommand implements CommandExecutor {
                     lobby.addBot();
                     lobby.startGame(p);
                 }
+                case "5_bots" -> {
+                    Lobby lobby = BotBows.getLobby(0);
+                    if (args.length != 3) {
+                        lobby.joinGame(Bukkit.getPlayer("GruveXp"));
+                        for (int i = 0; i < 10; i++) {
+                            lobby.addBot();
+                        }
+                        lobby.settings.setMaxAbilities(2);
+                    }
+                    BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
+                    gxbp.equipAbility(AbilityType.THUNDER_BOW);
+                    gxbp.equipAbility(AbilityType.SPLASH_BOW);
+                    if (args.length > 1) return true;
+                    lobby.startGame(p);
+                }
                 case "add_bot" -> BotBows.getLobby(0).addBot();
                 case "toggle_experimental" -> {
                     Lobby lobby = BotBows.getLobby(p);
                     if (lobby == null) {
-                        assert p != null;
                         p.sendMessage(Component.text("Go in a lobby and try again"));
                         return true;
                     }
