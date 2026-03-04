@@ -30,7 +30,7 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
 
     public SplashBow(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.SPLASH_BOW);
-        bp.player.getInventory().setItem(18, new ItemStack(Material.ARROW, 64));
+        bp.avatar.setItem(18, new ItemStack(Material.ARROW, 64));
     }
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
@@ -47,11 +47,6 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
 
             bp.handleHit(Component.text(" was splash bowed by "), lobby.getBotBowsPlayer(attacker));
         }
-    }
-
-    @Override
-    public void unequip() {
-        bp.player.getInventory().remove(Material.ARROW);
     }
 
     @Override

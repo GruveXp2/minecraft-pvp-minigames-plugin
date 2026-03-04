@@ -3,11 +3,10 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.tasks.GvwDungeonProximityScanner;
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
@@ -28,19 +27,17 @@ public class DungeonGhoster {
     private ArmorStand as1;
     private ArmorStand as2;
 
-    private final Player p;
     private final BotBowsPlayer bp;
     private Location prevLoc;
 
     public DungeonGhoster(BotBowsPlayer bp) {
         this.bp = bp;
-        this.p = bp.player;
-        prevLoc = p.getLocation();
+        prevLoc = bp.getLocation();
         updateArmorStandsAndSection();
     }
 
     public void handleMovement() {
-        Location currentLoc = p.getLocation();
+        Location currentLoc = bp.getLocation();
         if (currentLoc.equals(prevLoc)) {
             Bukkit.getLogger().info("Somehow handleMovement() was called when the player didnt move (bug)");
             return; // No movement, no need to process
@@ -81,12 +78,12 @@ public class DungeonGhoster {
 
         if (isInGreenArea()) {
             section = Section.GREEN;
-            as1 = spawnArmorStand(p.getLocation().add(-4, 0, -11));
-            as2 = spawnArmorStand(p.getLocation().add(-8, 0, -22));
+            as1 = spawnArmorStand(bp.getLocation().add(-4, 0, -11));
+            as2 = spawnArmorStand(bp.getLocation().add(-8, 0, -22));
         } else if (isInPurpleArea()) {
             section = Section.PURPLE;
-            as1 = spawnArmorStand(p.getLocation().add(4, 0, 11));
-            as2 = spawnArmorStand(p.getLocation().add(-4, 0, -11));
+            as1 = spawnArmorStand(bp.getLocation().add(4, 0, 11));
+            as2 = spawnArmorStand(bp.getLocation().add(-4, 0, -11));
         } else {
             section = Section.OUTSIDE;
         }
@@ -94,20 +91,17 @@ public class DungeonGhoster {
 
     private ArmorStand spawnArmorStand(Location location) {
         //debugMessage(STR."Armor stand was spawned: \{BotBowsManager.getTeam(PLAYER)}");
-        ArmorStand AS = p.getWorld().spawn(location, ArmorStand.class);
-        AS.setArms(true);
-        AS.setBasePlate(false);
-        AS.setGravity(false);
-        AS.setInvulnerable(true);
-        AS.setRightArmPose(new EulerAngle(275f,346f,0f));
-        AS.setLeftArmPose(new EulerAngle(275f,49f,0f));
-        AS.getEquipment().setItemInMainHand(BotBows.BOTBOW);
-        AS.getEquipment().setArmorContents(new ItemStack[] {
-                bp.getArmorPiece(Material.LEATHER_BOOTS),
-                bp.getArmorPiece(Material.LEATHER_LEGGINGS),
-                bp.getArmorPiece(Material.LEATHER_CHESTPLATE),
-                bp.getArmorPiece(Material.LEATHER_HELMET)});
-        return AS;
+        ArmorStand as = location.getWorld().spawn(location, ArmorStand.class);
+        as.setArms(true);
+        as.setBasePlate(false);
+        as.setGravity(false);
+        as.setInvulnerable(true);
+        as.setRightArmPose(new EulerAngle(275f,346f,0f));
+        as.setLeftArmPose(new EulerAngle(275f,49f,0f));
+        as.getEquipment().setItemInMainHand(BotBows.BOTBOW);
+        BotBowsAvatar.ArmorSet armor = bp.avatar.getArmor();
+        as.getEquipment().setArmorContents(new ItemStack[] {armor.boots(), armor.leggings(), armor.chestplate(), armor.helmet()});
+        return as;
     }
 
     private void removeArmorStands() {
@@ -119,11 +113,11 @@ public class DungeonGhoster {
     }
 
     private boolean isInGreenArea() {
-        return GvwDungeonProximityScanner.isInsideBoundingBox(p.getLocation(), GREEN_BOUNDING_BOX_MIN, GREEN_BOUNDING_BOX_MAX);
+        return GvwDungeonProximityScanner.isInsideBoundingBox(bp.getLocation(), GREEN_BOUNDING_BOX_MIN, GREEN_BOUNDING_BOX_MAX);
     }
 
     private boolean isInPurpleArea() {
-        return GvwDungeonProximityScanner.isInsideBoundingBox(p.getLocation(), PURPLE_BOUNDING_BOX_MIN, PURPLE_BOUNDING_BOX_MAX);
+        return GvwDungeonProximityScanner.isInsideBoundingBox(bp.getLocation(), PURPLE_BOUNDING_BOX_MIN, PURPLE_BOUNDING_BOX_MAX);
     }
 
     /*private boolean enteredGreenArea() {

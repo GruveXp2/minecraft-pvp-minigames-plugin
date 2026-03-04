@@ -5,24 +5,19 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class EarthquakeHazard extends Hazard {
-    Map<BotBowsPlayer, BossBar> bars = new HashMap<>();
     Set<Location> anvilLocations = new HashSet<>();
 
     public EarthquakeHazard(Lobby lobby) {
@@ -31,26 +26,25 @@ public class EarthquakeHazard extends Hazard {
 
     public void init() { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
-        for (BotBowsPlayer p : lobby.getPlayers()) {
-            BossBar bar = Bukkit.createBossBar(ChatColor.GOLD + "Anvil timer", BarColor.YELLOW, BarStyle.SEGMENTED_6);
-            bar.addPlayer(p.player);
-            bar.setProgress(0d);
-            bar.setVisible(false);
-            bars.put(p, bar);
+        for (BotBowsPlayer bp : lobby.getPlayers()) {
+            BossBar bar = BossBar.bossBar(Component.text("Anvil timer", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_6);
+            bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar);
         }
     }
     @Override
     protected void trigger() {
-        lobby.messagePlayers(Component.text("EARTHQUAKE INCOMING!", NamedTextColor.DARK_RED)
-                .append(Component.text(" Stay above ground!", NamedTextColor.RED)));
-        lobby.titlePlayers(ChatColor.RED + "EARTHQUAKE INCOMING", 80);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            for (BotBowsPlayer p : lobby.getPlayers()) {
-                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(p, bars.get(p));
+            for (BotBowsPlayer bp : lobby.getPlayers()) {
+                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(bp);
                 earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
-                hazardTimers.put(p.player, earthQuakeTimer);
+                hazardTimers.put(bp, earthQuakeTimer);
             }
         }, 100L); // 5 sekunder
+    }
+
+    @Override
+    protected HazardMessage getAnnounceMessage() {
+        return new HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING");
     }
 
     @Override
@@ -73,10 +67,6 @@ public class EarthquakeHazard extends Hazard {
     @Override
     public void end() {
         super.end();
-        for (BossBar bossBar : bars.values()) { // resett storm baren og skjul den
-            bossBar.setVisible(false);
-            bossBar.setProgress(0d);
-        }
         for (Location anvilLocation : anvilLocations) {
             Block block = anvilLocation.getBlock();
             if (block.getType() == Material.ANVIL) {
@@ -92,22 +82,19 @@ public class EarthquakeHazard extends Hazard {
         static final int UPPER_BOUND = 29;
         static final int SECONDS = 6; // hvor lenge man kan stå før Einstein kommer p
 
-        final Player p;
         final BotBowsPlayer bp;
-        final BossBar bar;
         int time = 0;
-        public PlayerEarthQuakeTimer(BotBowsPlayer bp, BossBar bar) {
-            this.p = bp.player;
+        public PlayerEarthQuakeTimer(BotBowsPlayer bp) {
             this.bp = bp;
-            this.bar = bar;
         }
 
-        private boolean isPlayerUnderground(Player p) {
-            if (p.getLocation().getY() >= GROUND_LEVEL) {return false;}
+        private boolean isPlayerUnderground() {
+            Location loc = bp.getLocation();
+            if (loc.getY() >= GROUND_LEVEL) {return false;}
 
-            int x = (int) Math.floor(p.getLocation().getX());
-            int y = (int) Math.floor(p.getLocation().getY());
-            int z = (int) Math.floor(p.getLocation().getZ());
+            int x = (int) Math.floor(loc.getX());
+            int y = (int) Math.floor(loc.getY());
+            int z = (int) Math.floor(loc.getZ());
             //p.sendMessage(ChatColor.GRAY + "======== [DEBUG] ========\np_coord = " + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
             for (int i = y + 2; i < UPPER_BOUND + 2; i++) {
                 //p.sendMessage(ChatColor.GRAY + "" + x + ", " + y + ", " + z + " : " + world.getBlockAt(x, y, z).getType());
@@ -118,30 +105,24 @@ public class EarthquakeHazard extends Hazard {
 
         @Override
         public void run() { // annehver tick = 10Hz
-            if (p.getGameMode() == GameMode.SPECTATOR) return; // if the player is dead, dont do anything
-            if (isPlayerUnderground(p)) {
+            if (!bp.isAlive()) return; // if the player is dead, dont do anything
+            if (isPlayerUnderground()) {
                 if (time < SECONDS*40) { // 40 = run().frekvens*hvor_mye
                     time += 4; // tida går opp 4x så kjapt som når cooldownen går ned. Altså går tida opp 1s/s
                     if (time >= SECONDS*40) {
-                        bar.setProgress(1.0d);
+                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 1);
                     } else {
-                        bar.setProgress(time/(SECONDS*40d));
-                    }
-                    if (time >= 4) { // baren vises bare når det er nødvendig, hvis den er 0 så er man i sikkerhet, men om den er over 0 betyr det enten at man er i fare eller så kan man se hvor lenge er igjen av timeren
-                        bar.setVisible(true);
+                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, (float) time /(SECONDS*40));
                     }
                 } else {
-                    FallingBlock fallingAnvil = Main.WORLD.spawnFallingBlock(p.getLocation().add(0, 3.9, 0), Material.ANVIL.createBlockData());
+                    FallingBlock fallingAnvil = Main.WORLD.spawnFallingBlock(bp.getLocation().add(0, 3.9, 0), Material.ANVIL.createBlockData());
                     fallingAnvil.setHurtEntities(true);
                     fallingAnvil.setDropItem(false);
                     time = 0; // resetter
-                    bar.setProgress(0);
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                        p.damage(1); // sånn
-                        bp.die(Component.text(p.getName(), bp.getTeamColor())
-                                .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD)));
-                    }, 20L);
-                    Location anvilLoc = p.getLocation().toBlockLocation();
+                    bp.avatar.setHazardBarProgress(HazardType.STORM, 0);
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.die(bp.getName()
+                            .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD))), 20L);
+                    Location anvilLoc = bp.getLocation().toBlockLocation();
                     while (anvilLoc.getBlock().getType() == Material.AIR) {
                         anvilLoc.subtract(0, 1, 0);
                     }
@@ -151,10 +132,7 @@ public class EarthquakeHazard extends Hazard {
             } else {
                 if (time > 0) {
                     time--; // cooldownen går ned 0.25s/s
-                    bar.setProgress(time/(SECONDS*40d));
-                    if (time == 0) {
-                        bar.setVisible(false);
-                    }
+                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, (float) time /(SECONDS*40));
                 }
             }
         }

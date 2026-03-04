@@ -3,13 +3,11 @@ package gruvexp.bbminigames.menu.menus;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -18,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HealthMenu extends SettingsMenu {
@@ -90,8 +89,9 @@ public class HealthMenu extends SettingsMenu {
             }
             case PLAYER_HEAD -> {
                 ItemStack head = e.getCurrentItem();
-                Player p = Bukkit.getPlayer(UUID.fromString(head.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
+                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
                 int slot = e.getSlot();
                 if (slot < 9) {
                     int maxHP = head.getAmount();
@@ -155,13 +155,13 @@ public class HealthMenu extends SettingsMenu {
         }
         for (int i = 0; i < settings.team1.size(); i++) {
             BotBowsPlayer p = settings.team1.getPlayer(i);
-            ItemStack item = makeHeadItem(p.player, settings.team1.color);
+            ItemStack item = p.avatar.getHeadItem();
             item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
             inventory.setItem(i + start + slotOffset, item);
         }
         for (int i = 0; i < settings.team2.size(); i++) {
             BotBowsPlayer p = settings.team2.getPlayer(i);
-            ItemStack item = makeHeadItem(p.player, settings.team2.color);
+            ItemStack item = p.avatar.getHeadItem();
             item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
             inventory.setItem(8 - i + slotOffset, item);
         }

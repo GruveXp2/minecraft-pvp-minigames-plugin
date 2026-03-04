@@ -10,8 +10,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -148,6 +148,7 @@ public class Settings {
             team2.join(bp);
         }
         teamsMenu.recalculateTeam();
+        bp.setMaxHP(maxHP);
         healthMenu.updateMenu();
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
         AbilityMenu newMenu = new AbilityMenu(this, bp);
@@ -156,17 +157,32 @@ public class Settings {
 
         if (getPlayers().size() == 1) {
             modPlayer = bp;
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
-                    " and will be the settings moderator"));
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
+                    " and will be the settings moderator")));
             mapMenu.open(p);
         } else {
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")"));
+            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
         }
+    }
+
+    public void joinGame(Mannequin mannequin) {
+        BotBowsPlayer bp = new BotBowsPlayer(mannequin, this);
+        lobby.registerBotBowsPlayer(bp);
+        players.add(bp);
+        if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
+            team1.join(bp);
+        } else {
+            team2.join(bp);
+        }
+        teamsMenu.recalculateTeam();
+        healthMenu.updateMenu();
+        abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
+        Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
     }
 
     public void leaveGame(BotBowsPlayer bp) {
         if (!players.contains(bp)) {
-            bp.player.sendMessage(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
+            bp.avatar.message(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
             return;
         }
         bp.leaveGame();
@@ -178,17 +194,17 @@ public class Settings {
             setModPlayer(players.iterator().next());
         }
 
-        bp.player.setGameMode(GameMode.SPECTATOR);
-        bp.player.sendMessage(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
-        lobby.messagePlayers(Component.text(bp.player.getName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
+        bp.reset();
+        bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
+        lobby.messagePlayers(Component.text(bp.getPlainName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
     }
 
     public Set<BotBowsPlayer> getPlayers() {
         return Collections.unmodifiableSet(players);
     }
 
-    public boolean isPlayerJoined(Player p) {
-        return Optional.ofNullable(lobby.getBotBowsPlayer(p))
+    public boolean isPlayerJoined(UUID playerId) {
+        return Optional.ofNullable(lobby.getBotBowsPlayer(playerId))
                 .map(players::contains)
                 .orElse(false);
     }
@@ -196,12 +212,12 @@ public class Settings {
     public void setModPlayer(BotBowsPlayer bp) {
         String first = modPlayer == null ? "" : "new ";
         modPlayer = bp;
-        lobby.messagePlayers(bp.player.name().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
+        lobby.messagePlayers(bp.getName().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
     }
 
     public boolean playerIsMod(BotBowsPlayer bp) {
         boolean isPlayerMod = bp == modPlayer;
-        if (!isPlayerMod) bp.player.sendMessage(Component.text("Only mods can do this action", NamedTextColor.RED));
+        if (!isPlayerMod) bp.avatar.message(Component.text("Only mods can do this action", NamedTextColor.RED));
         return isPlayerMod;
     }
 

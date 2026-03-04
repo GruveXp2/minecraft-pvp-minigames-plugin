@@ -1,25 +1,31 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class Lobby {
 
     public final int ID;
-    private final HashMap<Player, BotBowsPlayer> players = new HashMap<>(); // liste med alle players som er i gamet
+    private final HashMap<UUID, BotBowsPlayer> players = new HashMap<>(); // liste med alle players som er i gamet
     public Settings settings;
     public BotBowsGame botBowsGame;
     private boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
@@ -57,42 +63,58 @@ public class Lobby {
         }
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.registerPlayerLobby(p, this);
+        BotBows.registerPlayerLobby(p.getUniqueId(), this);
         p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
         p.getInventory().setItem(4, NOT_READY);
     }
 
-    public void leaveGame(Player p) {
-        BotBowsPlayer bp = getBotBowsPlayer(p);
-        if (!settings.isPlayerJoined(p)) {
-            p.sendMessage("Nothing happened, you werent in the game in the first place");
-            return;
-        }
+    public void addBot() {
+        Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
+        mannequin.customName(Component.text("BotBowBot"));
+        mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
+        settings.joinGame(mannequin);
+        BotBows.lobbyMenu.updateLobbyItem(this);
+        BotBows.registerPlayerLobby(mannequin.getUniqueId(), this);
+    }
+
+    public void leaveGame(UUID playerId) {
+        BotBowsPlayer bp = getBotBowsPlayer(playerId);
         if (activeGame) {
             botBowsGame.leaveGame(bp);
         } else {
             settings.leaveGame(bp);
         }
-        players.remove(p);
+        players.remove(playerId);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.unRegisterPlayerLobby(p);
-        Inventory inv = p.getInventory();
-        for (int i = 1; i < 9; i++) {
-            inv.setItem(i, null); // fjerner abilities
-        }
+        BotBows.unRegisterPlayerLobby(playerId);
     }
 
-    public boolean isPlayerJoined(Player p) {
-        return players.containsKey(p);
+    public void leaveGame(Player p) {
+        UUID playerId = p.getUniqueId();
+        if (!settings.isPlayerJoined(playerId)) {
+            p.sendMessage("Nothing happened, you werent in the game in the first place");
+            return;
+        }
+        leaveGame(playerId);
+    }
+
+    public void replacePlayerId(UUID oldId, UUID newId) {
+        BotBowsPlayer bp = players.get(oldId);
+        players.remove(oldId);
+        players.put(newId, bp);
     }
 
     public BotBowsPlayer getBotBowsPlayer(Player p) {
-        return players.get(p);
+        return getBotBowsPlayer(p.getUniqueId());
+    }
+
+    public BotBowsPlayer getBotBowsPlayer(UUID playerId) {
+        return players.get(playerId);
     }
 
     public void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (players.containsKey(p.player)) return;
-        players.put(p.player, p);
+        if (players.containsKey(p.avatar.getUUID())) return;
+        players.put(p.avatar.getUUID(), p);
     }
 
     public Collection<BotBowsPlayer> getPlayers() {
@@ -133,13 +155,14 @@ public class Lobby {
 
     public void messagePlayers(Component message) {
         for (BotBowsPlayer p : settings.getPlayers()) {
-            p.player.sendMessage(message);
+            p.avatar.message(message);
         }
     }
 
-    public void titlePlayers(String title, int duration) {
+    public void titlePlayers(Component component, int seconds) {
         for (BotBowsPlayer p : players.values()) {
-            p.player.sendTitle(title, null, 2, duration, 5);
+            p.avatar.showTitle(Title.title(component, Component.text(""),
+                    Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
         }
     }
 
@@ -160,7 +183,7 @@ public class Lobby {
         long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
         int totalPlayers = Math.max(players.size(), 2);
 
-        messagePlayers(Component.text(p.player.getName() +
+        messagePlayers(Component.text(p.getPlainName() +
                 (ready ? " has readied up " : " is no longer ready ") +
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
         if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {

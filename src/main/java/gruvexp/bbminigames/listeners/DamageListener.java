@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,10 +31,10 @@ public class DamageListener implements Listener {
         }
         if ((e.getDamager() instanceof Arrow arrow)) {
             if (!(arrow.getShooter() instanceof Player attacker)) {return;}
-            if (e.getEntity() instanceof Player defender) {
-                if (!BotBows.isPlayerJoined(attacker) || !BotBows.isPlayerJoined(defender)) {return;} // hvis de ikke er i gamet
-                BotBowsPlayer attackerBp = BotBows.getLobby(attacker).getBotBowsPlayer(attacker);
-                BotBowsPlayer defenderBp = BotBows.getLobby(defender).getBotBowsPlayer(defender);
+            BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
+            if (e.getEntity() instanceof LivingEntity defender) {
+                BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender.getUniqueId());
+                if (attackerBp == null || defenderBp == null) return;
 
                 if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
                     arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage

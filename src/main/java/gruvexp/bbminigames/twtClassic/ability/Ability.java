@@ -3,7 +3,6 @@ package gruvexp.bbminigames.twtClassic.ability;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,14 +54,12 @@ public class Ability {
 
     public void obtain() {
         resetCooldown();
-        Inventory inv = bp.player.getInventory();
-        inv.setItem(hotBarSlot, type.getAbilityItem());
+        bp.avatar.setItem(hotBarSlot, type.getAbilityItem());
     }
 
     public void lose() {
-        Inventory inv = bp.player.getInventory();
         if (type.category == AbilityCategory.DAMAGING) {
-            inv.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
+            bp.avatar.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
         } else {
             cooldownTimer = new CooldownTimer(bp, effectiveCooldown);
             cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
@@ -120,10 +117,10 @@ public class Ability {
     private class CooldownTimer extends BukkitRunnable {
         int currentCooldown;
         ItemStack cooldownItem = getCooldownItem(currentCooldown);
-        private final Inventory inv;
+        private final BotBowsPlayer bp;
 
         private CooldownTimer(BotBowsPlayer bp, int effectiveCooldown) {
-            this.inv = bp.player.getInventory();
+            this.bp = bp;
             currentCooldown = effectiveCooldown;
         }
 
@@ -140,7 +137,7 @@ public class Ability {
                 case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
             }
             cooldownItem.setAmount(currentCooldown);
-            inv.setItem(hotBarSlot, cooldownItem);
+            bp.avatar.setItem(hotBarSlot, cooldownItem);
             currentCooldown--;
         }
 

@@ -1,8 +1,9 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -22,11 +23,12 @@ public abstract class Hazard {
 
     public void setChance(HazardChance chance) {hazardChance = chance;}
 
-    public Map<Player, BukkitRunnable> hazardTimers = new HashMap<>();
+    public Map<BotBowsPlayer, BukkitRunnable> hazardTimers = new HashMap<>();
 
     public void triggerOnChance() {
         if (hazardChance.occurs()) {
             isActive = true;
+            announce();
             trigger();
         }
     }
@@ -38,7 +40,13 @@ public abstract class Hazard {
     public abstract void init();
 
     protected abstract void trigger(); // hazarden starter
-
+    protected abstract HazardMessage getAnnounceMessage();
+    private void announce() {
+        HazardMessage msg = getAnnounceMessage();
+        lobby.messagePlayers(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
+                .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
+        lobby.titlePlayers(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
+    }
     public abstract String getName();
 
     public abstract Component[] getDescription();
@@ -52,4 +60,10 @@ public abstract class Hazard {
         hazardTimers.clear();
         isActive = false;
     } // stopper hazarden
+
+    public record HazardMessage(
+            String chatHeader,
+            String chatDescription,
+            String screenTitle
+    ) {}
 }

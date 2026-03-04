@@ -13,8 +13,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -22,7 +20,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
 
-import gruvexp.bbminigames.twtClassic.BarManager;
 import org.bukkit.scheduler.BukkitTask;
 
 public class BotBowsGame {
@@ -33,7 +30,6 @@ public class BotBowsGame {
     protected final BotBowsTeam team2;
     protected final Set<BotBowsPlayer> players;
     public final BoardManager boardManager;
-    public final BarManager barManager;
     protected final Collection<Hazard> hazards;
 
     public boolean canMove = true;
@@ -50,28 +46,14 @@ public class BotBowsGame {
         this.players = settings.getPlayers();
         this.hazards = settings.getHazards().values();
         this.boardManager = new BoardManager(lobby);
-        this.barManager = new BarManager(lobby);
     }
 
     public void leaveGame(BotBowsPlayer p) {
-        // stuff
         settings.leaveGame(p);
         boardManager.removePlayerScore(p);
-        if (barManager.sneakBars.containsKey(p.player)) {
-            barManager.sneakBars.get(p.player).setVisible(false);
-            barManager.sneakBars.get(p.player).removeAll();
-            barManager.sneakBars.remove(p.player);
-        }
-        Cooldowns.sneakCooldowns.remove(p.player);
-        if (Cooldowns.sneakRunnables.containsKey(p.player)) {
-            Cooldowns.sneakRunnables.get(p.player).cancel();
-            Cooldowns.sneakRunnables.remove(p.player);
-        }
     }
 
     public void startGame() {
-        barManager.sneakBarInit();
-        Cooldowns.CoolDownInit(players);
         boardManager.createBoard();
         startRound();
         hazards.forEach(Hazard::init);
@@ -82,6 +64,7 @@ public class BotBowsGame {
             boardManager.updatePlayerScore(q);
         }
         boardManager.updateTeamScores();
+        players.forEach(BotBowsPlayer::start);
         new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
     }
     public void startRound() {
@@ -196,13 +179,13 @@ public class BotBowsGame {
                 .forEach(Hazard::end);
 
         if (winningTeam == null) {
-            lobby.titlePlayers(ChatColor.YELLOW + "DRAW", 40);
+            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2);
             canShoot = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
             return;
         }
 
-        lobby.titlePlayers(BoardManager.toChatColor((NamedTextColor) winningTeam.color) + winningTeam.name + " +" + winScore, 40);
+        lobby.titlePlayers(Component.text(winningTeam.name + " +" + winScore, winningTeam.color), 2);
         boardManager.updateTeamScores();
 
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
@@ -246,14 +229,9 @@ public class BotBowsGame {
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(10000);
 
-        players.forEach(BotBowsPlayer::reset);
-        players.forEach(p -> p.player.getInventory().remove(Material.ARROW));
         boardManager.resetTeams();
         team1.reset();
         team2.reset();
-        barManager.sneakBars.clear();
-        Cooldowns.sneakCooldowns.clear();
-        Cooldowns.sneakRunnables.clear();
         lobby.reset();
     }
 
@@ -263,11 +241,11 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
+            p.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
         for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.player.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
+            p.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
     }

@@ -55,20 +55,20 @@ public class BotBowsTeam {
 
     public void tpPlayersToSpawn() {
         for (int i = 0; i < players.size(); i++) {
-            players.get(i).player.teleport(spawnPos[i]);
+            players.get(i).teleport(spawnPos[i]);
         }
     }
 
     public void postTeamSwap() { // when the map is changed and the teams are swapped out
         for (BotBowsPlayer p : players) {
             p.updateTeam(this);
-            p.player.teleport(tribunePos);
+            p.teleport(tribunePos);
         }
     }
 
     public void join(BotBowsPlayer p) {
         players.add(p);
-        p.player.teleport(tribunePos);
+        p.teleport(tribunePos);
         p.joinTeam(this);
     }
 
@@ -126,8 +126,8 @@ public class BotBowsTeam {
     }
 
     public void glow(int seconds) {
-        players.forEach(p -> p.player.setGlowing(true));
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.player.setGlowing(false)), 20L * seconds);
+        players.forEach(p -> p.avatar.setGlowing(true));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.avatar.setGlowing(false)), 20L * seconds);
     }
 
     public Material getGlassPane() {

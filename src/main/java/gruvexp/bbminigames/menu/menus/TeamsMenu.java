@@ -6,7 +6,6 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -14,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class TeamsMenu extends SettingsMenu {
@@ -44,8 +44,9 @@ public class TeamsMenu extends SettingsMenu {
 
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {
-                Player p = Bukkit.getPlayer(UUID.fromString(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING)));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(p);
+                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
                 bp.getTeam().getOppositeTeam().join(bp);
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
@@ -88,12 +89,12 @@ public class TeamsMenu extends SettingsMenu {
         inventory.remove(Material.PLAYER_HEAD); // Fjerner player heads sånn at det kan kalkuleres pånytt
 
         for (int i = 0; i < team1.size(); i++) { // team 1
-            ItemStack p = makeHeadItem(team1.getPlayer(i).player, team1.color);
-            inventory.setItem(2 + i, p);
+            ItemStack playerHead = team1.getPlayer(i).avatar.getHeadItem();
+            inventory.setItem(2 + i, playerHead);
         }
         for (int i = 0; i < team2.size(); i++) { // team 2
-            ItemStack p = makeHeadItem(team2.getPlayer(i).player, team2.color);
-            inventory.setItem(11 + i, p);
+            ItemStack playerHead = team2.getPlayer(i).avatar.getHeadItem();
+            inventory.setItem(11 + i, playerHead);
         }
     }
 }

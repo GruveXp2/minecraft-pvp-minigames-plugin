@@ -10,7 +10,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -150,13 +149,14 @@ public class AbilityMenu extends SettingsMenu {
             }
             case PLAYER_HEAD -> {
                 if (PlainTextComponentSerializer.plainText().serialize(clickedItem.displayName()).contains("Laser")) {
-                    handleAbilityClick(e, bp, clickedItem);
+                    handleAbilityClick(e, clicker, bp, clickedItem);
                     return;
                 }
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
-                Player p = Bukkit.getPlayer(UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING))));
-                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(p);
+                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
+                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
                 if (e.getSlot() < 9) {
                     int maxAbilities = headBp.getMaxAbilities(); // oppdaterer max abilities
                     maxAbilities++;
@@ -200,12 +200,11 @@ public class AbilityMenu extends SettingsMenu {
             case ARROW -> {
                 if (e.getClickedInventory() != inventory) e.setCancelled(true);
             }
-            default -> handleAbilityClick(e, bp, clickedItem);
+            default -> handleAbilityClick(e, clicker, bp, clickedItem);
         }
     }
 
-    private void handleAbilityClick(InventoryClickEvent e, BotBowsPlayer bp, ItemStack clickedItem) {
-        Player p = bp.player;
+    private void handleAbilityClick(InventoryClickEvent e, Player p, BotBowsPlayer bp, ItemStack clickedItem) {
         ItemStack cursorItem = e.getCursor();
         AbilityType cursorAbility = AbilityType.fromItem(cursorItem);
         AbilityType clickedAbility = AbilityType.fromItem(clickedItem);
@@ -444,11 +443,11 @@ public class AbilityMenu extends SettingsMenu {
 
     public void addPlayer(BotBowsPlayer p) {
         //max abilities
-        ItemStack abilitiesHead = makeHeadItem(p.player, p.getTeamColor());
+        ItemStack abilitiesHead = p.avatar.getHeadItem();
         abilitiesHead.setAmount(Math.max(p.getMaxAbilities(), 1));
         maxAbilitiesRow.addItem(abilitiesHead);
         // cooldown multiplier
-        ItemStack cooldownHead = makeHeadItem(p.player, p.getTeamColor());
+        ItemStack cooldownHead = p.avatar.getHeadItem();
         ItemMeta meta = cooldownHead.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         cooldownHead.setItemMeta(meta);

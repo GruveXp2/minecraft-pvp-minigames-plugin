@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -73,7 +74,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
             for (int i = 0; i < 100; i++) {
                 block = block.getRelative(face);
 
-                if (block.getType() == Material.AIR || !block.isSolid() || block.getType().isTransparent()) {
+                if (block.getType() == Material.AIR || !block.isSolid() || Util.isBlockMiddleTransparent(block.getType())) {
                     length++;
                     continue;
                 }
@@ -106,7 +107,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
         @Override
         public void run() {
             for (BotBowsPlayer defender : opponents) {
-                Location proximity = defender.player.getLocation().add(0, 1, 0).subtract(center);
+                Location proximity = defender.avatar.getLocation().add(0, 1, 0).subtract(center);
                 if (Math.abs(proximity.getX()) < offset.getX() + 0.5 &&
                         Math.abs(proximity.getY()) < offset.getY() + 1 &&
                         Math.abs(proximity.getZ()) < offset.getZ() + 0.5) {

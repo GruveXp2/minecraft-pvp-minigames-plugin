@@ -27,12 +27,13 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class BotBows {
 
     public static final ItemStack BOTBOW = getBotBow();
     private static Lobby[] lobbies;
-    private static final HashMap<Player, Lobby> players = new HashMap<>(); // liste med alle players som er i gamet
+    private static final HashMap<UUID, Lobby> players = new HashMap<>(); // liste med alle players som er i gamet
 
     public static GameMenu gameMenu;
     public static LobbyMenu lobbyMenu;
@@ -49,12 +50,12 @@ public class BotBows {
         lobbies = new Lobby[]{new Lobby(0), new Lobby(1), new Lobby(2)};
     }
 
-    public static void registerPlayerLobby(Player p, Lobby lobby) {
-        players.put(p, lobby);
+    public static void registerPlayerLobby(UUID playerId, Lobby lobby) {
+        players.put(playerId, lobby);
     }
 
-    public static void unRegisterPlayerLobby(Player p) {
-        players.remove(p);
+    public static void unRegisterPlayerLobby(UUID playerId) {
+        players.remove(playerId);
     }
 
     public static Lobby getLobby(int ID) {
@@ -62,13 +63,21 @@ public class BotBows {
     }
 
     public static Lobby getLobby(Player p) {
-        return players.get(p);
+        return getLobby(p.getUniqueId());
+    }
+
+    public static Lobby getLobby(UUID playerId) {
+        return players.get(playerId);
     }
 
     public static BotBowsPlayer getBotBowsPlayer(Player p) { // gets the BotBowsPlayer that is used by the lobby the player is in
-        Lobby lobby = getLobby(p);
+        return getBotBowsPlayer(p.getUniqueId());
+    }
+
+    public static BotBowsPlayer getBotBowsPlayer(UUID playerId) { // gets the BotBowsPlayer that is used by the lobby the player is in
+        Lobby lobby = getLobby(playerId);
         if (lobby == null) return null;
-        return lobby.getBotBowsPlayer(p);
+        return lobby.getBotBowsPlayer(playerId);
     }
 
     public static Lobby[] getLobbies() {
@@ -77,6 +86,13 @@ public class BotBows {
 
     public static boolean isPlayerJoined(Player p) {
         return getLobby(p) != null;
+    }
+
+    public static void replacePlayerId(UUID oldId, UUID newId) {
+        Lobby lobby = getLobby(oldId);
+        players.remove(oldId);
+        players.put(newId, lobby);
+        lobby.replacePlayerId(oldId, newId);
     }
 
     private static ItemStack getBotBow() {
