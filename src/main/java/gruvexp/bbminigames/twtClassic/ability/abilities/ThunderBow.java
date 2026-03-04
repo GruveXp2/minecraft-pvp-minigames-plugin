@@ -13,7 +13,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -141,8 +140,12 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
         if (hitBlock != null) {
             Location hitLoc = e.getHitBlock().getLocation();
             ThunderBow.handleArrowHitBlock(hitLoc);
-        }else if (e.getHitEntity() instanceof Player p) {
-            ThunderBow.handleArrowHitPlayer(bp, BotBows.getBotBowsPlayer(p));
+            return;
+        }
+        BotBowsPlayer defender = BotBows.getBotBowsPlayer(e.getHitEntity().getUniqueId());
+
+        if (defender != null) {
+            ThunderBow.handleArrowHitPlayer(bp, defender);
         }
 
         activeArrows.get(arrow).cancel();
