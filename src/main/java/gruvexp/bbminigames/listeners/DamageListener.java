@@ -36,7 +36,7 @@ public class DamageListener implements Listener {
                 BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender.getUniqueId());
                 if (attackerBp == null || defenderBp == null) return;
 
-                if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canShoot) {
+                if (attackerBp.getTeam() == defenderBp.getTeam() || attacker.isGlowing() || !defenderBp.lobby.botBowsGame.canInteract) {
                     arrow.remove(); // if the player already was hit and has a cooldown, or if the hit player is of the same team as the attacker, or shooting is disabled, the arrow won't do damage
                     e.setCancelled(true);
                     return;

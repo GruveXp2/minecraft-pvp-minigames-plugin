@@ -36,7 +36,7 @@ public class AbilityListener implements Listener {
         ItemStack abilityItem = e.getItem();
         AbilityType type = AbilityType.fromItem(abilityItem);
         if (type == null) return;
-        if (!lobby.isGameActive() && !TestCommand.testAbilities) {
+        if (!lobby.isGameActive() && !TestCommand.testAbilities || !lobby.botBowsGame.canInteract) {
             e.setCancelled(true); // kanke bruke abilities i lobbyen
             return;
         }

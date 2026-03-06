@@ -33,8 +33,8 @@ public class BotBowsGame {
     protected final Collection<Hazard> hazards;
 
     public boolean canMove = true;
-    public boolean canShoot = false;
-    public boolean activeRound = false;
+    public boolean canInteract = false; // if you are able to shoot or use abilities
+    public boolean activeRound = false; // if the game is currently ongoing, this includes the countdown in the start of rounds
     protected int round = 0; // hvilken runde man er på
     private BukkitTask roundTimer;
 
@@ -78,7 +78,7 @@ public class BotBowsGame {
         team1.tpPlayersToSpawn();
         team2.tpPlayersToSpawn();
         canMove = false;
-        canShoot = false;
+        canInteract = false;
         activeRound = true;
         new RoundCountdown(this, round).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         if (settings.getRoundDuration() != 0) {
@@ -180,7 +180,7 @@ public class BotBowsGame {
 
         if (winningTeam == null) {
             lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2);
-            canShoot = false;
+            canInteract = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
             return;
         }
@@ -191,7 +191,7 @@ public class BotBowsGame {
         if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
         } else {
-            canShoot = false;
+            canInteract = false;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
         }
     }

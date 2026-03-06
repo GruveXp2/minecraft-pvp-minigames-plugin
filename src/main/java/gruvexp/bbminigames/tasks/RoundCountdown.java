@@ -33,7 +33,7 @@ public class RoundCountdown extends BukkitRunnable {
                 botBowsGame.lobby.messagePlayers(Component.text("Round " + round, Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
                         .append(Component.text(" has started!")));
                 botBowsGame.canMove = true;
-                botBowsGame.canShoot = true;
+                botBowsGame.canInteract = true;
 
                 botBowsGame.triggerHazards();
 
