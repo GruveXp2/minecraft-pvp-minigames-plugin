@@ -82,9 +82,8 @@ public class AbilityMenu extends SettingsMenu {
         if (settings.getMaxAbilities() > 0) {
             updateAbilityStatuses();
             updateCooldownMultiplier();
-        } else {
-            updateAbilityUIState();
         }
+        updateAbilityUIState();
     }
 
     @Override
