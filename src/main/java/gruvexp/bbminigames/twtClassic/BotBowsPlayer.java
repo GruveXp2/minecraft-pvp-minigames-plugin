@@ -126,7 +126,7 @@ public class BotBowsPlayer {
     }
 
     public void reset() {
-        sneakManager.destroy();
+        if (sneakManager != null) sneakManager.destroy();
         avatar.reset();
         hasKarmaEffect = false;
     }
