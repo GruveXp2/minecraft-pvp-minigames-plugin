@@ -119,7 +119,7 @@ public class EarthquakeHazard extends Hazard {
                     fallingAnvil.setHurtEntities(true);
                     fallingAnvil.setDropItem(false);
                     time = 0; // resetter
-                    bp.avatar.setHazardBarProgress(HazardType.STORM, 0);
+                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 0);
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.die(bp.getName()
                             .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD))), 20L);
                     Location anvilLoc = bp.getLocation().toBlockLocation();
