@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
@@ -155,7 +156,7 @@ public class Settings {
         abilityMenus.put(bp, newMenu);
         players.forEach(newMenu::addPlayer);
 
-        if (getPlayers().size() == 1) {
+        if (getPlayers().size() == 1 || modPlayer.avatar instanceof NpcAvatar) {
             modPlayer = bp;
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
                     " and will be the settings moderator")));
