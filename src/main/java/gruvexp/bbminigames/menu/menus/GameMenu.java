@@ -26,10 +26,12 @@ public class GameMenu extends Menu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
+        ItemStack item = e.getCurrentItem();
+        if (item == null) return;
 
-        if (e.getCurrentItem().getType() == Material.BOW) {
+        if (item.getType() == Material.BOW) {
             BotBows.lobbyMenu.open(p);
-        } else if (e.getCurrentItem().getType() == Material.STICK) {
+        } else if (item.getType() == Material.STICK) {
             p.sendMessage(Component.text("This will be added soon. You can take a look at the arena ")
                     .append(Component.text("here", Style.style(NamedTextColor.AQUA, TextDecoration.UNDERLINED))
                             .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @s 38.0 31.3 -176.5 102 22"))));
