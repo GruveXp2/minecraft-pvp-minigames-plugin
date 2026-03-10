@@ -1,10 +1,11 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import net.kyori.adventure.text.Component;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -37,7 +38,7 @@ public class BubbleJet extends Ability {
                         .filter(p -> p.getTeam() != bp.getTeam())
                         .forEach(target -> {
                             target.avatar.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
-                            target.handleHit(Component.text(" was hit by bubble jet from "), bp);
+                            target.damage(new DamageContext.Player(DamageType.Player.BUBBLE_JET, bp));
                         });
             }
         };

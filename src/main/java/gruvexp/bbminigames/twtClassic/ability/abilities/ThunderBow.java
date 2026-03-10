@@ -3,6 +3,8 @@ package gruvexp.bbminigames.twtClassic.ability.abilities;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.Menu;
 import gruvexp.bbminigames.twtClassic.BotBows;
@@ -48,7 +50,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
     }
 
     public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
-        defender.handleHit(Component.text(" was thunderbowed by "), attacker);
+        defender.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW, attacker));
         Set<BotBowsPlayer> handledPlayers = new HashSet<>();
         handledPlayers.add(defender);
         handleChain(attacker, defender, handledPlayers);
@@ -66,7 +68,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
             Location nearbyPlayerLoc = nearbyPlayer.getLocation().add(0, 1, 0); // the arc will hit the middle of the player
             world.strikeLightningEffect(nearbyPlayerLoc);
             createElectricArc(defender.getLocation().add(0, 1, 0), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
-            nearbyPlayer.handleHit(Component.text(" was electrobowed by "), attacker);
+            nearbyPlayer.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker));
             handledPlayers.add(nearbyPlayer);
         }
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {

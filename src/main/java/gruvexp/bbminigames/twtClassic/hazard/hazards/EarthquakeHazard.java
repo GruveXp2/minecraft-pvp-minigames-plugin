@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -120,8 +122,7 @@ public class EarthquakeHazard extends Hazard {
                     fallingAnvil.setDropItem(false);
                     time = 0; // resetter
                     bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 0);
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.die(bp.getName()
-                            .append(Component.text(" was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD))), 20L);
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.damage(new DamageContext.Environment(DamageType.Environment.EARTHQUAKE)), 20L);
                     Location anvilLoc = bp.getLocation().toBlockLocation();
                     while (anvilLoc.getBlock().getType() == Material.AIR) {
                         anvilLoc.subtract(0, 1, 0);

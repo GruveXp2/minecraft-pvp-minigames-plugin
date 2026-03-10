@@ -3,11 +3,12 @@ package gruvexp.bbminigames.twtClassic.ability.abilities;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -43,7 +44,7 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
                 .map(Entity::getUniqueId)
                 .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
                 .filter(BotBowsPlayer::isAlive)
-                .forEach(bp -> bp.handleHit(Component.text(" was splash bowed by "), attackerBp));
+                .forEach(bp -> bp.damage(new DamageContext.Player(DamageType.Player.SPLASH_BOW, attackerBp)));
     }
 
     @Override

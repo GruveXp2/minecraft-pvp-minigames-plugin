@@ -9,8 +9,6 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
@@ -48,7 +46,7 @@ public class DamageListener implements Listener {
                 if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBow) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                 } else {
                     //defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
-                    defenderBp.damage(new DamageContext.Player(attackerBp, DamageType.Player.BOW));
+                    defenderBp.damage(new DamageContext.Player(DamageType.Player.BOW, attackerBp));
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
                 }
                 if (hasKarma) {
@@ -91,8 +89,8 @@ public class DamageListener implements Listener {
             Lobby lobby = BotBows.getLobby(p);
             if (lobby == null) return;
             BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-            bp.die(Component.text(p.getName(), bp.getTeamColor())
-                    .append(Component.text(" tried to swim in lava", NamedTextColor.GOLD)));
+            e.setCancelled(true);
+            bp.damage(new DamageContext.Environment(DamageType.Environment.LAVA));
         }
     }
 }

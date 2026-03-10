@@ -4,10 +4,11 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -111,7 +112,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
                 if (Math.abs(proximity.getX()) < offset.getX() + 0.5 &&
                         Math.abs(proximity.getY()) < offset.getY() + 1 &&
                         Math.abs(proximity.getZ()) < offset.getZ() + 0.5) {
-                    defender.handleHit(Component.text(" got enlightened by "), bp, Component.text("'s laser beam"));
+                    defender.damage(new DamageContext.Player(DamageType.Player.LASER, bp));
                 }
             }
             Location loc = origin.clone();

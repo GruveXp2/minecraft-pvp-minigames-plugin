@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -9,7 +11,6 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -182,8 +183,7 @@ public class GhostHazard extends Hazard {
                     }
                     if (!bp.isAlive() || ticks >= 40) {
                         cancel();
-                        bp.die(bp.getName()
-                                .append(Component.text(" was ghosted", NamedTextColor.DARK_GRAY)));
+                        bp.damage(new DamageContext.Environment(DamageType.Environment.GHOST));
                         descendGhost(ghostLoc);
                         return;
                     }

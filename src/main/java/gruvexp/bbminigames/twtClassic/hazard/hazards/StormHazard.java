@@ -1,6 +1,8 @@
 package gruvexp.bbminigames.twtClassic.hazard.hazards;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -67,7 +69,6 @@ public class StormHazard extends Hazard {
     @Override
     public void end() {
         super.end();
-        // resett været
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(12000);
@@ -116,8 +117,7 @@ public class StormHazard extends Hazard {
                     Main.WORLD.strikeLightningEffect(bp.getLocation());
                     time = 0; // resetter
                     bp.avatar.setHazardBarProgress(HazardType.STORM, 0);
-                    bp.die(bp.getName()
-                            .append(Component.text(" was electrocuted to a crisp!", NamedTextColor.AQUA)));
+                    bp.damage(new DamageContext.Environment(DamageType.Environment.LIGHTNING));
                 }
             } else {
                 if (time > 0) {

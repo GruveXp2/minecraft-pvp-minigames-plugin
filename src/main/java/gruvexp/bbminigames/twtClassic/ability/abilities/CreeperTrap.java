@@ -3,13 +3,14 @@ package gruvexp.bbminigames.twtClassic.ability.abilities;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.ability.AbilityContext;
 import gruvexp.bbminigames.api.ability.AbilityTrigger;
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.data.Lightable;
@@ -173,7 +174,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
                 BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
                 hitPlayers.add(bp);
             }
-            hitPlayers.forEach(bp -> bp.handleHit(Component.text(" hugged "), owner, Component.text("'s creeper")));
+            hitPlayers.forEach(bp -> bp.damage(new DamageContext.Player(DamageType.Player.CREEPER, owner)));
         }
     }
 }

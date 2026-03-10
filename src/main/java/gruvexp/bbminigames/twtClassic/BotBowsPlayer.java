@@ -12,7 +12,6 @@ import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -373,59 +372,25 @@ public class BotBowsPlayer {
 
         boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().attackDamage;
 
-        if (isFatal || ctx instanceof DamageContext.Environment) {
-            if (ctx instanceof DamageContext.Player) {
+        if (ctx instanceof DamageContext.Environment) {
+            die(damageMessage);
+        } else if (ctx instanceof DamageContext.Player playerCtx) {
+            if (isFatal) {
                 damageMessage = damageMessage
                         .append(Component.text(" and got"))
                         .append(Component.text(" eliminated", NamedTextColor.DARK_RED));
+                die(damageMessage);
+                return;
             }
-            die(damageMessage);
-            return;
+            setHP(hp - playerCtx.getAttacker().getAttackDamage());
+            lobby.messagePlayers(ctx.formatMessage(this));
+            abilities.values().forEach(Ability::hit); // pauses the cooldowns etc
+            isDamaged = true;
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
         }
-        assert ctx instanceof DamageContext.Player;
-        DamageContext.Player pctx = (DamageContext.Player) ctx;
-        setHP(hp - pctx.getAttacker().getAttackDamage());
-        lobby.messagePlayers(ctx.formatMessage(this));
-        abilities.values().forEach(Ability::hit);
-        isDamaged = true;
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
     }
 
-    public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker) {
-        handleHit(hitActionMessage, attacker, Component.empty());
-    }
-
-    public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
-        if (isDamaged) return;
-        avatar.damage();
-        TextColor attackerColor = attacker.team.color;
-        TextColor lightColor = BotBows.lighten(attackerColor, 0.5f);
-        if (hp <= attacker.attackDamage) { // spilleren kommer til å daue
-            die(getName()
-                    .append(hitActionMessage.color(lightColor))
-                    .append(attacker.getName())
-                    .append(hitActionMessage2.color(lightColor))
-                    .append(Component.text(" and got", lightColor))
-                    .append(Component.text(" eliminated", NamedTextColor.DARK_RED)));
-            if (!isAlive() && avatar instanceof PlayerAvatar playerAvatar) {
-                playerAvatar.spectate(attacker.avatar);
-            }
-            return;
-        }
-        setHP(hp - attacker.attackDamage);
-        lobby.messagePlayers(getName()
-                .append(hitActionMessage.color(lightColor))
-                .append(attacker.getName())
-                .append(hitActionMessage2.color(lightColor))
-                .append(Component.text("; ", NamedTextColor.WHITE)
-                        .append(Component.text(hp + "hp left"))));
-        // defender effects
-        abilities.values().forEach(Ability::hit);
-        isDamaged = true;
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
-    }
-
-    public void die(Component deathMessage) { // gjør at spilleren dauer
+    private void die(Component deathMessage) {
         setHP(0);
         lobby.botBowsGame.boardManager.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);

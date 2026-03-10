@@ -1,17 +1,29 @@
 package gruvexp.bbminigames.api.damage
 
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+
 sealed interface DamageType {
     val template: String
 
     // damaged by the environment
-    enum class Environment(override val template: String) : DamageType {
-        LAVA("%d tried to swim in lava"),
-        LIGHTNING("%d was electrocuted to a crisp");
+    enum class Environment(override val template: String, val messageColor: TextColor) : DamageType {
+        LAVA("%d tried to swim in lava", NamedTextColor.GOLD),
+        LIGHTNING("%d was electrocuted to a crisp!", NamedTextColor.AQUA),
+        EARTHQUAKE("%d was squashed by a small stone the size of a large boulder", NamedTextColor.GOLD),
+        GHOST("%d was ghosted", NamedTextColor.DARK_GRAY);
     }
 
-    // Enum for alle spillervåpen
+    // damaged by a player
     enum class Player(override val template: String) : DamageType {
-        LASER("%d was enlightened by %a's laser"),
-        BOW("%d was sniped by %a");
+        BOW("%d was sniped by %a"),
+        BUBBLE_JET("%d was hit by %a's bubble jet"),
+        SLAP("%d was slapped by %a"),
+        COOL_ROD("%d got slapped by %a's cool rod"),
+        SPLASH_BOW("%d was splash bowed by %a"),
+        THUNDER_BOW("%d was thunderbowed by %a"),
+        THUNDER_BOW_CHAIN("%d was electrobowed by %a"),
+        CREEPER("%d hugged %a's creeper"),
+        LASER("%d got enlightened by %a's laser beam");
     }
 }
