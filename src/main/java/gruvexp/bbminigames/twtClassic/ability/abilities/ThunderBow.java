@@ -50,6 +50,8 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
     }
 
     public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
+        if (defender.getTeam() == attacker.getTeam()) return;
+
         defender.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW, attacker));
         Set<BotBowsPlayer> handledPlayers = new HashSet<>();
         handledPlayers.add(defender);
