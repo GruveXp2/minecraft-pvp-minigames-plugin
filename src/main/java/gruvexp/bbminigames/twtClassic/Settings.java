@@ -156,7 +156,7 @@ public class Settings {
         abilityMenus.put(bp, newMenu);
         players.forEach(newMenu::addPlayer);
 
-        if (getPlayers().size() == 1 || (modPlayer != null && modPlayer.avatar instanceof NpcAvatar)) {
+        if (getPlayers().size() == 1 || modPlayer == null || modPlayer.avatar instanceof NpcAvatar) {
             modPlayer = bp;
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
                     " and will be the settings moderator")));
