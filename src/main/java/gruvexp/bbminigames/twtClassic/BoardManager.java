@@ -19,7 +19,6 @@ public class BoardManager {
     private Objective objective;
     private Team sbTeam1;
     private Team sbTeam2;
-    public ScoreboardManager manager = Bukkit.getScoreboardManager();
 
     public BoardManager(Lobby lobby) {
         this.lobby = lobby;
@@ -29,7 +28,7 @@ public class BoardManager {
     public BotBowsTeam team2() {return lobby.settings.team2;}
 
     public void createBoard() {
-        Scoreboard board = manager.getNewScoreboard();
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
         Component objectiveTitle = Component.text("BotBows").style(Style.style(NamedTextColor.GOLD, TextDecoration.BOLD))
                 .append(Component.text("Classic").color(NamedTextColor.AQUA));
         objective = board.registerNewObjective("botbows", Criteria.DUMMY, objectiveTitle);

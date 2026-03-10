@@ -99,7 +99,7 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     @Override
     public void reset() {
-        player.setScoreboard(bp.lobby.botBowsGame.boardManager.manager.getNewScoreboard());
+        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         player.getInventory().clear();
         player.setGlowing(false);
         player.setInvulnerable(false);
