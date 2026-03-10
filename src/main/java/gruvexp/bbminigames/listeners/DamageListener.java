@@ -1,5 +1,7 @@
 package gruvexp.bbminigames.listeners;
 
+import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
@@ -45,7 +47,8 @@ public class DamageListener implements Listener {
                 boolean hasKarma = defenderBp.hasKarmaEffect();
                 if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBow) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                 } else {
-                    defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
+                    //defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
+                    defenderBp.damage(new DamageContext.Player(attackerBp, DamageType.Player.BOW));
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
                 }
                 if (hasKarma) {

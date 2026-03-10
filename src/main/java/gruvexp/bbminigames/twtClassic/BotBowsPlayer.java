@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.api.damage.DamageContext;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
@@ -365,13 +366,37 @@ public class BotBowsPlayer {
         return isDamaged;
     }
 
+    public void damage(DamageContext ctx) {
+        if (isDamaged) return;
+        avatar.damage();
+        Component damageMessage = ctx.formatMessage(this);
+
+        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().attackDamage;
+
+        if (isFatal || ctx instanceof DamageContext.Environment) {
+            if (ctx instanceof DamageContext.Player) {
+                damageMessage = damageMessage
+                        .append(Component.text(" and got"))
+                        .append(Component.text(" eliminated", NamedTextColor.DARK_RED));
+            }
+            die(damageMessage);
+            return;
+        }
+        assert ctx instanceof DamageContext.Player;
+        DamageContext.Player pctx = (DamageContext.Player) ctx;
+        setHP(hp - pctx.getAttacker().getAttackDamage());
+        lobby.messagePlayers(ctx.formatMessage(this));
+        abilities.values().forEach(Ability::hit);
+        isDamaged = true;
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
+    }
+
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker) {
         handleHit(hitActionMessage, attacker, Component.empty());
     }
 
     public void handleHit(TextComponent hitActionMessage, BotBowsPlayer attacker, TextComponent hitActionMessage2) {
         if (isDamaged) return;
-        if (!isAlive()) return;
         avatar.damage();
         TextColor attackerColor = attacker.team.color;
         TextColor lightColor = BotBows.lighten(attackerColor, 0.5f);
