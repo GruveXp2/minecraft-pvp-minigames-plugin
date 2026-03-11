@@ -1,12 +1,14 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.ShutdownManager;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +20,7 @@ public class JoinLeaveListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        ShutdownManager.cancelShutdown();
         Player p = e.getPlayer();
         if (p.getInventory().getItemInMainHand().getType() != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
             Main.WORLD.dropItem(p.getLocation(), p.getInventory().getItemInMainHand());
@@ -44,5 +47,6 @@ public class JoinLeaveListener implements Listener {
         if (lobby != null) {
             lobby.leaveGame(p);
         }
+        if (Bukkit.getOnlinePlayers().size() == 1) ShutdownManager.scheduleShutdown();
     }
 }
