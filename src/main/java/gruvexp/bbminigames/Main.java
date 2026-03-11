@@ -39,7 +39,8 @@ public final class Main extends JavaPlugin {
                 new RightClickListener(),
                 new ShiftListener(),
                 new SwitchSpectator(),
-                new AbilityListener()
+                new AbilityListener(),
+                new ItemListener()
         );
 
         getCommand("menu").setExecutor(new MenuCommand());
