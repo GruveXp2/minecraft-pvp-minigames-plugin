@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
@@ -154,6 +155,16 @@ public class BotBowsPlayer {
         BotBowsTeam opponentTeam = team.getOppositeTeam();
         opponentTeam.glow(Radar.DURATION);
         CreeperTrap.glowCreepers(opponentTeam, Radar.DURATION);
+        final int blinks = Radar.DURATION * 20 / Radar.BLINK_PERIOD;
+        new BukkitRunnable() {
+            int step = 0;
+            @Override
+            public void run() {
+                step++;
+                opponentTeam.setGlowColor(NamedTextColor.YELLOW, Radar.BLINK_PERIOD/2);
+                if (step == blinks) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 0, Radar.BLINK_PERIOD);
     }
 
     public int getMaxHP() {return maxHP;}

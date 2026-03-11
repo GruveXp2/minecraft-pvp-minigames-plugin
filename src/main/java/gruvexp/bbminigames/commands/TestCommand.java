@@ -74,11 +74,12 @@ public class TestCommand implements CommandExecutor {
                         for (int i = 0; i < 10; i++) {
                             lobby.addBot();
                         }
-                        lobby.settings.setMaxAbilities(2);
                     }
+                    lobby.settings.setMaxAbilities(3);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
                     gxbp.equipAbility(AbilityType.THUNDER_BOW);
                     gxbp.equipAbility(AbilityType.SPLASH_BOW);
+                    gxbp.equipAbility(AbilityType.RADAR);
                     if (args.length > 1) return true;
                     lobby.startGame(p);
                 }

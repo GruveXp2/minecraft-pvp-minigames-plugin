@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -128,6 +129,11 @@ public class BotBowsTeam {
     public void glow(int seconds) {
         players.forEach(p -> p.avatar.setGlowing(true));
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.avatar.setGlowing(false)), 20L * seconds);
+    }
+
+    public void setGlowColor(NamedTextColor color, int ticks) {
+        players.forEach(p -> p.avatar.setColor(color));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p ->  p.avatar.setColor((NamedTextColor) this.color)), ticks);
     }
 
     public Material getGlassPane() {
