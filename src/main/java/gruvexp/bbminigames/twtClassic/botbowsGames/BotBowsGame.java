@@ -60,9 +60,10 @@ public class BotBowsGame {
 
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
-            q.initBattle();
+            q.initBattle(boardManager.getTeamManager());
             boardManager.updatePlayerScore(q);
         }
+        boardManager.initPlayers(); // makes the player join the Team's to get the correct color outline
         boardManager.updateTeamScores();
         players.forEach(BotBowsPlayer::start);
         new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
@@ -229,7 +230,6 @@ public class BotBowsGame {
         Main.WORLD.setStorm(false);
         Main.WORLD.setClearWeatherDuration(10000);
 
-        boardManager.resetTeams();
         team1.reset();
         team2.reset();
         lobby.reset();

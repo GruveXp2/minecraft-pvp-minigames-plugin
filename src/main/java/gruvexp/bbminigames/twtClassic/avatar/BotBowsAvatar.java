@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -24,13 +24,13 @@ public interface BotBowsAvatar {
     ArmorSet getArmor();
     void remove(); // removes the player from the game
     void reset(); // its like removing and recreating this avatar, but reusing the object
-    void readyBattle();
+    void readyBattle(TeamManager teamManager);
     void setReady(boolean ready, int itemIndex);
     int getNextFreeSlot();
     void damage();
     void setGlowing(boolean flag);
     void addPotionEffect(PotionEffect effect);
-    void setColor(TextColor color);
+    void setColor(NamedTextColor color);
     void growSize(double scale, int duration, int delay);
     default void growSize(double scale, int duration) {growSize(scale, duration, 0);}
     UUID getUUID();

@@ -6,7 +6,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -34,6 +34,7 @@ public class NpcAvatar implements BotBowsAvatar{
     private Mannequin mannequin;
     private final BotBowsPlayer bp;
     private int visualHp = -1;
+    private TeamManager teamManager;
 
     public NpcAvatar(Mannequin mannequin, BotBowsPlayer bp) {
         this.mannequin = mannequin;
@@ -107,8 +108,8 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void readyBattle() {
-
+    public void readyBattle(TeamManager teamManager) {
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -144,8 +145,8 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void setColor(TextColor color) {
-
+    public void setColor(NamedTextColor color) {
+        teamManager.setColor(mannequin, color);
     }
 
     @Override

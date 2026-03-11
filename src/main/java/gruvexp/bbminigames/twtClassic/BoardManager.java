@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic;
 
+import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,8 +18,7 @@ public class BoardManager {
 
     public final Lobby lobby;
     private Objective objective;
-    private Team sbTeam1;
-    private Team sbTeam2;
+    private TeamManager teamManager;
 
     public BoardManager(Lobby lobby) {
         this.lobby = lobby;
@@ -44,20 +44,19 @@ public class BoardManager {
         }
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        // Team stuff!
-        sbTeam1 = board.registerNewTeam(team1().name);
-        sbTeam2 = board.registerNewTeam(team2().name);
+        teamManager = new TeamManager(board); // manages scoreboard teams, used for player coloring (username, glow)
+    }
 
-        sbTeam1.color((NamedTextColor) team1().color);
-        sbTeam2.color((NamedTextColor) team2().color);
-
+    public void initPlayers() {
         for (BotBowsPlayer p : team1().getPlayers()) {
-            sbTeam1.addEntry(p.getPlainName());
+            p.avatar.setColor((NamedTextColor) team1().color);
         }
         for (BotBowsPlayer p : team2().getPlayers()) {
-            sbTeam2.addEntry(p.getPlainName());
+            p.avatar.setColor((NamedTextColor) team2().color);
         }
     }
+
+    public TeamManager getTeamManager() {return teamManager;}
 
     public void updatePlayerScore(BotBowsPlayer p) {
         removePlayerScore(p);
@@ -148,11 +147,6 @@ public class BoardManager {
     private void setScore(String text, int score) {
         Score l1 = objective.getScore(text);
         l1.setScore(score); //nederst
-    }
-
-    public void resetTeams() {
-        sbTeam1.unregister();
-        sbTeam2.unregister();
     }
 
     private static TextColor darkenColor(TextColor color) {

@@ -9,7 +9,6 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -34,6 +33,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     private final BossBar sneakBar;
     private final Map<HazardType, BossBar> hazardBars = new EnumMap<>(HazardType.class);
     private int visualHp;
+    private TeamManager teamManager;
 
     public PlayerAvatar(Player player, BotBowsPlayer bp) {
         this.player = player;
@@ -110,8 +110,9 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void readyBattle() {
+    public void readyBattle(TeamManager teamManager) {
         player.getInventory().remove(Lobby.READY.clone()); // removes ready up item
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -167,8 +168,8 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void setColor(TextColor color) {
-
+    public void setColor(NamedTextColor color) {
+        teamManager.setColor(player, color);
     }
 
     @Override

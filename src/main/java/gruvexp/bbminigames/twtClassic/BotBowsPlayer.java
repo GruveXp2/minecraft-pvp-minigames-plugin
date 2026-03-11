@@ -10,6 +10,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
+import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -131,8 +132,8 @@ public class BotBowsPlayer {
         hasKarmaEffect = false;
     }
 
-    public void initBattle() {
-        avatar.readyBattle();
+    public void initBattle(TeamManager teamManager) {
+        avatar.readyBattle(teamManager);
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
     }
 
@@ -470,7 +471,7 @@ public class BotBowsPlayer {
             public void accept(BukkitTask task) {
                 if (counter == 0) {
                     task.cancel();
-                    avatar.setColor(getTeamColor());
+                    avatar.setColor((NamedTextColor) getTeamColor());
                     return;
                 }
                 avatar.setGlowing(counter % 2 == 0);
