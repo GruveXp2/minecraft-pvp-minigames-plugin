@@ -9,6 +9,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
+import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -37,6 +38,11 @@ public class GhostHazard extends Hazard {
 
     @Override
     public void init() {}
+
+    @Override
+    public HazardChance getDefaultChance() {
+        return HazardChance.FIVE;
+    }
 
     @Override
     protected void trigger() {

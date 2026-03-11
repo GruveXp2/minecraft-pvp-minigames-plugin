@@ -33,6 +33,12 @@ public class EarthquakeHazard extends Hazard {
             bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar);
         }
     }
+
+    @Override
+    public HazardChance getDefaultChance() {
+        return HazardChance.TEN;
+    }
+
     @Override
     protected void trigger() {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {

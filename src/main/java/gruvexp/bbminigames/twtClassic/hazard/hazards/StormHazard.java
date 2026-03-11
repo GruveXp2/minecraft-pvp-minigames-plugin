@@ -31,6 +31,11 @@ public class StormHazard extends Hazard {
     }
 
     @Override
+    public HazardChance getDefaultChance() {
+        return HazardChance.TWENTY_FIVE;
+    }
+
+    @Override
     protected void trigger() {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer bp : lobby.getPlayers()) {

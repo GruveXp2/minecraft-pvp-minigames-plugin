@@ -83,7 +83,7 @@ public class HazardMenu extends SettingsMenu {
                 int row = e.getSlot() / 9;
                 HazardType hazardType = hazardsSorted.get(row);
                 Hazard hazard = hazards.get(hazardType);
-                hazard.setChance(HazardChance.TEN);
+                hazard.setChance(hazard.getDefaultChance());
                 updateBar(hazardType, row);
             } case LIME_STAINED_GLASS_PANE -> {
                 int row = e.getSlot() / 9;

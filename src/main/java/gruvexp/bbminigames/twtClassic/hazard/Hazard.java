@@ -11,7 +11,7 @@ import java.util.Map;
 
 public abstract class Hazard {
 
-    private HazardChance hazardChance = HazardChance.TEN;
+    private HazardChance hazardChance = getDefaultChance();
     private boolean isActive = false;
     protected final Lobby lobby;
 
@@ -38,6 +38,7 @@ public abstract class Hazard {
     }
 
     public abstract void init();
+    public abstract HazardChance getDefaultChance();
 
     protected abstract void trigger(); // hazarden starter
     protected abstract HazardMessage getAnnounceMessage();
