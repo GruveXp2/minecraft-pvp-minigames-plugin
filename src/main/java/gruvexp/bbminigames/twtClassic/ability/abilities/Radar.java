@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class Radar extends Ability {
 
-    public static final int DURATION = 4; // seconds
+    public static final int DURATION = 10; // seconds
     public static final int BLINK_PERIOD = 20; // ticks
 
     public Radar(BotBowsPlayer bp, int hotBarSlot) {
