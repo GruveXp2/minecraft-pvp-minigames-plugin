@@ -459,6 +459,7 @@ public class BotBowsPlayer {
         PotionEffectType randomEffect = effects[effectID];
 
         avatar.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
+        avatar.setGlowing(true);
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             int counter = 40;
             @Override
@@ -466,9 +467,11 @@ public class BotBowsPlayer {
                 if (counter == 0) {
                     task.cancel();
                     avatar.setColor((NamedTextColor) getTeamColor());
+                    avatar.setGlowing(false);
                     return;
                 }
-                avatar.setGlowing(counter % 2 == 0);
+                if (counter % 2 == 0) avatar.setColor(NamedTextColor.GOLD);
+                else avatar.setColor((NamedTextColor) getTeamColor());
                 counter--;
             }
         }, 0, 5);

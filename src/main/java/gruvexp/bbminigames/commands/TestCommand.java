@@ -67,6 +67,14 @@ public class TestCommand implements CommandExecutor {
                     lobby.addBot();
                     lobby.startGame(p);
                 }
+                case "get_karma" -> {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                    if (bp == null) {
+                        p.sendMessage(Component.text("u need 2 join the game first"));
+                        return true;
+                    }
+                    bp.getKarma();
+                }
                 case "5_bots" -> {
                     Lobby lobby = BotBows.getLobby(0);
                     if (args.length != 3) {
