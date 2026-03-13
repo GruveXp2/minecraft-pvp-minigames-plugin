@@ -1,12 +1,10 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Set;
 
@@ -18,6 +16,12 @@ public class ChargePotion extends PotionAbility {
         super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
         this.type = AbilityType.CHARGE_POTION;
         this.baseCooldown = type.getBaseCooldown();
+    }
+
+    @Override
+    public void use() {
+        super.use();
+        bp.obtainWeaponAbilities();
     }
 
     @Override
