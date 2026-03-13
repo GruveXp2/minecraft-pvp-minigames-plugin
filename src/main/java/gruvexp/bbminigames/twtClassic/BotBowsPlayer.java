@@ -361,7 +361,7 @@ public class BotBowsPlayer {
     }
 
     public void damage(DamageContext ctx) {
-        if (isDamaged) return;
+        if (isDamaged || !isAlive()) return;
         avatar.damage();
         Component damageMessage = ctx.formatMessage(this);
 
