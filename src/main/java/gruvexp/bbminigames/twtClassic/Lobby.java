@@ -61,6 +61,7 @@ public class Lobby {
             }
             BotBows.getLobby(p).leaveGame(p); // leaver den forrige lobbien for å joine denne
         }
+        p.getInventory().clear();
         settings.joinGame(p);
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.registerPlayerLobby(p.getUniqueId(), this);
