@@ -3,6 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import org.bukkit.Material;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,10 +16,18 @@ public class RightClickListener implements Listener {
 
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent e) {
-        // Check if the action is a right-click (block or air)
         switch (e.getAction()) {
             case RIGHT_CLICK_AIR:
+                break;
             case RIGHT_CLICK_BLOCK:
+                Player p = e.getPlayer();
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                if (bp == null) break;
+                Material type = e.getClickedBlock().getType();
+                if (type == Material.CHEST || type == Material.TRAPPED_CHEST || type == Material.BARREL) { // stop accidentally opening containers mid-game
+                    e.setCancelled(true);
+                    return;
+                }
                 break;
             default:
                 return;
