@@ -45,9 +45,8 @@ public final class Main extends JavaPlugin {
 
         getCommand("menu").setExecutor(new MenuCommand());
         getCommand("settings").setExecutor(new SettingsCommand());
-        getCommand("start").setExecutor(new StartCommand());
-        getCommand("leave").setExecutor(new LeaveCommand());
-        getCommand("stopgame").setExecutor(new StopGameCommand());
+        getCommand("botbows").setExecutor(new BotBowsCommand());
+        getCommand("botbows").setTabCompleter(new BotBowsTabCompleter());
         getCommand("test").setExecutor(new TestCommand());
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");

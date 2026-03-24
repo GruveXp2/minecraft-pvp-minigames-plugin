@@ -250,6 +250,11 @@ public class BotBowsGame {
         }
     }
 
+    public void endGame(BotBowsPlayer ender) {
+        lobby.messagePlayers(Component.text("The game was ended by ").append(ender.getName()));
+        endGame();
+    }
+
     public void endGame() { // the game has ended, check who won
         if (settings.getRoundDuration() > 0) {
             roundTimer.cancel();
