@@ -2,6 +2,7 @@ package gruvexp.bbminigames;
 
 import gruvexp.bbminigames.commands.*;
 import gruvexp.bbminigames.listeners.*;
+import gruvexp.bbminigames.service.BattlePresetService;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -25,6 +26,10 @@ public final class Main extends JavaPlugin {
     private static final int PORT = 25566; // Port used to communicate with the discord bot
     public static Main getPlugin() {
         return PLUGIN;
+    }
+    private BattlePresetService presetService;
+    public BattlePresetService getPresetService() {
+        return presetService;
     }
 
     @Override

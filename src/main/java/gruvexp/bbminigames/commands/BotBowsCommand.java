@@ -1,11 +1,14 @@
 package gruvexp.bbminigames.commands;
 
+import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.model.preset.BattlePreset;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,6 +44,23 @@ public class BotBowsCommand implements CommandExecutor {
                 }
             }
             case "leave" -> lobby.leaveGame(p);
+            case "save_preset" -> {
+                if (args.length == 1) {
+                    return Component.text("You must specify a name for the preset!", NamedTextColor.RED);
+                }
+                String name = args[1];
+                if (args.length == 2) {
+                    return Component.text("You must specify an item icon for the preset!", NamedTextColor.RED);
+                }
+                Material icon = Material.valueOf(args[2]);
+                BattlePreset preset = lobby.settings.saveBattlePreset(name, icon);
+                boolean success = Main.getPlugin().getPresetService().addPreset(preset);
+                if (success) {
+                    p.sendMessage(Component.text("Successfully added preset \"" + name + "\" with icon " + args[2]));
+                } else {
+                    p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED));
+                }
+            }
             default -> {
                 return Component.text("Invalid subcommand!", NamedTextColor.RED);
             }

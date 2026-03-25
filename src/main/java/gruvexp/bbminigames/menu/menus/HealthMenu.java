@@ -207,4 +207,8 @@ public class HealthMenu extends SettingsMenu {
         }
         settings.resetAttackDamage();
     }
+
+    public boolean isCustomHPEnabled() {return customHP;}
+
+    public boolean isCustomDamageEnabled() {return customDamage;}
 }

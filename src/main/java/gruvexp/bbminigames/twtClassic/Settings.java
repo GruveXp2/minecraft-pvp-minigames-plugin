@@ -2,6 +2,10 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
+import gruvexp.bbminigames.model.preset.AbilitySettings;
+import gruvexp.bbminigames.model.preset.BattlePreset;
+import gruvexp.bbminigames.model.preset.HealthSettings;
+import gruvexp.bbminigames.model.preset.WinConditionSettings;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
@@ -12,10 +16,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Settings {
 
@@ -77,6 +83,86 @@ public class Settings {
         players.forEach(bp -> abilityMenus.put(bp, new AbilityMenu(this, bp)));
 
         setMap(BotBowsMap.CLASSIC_ARENA);
+    }
+
+    public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
+        HealthSettings healthSettings = new HealthSettings(
+                healthMenu.isCustomHPEnabled() ? null : maxHP,
+                healthMenu.isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxHP)) : null,
+                healthMenu.isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAttackDamage)) : null
+        );
+        WinConditionSettings winConditionSettings = new WinConditionSettings(
+                winScoreThreshold, roundDuration, dynamicScoring
+        );
+        AbilitySettings abilitySettings = new AbilitySettings(
+                isIndividualMaxAbilities ? null : maxAbilities,
+                isIndividualMaxAbilities ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
+                isIndividualCooldownMultiplier ? null : abilityCooldownMultiplier,
+                isIndividualCooldownMultiplier ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAbilityCooldownMultiplier)) : null,
+                abilityStates.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toSet())
+        );
+        return new BattlePreset(
+                presetName,
+                presetIcon,
+                currentMap,
+                team1.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
+                team2.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
+                healthSettings,
+                winConditionSettings,
+                hazards.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getChance())),
+                abilitySettings
+        );
+    }
+
+    public void applyBattlePreset(BattlePreset preset) {
+        setMap(preset.map());
+
+        preset.team1().stream()
+                .map(BotBows::getBotBowsPlayer)
+                .filter(Objects::nonNull)
+                .filter(players::contains)
+                .forEach(team1::join);
+        preset.team2().stream()
+                .map(BotBows::getBotBowsPlayer)
+                .filter(Objects::nonNull)
+                .filter(players::contains)
+                .forEach(team2::join);
+
+        HealthSettings healthSettings = preset.health();
+        Integer maxHp = healthSettings.maxHp();
+        if (maxHp != null) {
+            setMaxHP(maxHp);
+        }
+        var individualMaxHp = healthSettings.individualMaxHp();
+        if (individualMaxHp != null) {
+            individualMaxHp.forEach((key, value) -> {
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
+                if (bp != null) {
+                    bp.setMaxHP(value);
+                }
+            });
+        }
+        var individualDamage = healthSettings.customDamage();
+        if (individualDamage != null) {
+            individualDamage.forEach((key, value) -> {
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
+                if (bp != null) {
+                    bp.setAttackDamage(value);
+                }
+            });
+        }
+
+        WinConditionSettings winConditionSettings = preset.winCondition();
+        setWinScoreThreshold(winConditionSettings.winScoreThreshold());
+        setRoundDuration(winConditionSettings.roundDuration());
+        setDynamicScoring(winConditionSettings.dynamicPoints());
+
+        currentMap.allowedHazards.forEach(type -> {
+            hazards.computeIfAbsent(type, h -> h.createHazard(lobby));
+            hazards.get(type).setChance(preset.hazards().get(type));
+        });
+
+        AbilitySettings abilitySettings = preset.abilities();
     }
 
     public void setMap(BotBowsMap map) {
