@@ -20,9 +20,9 @@ sealed interface DamageType {
         BUBBLE_JET("%d was hit by %a's bubble jet"),
         SLAP("%d was slapped by %a"),
         COOL_ROD("%d got slapped by %a's cool rod"),
-        SPLASH_BOW("%d was splash bowed by %a"),
-        THUNDER_BOW("%d was thunderbowed by %a"),
-        THUNDER_BOW_CHAIN("%d was electrobowed by %a"),
+        SPLASH_BOW("%d was splashed by %a"),
+        THUNDER_BOW("%d was electrocuted by %a"),
+        THUNDER_BOW_CHAIN("%d was chain zapped by %a"),
         CREEPER("%d hugged %a's creeper"),
         LASER("%d got enlightened by %a's laser beam");
     }
