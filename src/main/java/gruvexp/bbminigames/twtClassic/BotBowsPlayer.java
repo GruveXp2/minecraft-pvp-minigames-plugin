@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.damage.DamageContext;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
@@ -275,7 +276,6 @@ public class BotBowsPlayer {
         }
         if (relativeAbilitySlot > 0) { // slot -1 means cursor
             getAbilityMenu().getInventory().setItem(relativeAbilitySlot + 27, AbilityMenu.ABILITY_EQUIPPED);
-            BotBows.debugMessage("Setting equip item at " + relativeAbilitySlot);
         }
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
 
