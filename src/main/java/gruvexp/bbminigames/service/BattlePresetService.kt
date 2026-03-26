@@ -13,7 +13,6 @@ class BattlePresetService {
         .setPrettyPrinting()
         .create()
     private val folder = File(Main.getPlugin().dataFolder, "presets")
-    var totalPresets: Int = 0
 
     fun loadPresetsFromFile() {
         val file = folder.resolve("battlepresets.json")
@@ -21,7 +20,6 @@ class BattlePresetService {
 
         val json = file.readText()
 
-        // Vi forteller Gson: "Dette er en Map med String som nøkkel og BattlePreset som verdi"
         val type = object : TypeToken<Map<String, BattlePreset>>() {}.type
         val loadedPresets: Map<String, BattlePreset> = gson.fromJson(json, type)
 
@@ -58,5 +56,13 @@ class BattlePresetService {
         battlePresets[id] = battlePreset
         savePresetsToFile()
         return true
+    }
+
+    fun getPreset(presetName: String): BattlePreset? {
+        return battlePresets[presetName]
+    }
+
+    fun getPresetNames(): MutableSet<String> {
+        return battlePresets.keys;
     }
 }

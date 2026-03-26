@@ -94,12 +94,13 @@ public class Settings {
         WinConditionSettings winConditionSettings = new WinConditionSettings(
                 winScoreThreshold, roundDuration, dynamicScoring
         );
+        Set<AbilityType> bannedAbilities = abilityStates.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toSet());
         AbilitySettings abilitySettings = new AbilitySettings(
                 isIndividualMaxAbilities ? null : maxAbilities,
                 isIndividualMaxAbilities ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
                 isIndividualCooldownMultiplier ? null : abilityCooldownMultiplier,
                 isIndividualCooldownMultiplier ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAbilityCooldownMultiplier)) : null,
-                abilityStates.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toSet())
+                !bannedAbilities.isEmpty() ? bannedAbilities : null
         );
         return new BattlePreset(
                 presetName,
@@ -163,6 +164,39 @@ public class Settings {
         });
 
         AbilitySettings abilitySettings = preset.abilities();
+        Integer maxAbilities = abilitySettings.maxAbilities();
+        if (maxAbilities != null) {
+            BotBows.debugMessage("setting amx abilities to" + maxAbilities);
+            setMaxAbilities(maxAbilities);
+        }
+
+        var individualMaxAbilities = abilitySettings.individualMaxAbilities();
+        if (individualMaxAbilities != null) {
+            individualMaxAbilities.forEach((key, value) -> {
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
+                if (bp != null) {
+                    bp.setMaxAbilities(value);
+                }
+            });
+        }
+        Float cooldownMultiplier = abilitySettings.cooldownMultiplier();
+        if (cooldownMultiplier != null) setAbilityCooldownMultiplier(cooldownMultiplier);
+
+        var individualCooldownMultiplier = abilitySettings.individualCooldownMultiplier();
+        if (individualCooldownMultiplier != null) {
+            individualCooldownMultiplier.forEach((key, value) -> {
+                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
+                if (bp != null) {
+                    bp.setAbilityCooldownMultiplier(value);
+                }
+            });
+        }
+        var bannedAbilities = abilitySettings.bannedAbilities();
+
+        if (bannedAbilities != null) Arrays.stream(AbilityType.values()).forEach(type -> {
+            if (bannedAbilities.contains(type) && isAbilityAllowed(type)) disableAbility(type);
+            else if (!isAbilityAllowed(type)) allowAbility(type);
+        });
     }
 
     public void setMap(BotBowsMap map) {

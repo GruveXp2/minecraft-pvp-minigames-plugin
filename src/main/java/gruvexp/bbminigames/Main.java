@@ -58,6 +58,8 @@ public final class Main extends JavaPlugin {
         WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end");
         BotBows.init();
         BotBowsPlayer.armorInit();
+        presetService = new BattlePresetService();
+        presetService.loadPresetsFromFile();
         new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
     }
 

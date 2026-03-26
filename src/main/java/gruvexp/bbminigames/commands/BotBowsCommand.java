@@ -52,7 +52,9 @@ public class BotBowsCommand implements CommandExecutor {
                 if (args.length == 2) {
                     return Component.text("You must specify an item icon for the preset!", NamedTextColor.RED);
                 }
-                Material icon = Material.valueOf(args[2]);
+                Material icon = Material.getMaterial(args[2].toUpperCase());
+                if (icon == null) return Component.text("Invalid item \"" + args[2] + "\"", NamedTextColor.RED);
+
                 BattlePreset preset = lobby.settings.saveBattlePreset(name, icon);
                 boolean success = Main.getPlugin().getPresetService().addPreset(preset);
                 if (success) {
@@ -60,6 +62,18 @@ public class BotBowsCommand implements CommandExecutor {
                 } else {
                     p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED));
                 }
+            }
+            case "load_preset" -> {
+                if (args.length == 1) {
+                    return Component.text("You must spe/cify the preset to load!", NamedTextColor.RED);
+                }
+                String presetName = args[1];
+                BattlePreset preset = Main.getPlugin().getPresetService().getPreset(presetName);
+                if (preset == null) return Component.text("Error! No preset with name \"" + presetName + "\" exists");
+
+                lobby.settings.applyBattlePreset(preset);
+                p.sendMessage(Component.text("Successfully applied preset ")
+                        .append(Component.text(presetName, NamedTextColor.AQUA)));
             }
             default -> {
                 return Component.text("Invalid subcommand!", NamedTextColor.RED);
