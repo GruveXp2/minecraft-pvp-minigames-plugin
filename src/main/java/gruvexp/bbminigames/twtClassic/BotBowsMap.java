@@ -6,7 +6,7 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 public enum BotBowsMap {
     CLASSIC_ARENA(ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST)),
     ICY_RAVINE(ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST)),
-    ROYAL_MAP(ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST)),
+    ROYAL_MAP(ImmutableSet.of(HazardType.GHOST)),
     STEAMPUNK(ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST)),
     PIGLIN_HIDEOUT(ImmutableSet.of(HazardType.EARTHQUAKE, HazardType.GHOST)),
 
