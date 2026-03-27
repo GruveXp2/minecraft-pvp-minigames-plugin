@@ -22,7 +22,9 @@ public class JoinLeaveListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         ShutdownManager.cancelShutdown();
         Player p = e.getPlayer();
-        p.setOp(false);
+        if (!p.getName().equals("ColinStorm") && !p.getName().equals("GruveXp")) {
+            p.setOp(false);
+        }
         if (p.getInventory().getItemInMainHand().getType() != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
             Main.WORLD.dropItem(p.getLocation(), p.getInventory().getItemInMainHand());
         }
