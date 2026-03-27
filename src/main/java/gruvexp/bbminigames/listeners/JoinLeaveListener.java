@@ -32,13 +32,13 @@ public class JoinLeaveListener implements Listener {
                 .append(Component.text("/menu ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/menu")))
                 .append(Component.text("or right click the compass\n"))
                 .append(Component.text("To leave a game, run "))
-                .append(Component.text("/leave\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/leave")))
+                .append(Component.text("/botbows leave\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows leave")))
                 .append(Component.text("To access settings for a game, run "))
                 .append(Component.text("/settings\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/settings")))
                 .append(Component.text("To start/stop a game, run "))
-                .append(Component.text("/start ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/start")))
+                .append(Component.text("/botbows start ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows start")))
                 .append(Component.text("or "))
-                .append(Component.text("/stopgame", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/stopgame"))));
+                .append(Component.text("/botbows stop", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows stop"))));
     }
 
     @EventHandler

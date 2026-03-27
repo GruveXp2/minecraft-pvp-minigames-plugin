@@ -20,7 +20,7 @@ public class BotBowsTabCompleter implements TabCompleter {
             case "load_preset" -> {
                 if (args.length == 2) return Main.getPlugin().getPresetService().getPresetNames().stream().toList();
             }
-            case "add_preset" -> {
+            case "save_preset" -> {
                 if (args.length == 2) return List.of("<name>");
                 if (args.length == 3) return Arrays.stream(Material.values())
                         .map(e -> e.name().toLowerCase())
