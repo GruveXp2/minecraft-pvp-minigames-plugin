@@ -2,10 +2,10 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
-import gruvexp.bbminigames.model.preset.AbilitySettings;
+import gruvexp.bbminigames.model.preset.AbilityPreset;
 import gruvexp.bbminigames.model.preset.BattlePreset;
-import gruvexp.bbminigames.model.preset.HealthSettings;
-import gruvexp.bbminigames.model.preset.WinConditionSettings;
+import gruvexp.bbminigames.model.preset.HealthPreset;
+import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
@@ -86,16 +86,16 @@ public class Settings {
     }
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
-        HealthSettings healthSettings = new HealthSettings(
+        HealthPreset healthPreset = new HealthPreset(
                 healthMenu.isCustomHPEnabled() ? null : maxHP,
                 healthMenu.isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxHP)) : null,
                 healthMenu.isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAttackDamage)) : null
         );
-        WinConditionSettings winConditionSettings = new WinConditionSettings(
+        WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
         );
         Set<AbilityType> bannedAbilities = abilityStates.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toSet());
-        AbilitySettings abilitySettings = new AbilitySettings(
+        AbilityPreset abilityPreset = new AbilityPreset(
                 isIndividualMaxAbilities ? null : maxAbilities,
                 isIndividualMaxAbilities ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
                 isIndividualCooldownMultiplier ? null : abilityCooldownMultiplier,
@@ -108,10 +108,10 @@ public class Settings {
                 currentMap,
                 team1.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
                 team2.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
-                healthSettings,
-                winConditionSettings,
+                healthPreset,
+                winConditionPreset,
                 hazards.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getChance())),
-                abilitySettings
+                abilityPreset
         );
     }
 
@@ -129,12 +129,12 @@ public class Settings {
                 .filter(players::contains)
                 .forEach(team2::join);
 
-        HealthSettings healthSettings = preset.health();
-        Integer maxHp = healthSettings.maxHp();
+        HealthPreset healthPreset = preset.health();
+        Integer maxHp = healthPreset.maxHp();
         if (maxHp != null) {
             setMaxHP(maxHp);
         }
-        var individualMaxHp = healthSettings.individualMaxHp();
+        var individualMaxHp = healthPreset.individualMaxHp();
         if (individualMaxHp != null) {
             individualMaxHp.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
@@ -143,7 +143,7 @@ public class Settings {
                 }
             });
         }
-        var individualDamage = healthSettings.customDamage();
+        var individualDamage = healthPreset.customDamage();
         if (individualDamage != null) {
             individualDamage.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
@@ -153,24 +153,24 @@ public class Settings {
             });
         }
 
-        WinConditionSettings winConditionSettings = preset.winCondition();
-        setWinScoreThreshold(winConditionSettings.winScoreThreshold());
-        setRoundDuration(winConditionSettings.roundDuration());
-        setDynamicScoring(winConditionSettings.dynamicPoints());
+        WinConditionPreset winConditionPreset = preset.winCondition();
+        setWinScoreThreshold(winConditionPreset.winScoreThreshold());
+        setRoundDuration(winConditionPreset.roundDuration());
+        setDynamicScoring(winConditionPreset.dynamicPoints());
 
         currentMap.allowedHazards.forEach(type -> {
             hazards.computeIfAbsent(type, h -> h.createHazard(lobby));
             hazards.get(type).setChance(preset.hazards().get(type));
         });
 
-        AbilitySettings abilitySettings = preset.abilities();
-        Integer maxAbilities = abilitySettings.maxAbilities();
+        AbilityPreset abilityPreset = preset.abilities();
+        Integer maxAbilities = abilityPreset.maxAbilities();
         if (maxAbilities != null) {
             BotBows.debugMessage("setting amx abilities to" + maxAbilities);
             setMaxAbilities(maxAbilities);
         }
 
-        var individualMaxAbilities = abilitySettings.individualMaxAbilities();
+        var individualMaxAbilities = abilityPreset.individualMaxAbilities();
         if (individualMaxAbilities != null) {
             individualMaxAbilities.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
@@ -179,10 +179,10 @@ public class Settings {
                 }
             });
         }
-        Float cooldownMultiplier = abilitySettings.cooldownMultiplier();
+        Float cooldownMultiplier = abilityPreset.cooldownMultiplier();
         if (cooldownMultiplier != null) setAbilityCooldownMultiplier(cooldownMultiplier);
 
-        var individualCooldownMultiplier = abilitySettings.individualCooldownMultiplier();
+        var individualCooldownMultiplier = abilityPreset.individualCooldownMultiplier();
         if (individualCooldownMultiplier != null) {
             individualCooldownMultiplier.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
@@ -191,11 +191,11 @@ public class Settings {
                 }
             });
         }
-        var bannedAbilities = abilitySettings.bannedAbilities();
+        var bannedAbilities = abilityPreset.bannedAbilities();
 
         if (bannedAbilities != null) Arrays.stream(AbilityType.values()).forEach(type -> {
-            if (bannedAbilities.contains(type) && isAbilityAllowed(type)) disableAbility(type);
-            else if (!isAbilityAllowed(type)) allowAbility(type);
+            if (isAbilityBanned(type)) disableAbility(type);
+            else if (!isAbilityBanned(type)) allowAbility(type);
         });
     }
 

@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import java.util.UUID
 
 @JvmRecord
-data class AbilitySettings(
+data class AbilityPreset(
     val maxAbilities: Int?,
     val individualMaxAbilities: Map<UUID, Int>?,
     val cooldownMultiplier: Float?,

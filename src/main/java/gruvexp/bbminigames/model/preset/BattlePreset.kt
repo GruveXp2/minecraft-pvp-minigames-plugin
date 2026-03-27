@@ -13,8 +13,8 @@ data class BattlePreset(
     val map: BotBowsMap,
     val team1: Set<UUID>,
     val team2: Set<UUID>,
-    val health: HealthSettings,
-    val winCondition: WinConditionSettings,
+    val health: HealthPreset,
+    val winCondition: WinConditionPreset,
     val hazards: Map<HazardType, HazardChance>,
-    val abilities: AbilitySettings,
+    val abilities: AbilityPreset,
 )
