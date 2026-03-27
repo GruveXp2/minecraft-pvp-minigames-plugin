@@ -32,7 +32,7 @@ public class StormHazard extends Hazard {
 
     @Override
     public HazardChance getDefaultChance() {
-        return HazardChance.TWENTY_FIVE;
+        return HazardChance.TEN;
     }
 
     @Override

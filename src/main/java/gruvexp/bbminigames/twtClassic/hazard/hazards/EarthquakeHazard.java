@@ -36,7 +36,7 @@ public class EarthquakeHazard extends Hazard {
 
     @Override
     public HazardChance getDefaultChance() {
-        return HazardChance.TEN;
+        return HazardChance.FIVE;
     }
 
     @Override

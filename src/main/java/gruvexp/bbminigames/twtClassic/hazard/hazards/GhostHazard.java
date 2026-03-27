@@ -41,7 +41,7 @@ public class GhostHazard extends Hazard {
 
     @Override
     public HazardChance getDefaultChance() {
-        return HazardChance.FIVE;
+        return HazardChance.DISABLED;
     }
 
     @Override
