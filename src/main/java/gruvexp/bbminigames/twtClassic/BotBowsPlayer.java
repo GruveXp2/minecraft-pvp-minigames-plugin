@@ -2,7 +2,6 @@ package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
@@ -325,10 +324,10 @@ public class BotBowsPlayer {
 
         int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
-            if (lobby.settings.isAbilityAllowed(type)) {
-                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
-            } else {
+            if (lobby.settings.isAbilityBanned(type)) {
                 getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
+            } else {
+                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
             }
         }
         abilities.remove(type);

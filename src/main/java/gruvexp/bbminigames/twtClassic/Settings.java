@@ -45,7 +45,7 @@ public class Settings {
     private boolean isIndividualMaxAbilities = false;
     private float abilityCooldownMultiplier = 1.0f;
     private boolean isIndividualCooldownMultiplier = false;
-    private final Map<AbilityType, Boolean> abilityStates = new HashMap<>();
+    private final Set<AbilityType> bannedAbilities = new HashSet<>();
     public int rain = 0;
     // menus
     public MapMenu mapMenu;
@@ -94,7 +94,7 @@ public class Settings {
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
         );
-        Set<AbilityType> bannedAbilities = abilityStates.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toSet());
+        Set<AbilityType> bannedAbilities = this.bannedAbilities;
         AbilityPreset abilityPreset = new AbilityPreset(
                 isIndividualMaxAbilities ? null : maxAbilities,
                 isIndividualMaxAbilities ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
@@ -446,25 +446,26 @@ public class Settings {
     }
 
     public void allowAbility(AbilityType type) {
-        abilityStates.put(type, true);
+        bannedAbilities.remove(type);
         abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
     }
 
     public void disableAbility(AbilityType type) {
-        abilityStates.put(type, false);
+        bannedAbilities.add(type);
         abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
         players.forEach(p -> p.unequipAbility(type));
     }
 
     public void toggleAbility(AbilityType type) {
-        if (isAbilityAllowed(type)) {
-            disableAbility(type);
-        } else {
+        if (isAbilityBanned(type)) {
             allowAbility(type);
+        } else {
+            disableAbility(type);
         }
     }
 
-    public boolean isAbilityAllowed(AbilityType type) {
-        return abilityStates.getOrDefault(type, true); // Default to enabled
+    public boolean isAbilityBanned(AbilityType type) {
+        return bannedAbilities.contains(type); // Default to enabled
     }
+
 }
