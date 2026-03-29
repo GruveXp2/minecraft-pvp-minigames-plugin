@@ -1,11 +1,11 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,11 +13,6 @@ public abstract class Hazard {
 
     private HazardChance hazardChance = getDefaultChance();
     private boolean isActive = false;
-    protected final Lobby lobby;
-
-    protected Hazard(Lobby lobby) {
-        this.lobby = lobby;
-    }
 
     public HazardChance getChance() {return hazardChance;}
 
@@ -25,11 +20,11 @@ public abstract class Hazard {
 
     public Map<BotBowsPlayer, BukkitRunnable> hazardTimers = new HashMap<>();
 
-    public void triggerOnChance() {
+    public void triggerOnChance(Collection<BotBowsPlayer> players) {
         if (hazardChance.occurs()) {
             isActive = true;
-            announce();
-            trigger();
+            announce(players);
+            trigger(players);
         }
     }
 
@@ -37,16 +32,18 @@ public abstract class Hazard {
         return isActive;
     }
 
-    public abstract void init();
+    public abstract void init(Collection<BotBowsPlayer> players);
     public abstract HazardChance getDefaultChance();
 
-    protected abstract void trigger(); // hazarden starter
+    protected abstract void trigger(Collection<BotBowsPlayer> players); // hazarden starter
     protected abstract HazardMessage getAnnounceMessage();
-    private void announce() {
+    private void announce(Collection<BotBowsPlayer> players) {
         HazardMessage msg = getAnnounceMessage();
-        lobby.messagePlayers(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
-                .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
-        lobby.titlePlayers(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
+        players.forEach(p -> {
+            p.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
+                    .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
+            p.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
+        });
     }
     public abstract String getName();
 

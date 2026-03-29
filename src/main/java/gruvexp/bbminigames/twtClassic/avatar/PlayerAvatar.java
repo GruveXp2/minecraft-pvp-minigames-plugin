@@ -24,6 +24,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Duration;
 import java.util.*;
 
 public class PlayerAvatar implements BotBowsAvatar{
@@ -239,6 +240,12 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void showTitle(Title title) {
         player.showTitle(title);
+    }
+
+    @Override
+    public void showTitle(Component component, int seconds) {
+        player.showTitle(Title.title(component, Component.text(""),
+                Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
     }
 
     @Override

@@ -44,6 +44,7 @@ public interface BotBowsAvatar {
     default Location getLocation() {return getEntity().getLocation();}
     default void teleport(Location location) {getEntity().teleport(location);}
     void showTitle(Title title);
+    void showTitle(Component component, int seconds);
     void playSound(Location location, String sound, float volume, float pitch);
     void initHazardBar(HazardType hazardType, BossBar bar);
     void setHazardBarProgress(HazardType hazardType, float progress);

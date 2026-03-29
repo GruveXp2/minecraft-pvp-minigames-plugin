@@ -4,7 +4,6 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.api.damage.DamageContext;
 import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
@@ -16,19 +15,17 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class EarthquakeHazard extends Hazard {
     Set<Location> anvilLocations = new HashSet<>();
 
-    public EarthquakeHazard(Lobby lobby) {
-        super(lobby);
-    }
-
-    public void init() { // calles når spillet begynner
+    @Override
+    public void init(Collection<BotBowsPlayer> players) { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
-        for (BotBowsPlayer bp : lobby.getPlayers()) {
+        for (BotBowsPlayer bp : players) {
             BossBar bar = BossBar.bossBar(Component.text("Anvil timer", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_6);
             bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar);
         }
@@ -40,9 +37,9 @@ public class EarthquakeHazard extends Hazard {
     }
 
     @Override
-    protected void trigger() {
+    protected void trigger(Collection<BotBowsPlayer> players) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            for (BotBowsPlayer bp : lobby.getPlayers()) {
+            for (BotBowsPlayer bp : players) {
                 PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(bp);
                 earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
                 hazardTimers.put(bp, earthQuakeTimer);

@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
+import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.scheduler.BukkitTask;
 
@@ -44,7 +46,7 @@ public class BotBowsGame {
         this.team1 = settings.team1;
         this.team2 = settings.team2;
         this.players = settings.getPlayers();
-        this.hazards = settings.getHazards().values();
+        this.hazards = settings.getHazardSettings().createActiveHazards();
         this.boardManager = new BoardManager(lobby);
     }
 
@@ -56,7 +58,7 @@ public class BotBowsGame {
     public void startGame() {
         boardManager.createBoard();
         startRound();
-        hazards.forEach(Hazard::init);
+        hazards.forEach(hazard -> hazard.init(players));
 
         // legger til player liv osv
         for (BotBowsPlayer q : players) {
@@ -88,7 +90,11 @@ public class BotBowsGame {
     }
 
     public void triggerHazards() {
-        hazards.forEach(Hazard::triggerOnChance);
+        hazards.forEach(hazard -> hazard.triggerOnChance(players));
+    }
+
+    public Hazard getStormHazard() { // temporary until trident ability is revamped
+        return hazards.stream().filter(hazard -> hazard instanceof StormHazard).collect(Collectors.toSet()).iterator().next();
     }
 
     public void handleMovement(PlayerMoveEvent e) {
