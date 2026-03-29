@@ -15,6 +15,7 @@ import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -81,7 +82,14 @@ public class TestCommand implements CommandExecutor {
                             lobby.addBot();
                         }
                     }
-                    lobby.settings.setMaxAbilities(3);
+                    Settings settings = lobby.settings;
+                    settings.setMaxAbilities(3);
+                    settings.disableAbility(AbilityType.ENDER_PEARL);
+                    settings.disableAbility(AbilityType.BABY_POTION);
+                    settings.setMaxAbilities(3);
+                    settings.setAbilityCooldownMultiplier(1.25f);
+                    settings.setMap(BotBowsMap.ICY_RAVINE);
+                    settings.setWinScoreThreshold(67);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
                     gxbp.equipAbility(AbilityType.THUNDER_BOW);
                     gxbp.equipAbility(AbilityType.SPLASH_BOW);
@@ -89,7 +97,14 @@ public class TestCommand implements CommandExecutor {
                     if (args.length > 1) return true;
                     lobby.startGame(p);
                 }
-                case "add_bot" -> BotBows.getLobby(0).addBot();
+                case "add_bot" -> {
+                    if (args.length == 1) {
+                        BotBows.getLobby(0).addBot();
+                    } else {
+                        int lobbyId = Integer.parseInt(args[1]);
+                        BotBows.getLobby(lobbyId).addBot();
+                    }
+                }
                 case "toggle_experimental" -> {
                     Lobby lobby = BotBows.getLobby(p);
                     if (lobby == null) {
@@ -199,7 +214,7 @@ public class TestCommand implements CommandExecutor {
                     lobby.joinGame(gruveXp);
                     lobby.joinGame(judith);
                     lobby.settings.setMap(BotBowsMap.SPACE_STATION);
-                    lobby.settings.getHazards().values().forEach(h -> h.setChance(HazardChance.DISABLED));
+                    //lobby.settings.getHazards().values().forEach(h -> h.setChance(HazardChance.DISABLED));
                     BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
                     gruveBp.equipAbility(1, AbilityType.LASER_TRAP);
@@ -232,7 +247,7 @@ public class TestCommand implements CommandExecutor {
                     Player judith = Bukkit.getPlayer("Spionagent54");
 
                     Lobby lobby  = BotBows.getLobby(0);
-                    lobby.settings.getHazard(HazardType.STORM).setChance(HazardChance.DISABLED);
+                    lobby.settings.getHazardSettings().setChance(HazardType.STORM, HazardChance.DISABLED);
                     lobby.joinGame(gruveXp);
                     lobby.joinGame(judith);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
@@ -295,8 +310,52 @@ public class TestCommand implements CommandExecutor {
                 default -> sender.sendMessage("Wrong arg (" + args[0] + ")");
             }
             return true;
+        } else {
+            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+            if (bp == null) {
+                p.sendMessage(Component.text("You must be in a lobby to test", NamedTextColor.RED));
+                return true;
+            }
+            testAbilities(bp);
         }
         //BotBowsManager.debugMessage(STR."\{p.getName()}is \{isInDungeon(p) ? "" : "not"} in a dungeon\{BotBowsManager.isInDungeon(p) ? STR.", section\{BotBowsManager.getSection(p)}" : ""}");
         return true;
+    }
+
+    private void testHazards(BotBowsPlayer bp) {
+        Settings settings = bp.lobby.settings;
+        settings.getHazardSettings().setChance(HazardType.STORM, HazardChance.ALWAYS);
+        assertThat(settings.getHazardSettings().getChance(HazardType.STORM) == HazardChance.ALWAYS, "setup storm chance", bp);
+
+        BattlePreset preset = Main.getPlugin().getPresetService().getPreset("test");
+        assertThat(preset != null, "preset exists", bp);
+        assert preset != null;
+        assertThat(preset.hazards().get(HazardType.STORM) == HazardChance.FIFTY, "preset has 50% storm", bp);
+
+        settings.applyBattlePreset(preset);
+        assertThat(settings.getHazardSettings().getChance(HazardType.STORM) == HazardChance.FIFTY, "preset applied, has 50% storm now", bp);
+    }
+
+    private void testAbilities(BotBowsPlayer bp) {
+        Settings settings = bp.lobby.settings;
+        settings.allowAbility(AbilityType.ENDER_PEARL);
+        assertThat(!settings.isAbilityBanned(AbilityType.ENDER_PEARL), "enderpearl initially allowed", bp);
+
+        BattlePreset preset = Main.getPlugin().getPresetService().getPreset("test");
+        assertThat(preset != null, "preset exists", bp);
+        assert preset != null;
+        assertThat(preset.abilities().bannedAbilities() != null, "some abilities are banned", bp);
+        assertThat(preset.abilities().bannedAbilities().contains(AbilityType.ENDER_PEARL), "preset has banned pearl", bp);
+
+        settings.applyBattlePreset(preset);
+        assertThat(settings.isAbilityBanned(AbilityType.ENDER_PEARL), "enderpearl banned", bp);
+    }
+
+    private void assertThat(boolean condition, String message, BotBowsPlayer tester) {
+        if (condition) {
+            tester.avatar.message(Component.text("✔ PASS: ", NamedTextColor.GREEN).append(Component.text(message)));
+        } else {
+            tester.avatar.message(Component.text("✘ FAIL: ", NamedTextColor.RED).append(Component.text(message)));
+        }
     }
 }
