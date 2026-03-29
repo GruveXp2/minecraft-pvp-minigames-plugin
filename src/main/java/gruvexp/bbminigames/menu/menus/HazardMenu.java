@@ -7,6 +7,8 @@ import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
+import gruvexp.bbminigames.twtClassic.settings.HazardUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -14,26 +16,26 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class HazardMenu extends SettingsMenu {
+public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
 
     private static final List<String> PERCENT = HazardChance.getPercentStrings();
-    private final HashMap<HazardType, Hazard> hazards;
     private final ArrayList<HazardType> hazardsSorted = new ArrayList<>();
 
     private final HashMap<HazardType, MenuSlider> hazardSliders = new HashMap<>();
 
     public HazardMenu(Settings settings) {
         super(settings);
-        hazards = settings.getHazards();
     }
 
     private ItemStack getHazardItem(Hazard hazard) {
+        if (hazard == null) {
+            return makeItem(Material.BARRIER, Component.text("Unavailable", NamedTextColor.RED),
+                    Component.text("This hazard is not compatible with this map", NamedTextColor.RED));
+        }
         ItemStack item;
         Component[] loreDesc = hazard.getDescription();
         if (hazard.getChance() == HazardChance.DISABLED) {
@@ -66,6 +68,7 @@ public class HazardMenu extends SettingsMenu {
         BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(clicker);
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(bp)) return;
 
+        HazardSettings hazardSettings = settings.getHazardSettings();
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, CYAN_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
                 Component c = e.getCurrentItem().getItemMeta().displayName();
@@ -73,24 +76,16 @@ public class HazardMenu extends SettingsMenu {
                 String s = PlainTextComponentSerializer.plainText().serialize(c);
                 HazardChance chance = HazardChance.of(s);
                 int row = e.getSlot() / 9;
-                HazardType hazardType = hazardsSorted.get(row);
-                Hazard hazard = hazards.get(hazardType);
-                if (hazard.getChance() != chance) {
-                    hazard.setChance(chance);
-                    updateBar(hazardType, row);
-                }
+                HazardType type = hazardsSorted.get(row);
+                hazardSettings.setChance(type, chance);
             } case RED_STAINED_GLASS_PANE -> {
                 int row = e.getSlot() / 9;
-                HazardType hazardType = hazardsSorted.get(row);
-                Hazard hazard = hazards.get(hazardType);
-                hazard.setChance(hazard.getDefaultChance());
-                updateBar(hazardType, row);
+                HazardType type = hazardsSorted.get(row);
+                hazardSettings.resetChance(type);
             } case LIME_STAINED_GLASS_PANE -> {
                 int row = e.getSlot() / 9;
-                HazardType hazardType = hazardsSorted.get(row);
-                Hazard hazard = hazards.get(hazardType);
-                hazard.setChance(HazardChance.DISABLED);
-                updateBar(hazardType, row);
+                HazardType type = hazardsSorted.get(row);
+                hazardSettings.setChance(type, HazardChance.DISABLED);
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
@@ -109,13 +104,16 @@ public class HazardMenu extends SettingsMenu {
     }
 
     void updateBar(HazardType hazardType, int row) {
-        inventory.setItem(row * 9, getHazardItem(hazards.get(hazardType)));
-        hazardSliders.get(hazardType).setProgress(hazards.get(hazardType).getChance().toString());
+        HazardSettings hazardSettings = settings.getHazardSettings();
+        inventory.setItem(row * 9, getHazardItem(hazardSettings.getHazard(hazardType)));
+        hazardSliders.get(hazardType).setProgress(hazardSettings.getChance(hazardType).toString());
     }
 
-    public void updateHazards() {
+    @Override
+    public void onSchemaUpdate() {
+        Set<HazardType> newHazards = settings.getHazardSettings().getHazardTypes();
         List<HazardType> updated = Arrays.stream(HazardType.values())
-                .filter(hazards::containsKey)
+                .filter(newHazards::contains)
                 .toList();
 
         hazardsSorted.stream()
@@ -141,8 +139,14 @@ public class HazardMenu extends SettingsMenu {
             updateBar(hazardType, hazardsSorted.indexOf(hazardType));
         }
 
-        for (int i = hazards.size() * 9; i < getSlots() - 9; i++) {
+        for (int i = hazardsSorted.size() * 9; i < getSlots() - 9; i++) {
             inventory.setItem(i, VOID);
         }
+    }
+
+    @Override
+    public void onHazardUpdate(@NotNull HazardType type) {
+        int row = hazardsSorted.indexOf(type);
+        updateBar(type, row);
     }
 }

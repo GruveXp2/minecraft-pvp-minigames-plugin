@@ -5,7 +5,6 @@ import gruvexp.bbminigames.api.damage.DamageContext;
 import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -25,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 
 public class GhostHazard extends Hazard {
 
@@ -32,12 +32,8 @@ public class GhostHazard extends Hazard {
     private static final ItemStack GHOST_SWORD = getGhostSword();
     private static final ItemStack GHOST_SWORD_NETHERITE = getGhostSwordNetherite();
 
-    public GhostHazard(Lobby lobby) {
-        super(lobby);
-    }
-
     @Override
-    public void init() {}
+    public void init(Collection<BotBowsPlayer> players) {}
 
     @Override
     public HazardChance getDefaultChance() {
@@ -45,8 +41,8 @@ public class GhostHazard extends Hazard {
     }
 
     @Override
-    protected void trigger() {
-        for (BotBowsPlayer bp : lobby.getPlayers()) {
+    protected void trigger(Collection<BotBowsPlayer> players) {
+        for (BotBowsPlayer bp : players) {
             PlayerGhostMover ghostMover = new PlayerGhostMover(bp);
             ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L);
             hazardTimers.put(bp, ghostMover);
@@ -55,11 +51,11 @@ public class GhostHazard extends Hazard {
                 ghostMover.ascendGhost(bp.getLocation());
 
                 float randomPitch = 0.8f + (float) Math.random() * 0.4f;
-                Main.WORLD.playSound(lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
-                Main.WORLD.playSound(lobby.settings.team2.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                // 2DO: get the spawnpoint in a cleaner way
+                Main.WORLD.playSound(bp.lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(bp.lobby.settings.team2.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
             }, 60L); // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
-
         BotBows.setTimeSmooth(6000, 18000, 5);
     }
 

@@ -9,8 +9,7 @@ import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
-import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -39,7 +38,7 @@ public class Settings {
     private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
     private int roundDuration = 5;
     // hazards
-    private final HashMap<HazardType, Hazard> hazards = new HashMap<>();
+    private HazardSettings hazardSettings;
     // abilities
     private int maxAbilities = 0;
     private boolean isIndividualMaxAbilities = false;
@@ -78,11 +77,16 @@ public class Settings {
         winConditionMenu.updateRoundDuration();
 
         hazardMenu = new HazardMenu(this);
+        hazardSettings = new HazardSettings(hazardMenu);
 
         abilityMenus = new HashMap<>();
         players.forEach(bp -> abilityMenus.put(bp, new AbilityMenu(this, bp)));
 
         setMap(BotBowsMap.CLASSIC_ARENA);
+    }
+
+    public HazardSettings getHazardSettings() {
+        return hazardSettings;
     }
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
@@ -110,7 +114,7 @@ public class Settings {
                 team2.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
                 healthPreset,
                 winConditionPreset,
-                hazards.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getChance())),
+                hazardSettings.getChances(),
                 abilityPreset
         );
     }
@@ -158,10 +162,7 @@ public class Settings {
         setRoundDuration(winConditionPreset.roundDuration());
         setDynamicScoring(winConditionPreset.dynamicPoints());
 
-        currentMap.allowedHazards.forEach(type -> {
-            hazards.computeIfAbsent(type, h -> h.createHazard(lobby));
-            hazards.get(type).setChance(preset.hazards().get(type));
-        });
+        currentMap.allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();
         Integer maxAbilities = abilityPreset.maxAbilities();
@@ -236,9 +237,7 @@ public class Settings {
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
 
-        hazards.keySet().retainAll(map.allowedHazards); // remove hazards not compatible with the new map
-        map.allowedHazards.forEach(newH -> hazards.computeIfAbsent(newH, h -> h.createHazard(lobby))); // add hazards compatible with the new map
-        hazardMenu.updateHazards();
+        hazardSettings.syncWithMap(map);
 
         String mapName = map.name().charAt(0) + map.name().substring(1).toLowerCase().replace('_', ' ');
         lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
@@ -249,14 +248,6 @@ public class Settings {
         team2 = newTeam2;
         team1.setOppositeTeam(team2);
         team2.setOppositeTeam(team1);
-    }
-
-    public HashMap<HazardType, Hazard> getHazards() {
-        return hazards;
-    }
-
-    public Hazard getHazard(HazardType type) {
-        return hazards.get(type);
     }
 
     public void joinGame(Player p) {

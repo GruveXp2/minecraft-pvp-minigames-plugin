@@ -213,6 +213,11 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
+    public void showTitle(Component component, int seconds) {
+
+    }
+
+    @Override
     public void playSound(Location location, String sound, float volume, float pitch) {
 
     }

@@ -1,13 +1,12 @@
 package gruvexp.bbminigames.twtClassic.hazard;
 
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.EarthquakeHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.GhostHazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public enum HazardType {
 
@@ -18,16 +17,16 @@ public enum HazardType {
     public final String name;
     public final Material menuFillItem;
     public final NamedTextColor textColor;
-    private final Function<Lobby, Hazard> factory;
+    private final Supplier<Hazard> supplier;
 
-    HazardType(String name, Material menuFillItem, NamedTextColor textColor, Function<Lobby, Hazard> factory) {
+    HazardType(String name, Material menuFillItem, NamedTextColor textColor, Supplier<Hazard> supplier) {
         this.name = name;
         this.menuFillItem = menuFillItem;
         this.textColor = textColor;
-        this.factory = factory;
+        this.supplier = supplier;
     }
 
-    public Hazard createHazard(Lobby lobby) {
-        return factory.apply(lobby);
+    public Hazard createHazard() {
+        return supplier.get();
     }
 }

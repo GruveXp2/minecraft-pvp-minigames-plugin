@@ -46,7 +46,7 @@ public class AbilityListener implements Listener {
                 p.resetPlayerWeather();
                 p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                    if (!bp.lobby.settings.getHazard(HazardType.STORM).isActive()) {
+                    if (!bp.lobby.botBowsGame.getStormHazard().isActive()) {
                         p.setPlayerWeather(WeatherType.CLEAR);
                     } else {
                         p.resetPlayerWeather();
@@ -223,7 +223,7 @@ public class AbilityListener implements Listener {
 
         if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            if (!attackerBp.lobby.settings.getHazard(HazardType.STORM).isActive()) {
+            if (!attackerBp.lobby.botBowsGame.getStormHazard().isActive()) {
                 attacker.setPlayerWeather(WeatherType.CLEAR);
             } else {
                 attacker.resetPlayerWeather();
