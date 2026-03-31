@@ -6,6 +6,8 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
+import gruvexp.bbminigames.twtClassic.settings.AbilityUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -23,10 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class AbilityMenu extends SettingsMenu {
-
-    private boolean individualMaxAbilities = false;
-    private boolean individualCooldownMultipliers = false;
+public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
 
     private static final ItemStack ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.RED),
             Component.text("Disabled", NamedTextColor.RED),
@@ -78,12 +77,7 @@ public class AbilityMenu extends SettingsMenu {
     public AbilityMenu(Settings settings, BotBowsPlayer bp) {
         super(settings);
         this.bp = bp;
-        updateMaxAbilities();
-        if (settings.getMaxAbilities() > 0) {
-            updateAbilityStatuses();
-            updateCooldownMultiplier();
-        }
-        updateAbilityUIState();
+        updateUIState();
     }
 
     @Override
@@ -109,6 +103,7 @@ public class AbilityMenu extends SettingsMenu {
         if (clickedItem == null) {
             clickedItem = new ItemStack(Material.AIR);
         }
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
                 if (e.getClickedInventory() != inventory) return;
@@ -116,11 +111,11 @@ public class AbilityMenu extends SettingsMenu {
 
                 switch (e.getSlot()) {
                     case 0 -> {
-                        settings.disableIndividualMaxAbilities();
-                        settings.setMaxAbilities(2);
+                        abilitySettings.setIndividualMax(false);
+                        abilitySettings.setMaxAbilities(2);
                     }
-                    case 8 -> settings.setMaxAbilities(0);
-                    case 18 -> settings.disableIndividualCooldownMultiplier();
+                    case 8 -> abilitySettings.setMaxAbilities(0);
+                    case 18 -> abilitySettings.setIndividualCooldown(false);
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
@@ -128,9 +123,9 @@ public class AbilityMenu extends SettingsMenu {
                 if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
-                    case 0 -> settings.enableIndividualMaxAbilities();
-                    case 8 -> settings.setMaxAbilities(2);
-                    case 18 -> settings.enableIndividualCooldownMultiplier();
+                    case 0 -> abilitySettings.setIndividualMax(true);
+                    case 8 -> abilitySettings.setMaxAbilities(2);
+                    case 18 -> abilitySettings.setIndividualCooldown(true);
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
@@ -140,10 +135,10 @@ public class AbilityMenu extends SettingsMenu {
                 assert c != null;
                 String s = PlainTextComponentSerializer.plainText().serialize(c);
                 if (e.getSlot() < 9) {
-                    settings.setMaxAbilities(Integer.parseInt(s));
+                    abilitySettings.setMaxAbilities(Integer.parseInt(s));
                 } else if (e.getSlot() <=27) {
                     s = s.substring(0, s.length() - 1);
-                    settings.setAbilityCooldownMultiplier(Float.parseFloat(s));
+                    abilitySettings.setCooldownMultiplier(Float.parseFloat(s));
                 }
             }
             case PLAYER_HEAD -> {
@@ -193,7 +188,7 @@ public class AbilityMenu extends SettingsMenu {
                 Collections.shuffle(abilityTypes);
                 for (AbilityType abilityType : abilityTypes) {
                     if (bp.getTotalAbilities() == bp.getMaxAbilities()) break;
-                    if (!settings.isAbilityBanned(abilityType)) bp.equipAbility(abilityType);
+                    if (!abilitySettings.isBanned(abilityType)) bp.equipAbility(abilityType);
                 }
             }
             case ARROW -> {
@@ -211,6 +206,7 @@ public class AbilityMenu extends SettingsMenu {
         if (cursorAbility == null && clickedAbility == null) return;
 
         Inventory menuInventory = inventory;
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
         if (e.getClickedInventory() == menuInventory) {
             if (cursorAbility != null) {
                 p.setItemOnCursor(null);
@@ -219,12 +215,12 @@ public class AbilityMenu extends SettingsMenu {
                 }
             } else {
                 if (bp.isToggleAbilityMode()) {
-                    settings.toggleAbility(clickedAbility);
+                    abilitySettings.toggle(clickedAbility);
                     return;
                 }
                 if (cursorItem.getType() != Material.AIR) return;
 
-                if (settings.isAbilityBanned(clickedAbility)) {
+                if (abilitySettings.isBanned(clickedAbility)) {
                     p.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED));
                     return;
                 }
@@ -317,8 +313,8 @@ public class AbilityMenu extends SettingsMenu {
         setFillerVoid();
     }
 
-    public void updateAbilityUIState() {
-        if (settings.getMaxAbilities() > 0) {
+    public void updateUIState() {
+        if (settings.getAbilitySettings().getMaxAbilities() > 0) {
             inventory.setItem(8, ABILITIES_ENABLED);
             updateMaxAbilitiesUIState();
             updateCooldownMultiplierUIState();
@@ -348,13 +344,12 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateMaxAbilitiesUIState() {
-        if (settings.individualMaxAbilitiesOn()) {
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        if (abilitySettings.isIndividualMax()) {
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_ENABLED);
-            individualMaxAbilities = true;
             maxAbilitiesRow.show();
         } else {
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
-            individualMaxAbilities = false;
             maxAbilitiesRow.hide();
             inventory.setItem(5, VOID);
             inventory.setItem(6, VOID);
@@ -362,55 +357,72 @@ public class AbilityMenu extends SettingsMenu {
     }
 
     public void updateCooldownMultiplierUIState() {
-        if (settings.individualCooldownMultiplierOn()) {
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        if (abilitySettings.isIndividualCooldown()) {
             inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED);
-            individualCooldownMultipliers = true;
             cooldownMultiplierRow.show();
         } else {
             inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
-            individualCooldownMultipliers = false;
-            settings.setAbilityCooldownMultiplier(1.0f);
+            abilitySettings.setCooldownMultiplier(1.0f);
             cooldownMultiplierRow.hide();
         }
     }
 
-    public void updateMaxAbilities() {
-        if (settings.individualMaxAbilitiesOn()) {
+    @Override
+    public void onAbilitiesToggle() {
+        updateUIState();
+    }
+
+    @Override
+    public void onMaxAbilitiesChange() {
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        if (abilitySettings.isIndividualMax()) {
             settings.getPlayers().forEach(this::updateMaxAbilities);
         } else {
-            maxAbilitiesSlider.setProgressSlots(settings.getMaxAbilities()); // oppdaterer slideren
+            maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities()); // oppdaterer slideren
         }
     }
 
     public void updateMaxAbilities(BotBowsPlayer p) {
-        if (!individualMaxAbilities) return;
+        if (!settings.getAbilitySettings().isIndividualMax()) return;
         ItemStack headItem = maxAbilitiesRow.getItem(p);
         headItem.setAmount(Math.max(p.getMaxAbilities(), 1)); // oppdaterer head count
-        if (individualMaxAbilities) {
-            maxAbilitiesRow.displayRow();
-        }
+        maxAbilitiesRow.displayRow();
     }
 
-    public void updateCooldownMultiplier() {
-        if (individualCooldownMultipliers) {
+    @Override
+    public void onIndividualMaxToggle() {
+        updateMaxAbilitiesUIState();
+    }
+    @Override
+    public void onCooldownMultiplierChange() {
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        if (abilitySettings.isIndividualCooldown()) {
             settings.getPlayers().forEach(this::updateCooldownMultiplier);
         } else {
-            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", settings.getAbilityCooldownMultiplier()));
+            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", abilitySettings.getCooldownMultiplier()));
         }
     }
 
     public void updateCooldownMultiplier(BotBowsPlayer p) {
-        if (!individualCooldownMultipliers) return;
+        if (!settings.getAbilitySettings().isIndividualCooldown()) return;
         ItemStack headItem = cooldownMultiplierRow.getItem(p);
         ItemMeta meta = headItem.getItemMeta();
-        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        meta.lore(List.of(Component.text("Cooldown multiplier: ")
+                .append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         headItem.setItemMeta(meta);
         cooldownMultiplierRow.displayRow();
     }
 
-    public void updateAbilityStatus(AbilityType type) {
+    @Override
+    public void onIndividualCooldownToggle() {
+        updateCooldownMultiplierUIState();
+    }
+
+    @Override
+    public void onAbilityStatusChange(@NotNull AbilityType type) {
         int slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
-        if (settings.isAbilityBanned(type)) {
+        if (settings.getAbilitySettings().isBanned(type)) {
             inventory.setItem(slot - 9, ABILITY_DISABLED);
         } else {
             inventory.setItem(slot - 9, VOID);
@@ -426,7 +438,7 @@ public class AbilityMenu extends SettingsMenu {
                 inventory.setItem(abilitySlot - 9, VOID);
             } else if (bp.hasAbilityEquipped(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_EQUIPPED);
-            } else if (settings.isAbilityBanned(abilityType)) {
+            } else if (settings.getAbilitySettings().isBanned(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
             } else {
                 inventory.setItem(abilitySlot - 9, VOID);

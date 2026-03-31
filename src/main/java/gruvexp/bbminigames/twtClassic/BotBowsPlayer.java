@@ -12,6 +12,7 @@ import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -64,8 +65,9 @@ public class BotBowsPlayer {
         maxHP = settings.getMaxHP();
         hp = maxHP;
         attackDamage = 1;
-        maxAbilities = settings.getMaxAbilities();
-        abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        maxAbilities = abilitySettings.getMaxAbilities();
+        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
     }
 
     public BotBowsPlayer(Mannequin mannequin, Settings settings) {
@@ -75,8 +77,9 @@ public class BotBowsPlayer {
         maxHP = settings.getMaxHP();
         hp = maxHP;
         attackDamage = 1;
-        maxAbilities = settings.getMaxAbilities();
-        abilityCooldownMultiplier = settings.getAbilityCooldownMultiplier();
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        maxAbilities = abilitySettings.getMaxAbilities();
+        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
         setReady(true, 4); // bots are always ready for match
     }
 
@@ -248,7 +251,7 @@ public class BotBowsPlayer {
     }
 
     public void equipAbility(int slot, AbilityType type, boolean updateInventory) {
-        if (lobby.settings.getMaxAbilities() == 0) return;
+        if (lobby.settings.getAbilitySettings().getMaxAbilities() == 0) return;
         boolean abilityAlreadyEquipped = hasAbilityEquipped(type);
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
@@ -324,7 +327,7 @@ public class BotBowsPlayer {
 
         int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (abilityEquipSlot > 0) {
-            if (lobby.settings.isAbilityBanned(type)) {
+            if (lobby.settings.getAbilitySettings().isBanned(type)) {
                 getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
             } else {
                 getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);

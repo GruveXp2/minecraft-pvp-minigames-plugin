@@ -9,6 +9,7 @@ import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
+import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,12 +41,8 @@ public class Settings {
     // hazards
     private HazardSettings hazardSettings;
     // abilities
-    private int maxAbilities = 0;
-    private boolean isIndividualMaxAbilities = false;
-    private float abilityCooldownMultiplier = 1.0f;
-    private boolean isIndividualCooldownMultiplier = false;
-    private final Set<AbilityType> bannedAbilities = new HashSet<>();
-    public int rain = 0;
+    private AbilitySettings abilitySettings;
+    public int rain = 0; // temporary workaround
     // menus
     public MapMenu mapMenu;
     public HealthMenu healthMenu;
@@ -80,13 +77,21 @@ public class Settings {
         hazardSettings = new HazardSettings(hazardMenu);
 
         abilityMenus = new HashMap<>();
-        players.forEach(bp -> abilityMenus.put(bp, new AbilityMenu(this, bp)));
+        abilitySettings = new AbilitySettings();
+        players.forEach(bp -> {
+            abilityMenus.put(bp, new AbilityMenu(this, bp));
+            abilitySettings.addListener(bp, abilityMenus.get(bp));
+        });
 
         setMap(BotBowsMap.CLASSIC_ARENA);
     }
 
     public HazardSettings getHazardSettings() {
         return hazardSettings;
+    }
+
+    public AbilitySettings getAbilitySettings() {
+        return abilitySettings;
     }
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
@@ -98,12 +103,13 @@ public class Settings {
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
         );
-        Set<AbilityType> bannedAbilities = this.bannedAbilities;
+
+        Set<AbilityType> bannedAbilities = abilitySettings.getBanned();
         AbilityPreset abilityPreset = new AbilityPreset(
-                isIndividualMaxAbilities ? null : maxAbilities,
-                isIndividualMaxAbilities ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
-                isIndividualCooldownMultiplier ? null : abilityCooldownMultiplier,
-                isIndividualCooldownMultiplier ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAbilityCooldownMultiplier)) : null,
+                abilitySettings.isIndividualMax() ? null : abilitySettings.getMaxAbilities(),
+                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
+                abilitySettings.isIndividualCooldown() ? null : abilitySettings.getCooldownMultiplier(),
+                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAbilityCooldownMultiplier)) : null,
                 !bannedAbilities.isEmpty() ? bannedAbilities : null
         );
         return new BattlePreset(
@@ -165,39 +171,7 @@ public class Settings {
         currentMap.allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();
-        Integer maxAbilities = abilityPreset.maxAbilities();
-        if (maxAbilities != null) {
-            BotBows.debugMessage("setting amx abilities to" + maxAbilities);
-            setMaxAbilities(maxAbilities);
-        }
-
-        var individualMaxAbilities = abilityPreset.individualMaxAbilities();
-        if (individualMaxAbilities != null) {
-            individualMaxAbilities.forEach((key, value) -> {
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
-                if (bp != null) {
-                    bp.setMaxAbilities(value);
-                }
-            });
-        }
-        Float cooldownMultiplier = abilityPreset.cooldownMultiplier();
-        if (cooldownMultiplier != null) setAbilityCooldownMultiplier(cooldownMultiplier);
-
-        var individualCooldownMultiplier = abilityPreset.individualCooldownMultiplier();
-        if (individualCooldownMultiplier != null) {
-            individualCooldownMultiplier.forEach((key, value) -> {
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
-                if (bp != null) {
-                    bp.setAbilityCooldownMultiplier(value);
-                }
-            });
-        }
-        var bannedAbilities = abilityPreset.bannedAbilities();
-
-        if (bannedAbilities != null) Arrays.stream(AbilityType.values()).forEach(type -> {
-            if (isAbilityBanned(type)) disableAbility(type);
-            else if (!isAbilityBanned(type)) allowAbility(type);
-        });
+        abilitySettings.applyPreset(abilityPreset);
     }
 
     public void setMap(BotBowsMap map) {
@@ -302,6 +276,8 @@ public class Settings {
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenus.values().forEach(menu -> menu.removePlayer(bp));
+        abilityMenus.remove(bp);
+        abilitySettings.removeListener(bp);
         if (playerIsMod(bp) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
         }
@@ -380,83 +356,4 @@ public class Settings {
         roundDuration = Math.max(duration, 0);
         winConditionMenu.updateRoundDuration();
     }
-
-    public void setMaxAbilities(int maxAbilities) {
-        if (this.maxAbilities == 0 && maxAbilities > 0) { // if max abilities was increased from 0, abilities gets enabled, so update the ui
-            this.maxAbilities = maxAbilities;
-            abilityMenus.values().forEach(AbilityMenu::updateAbilityUIState);
-        }
-        this.maxAbilities = maxAbilities;
-        players.forEach(p -> p.setMaxAbilities(maxAbilities));
-        if (maxAbilities == 0) { // if max abilities is set to 0, abilities gets disabled, so update the ui
-            abilityMenus.values().forEach(AbilityMenu::updateAbilityUIState);
-        }
-        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilities);
-    }
-
-    public int getMaxAbilities() {
-        return maxAbilities;
-    }
-
-    public void enableIndividualMaxAbilities() {
-        isIndividualMaxAbilities = true;
-        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilitiesUIState);
-    }
-
-    public void disableIndividualMaxAbilities() {
-        isIndividualMaxAbilities = false;
-        abilityMenus.values().forEach(AbilityMenu::updateMaxAbilitiesUIState);
-    }
-
-    public boolean individualMaxAbilitiesOn() {
-        return isIndividualMaxAbilities;
-    }
-
-    public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        abilityCooldownMultiplier = cooldownMultiplier;
-        players.forEach(p -> p.setAbilityCooldownMultiplier(cooldownMultiplier));
-        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplier);
-    }
-
-    public float getAbilityCooldownMultiplier() {
-        return abilityCooldownMultiplier;
-    }
-
-    public void enableIndividualCooldownMultiplier() {
-        isIndividualCooldownMultiplier = true;
-        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplierUIState);
-    }
-
-    public void disableIndividualCooldownMultiplier() {
-        isIndividualCooldownMultiplier = false;
-        abilityMenus.values().forEach(AbilityMenu::updateCooldownMultiplierUIState);
-    }
-
-    public boolean individualCooldownMultiplierOn() {
-        return isIndividualCooldownMultiplier;
-    }
-
-    public void allowAbility(AbilityType type) {
-        bannedAbilities.remove(type);
-        abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
-    }
-
-    public void disableAbility(AbilityType type) {
-        bannedAbilities.add(type);
-        abilityMenus.values().forEach(menu -> menu.updateAbilityStatus(type));
-        players.forEach(p -> p.unequipAbility(type));
-    }
-
-    public void toggleAbility(AbilityType type) {
-        if (isAbilityBanned(type)) {
-            allowAbility(type);
-        } else {
-            disableAbility(type);
-        }
-    }
-
-    public boolean isAbilityBanned(AbilityType type) {
-        return bannedAbilities.contains(type); // Default to enabled
-    }
-
 }

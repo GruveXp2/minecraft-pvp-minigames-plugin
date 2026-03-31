@@ -11,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
@@ -83,11 +84,12 @@ public class TestCommand implements CommandExecutor {
                         }
                     }
                     Settings settings = lobby.settings;
-                    settings.setMaxAbilities(3);
-                    settings.disableAbility(AbilityType.ENDER_PEARL);
-                    settings.disableAbility(AbilityType.BABY_POTION);
-                    settings.setMaxAbilities(3);
-                    settings.setAbilityCooldownMultiplier(1.25f);
+                    AbilitySettings abilitySettings = settings.getAbilitySettings();
+                    abilitySettings.setMaxAbilities(3);
+                    abilitySettings.ban(AbilityType.ENDER_PEARL);
+                    abilitySettings.ban(AbilityType.BABY_POTION);
+                    abilitySettings.setMaxAbilities(3);
+                    abilitySettings.setCooldownMultiplier(1.25f);
                     settings.setMap(BotBowsMap.ICY_RAVINE);
                     settings.setWinScoreThreshold(67);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
@@ -338,8 +340,9 @@ public class TestCommand implements CommandExecutor {
 
     private void testAbilities(BotBowsPlayer bp) {
         Settings settings = bp.lobby.settings;
-        settings.allowAbility(AbilityType.ENDER_PEARL);
-        assertThat(!settings.isAbilityBanned(AbilityType.ENDER_PEARL), "enderpearl initially allowed", bp);
+        AbilitySettings abilitySettings = settings.getAbilitySettings();
+        abilitySettings.unban(AbilityType.ENDER_PEARL);
+        assertThat(!abilitySettings.isBanned(AbilityType.ENDER_PEARL), "enderpearl initially allowed", bp);
 
         BattlePreset preset = Main.getPlugin().getPresetService().getPreset("test");
         assertThat(preset != null, "preset exists", bp);
@@ -348,7 +351,7 @@ public class TestCommand implements CommandExecutor {
         assertThat(preset.abilities().bannedAbilities().contains(AbilityType.ENDER_PEARL), "preset has banned pearl", bp);
 
         settings.applyBattlePreset(preset);
-        assertThat(settings.isAbilityBanned(AbilityType.ENDER_PEARL), "enderpearl banned", bp);
+        assertThat(abilitySettings.isBanned(AbilityType.ENDER_PEARL), "enderpearl banned", bp);
     }
 
     private void assertThat(boolean condition, String message, BotBowsPlayer tester) {
