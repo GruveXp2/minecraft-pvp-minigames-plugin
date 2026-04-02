@@ -342,6 +342,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             // fyller med gråe glassvinduer der settings var
             updateMaxAbilitiesUIState();
             inventory.setItem(0, DISABLED);
+            inventory.setItem(6, DISABLED);
             inventory.setItem(18, DISABLED);
             for (int i = 20; i < 27; i++) {
                 inventory.setItem(i, DISABLED);
