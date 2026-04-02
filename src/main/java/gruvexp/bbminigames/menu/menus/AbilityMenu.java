@@ -363,6 +363,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         } else {
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
             maxAbilitiesRow.hide();
+            maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
             inventory.setItem(5, VOID);
             inventory.setItem(6, VOID);
         }
