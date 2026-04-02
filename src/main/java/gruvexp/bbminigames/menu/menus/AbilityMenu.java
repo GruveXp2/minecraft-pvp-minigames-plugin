@@ -51,12 +51,21 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             Component.text("Enabled", NamedTextColor.GREEN),
             Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier"));
 
+    private static final ItemStack UNIQUE_MODE_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Unique mode", NamedTextColor.RED),
+            Component.text("Disabled", NamedTextColor.RED),
+            Component.text("By enabling this, each ability"), Component.text("can can only be equipped by max team member"));
+
+    private static final ItemStack UNIQUE_MODE_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Unique mode", NamedTextColor.GREEN),
+            Component.text("Enabled", NamedTextColor.GREEN),
+            Component.text("By enabling this, each player"), Component.text("can can only be equipped by max team member"));
+
     private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
     Component.text("When enabled, you can toggle"), Component.text("which abilities will be allowed"));
 
     public static final ItemStack MOD_TOGGLE_DISABLED = makeItem("inactive_slot_covered", Component.empty());
     public static final ItemStack MOD_TOGGLE_ENABLED = makeItem("active_slot_covered", Component.empty());
     public static final ItemStack ABILITY_DISABLED = makeItem("disabled_slot_covered", Component.empty());
+    public static final ItemStack ABILITY_TAKEN = makeItem("yellow_slot_covered", Component.empty());
     public static final ItemStack ABILITY_EQUIPPED = makeItem("enabled_slot_covered", Component.empty());
 
     private static final ItemStack RANDOMIZE_ABILITIES = makeItem(Material.TARGET, Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
@@ -318,6 +327,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             inventory.setItem(8, ABILITIES_ENABLED);
             updateMaxAbilitiesUIState();
             updateCooldownMultiplierUIState();
+            onUniqueModeToggle();
             abilityRow.show();
             inventory.setItem(36, MOD_TOGGLE);
             inventory.setItem(45, RANDOMIZE_ABILITIES);
@@ -420,6 +430,15 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     }
 
     @Override
+    public void onUniqueModeToggle() {
+        if (settings.getAbilitySettings().isUniqueMode()) {
+            inventory.setItem(6, UNIQUE_MODE_ENABLED);
+        } else {
+            inventory.setItem(6, UNIQUE_MODE_DISABLED);
+        }
+    }
+
+    @Override
     public void onAbilityStatusChange(@NotNull AbilityType type) {
         int slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
         if (settings.getAbilitySettings().isBanned(type)) {
@@ -428,7 +447,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             inventory.setItem(slot - 9, VOID);
         }
     }
-    
+
     public void updateAbilityStatuses() {
         for (int i = 0; i < abilityRow.size; i++) {
             int abilitySlot = abilityRow.startSlot + i;
@@ -472,5 +491,16 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
 
     private void removePlayerFromRow(BotBowsPlayer p, PlayerMenuRow row) {
         row.removeItem(row.getItem(p));
+    }
+
+    @Override
+    public void onUniqueAbilityOccupancyChange(@NotNull AbilityType type, @NotNull BotBowsPlayer bp, boolean equipped) {
+        if (bp == this.bp || bp.getTeam() != this.bp.getTeam()) return;
+        int slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot();
+        if (equipped) {
+            inventory.setItem(slot - 9, ABILITY_TAKEN);
+        } else {
+            inventory.setItem(slot - 9, VOID);
+        }
     }
 }

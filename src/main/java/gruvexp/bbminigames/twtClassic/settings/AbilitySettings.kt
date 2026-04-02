@@ -4,6 +4,7 @@ import gruvexp.bbminigames.model.preset.AbilityPreset
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.botbowsTeams.TeamSide
 
 class AbilitySettings {
     var maxAbilities = 0
@@ -30,6 +31,15 @@ class AbilitySettings {
             notifyIndividualCooldownToggle()
         }
 
+    var isUniqueMode = false
+        set(value) {
+            field = value
+            notifyUniqueModeToggle()
+        }
+
+    private val teamAbilities: Map<TeamSide, MutableMap<AbilityType, BotBowsPlayer>> = mapOf(
+        TeamSide.TEAM_1 to mutableMapOf(),
+        TeamSide.TEAM_2 to mutableMapOf())
 
     private val bannedAbilities = mutableSetOf<AbilityType>()
     private val listeners = mutableMapOf<BotBowsPlayer, AbilityUpdateListener>()
@@ -103,9 +113,31 @@ class AbilitySettings {
         listeners.values.forEach { it.onIndividualCooldownToggle() }
     }
 
+    private fun notifyUniqueModeToggle() {
+        listeners.values.forEach { it.onUniqueModeToggle() }
+    }
+
     private fun notifyStatus(type: AbilityType) {
         listeners.values.forEach { it.onAbilityStatusChange(type) }
     }
+
+    fun attemptEquip(bp: BotBowsPlayer, type: AbilityType): Boolean {
+        if (!isUniqueMode) return true
+        val currentEquipper = teamAbilities[bp.team.teamSide]!![type]
+        if (currentEquipper == null) teamAbilities[bp.team.teamSide]!![type] = bp
+
+        if (currentEquipper == bp) {
+            listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, true) }
+            return true
+        }
+        return false
+    }
+
+    fun unequip(bp: BotBowsPlayer, type: AbilityType) {
+        teamAbilities[bp.team.teamSide]!!.remove(type)
+        listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, false) }
+    }
+
 
     private infix fun <T> Set<T>.xor(other: Set<T>): Set<T> {
         val intersect = this.intersect(other)

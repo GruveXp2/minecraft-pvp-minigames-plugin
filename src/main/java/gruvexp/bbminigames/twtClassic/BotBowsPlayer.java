@@ -253,6 +253,13 @@ public class BotBowsPlayer {
     public void equipAbility(int slot, AbilityType type, boolean updateInventory) {
         if (lobby.settings.getAbilitySettings().getMaxAbilities() == 0) return;
         boolean abilityAlreadyEquipped = hasAbilityEquipped(type);
+        if (!abilityAlreadyEquipped) {
+            boolean result = lobby.settings.getAbilitySettings().attemptEquip(this, type);
+            if (!result) {
+                avatar.message(Component.text("Cant equip, ability already in use by team member (unique ability mode enabled)", NamedTextColor.YELLOW));
+                return;
+            }
+        }
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
             case INVIS_POTION -> abilities.put(type, new InvisPotion(this, slot));
@@ -317,6 +324,7 @@ public class BotBowsPlayer {
     public void unequipAbility(AbilityType type, boolean hideMessage) {
         if (!abilities.containsKey(type)) return;
 
+        lobby.settings.getAbilitySettings().unequip(this, type);
         Ability ability = abilities.get(type);
         ability.resetCooldown();
         ability.unequip();
