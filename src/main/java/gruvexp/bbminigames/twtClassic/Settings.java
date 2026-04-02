@@ -239,6 +239,7 @@ public class Settings {
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
         AbilityMenu newMenu = new AbilityMenu(this, bp);
         abilityMenus.put(bp, newMenu);
+        abilitySettings.addListener(bp, newMenu);
         players.forEach(newMenu::addPlayer);
 
         if (getPlayers().size() == 1 || modPlayer == null || modPlayer.avatar instanceof NpcAvatar) {
