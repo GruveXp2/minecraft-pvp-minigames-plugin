@@ -9,8 +9,9 @@ import gruvexp.bbminigames.twtClassic.botbowsTeams.TeamSide
 class AbilitySettings {
     var maxAbilities = 0
         set(value) {
+            val toggle: Boolean = field == 0 || value == 0
             field = value
-            if (field == 0 || value == 0) notifyAbilitiesToggle() else notifyMaxAbilities()
+            if (toggle) notifyAbilitiesToggle() else notifyMaxAbilities()
         }
 
     var isIndividualMax = false
