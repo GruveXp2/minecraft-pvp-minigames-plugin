@@ -18,7 +18,7 @@ public class TeamBlaud extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26, -123.5, 180, 10);
 
     public TeamBlaud() {
-        super("Blaud", NamedTextColor.BLUE, DyeColor.BLUE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Blaud", NamedTextColor.BLUE, DyeColor.BLUE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamBlaud(BotBowsTeam otherTeam) {

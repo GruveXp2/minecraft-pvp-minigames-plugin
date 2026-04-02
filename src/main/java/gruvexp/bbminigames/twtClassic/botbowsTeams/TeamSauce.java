@@ -17,7 +17,7 @@ public class TeamSauce extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26, -208.5, 0, 10);
 
     public TeamSauce() {
-        super("Sauce", NamedTextColor.RED, DyeColor.RED, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Sauce", NamedTextColor.RED, DyeColor.RED, TeamSide.TEAM_2, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamSauce(BotBowsTeam otherTeam) {

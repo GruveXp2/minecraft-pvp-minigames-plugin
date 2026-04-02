@@ -17,7 +17,7 @@ public class TeamBlocc extends BotBowsTeam{
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -357.0, 26, -333.3, 180, 20);
 
     public TeamBlocc() {
-        super("Blocc", NamedTextColor.GOLD, DyeColor.ORANGE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Blocc", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamBlocc(BotBowsTeam otherTeam) {

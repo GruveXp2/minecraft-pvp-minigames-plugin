@@ -17,7 +17,7 @@ public class TeamHoglin extends BotBowsTeam{
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -343.5, 41, -166.0, 0, 20);
 
     public TeamHoglin() {
-        super("Hoglin", NamedTextColor.YELLOW, DyeColor.BROWN, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Hoglin", NamedTextColor.YELLOW, DyeColor.BROWN, TeamSide.TEAM_2, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamHoglin(BotBowsTeam otherTeam) {

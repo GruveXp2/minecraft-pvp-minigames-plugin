@@ -18,7 +18,7 @@ public class TeamGoofy extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26.0, -417.5, 0, 10);
 
     public TeamGoofy() {
-        super("Goofy", NamedTextColor.DARK_GREEN, DyeColor.GREEN, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Goofy", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TEAM_2, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamGoofy(BotBowsTeam otherTeam) {

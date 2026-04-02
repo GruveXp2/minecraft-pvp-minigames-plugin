@@ -17,7 +17,7 @@ public class TeamPiglin extends BotBowsTeam{
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -368.5, 41, -166.0, 0, 20);
 
     public TeamPiglin() {
-        super("Piglin", NamedTextColor.GOLD, DyeColor.ORANGE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Piglin", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamPiglin(BotBowsTeam otherTeam) {

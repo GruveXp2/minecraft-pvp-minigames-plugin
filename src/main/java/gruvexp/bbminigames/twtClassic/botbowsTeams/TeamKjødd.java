@@ -18,7 +18,7 @@ public class TeamKjødd extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -242.0, 26.0, -334.5, 180, 10);
 
     public TeamKjødd() {
-        super("Kjødd", NamedTextColor.GOLD, DyeColor.ORANGE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Kjødd", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamKjødd(BotBowsTeam otherTeam) {

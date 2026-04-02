@@ -17,7 +17,7 @@ public class TeamQuicc extends BotBowsTeam{
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD, -357.0, 26, -418.5, 0, 20);
 
     public TeamQuicc() {
-        super("Quicc", NamedTextColor.AQUA, DyeColor.CYAN, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Quicc", NamedTextColor.AQUA, DyeColor.CYAN, TeamSide.TEAM_2, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamQuicc(BotBowsTeam otherTeam) {
