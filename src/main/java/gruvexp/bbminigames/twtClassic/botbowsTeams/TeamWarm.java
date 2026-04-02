@@ -18,7 +18,7 @@ public class TeamWarm extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD_END, 173.5, 89.5, 201.5, 90, 10);
 
     public TeamWarm() {
-        super("Warm", NamedTextColor.GOLD, DyeColor.ORANGE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Warm", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamWarm(BotBowsTeam otherTeam) {

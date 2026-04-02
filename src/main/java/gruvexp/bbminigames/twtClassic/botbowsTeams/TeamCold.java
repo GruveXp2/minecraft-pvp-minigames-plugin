@@ -18,7 +18,7 @@ public class TeamCold extends BotBowsTeam {
     private static final Location TRIBUNE_POSITION = new Location(Main.WORLD_END, 149.5, 87, 168.5, 0, 10);
 
     public TeamCold() {
-        super("Cold", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, SPAWN_POSITIONS, TRIBUNE_POSITION);
+        super("Cold", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TEAM_1, SPAWN_POSITIONS, TRIBUNE_POSITION);
     }
 
     public TeamCold(BotBowsTeam otherTeam) {

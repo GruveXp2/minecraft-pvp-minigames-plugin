@@ -20,29 +20,37 @@ public class BotBowsTeam {
     public final DyeColor dyeColor;
     public final Location[] spawnPos;
     public final Location tribunePos;
+
+    private final TeamSide teamSide;
     private BotBowsTeam oppositeTeam;
     List<BotBowsPlayer> players = new ArrayList<>(4);
     private int points;
 
-    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location[] spawnPos, Location tribunePos) {
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, TeamSide teamSide, Location[] spawnPos, Location tribunePos) {
         this.name = name;
         this.color = color;
         this.dyeColor = dyeColor;
+        this.teamSide = teamSide;
         this.spawnPos = spawnPos;
         this.tribunePos = tribunePos;
     }
 
-    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location spawnPos, Location tribunePos) {
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, TeamSide teamSide, Location spawnPos, Location tribunePos) {
         this.name = name;
         this.color = color;
         this.dyeColor = dyeColor;
+        this.teamSide = teamSide;
         this.spawnPos = new Location[] {spawnPos, spawnPos, spawnPos, spawnPos, spawnPos};
         this.tribunePos = tribunePos;
     }
 
-    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, Location spawnPos, Location tribunePos, BotBowsTeam otherTeam) {
-        this(name, color, dyeColor, spawnPos, tribunePos);
+    public BotBowsTeam(String name, TextColor color, DyeColor dyeColor, TeamSide teamSide, Location spawnPos, Location tribunePos, BotBowsTeam otherTeam) {
+        this(name, color, dyeColor, teamSide, spawnPos, tribunePos);
         this.players = otherTeam.players;
+    }
+
+    public TeamSide getTeamSide() {
+        return teamSide;
     }
 
     public BotBowsTeam getOppositeTeam() {return oppositeTeam;}
