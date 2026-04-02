@@ -123,6 +123,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                         abilitySettings.setIndividualMax(false);
                         abilitySettings.setMaxAbilities(2);
                     }
+                    case 6 -> abilitySettings.setUniqueMode(false);
                     case 8 -> abilitySettings.setMaxAbilities(0);
                     case 18 -> abilitySettings.setIndividualCooldown(false);
                 }
@@ -133,6 +134,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
 
                 switch (e.getSlot()) {
                     case 0 -> abilitySettings.setIndividualMax(true);
+                    case 6 -> abilitySettings.setUniqueMode(true);
                     case 8 -> abilitySettings.setMaxAbilities(2);
                     case 18 -> abilitySettings.setIndividualCooldown(true);
                 }
