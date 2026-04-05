@@ -365,6 +365,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
             maxAbilitiesRow.hide();
             maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
+            settings.getPlayers().forEach(p -> p.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
             inventory.setItem(5, VOID);
             inventory.setItem(6, VOID);
         }
@@ -394,6 +395,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             settings.getPlayers().forEach(this::updateMaxAbilities);
         } else {
             maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities()); // oppdaterer slideren
+            settings.getPlayers().forEach(p -> p.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
         }
     }
 
