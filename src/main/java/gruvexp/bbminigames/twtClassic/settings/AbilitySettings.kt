@@ -124,11 +124,14 @@ class AbilitySettings {
 
     fun attemptEquip(bp: BotBowsPlayer, type: AbilityType): Boolean {
         if (!isUniqueMode) return true
-        val currentEquipper = teamAbilities[bp.team.teamSide]!![type]
-        if (currentEquipper == null) teamAbilities[bp.team.teamSide]!![type] = bp
+        val equipped = teamAbilities[bp.team.teamSide]!!
+        val currentBp = equipped[type]
 
-        if (currentEquipper == bp) {
-            listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, true) }
+        if (currentBp == null || currentBp == bp) {
+            if (currentBp == null) {
+                equipped[type] = bp
+                listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, true) }
+            }
             return true
         }
         return false
