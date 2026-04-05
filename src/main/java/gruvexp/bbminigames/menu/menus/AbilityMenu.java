@@ -123,9 +123,9 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                         abilitySettings.setIndividualMax(false);
                         abilitySettings.setMaxAbilities(2);
                     }
-                    case 6 -> abilitySettings.setUniqueMode(false);
                     case 8 -> abilitySettings.setMaxAbilities(0);
                     case 18 -> abilitySettings.setIndividualCooldown(false);
+                    case 53 -> abilitySettings.setUniqueMode(false);
                 }
             }
             case RED_STAINED_GLASS_PANE -> {
@@ -134,9 +134,9 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
 
                 switch (e.getSlot()) {
                     case 0 -> abilitySettings.setIndividualMax(true);
-                    case 6 -> abilitySettings.setUniqueMode(true);
                     case 8 -> abilitySettings.setMaxAbilities(2);
                     case 18 -> abilitySettings.setIndividualCooldown(true);
+                    case 53 -> abilitySettings.setUniqueMode(true);
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
@@ -342,7 +342,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             // fyller med gråe glassvinduer der settings var
             updateMaxAbilitiesUIState();
             inventory.setItem(0, DISABLED);
-            inventory.setItem(6, DISABLED);
+            inventory.setItem(53, DISABLED);
             inventory.setItem(18, DISABLED);
             for (int i = 20; i < 27; i++) {
                 inventory.setItem(i, DISABLED);
@@ -436,9 +436,9 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     @Override
     public void onUniqueModeToggle() {
         if (settings.getAbilitySettings().isUniqueMode()) {
-            inventory.setItem(6, UNIQUE_MODE_ENABLED);
+            inventory.setItem(53, UNIQUE_MODE_ENABLED);
         } else {
-            inventory.setItem(6, UNIQUE_MODE_DISABLED);
+            inventory.setItem(53, UNIQUE_MODE_DISABLED);
         }
     }
 
