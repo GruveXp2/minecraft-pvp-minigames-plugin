@@ -16,19 +16,15 @@ import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -281,7 +277,7 @@ public class BotBowsPlayer {
 
         int relativeAbilitySlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (slot > 0 && updateInventory) {
-            avatar.setItem(slot, makeAbilityItem(type));
+            avatar.setItem(slot, type.getAbilityItem(this));
         }
         if (relativeAbilitySlot > 0) { // slot -1 means cursor
             getAbilityMenu().getInventory().setItem(relativeAbilitySlot + 27, AbilityMenu.ABILITY_EQUIPPED);
@@ -290,31 +286,6 @@ public class BotBowsPlayer {
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         avatar.message(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
-    }
-
-    private ItemStack makeAbilityItem(AbilityType type) {
-        ItemStack abilityItem = type.getAbilityItem();
-        ItemMeta meta = abilityItem.getItemMeta();
-
-        Component cooldownComponent = getCooldownComponent(this, type);
-        List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
-        lore.set(lore.size() - 1, cooldownComponent);
-        meta.lore(lore);
-
-        abilityItem.setItemMeta(meta);
-        return abilityItem;
-    }
-
-    private static @NotNull Component getCooldownComponent(BotBowsPlayer p, AbilityType abilityType) {
-        if (abilityType.category == AbilityCategory.DAMAGING) {
-            return Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW));
-        }
-        int percentage = (int) ((p.getAbilityCooldownMultiplier() - 1) * 100);
-        Component cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
-        if (percentage != 0) {
-            cooldownComponent = cooldownComponent.append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
-        }
-        return cooldownComponent.decoration(TextDecoration.ITALIC, false);
     }
 
     public void unequipAbility(AbilityType type) {

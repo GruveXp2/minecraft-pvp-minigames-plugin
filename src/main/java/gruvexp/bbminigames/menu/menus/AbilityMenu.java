@@ -4,13 +4,11 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.*;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.AbilityUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -253,7 +251,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                         ItemStack abilityItem = clickedItem.clone();
                         ItemMeta meta = abilityItem.getItemMeta();
 
-                        Component cooldownComponent = getCooldownComponent(bp, clickedAbility);
+                        Component cooldownComponent = clickedAbility.getCooldownComponent(bp);
                         List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
                         lore.set(lore.size() - 1, cooldownComponent);
                         meta.lore(lore);
@@ -285,18 +283,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 }
             }
         }
-    }
-
-    private static @NotNull Component getCooldownComponent(BotBowsPlayer p, AbilityType abilityType) {
-        if (abilityType.category == AbilityCategory.DAMAGING) {
-            return Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW));
-        }
-        int percentage = (int) ((p.getAbilityCooldownMultiplier() - 1) * 100);
-        Component cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text((int) (abilityType.getBaseCooldown() * p.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
-        if (percentage != 0) {
-            cooldownComponent = cooldownComponent.append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
-        }
-        return cooldownComponent.decoration(TextDecoration.ITALIC, false);
     }
 
     public void handleMenuClose(InventoryCloseEvent e) {

@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.ability;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.menu.Menu;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
 import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -119,6 +120,33 @@ public enum AbilityType {
 
     public int getBaseCooldown() {
         return baseCooldown;
+    }
+
+    public ItemStack getAbilityItem(BotBowsPlayer bp) {
+        ItemStack abilityItem = getAbilityItem();
+        ItemMeta meta = abilityItem.getItemMeta();
+
+        Component cooldownComponent = getCooldownComponent(bp);
+        List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
+        lore.set(lore.size() - 1, cooldownComponent);
+        meta.lore(lore);
+
+        abilityItem.setItemMeta(meta);
+        return abilityItem;
+    }
+
+    public @NotNull Component getCooldownComponent(BotBowsPlayer bp) {
+        if (category == AbilityCategory.DAMAGING) {
+            return Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW));
+        }
+        int percentage = (int) ((bp.getAbilityCooldownMultiplier() - 1) * 100);
+        Component cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
+                .append(Component.text((int) (getBaseCooldown() * bp.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
+        if (percentage != 0) {
+            cooldownComponent = cooldownComponent
+                    .append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
+        }
+        return cooldownComponent.decoration(TextDecoration.ITALIC, false);
     }
 
     public static AbilityType fromItem(ItemStack item) {
