@@ -264,6 +264,10 @@ public class Settings {
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
+        AbilityMenu newMenu = new AbilityMenu(this, bp);
+        abilityMenus.put(bp, newMenu);
+        abilitySettings.addListener(bp, newMenu);
+        players.forEach(newMenu::addPlayer);
         Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
     }
 
