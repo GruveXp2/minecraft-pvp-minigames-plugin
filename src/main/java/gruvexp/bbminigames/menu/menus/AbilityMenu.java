@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.*;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.AbilityUpdateListener;
@@ -428,8 +429,17 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     public void onUniqueModeToggle() {
         if (settings.getAbilitySettings().isUniqueMode()) {
             inventory.setItem(53, UNIQUE_MODE_ENABLED);
+
+            // unequips abilities from team members if a teammate already has it equipped
+            var toUnequip = bp.getAbilities().stream()
+                    .map(Ability::getType)
+                    .filter(type -> !settings.getAbilitySettings().attemptEquip(bp, type))
+                    .toList();
+
+            toUnequip.forEach(bp::unequipAbility);
         } else {
             inventory.setItem(53, UNIQUE_MODE_DISABLED);
+            updateAbilityStatuses();
         }
     }
 

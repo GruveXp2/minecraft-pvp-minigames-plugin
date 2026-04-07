@@ -35,6 +35,9 @@ class AbilitySettings {
     var isUniqueMode = false
         set(value) {
             field = value
+            if (!value) {
+                teamAbilities.values.forEach { it.clear() }
+            }
             notifyUniqueModeToggle()
         }
 
@@ -143,7 +146,10 @@ class AbilitySettings {
     }
 
     fun unequip(bp: BotBowsPlayer, type: AbilityType) {
-        teamAbilities[bp.team.teamSide]!!.remove(type)
+        if (!isUniqueMode) return
+        val equipped = teamAbilities[bp.team.teamSide]!!
+        if (equipped[type] != bp) return
+        equipped.remove(type)
         listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, false) }
     }
 
