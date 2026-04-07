@@ -454,6 +454,8 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 inventory.setItem(abilitySlot - 9, ABILITY_EQUIPPED);
             } else if (settings.getAbilitySettings().isBanned(abilityType)) {
                 inventory.setItem(abilitySlot - 9, ABILITY_DISABLED);
+            } else if (settings.getAbilitySettings().isUniqueMode() && settings.getAbilitySettings().isEquippedByTeam(bp, abilityType)) {
+                inventory.setItem(abilitySlot - 9, ABILITY_TAKEN);
             } else {
                 inventory.setItem(abilitySlot - 9, VOID);
             }
