@@ -34,6 +34,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class TestCommand implements CommandExecutor {
 
@@ -313,15 +314,31 @@ public class TestCommand implements CommandExecutor {
             }
             return true;
         } else {
-            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-            if (bp == null) {
-                p.sendMessage(Component.text("You must be in a lobby to test", NamedTextColor.RED));
-                return true;
-            }
-            testAbilities(bp);
+//            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+//            if (bp == null) {
+//                p.sendMessage(Component.text("You must be in a lobby to test", NamedTextColor.RED));
+//                return true;
+//            }
+//            testAbilities(bp);
+            testYellow();
         }
         //BotBowsManager.debugMessage(STR."\{p.getName()}is \{isInDungeon(p) ? "" : "not"} in a dungeon\{BotBowsManager.isInDungeon(p) ? STR.", section\{BotBowsManager.getSection(p)}" : ""}");
         return true;
+    }
+
+    private void testYellow() {
+        Lobby lobby = BotBows.getLobby(0);
+        lobby.joinGame(Bukkit.getPlayer("GruveXp"));
+        BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
+        AbilitySettings abilitySettings = lobby.settings.getAbilitySettings();
+        abilitySettings.setMaxAbilities(2);
+        abilitySettings.setUniqueMode(true);
+        for (int i = 0; i < 4; i++) {
+            UUID id = lobby.addBot();
+            BotBowsPlayer bp = BotBows.getBotBowsPlayer(id);
+            bp.equipAbility(AbilityType.ENDER_PEARL);
+            assertThat(bp.hasAbilityEquipped(AbilityType.ENDER_PEARL), "bot has enderpearl", gruveBp);
+        }
     }
 
     private void testHazards(BotBowsPlayer bp) {

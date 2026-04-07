@@ -69,13 +69,15 @@ public class Lobby {
         p.getInventory().setItem(4, NOT_READY);
     }
 
-    public void addBot() {
+    public UUID addBot() {
         Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
         mannequin.customName(Component.text("BotBowBot"));
         mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
         settings.joinGame(mannequin);
         BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.registerPlayerLobby(mannequin.getUniqueId(), this);
+        UUID id = mannequin.getUniqueId();
+        BotBows.registerPlayerLobby(id, this);
+        return id;
     }
 
     public void leaveGame(UUID playerId) {
