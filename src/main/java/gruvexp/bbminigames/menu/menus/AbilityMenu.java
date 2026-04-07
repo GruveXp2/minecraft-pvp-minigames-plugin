@@ -246,6 +246,9 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                                 p.sendMessage(Component.text("Ability limit reached", NamedTextColor.RED));
                             }
                             return;
+                        } else if (abilitySettings.isUniqueMode() && abilitySettings.isEquippedByTeam(bp, clickedAbility)) {
+                            p.sendMessage(Component.text("This ability is already equipped by other team members (unique abilities is on)", NamedTextColor.YELLOW));
+                            return;
                         }
 
                         ItemStack abilityItem = clickedItem.clone();

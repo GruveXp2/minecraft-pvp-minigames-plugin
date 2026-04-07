@@ -94,6 +94,11 @@ class AbilitySettings {
         }
     }
 
+    fun isEquippedByTeam(bp: BotBowsPlayer, type: AbilityType): Boolean {
+        val equipped = teamAbilities[bp.team.teamSide]!!
+        return equipped.contains(type) && equipped[type] != bp
+    }
+
     private fun notifyAbilitiesToggle() {
         listeners.values.forEach { it.onAbilitiesToggle() }
     }
