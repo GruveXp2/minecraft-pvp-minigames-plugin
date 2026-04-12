@@ -2,6 +2,8 @@ package gruvexp.bbminigames.twtClassic.map
 
 import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
 data class VoteResult(val map: BotBowsMap, val voteCount: Int)
 
@@ -11,6 +13,11 @@ class MapVotingSession {
 
     fun vote(bp: BotBowsPlayer, map: BotBowsMap) {
         votes[bp] = map
+        bp.avatar.message(Component.text("Voted for: ")
+            .append(Component.text(map.name.lowercase(), NamedTextColor.AQUA))
+            .append(Component.text(", now "))
+            .append(Component.text(getVotes(map), NamedTextColor.GREEN))
+            .append(Component.text(" votes")))
     }
 
     fun getVotes(map: BotBowsMap): Int {

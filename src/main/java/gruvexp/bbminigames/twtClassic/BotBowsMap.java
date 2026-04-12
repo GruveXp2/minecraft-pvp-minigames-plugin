@@ -7,7 +7,10 @@ import gruvexp.bbminigames.twtClassic.map.MapType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 public enum BotBowsMap {
     CLASSIC_ARENA(MapType.CLASSIC, ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
@@ -94,6 +97,8 @@ public enum BotBowsMap {
                     Component.text("At the mars base. Sadly not finished yet,"),
                     Component.text("if it ever will be...")));
 
+    public static final NamespacedKey KEY = new NamespacedKey("botbows", "selected_map");
+
     public final MapType mapType;
     public final ImmutableSet<HazardType> allowedHazards;
     private final ItemStack menuItem;
@@ -105,6 +110,10 @@ public enum BotBowsMap {
     }
 
     public ItemStack getMenuItem() {
-        return menuItem.clone();
+        ItemStack item = menuItem.clone();
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, this.name());
+        item.setItemMeta(meta);
+        return item;
     }
 }
