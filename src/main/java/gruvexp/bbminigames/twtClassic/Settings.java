@@ -9,6 +9,8 @@ import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
+import gruvexp.bbminigames.twtClassic.map.MapVotingSession;
+import gruvexp.bbminigames.twtClassic.map.VoteResult;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
 import net.kyori.adventure.text.Component;
@@ -29,6 +31,7 @@ public class Settings {
     public boolean useExperimentalFeatures = false;
 
     public BotBowsMap currentMap; // default map
+    private final MapVotingSession mapVotingSession = new MapVotingSession();
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
@@ -93,6 +96,8 @@ public class Settings {
     public AbilitySettings getAbilitySettings() {
         return abilitySettings;
     }
+
+    public MapVotingSession getMapVotingSession() {return mapVotingSession;}
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
