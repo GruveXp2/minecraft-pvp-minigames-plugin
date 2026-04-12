@@ -14,7 +14,7 @@ import java.util.List;
 public class BotBowsTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (args.length == 1) return List.of("load_preset", "save_preset", "start", "stop", "leave");
+        if (args.length == 1) return List.of("finish_vote", "load_preset", "save_preset", "start", "stop", "leave");
         String oper = args[0];
         switch (oper) {
             case "load_preset" -> {

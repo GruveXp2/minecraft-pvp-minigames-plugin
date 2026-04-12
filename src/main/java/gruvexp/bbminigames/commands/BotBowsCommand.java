@@ -75,6 +75,7 @@ public class BotBowsCommand implements CommandExecutor {
                 p.sendMessage(Component.text("Successfully applied preset ")
                         .append(Component.text(presetName, NamedTextColor.AQUA)));
             }
+            case "finish_vote" -> bp.lobby.settings.finishVoting();
             default -> {
                 return Component.text("Invalid subcommand!", NamedTextColor.RED);
             }

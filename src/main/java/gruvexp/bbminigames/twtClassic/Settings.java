@@ -222,6 +222,18 @@ public class Settings {
         lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
     }
 
+    public void finishVoting() {
+        if (lobby.isGameActive()) return;
+
+        VoteResult result = mapVotingSession.getLeadingMap();
+        lobby.messagePlayers(Component.empty()
+                .append(Component.text(result.getMap().name().toLowerCase(), NamedTextColor.AQUA))
+                .append(Component.text(" won the vote with "))
+                .append(Component.text(result.getVoteCount(), NamedTextColor.GREEN))
+                .append(Component.text(" votes")));
+        setMap(result.getMap());
+    }
+
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {
         team1 = newTeam1;
         team2 = newTeam2;
