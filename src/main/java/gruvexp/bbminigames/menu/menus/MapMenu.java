@@ -42,8 +42,10 @@ public class MapMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null) return;
 
-        switch (e.getCurrentItem().getType()) {
+        switch (clickedItem.getType()) {
             case SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA);
             case SPRUCE_SAPLING -> {
                 if (isOldMapCategory) settings.setMap(BotBowsMap.ROCKET_FOREST);
