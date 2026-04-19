@@ -27,35 +27,35 @@ import java.util.*;
 public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
 
     private static final ItemStack ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow"));
 
     private static final ItemStack ABILITIES_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow"));
 
     private static final ItemStack INDIVIDUAL_MAX_ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different max ability cap"));
 
     private static final ItemStack INDIVIDUAL_MAX_ABILITIES_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different max ability cap"));
 
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier"));
 
     private static final ItemStack INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier"));
 
     private static final ItemStack UNIQUE_MODE_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Unique mode", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each ability"), Component.text("can can only be equipped by max team member"));
 
     private static final ItemStack UNIQUE_MODE_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Unique mode", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can can only be equipped by max team member"));
 
     private static final ItemStack MOD_TOGGLE = makeItem(Material.MACE, Component.text("Mod Toggle"),
@@ -331,17 +331,17 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             inventory.setItem(8, ABILITIES_DISABLED);
             // fyller med gråe glassvinduer der settings var
             updateMaxAbilitiesUIState();
-            inventory.setItem(0, DISABLED);
-            inventory.setItem(53, DISABLED);
-            inventory.setItem(18, DISABLED);
+            inventory.setItem(0, DISABLED_SLOT);
+            inventory.setItem(53, DISABLED_SLOT);
+            inventory.setItem(18, DISABLED_SLOT);
             for (int i = 20; i < 27; i++) {
-                inventory.setItem(i, DISABLED);
+                inventory.setItem(i, DISABLED_SLOT);
             }
             for (int i = 27; i < 36; i++) {
                 inventory.setItem(i, VOID);
             }
             for (int i = 36; i < 45; i++) {
-                inventory.setItem(i, DISABLED);
+                inventory.setItem(i, DISABLED_SLOT);
             }
         }
     }

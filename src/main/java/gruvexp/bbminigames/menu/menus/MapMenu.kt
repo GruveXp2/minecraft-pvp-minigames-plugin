@@ -133,13 +133,13 @@ class MapMenu(settings: Settings?) : SettingsMenu(settings) {
 
         val VOTE_MODE_ENABLED: ItemStack = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Vote mode"),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            STATUS_ENABLED,
             Component.text("The map with most votes will be used in the match")
         )
 
         val VOTE_MODE_DISABLED: ItemStack = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Vote mode"),
-            Component.text("Disabled", NamedTextColor.RED),
+            STATUS_DISABLED,
             Component.text("The map with most votes will be used in the match")
         )
     }

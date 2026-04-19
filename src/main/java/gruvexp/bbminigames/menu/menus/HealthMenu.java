@@ -22,22 +22,22 @@ import java.util.UUID;
 public class HealthMenu extends SettingsMenu {
 
     private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each player"),
             Component.text("can have a different amount of hp"));
 
     private static final ItemStack CUSTOM_HP_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"),
             Component.text("can have a different amount of hp"));
 
     private static final ItemStack CUSTOM_DAMAGE_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("By enabling this, each player"),
             Component.text("ca do different amounts of damage"));
 
     private static final ItemStack CUSTOM_DAMAGE_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("By enabling this, each player"),
             Component.text("can do different amounts of damage"));
 
@@ -203,7 +203,7 @@ public class HealthMenu extends SettingsMenu {
         inventory.setItem(9, CUSTOM_DAMAGE_DISABLED);
         inventory.setItem(10, VOID);
         for (int i = 0; i < 7; i++) {
-            inventory.setItem(11 + i, DISABLED);
+            inventory.setItem(11 + i, DISABLED_SLOT);
         }
         settings.resetAttackDamage();
     }

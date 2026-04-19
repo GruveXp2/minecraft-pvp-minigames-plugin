@@ -40,12 +40,12 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
         Component[] loreDesc = hazard.getDescription();
         if (hazard.getChance() == HazardChance.DISABLED) {
             item = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.RED),
-                    Component.text("Disabled", NamedTextColor.RED),
+                    SettingsMenu.STATUS_DISABLED,
                     Component.text("If enabled, x% of rounds " + hazard.getActionDescription() + "."), loreDesc[0], loreDesc[1], loreDesc[2]);
         } else {
             Component percentage = Component.text(hazard.getChance().getPercent() + "%", NamedTextColor.LIGHT_PURPLE);
             item = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
-                    Component.text("Enabled", NamedTextColor.GREEN),
+                    SettingsMenu.STATUS_ENABLED,
                     percentage.append(Component.text(" of rounds " + hazard.getActionDescription() + ".", NamedTextColor.DARK_PURPLE)), loreDesc[0], loreDesc[1], loreDesc[2]);
         }
         return item;

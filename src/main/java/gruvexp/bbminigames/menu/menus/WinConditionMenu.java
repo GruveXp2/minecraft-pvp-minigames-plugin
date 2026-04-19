@@ -11,13 +11,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class WinConditionMenu extends SettingsMenu {
     private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
-            Component.text("Disabled", NamedTextColor.RED),
+            SettingsMenu.STATUS_DISABLED,
             Component.text("If enabled, winning team gets 1"),
             Component.text("point for each remaining hp."),
             Component.text("If disbabled, winning team only gets 1 point."));
 
     private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
-            Component.text("Enabled", NamedTextColor.GREEN),
+            SettingsMenu.STATUS_ENABLED,
             Component.text("If enabled, winning team gets 1"),
             Component.text("point for each remaining hp."),
             Component.text("If disbabled, winning team only gets 1 point."));
