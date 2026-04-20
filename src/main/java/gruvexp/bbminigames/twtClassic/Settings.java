@@ -13,6 +13,7 @@ import gruvexp.bbminigames.twtClassic.map.MapVotingSession;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
+import gruvexp.bbminigames.twtClassic.settings.MapSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -46,7 +47,9 @@ public class Settings {
     // abilities
     private AbilitySettings abilitySettings;
     public int rain = 0; // temporary workaround
+    private MapSettings mapSettings ;
     // menus
+    public Map<BotBowsPlayer, MapMenu> mapMenus;
     public MapMenu mapMenu;
     public HealthMenu healthMenu;
     public TeamsMenu teamsMenu;
@@ -61,7 +64,11 @@ public class Settings {
     }
 
     public void initMenus() {
-        mapMenu = new MapMenu(this);
+        mapSettings = new MapSettings();
+        players.forEach(bp -> {
+            mapMenus.put(bp, new MapMenu(this, bp));
+            mapSettings.addListener(bp, mapMenus.get(bp));
+        });
 
         healthMenu = new HealthMenu(this);
         healthMenu.disableCustomHP();
@@ -95,6 +102,10 @@ public class Settings {
 
     public AbilitySettings getAbilitySettings() {
         return abilitySettings;
+    }
+
+    public MapSettings getMapSettings() {
+        return mapSettings;
     }
 
     public MapVotingSession getMapVotingSession() {return mapVotingSession;}

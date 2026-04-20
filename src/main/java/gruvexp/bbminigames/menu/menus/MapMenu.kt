@@ -2,7 +2,9 @@ package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.menu.SettingsMenu
 import gruvexp.bbminigames.twtClassic.BotBowsMap
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.settings.MapUpdateListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
@@ -25,7 +27,7 @@ internal enum class UiMode(menuTitle: TextComponent) {
     }
 }
 
-class MapMenu(settings: Settings?) : SettingsMenu(settings) {
+class MapMenu(settings: Settings?, bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
     private var isOldMapCategory = false
     private val uiMode = UiMode.MAIN
 
@@ -38,13 +40,12 @@ class MapMenu(settings: Settings?) : SettingsMenu(settings) {
     }
 
     override fun handleMenu(e: InventoryClickEvent) {
-        val clicker = e.getWhoClicked() as Player
-        if (e.getClickedInventory() !== inventory) return
+        val clicker = e.whoClicked as Player
+        if (e.clickedInventory !== inventory) return
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return
-        val clickedItem = e.getCurrentItem()
-        if (clickedItem == null) return
+        val clickedItem = e.getCurrentItem() ?: return
 
-        when (clickedItem.getType()) {
+        when (clickedItem.type) {
             Material.SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA)
             Material.SPRUCE_SAPLING -> {
                 if (isOldMapCategory) settings.setMap(BotBowsMap.ROCKET_FOREST)
@@ -84,7 +85,13 @@ class MapMenu(settings: Settings?) : SettingsMenu(settings) {
     fun updateMenu() {
         when (uiMode) {
             UiMode.MAIN -> {
-                inventory.setItem(0, BotBowsMap.INSIDE_BOTBASE.getMenuItem())
+                if (settings.mapSettings.isVoteMode) {
+                    inventory.setItem(9, VOTE_MODE_ENABLED)
+                    inventory.setItem(0, VOTE)
+                } else {
+                    inventory.setItem(9, VOTE_MODE_DISABLED)
+                    inventory.setItem(0, DISABLED_SLOT)
+                }
             }
             UiMode.VOTE, UiMode.SET -> {
                 if (isOldMapCategory) {
@@ -116,6 +123,14 @@ class MapMenu(settings: Settings?) : SettingsMenu(settings) {
         setFillerVoid()
     }
 
+    override fun onVoteToggle() {
+        updateMenu()
+    }
+
+    override fun onVote() {
+        TODO("Not yet implemented")
+    }
+
     companion object {
         val MAP_CATEGORY_MODERN: ItemStack = makeItem(
             "gear", Component.text("Map category"),
@@ -130,6 +145,7 @@ class MapMenu(settings: Settings?) : SettingsMenu(settings) {
         )
 
         val VOTE: ItemStack = makeItem(Material.PAPER, Component.text("Vote for map"))
+        val SET_MAP: ItemStack = makeItem(Material.PAPER, Component.text("Set the map"))
 
         val VOTE_MODE_ENABLED: ItemStack = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Vote mode"),
