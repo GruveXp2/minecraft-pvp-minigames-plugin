@@ -131,6 +131,11 @@ class MapMenu(settings: Settings?, bp: BotBowsPlayer) : SettingsMenu(settings), 
         TODO("Not yet implemented")
     }
 
+    override fun onMapSet() {
+        val map = settings.mapSettings.currentMap;
+        inventory.setItem(2, map?.menuItem)
+    }
+
     companion object {
         val MAP_CATEGORY_MODERN: ItemStack = makeItem(
             "gear", Component.text("Map category"),

@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.settings
 interface MapUpdateListener {
     fun onVoteToggle()
     fun onVote()
+    fun onMapSet()
 
 
 
