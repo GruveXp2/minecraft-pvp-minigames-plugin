@@ -25,22 +25,28 @@ public abstract class Menu implements InventoryHolder {
     public static final ItemStack NEXT = makeItem("next", Component.text("Next"));
     public static final ItemStack DISABLED_SLOT = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
 
+    private boolean built = false;
+
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
     // inventoryHolder in the MenuListener class when handling clicks
     public Menu() {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
-        //grab all the items specified to be used for this menu and add to inventory
-        this.setMenuItems();
+        // build() will init the inventory afterward and set the items, so its not called in the constructor
     }
 
-    //let each menu decide their name
+    private void build() {
+        this.setMenuItems();
+        built = true;
+    }
+
+    // name at the top of the inventory
     public abstract Component getMenuName();
 
-    //let each menu decide their slot amount
+    // how many slots in the menu, must be 9n
     public abstract int getSlots();
 
-    //let each menu decide how the items in the menu will be handled when clicked
+    // what happens when clicking in the menu
     public abstract void handleMenu(InventoryClickEvent e);
 
     public boolean handlesEmptySlots() {
@@ -51,17 +57,19 @@ public abstract class Menu implements InventoryHolder {
         return e.getSlot() > getSlots() - 9;
     }
 
-    //let each menu decide what items are to be placed in the inventory menu
+    // initing the menu items
     public abstract void setMenuItems();
 
     //When called, an inventory is created and opened for the player
     public void open(Player p) {
+        if (!built) build();
         p.openInventory(inventory);
     }
 
     //Overridden method from the InventoryHolder interface
     @Override
     public @NotNull Inventory getInventory() {
+        if (!built) build();
         return inventory;
     }
 
