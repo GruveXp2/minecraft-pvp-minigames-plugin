@@ -14,22 +14,23 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 internal enum class UiMode(menuTitle: TextComponent) {
     MAIN(Component.text("Arena map (1/6)")),
     VOTE(Component.text("Vote for map")),
     SET(Component.text("Set map"));
 
-    val menuTitle: TextComponent?
+    val menuTitle: TextComponent
 
     init {
         this.menuTitle = menuTitle
     }
 }
 
-class MapMenu(settings: Settings?, bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
+class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
     private var isOldMapCategory = false
-    private val uiMode = UiMode.MAIN
+    private var uiMode = UiMode.MAIN
 
     override fun getMenuName(): Component {
         return Component.text("Arena map (1/6)")
@@ -45,31 +46,22 @@ class MapMenu(settings: Settings?, bp: BotBowsPlayer) : SettingsMenu(settings), 
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return
         val clickedItem = e.getCurrentItem() ?: return
 
-        when (clickedItem.type) {
-            Material.SLIME_BALL -> settings.setMap(BotBowsMap.CLASSIC_ARENA)
-            Material.SPRUCE_SAPLING -> {
-                if (isOldMapCategory) settings.setMap(BotBowsMap.ROCKET_FOREST)
-                else settings.setMap(BotBowsMap.ICY_RAVINE)
+        val mapStr =
+            clickedItem.persistentDataContainer.get<String, String>(BotBowsMap.KEY, PersistentDataType.STRING)
+        if (mapStr != null) {
+            val map = BotBowsMap.valueOf(mapStr)
+            if (map == BotBowsMap.MARS_BASE) {
+                clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED))
+                return
             }
-
-            Material.MAGMA_BLOCK             -> settings.setMap(BotBowsMap.PIGLIN_HIDEOUT)
-            Material.COPPER_BULB             -> settings.setMap(BotBowsMap.STEAMPUNK)
-            Material.STONE_BRICK_STAIRS      -> settings.setMap(BotBowsMap.ROYAL_CASTLE)
-            Material.RED_SAND                -> clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED))
-            Material.GREEN_GLAZED_TERRACOTTA -> settings.setMap(BotBowsMap.INSIDE_BOTBASE)
-            Material.GRASS_BLOCK             -> settings.setMap(BotBowsMap.OUTSIDE_BOTBASE)
-            Material.CRAFTER                 -> settings.setMap(BotBowsMap.ROCKET)
-            Material.GLASS                   -> settings.setMap(BotBowsMap.SPACE_STATION)
-            Material.FIREWORK_STAR           -> {
-                if (e.slot == slots - 4) {
-                    settings.teamsMenu.open(clicker)
-                } else if (e.slot == slots - 5) {
-                    isOldMapCategory = !isOldMapCategory
-                    updateMenu()
-                }
+            //settings.setMap(map);
+            settings.mapVotingSession.vote(bp, map)
+            return
+        } else if (clickedItem.type == Material.FIREWORK_STAR) {
+            if (e.slot == slots - 5) {
+                isOldMapCategory = !isOldMapCategory
+                updateMenu()
             }
-
-            else -> {}
         }
     }
 
