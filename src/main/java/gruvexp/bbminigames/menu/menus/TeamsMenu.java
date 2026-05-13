@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
@@ -39,6 +40,7 @@ public class TeamsMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         // if you click on a player then they change teams
         Player clicker = (Player) e.getWhoClicked();
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(clicker);
         if (e.getClickedInventory() != inventory) return;
         if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
@@ -46,14 +48,14 @@ public class TeamsMenu extends SettingsMenu {
             case PLAYER_HEAD -> {
                 NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
                 UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
-                bp.getTeam().getOppositeTeam().join(bp);
+                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
+                headBp.getTeam().getOppositeTeam().join(headBp);
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == getSlots() - 6) {
-                    settings.mapMenu.open(clicker);
+                    settings.mapMenus.get(bp).open(clicker);
                 } else if (e.getSlot() == getSlots() - 4) {
                     settings.healthMenu.open(clicker);
                 }

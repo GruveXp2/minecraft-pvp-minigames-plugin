@@ -50,7 +50,6 @@ public class Settings {
     private MapSettings mapSettings ;
     // menus
     public Map<BotBowsPlayer, MapMenu> mapMenus;
-    public MapMenu mapMenu;
     public HealthMenu healthMenu;
     public TeamsMenu teamsMenu;
     public WinConditionMenu winConditionMenu;
@@ -264,11 +263,15 @@ public class Settings {
         teamsMenu.recalculateTeam();
         bp.setMaxHP(maxHP);
         healthMenu.updateMenu();
+
+        MapMenu mapMenu = new MapMenu(this, bp);
+        mapMenus.put(bp, mapMenu);
+
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
-        AbilityMenu newMenu = new AbilityMenu(this, bp);
-        abilityMenus.put(bp, newMenu);
-        abilitySettings.addListener(bp, newMenu);
-        players.forEach(newMenu::addPlayer);
+        AbilityMenu abilityMenu = new AbilityMenu(this, bp);
+        abilityMenus.put(bp, abilityMenu);
+        abilitySettings.addListener(bp, abilityMenu);
+        players.forEach(abilityMenu::addPlayer);
 
         if (getPlayers().size() == 1 || modPlayer == null || modPlayer.avatar instanceof NpcAvatar) {
             modPlayer = bp;
