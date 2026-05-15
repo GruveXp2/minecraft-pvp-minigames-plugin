@@ -7,7 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 
 data class VoteResult(val map: BotBowsMap, val voteCount: Int)
 
-class MapVotingSession {
+class MapVotingSession(private val onVoteRegistered: () -> Unit) {
     val votes : MutableMap<BotBowsPlayer, BotBowsMap> = mutableMapOf()
     val classicMapList : Set<BotBowsMap> = BotBowsMap.entries.filter { it.mapType == MapType.CLASSIC }.toSet()
 
@@ -18,6 +18,7 @@ class MapVotingSession {
             .append(Component.text(", now "))
             .append(Component.text(getVotes(map), NamedTextColor.GREEN))
             .append(Component.text(" votes")))
+        onVoteRegistered()
     }
 
     fun getVotes(map: BotBowsMap): Int {

@@ -32,7 +32,6 @@ public class Settings {
     public boolean useExperimentalFeatures = false;
 
     public BotBowsMap currentMap; // default map
-    private final MapVotingSession mapVotingSession = new MapVotingSession();
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
@@ -105,8 +104,6 @@ public class Settings {
     public MapSettings getMapSettings() {
         return mapSettings;
     }
-
-    public MapVotingSession getMapVotingSession() {return mapVotingSession;}
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
@@ -234,7 +231,7 @@ public class Settings {
     public void finishVoting() {
         if (lobby.isGameActive()) return;
 
-        VoteResult result = mapVotingSession.getLeadingMap();
+        VoteResult result = mapSettings.getMapVotingSession().getLeadingMap();
         lobby.messagePlayers(Component.empty()
                 .append(Component.text(result.getMap().name().toLowerCase(), NamedTextColor.AQUA))
                 .append(Component.text(" won the vote with "))
