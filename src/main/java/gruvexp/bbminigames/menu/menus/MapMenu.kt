@@ -32,6 +32,11 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     private var isOldMapCategory = false
     private var uiMode = UiMode.MAIN
 
+    init {
+        setPageButtons(1, false, true)
+        updateMenu()
+    }
+
     override fun getMenuName(): Component {
         return Component.text("Arena map (1/6)")
     }
@@ -107,12 +112,6 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                 }
             }
         }
-    }
-
-    override fun initMenu() {
-        setPageButtons(1, false, true)
-        updateMenu()
-        setFillerVoid()
     }
 
     override fun onVoteToggle() {

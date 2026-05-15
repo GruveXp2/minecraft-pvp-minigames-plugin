@@ -13,6 +13,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class GameMenu extends Menu {
+
+    public GameMenu() {
+        ItemStack botbows = makeItem(Material.BOW, Component.text("BotBows Classic"), Component.text("The classic game of BotBows"));
+        ItemStack sumo = makeItem(Material.STICK, Component.text("Sumo"), Component.text("The Sumo minigame"));
+        inventory.setItem(3, botbows);
+        inventory.setItem(5, sumo);
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Game Menu");
@@ -36,14 +44,5 @@ public class GameMenu extends Menu {
                     .append(Component.text("here", Style.style(NamedTextColor.AQUA, TextDecoration.UNDERLINED))
                             .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @s 38.0 31.3 -176.5 102 22"))));
         }
-    }
-
-    @Override
-    public void initMenu() {
-        ItemStack botbows = makeItem(Material.BOW, Component.text("BotBows Classic"), Component.text("The classic game of BotBows"));
-        ItemStack sumo = makeItem(Material.STICK, Component.text("Sumo"), Component.text("The Sumo minigame"));
-        inventory.setItem(3, botbows);
-        inventory.setItem(5, sumo);
-        setFillerVoid();
     }
 }

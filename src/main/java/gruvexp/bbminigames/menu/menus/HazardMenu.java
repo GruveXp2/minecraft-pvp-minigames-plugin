@@ -29,6 +29,7 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
 
     public HazardMenu(Settings settings) {
         super(settings);
+        setPageButtons(3, true, true);
     }
 
     private ItemStack getHazardItem(Hazard hazard) {
@@ -95,12 +96,6 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
                 }
             }
         }
-    }
-
-    @Override
-    public void initMenu() {
-        setPageButtons(3, true, true);
-        setFillerVoid();
     }
 
     void updateBar(HazardType hazardType, int row) {

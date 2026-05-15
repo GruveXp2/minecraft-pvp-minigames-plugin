@@ -25,19 +25,12 @@ public abstract class Menu implements InventoryHolder {
     public static final ItemStack NEXT = makeItem("next", Component.text("Next"));
     public static final ItemStack DISABLED_SLOT = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
 
-    private boolean built = false;
-
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
     // inventoryHolder in the MenuListener class when handling clicks
     public Menu() {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
-        // build() will init the inventory afterward and set the items, so its not called in the constructor
-    }
-
-    private void build() {
-        this.initMenu();
-        built = true;
+        setFillerVoid();
     }
 
     // name at the top of the inventory
@@ -57,19 +50,14 @@ public abstract class Menu implements InventoryHolder {
         return e.getSlot() > getSlots() - 9;
     }
 
-    // initing the menu items
-    public abstract void initMenu();
-
     //When called, an inventory is created and opened for the player
     public void open(Player p) {
-        if (!built) build();
         p.openInventory(inventory);
     }
 
     //Overridden method from the InventoryHolder interface
     @Override
     public @NotNull Inventory getInventory() {
-        if (!built) build();
         return inventory;
     }
 

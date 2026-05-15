@@ -24,6 +24,11 @@ public class TeamsMenu extends SettingsMenu {
 
     public TeamsMenu(Settings settings) {
         super(settings);
+        for (int i = 2; i < 7; i++) {
+            inventory.setItem(i, null);
+            inventory.setItem(i + 9, null);
+        }
+        setPageButtons(2, true, true);
     }
 
     @Override
@@ -61,11 +66,6 @@ public class TeamsMenu extends SettingsMenu {
                 }
             }
         }
-    }
-
-    @Override
-    public void initMenu() {
-        setPageButtons(2, true, true);
     }
 
     public void registerTeams() {

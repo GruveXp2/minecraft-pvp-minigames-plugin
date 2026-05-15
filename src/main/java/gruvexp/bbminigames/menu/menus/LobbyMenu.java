@@ -13,6 +13,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class LobbyMenu extends Menu {
 
+    public LobbyMenu() {
+        for (int i = 0; i < 3; i++) {
+            inventory.setItem(i, VOID);
+            inventory.setItem(i + 6, VOID);
+        }
+    }
+
     @Override
     public Component getMenuName() {
         return Component.text("Join Lobby");
@@ -37,14 +44,6 @@ public class LobbyMenu extends Menu {
                 int lobbyID = Integer.parseInt(String.valueOf(text.charAt(text.length() - 1))) - 1;
                 BotBows.getLobby(lobbyID).joinGame(p);
             }
-        }
-    }
-
-    @Override
-    public void initMenu() {
-        for (int i = 0; i < 3; i++) {
-            inventory.setItem(i, VOID);
-            inventory.setItem(i + 6, VOID);
         }
     }
 

@@ -24,6 +24,22 @@ public class WinConditionMenu extends SettingsMenu {
 
     public WinConditionMenu(Settings settings) {
         super(settings);
+        ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"));
+        ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"));
+        ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"));
+        ItemStack add10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, Component.text("+10"));
+
+        inventory.setItem(2, sub10);
+        inventory.setItem(3, sub1);
+        inventory.setItem(5, add1);
+        inventory.setItem(6, add10);
+
+        inventory.setItem(11, sub10);
+        inventory.setItem(12, sub1);
+        inventory.setItem(14, add1);
+        inventory.setItem(15, add10);
+
+        setPageButtons(2, true, true);
     }
 
     @Override
@@ -83,27 +99,6 @@ public class WinConditionMenu extends SettingsMenu {
                 }
             }
         }
-    }
-
-    @Override
-    public void initMenu() {
-        ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"));
-        ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"));
-        ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"));
-        ItemStack add10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, Component.text("+10"));
-
-        inventory.setItem(2, sub10);
-        inventory.setItem(3, sub1);
-        inventory.setItem(5, add1);
-        inventory.setItem(6, add10);
-
-        inventory.setItem(11, sub10);
-        inventory.setItem(12, sub1);
-        inventory.setItem(14, add1);
-        inventory.setItem(15, add10);
-
-        setPageButtons(2, true, true);
-        setFillerVoid();
     }
 
     public void updateWinScoreThreshold() {
