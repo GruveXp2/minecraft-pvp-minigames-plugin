@@ -86,7 +86,7 @@ public class WinConditionMenu extends SettingsMenu {
     }
 
     @Override
-    public void setMenuItems() {
+    public void initMenu() {
         ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"));
         ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"));
         ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"));

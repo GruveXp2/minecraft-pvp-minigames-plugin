@@ -41,7 +41,7 @@ public class LobbyMenu extends Menu {
     }
 
     @Override
-    public void setMenuItems() {
+    public void initMenu() {
         for (int i = 0; i < 3; i++) {
             inventory.setItem(i, VOID);
             inventory.setItem(i + 6, VOID);

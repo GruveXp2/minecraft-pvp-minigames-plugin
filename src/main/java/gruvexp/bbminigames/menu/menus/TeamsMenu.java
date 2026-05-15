@@ -64,7 +64,7 @@ public class TeamsMenu extends SettingsMenu {
     }
 
     @Override
-    public void setMenuItems() {
+    public void initMenu() {
         setPageButtons(2, true, true);
     }
 

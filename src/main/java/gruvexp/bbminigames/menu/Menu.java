@@ -36,7 +36,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     private void build() {
-        this.setMenuItems();
+        this.initMenu();
         built = true;
     }
 
@@ -58,7 +58,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     // initing the menu items
-    public abstract void setMenuItems();
+    public abstract void initMenu();
 
     //When called, an inventory is created and opened for the player
     public void open(Player p) {

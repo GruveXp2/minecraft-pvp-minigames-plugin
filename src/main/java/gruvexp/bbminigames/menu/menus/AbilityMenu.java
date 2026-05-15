@@ -85,7 +85,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     public AbilityMenu(Settings settings, BotBowsPlayer bp) {
         super(settings);
         this.bp = bp;
-        updateUIState();
     }
 
     @Override
@@ -303,15 +302,17 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     }
 
     @Override
-    public void setMenuItems() {
-        setPageButtons(5, true, false);
+    public void initMenu() {
         maxAbilitiesSlider = new MenuSlider(inventory, 2, Material.GREEN_STAINED_GLASS_PANE, NamedTextColor.GREEN, List.of("1", "2", "3"), "Max abilities");
         cooldownMultiplierSlider = new MenuSlider(inventory, 20, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE,
                 List.of("0.25x", "0.50x", "0.75x", "1.00x", "1.25x", "1.50x", "2.00x"), "Cooldown multiplier");
         maxAbilitiesRow = new PlayerMenuRow(inventory, 2, 5);
         cooldownMultiplierRow = new PlayerMenuRow(inventory, 20, 7);
         abilityRow = new AbilityMenuRow(inventory, 37, 8, this);
+
+        setPageButtons(5, true, false);
         setFillerVoid();
+        updateUIState();
     }
 
     public void updateUIState() {

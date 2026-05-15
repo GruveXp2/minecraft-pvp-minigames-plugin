@@ -109,7 +109,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         }
     }
 
-    override fun setMenuItems() {
+    override fun initMenu() {
         setPageButtons(1, false, true)
         updateMenu()
         setFillerVoid()

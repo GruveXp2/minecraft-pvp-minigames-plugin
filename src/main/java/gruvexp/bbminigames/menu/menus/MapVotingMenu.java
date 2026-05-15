@@ -94,7 +94,7 @@ public class MapVotingMenu extends SettingsMenu {
     }
 
     @Override
-    public void setMenuItems() {
+    public void initMenu() {
         updateMenu();
         setFillerVoid();
     }

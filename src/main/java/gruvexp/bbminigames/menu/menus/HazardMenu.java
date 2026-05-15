@@ -98,7 +98,7 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
     }
 
     @Override
-    public void setMenuItems() {
+    public void initMenu() {
         setPageButtons(3, true, true);
         setFillerVoid();
     }
