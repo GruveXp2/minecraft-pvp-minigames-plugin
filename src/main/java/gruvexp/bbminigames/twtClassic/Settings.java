@@ -49,12 +49,12 @@ public class Settings {
     public int rain = 0; // temporary workaround
     private MapSettings mapSettings ;
     // menus
-    public Map<BotBowsPlayer, MapMenu> mapMenus;
+    public final Map<BotBowsPlayer, MapMenu> mapMenus = new HashMap<>();
     public HealthMenu healthMenu;
     public TeamsMenu teamsMenu;
     public WinConditionMenu winConditionMenu;
     public HazardMenu hazardMenu;
-    public Map<BotBowsPlayer, AbilityMenu> abilityMenus;
+    public final Map<BotBowsPlayer, AbilityMenu> abilityMenus = new HashMap<>();
 
     private BotBowsPlayer modPlayer;
 
@@ -85,7 +85,6 @@ public class Settings {
         hazardMenu = new HazardMenu(this);
         hazardSettings = new HazardSettings(hazardMenu);
 
-        abilityMenus = new HashMap<>();
         abilitySettings = new AbilitySettings();
         players.forEach(bp -> {
             abilityMenus.put(bp, new AbilityMenu(this, bp));
