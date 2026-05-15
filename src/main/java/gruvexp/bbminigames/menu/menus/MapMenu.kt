@@ -31,6 +31,10 @@ internal enum class UiMode(menuTitle: TextComponent) {
 class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
     private var isOldMapCategory = false
     private var uiMode = UiMode.MAIN
+        set(value) {
+            field = value
+            updateMenu()
+        }
 
     init {
         setPageButtons(1, false, true)
@@ -46,9 +50,8 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun handleMenu(e: InventoryClickEvent) {
-        val clicker = e.whoClicked as Player
+        val p = e.whoClicked as Player
         if (e.clickedInventory !== inventory) return
-        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return
         val clickedItem = e.getCurrentItem() ?: return
 
         val mapStr =
@@ -56,19 +59,25 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         if (mapStr != null) {
             val map = BotBowsMap.valueOf(mapStr)
             if (map == BotBowsMap.MARS_BASE) {
-                clicker.sendMessage(Component.text("This map is not added yet", NamedTextColor.RED))
+                bp.avatar.message(Component.text("This map is not added yet", NamedTextColor.RED))
                 return
             }
             //settings.setMap(map);
-            settings.mapVotingSession.vote(bp, map)
+            settings.mapSettings.mapVotingSession.vote(bp, map)
+            uiMode = UiMode.MAIN
             return
-        } else if (clickedItem.type == Material.FIREWORK_STAR) {
-            if (e.slot == slots - 4) {
-                settings.teamsMenu.open(clicker)
-            } else if (e.slot == slots - 5) {
-                isOldMapCategory = !isOldMapCategory
-                updateMenu()
+        }
+        when(clickedItem.type) {
+            Material.FIREWORK_STAR -> {
+                if (e.slot == slots - 4) {
+                    settings.teamsMenu.open(p)
+                } else if (e.slot == slots - 5) {
+                    isOldMapCategory = !isOldMapCategory
+                    updateMenu()
+                }
             }
+            Material.PAPER -> uiMode = UiMode.VOTE
+            else -> {}
         }
     }
 
@@ -125,7 +134,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun onMapSet() {
-        val map = settings.mapSettings.currentMap;
+        val map = settings.mapSettings.currentMap
         inventory.setItem(2, map?.menuItem)
     }
 
