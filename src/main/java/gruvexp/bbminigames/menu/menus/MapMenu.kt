@@ -63,7 +63,9 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
             settings.mapVotingSession.vote(bp, map)
             return
         } else if (clickedItem.type == Material.FIREWORK_STAR) {
-            if (e.slot == slots - 5) {
+            if (e.slot == slots - 4) {
+                settings.teamsMenu.open(clicker)
+            } else if (e.slot == slots - 5) {
                 isOldMapCategory = !isOldMapCategory
                 updateMenu()
             }
@@ -75,7 +77,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
             Component.text("This map is not fully added yet. To play on it, run ", NamedTextColor.YELLOW).append(
                 Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED)
             )
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/test toggle_experimental"))
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/test toggle_experimental")))
         )
     }
 
