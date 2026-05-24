@@ -1,12 +1,35 @@
 package gruvexp.bbminigames.menu;
 
+import org.bukkit.NamespacedKey;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MenuRow {
+
+    public enum RowAction {
+        PREV,
+        NEXT
+    }
+    public static final NamespacedKey KEY_ROW_ACTION = new NamespacedKey("botbows", "row_action");
+
+    private static final ItemStack ROW_PREV = PaginatedMenu.PAGE_PREV.clone();
+    private static final ItemStack ROW_NEXT = PaginatedMenu.PAGE_NEXT.clone();
+
+    static {
+        ItemMeta prevMeta = ROW_PREV.getItemMeta();
+        prevMeta.getPersistentDataContainer().set(KEY_ROW_ACTION, PersistentDataType.STRING, RowAction.PREV.name());
+        ROW_PREV.setItemMeta(prevMeta);
+
+        ItemMeta nextMeta = ROW_NEXT.getItemMeta();
+        nextMeta.getPersistentDataContainer().set(KEY_ROW_ACTION, PersistentDataType.STRING, RowAction.NEXT.name());
+        ROW_NEXT.setItemMeta(nextMeta);
+    }
 
     protected final Inventory inventory;
     public final int startSlot; // slotten i inventoriet som man begynner på
@@ -74,11 +97,11 @@ public class MenuRow {
                 ItemStack item = i < itemList.size() ? itemList.get(i) : null;
                 inventory.setItem(startSlot + i, item);
             }
-            inventory.setItem(startSlot + size - 1, Menu.NEXT);
+            inventory.setItem(startSlot + size - 1, ROW_NEXT);
             return;
         }
         firstVisibleItem = size - 1 + (size - 2)*(page - 2); // første element på den sida
-        setItem(0, Menu.PREV); // en prev knapp først, deretter fylles rada opp bortsett fra den siste hvis det er en midtside, da blir det en next på slutten
+        setItem(0, ROW_PREV); // en prev knapp først, deretter fylles rada opp bortsett fra den siste hvis det er en midtside, da blir det en next på slutten
         for (int i = 0; i < size - 2; i++) {
             int targetSlot = 1 + i; // begynner på slot 2 pga nr 1 er for PREV knappen
             ItemStack item = firstVisibleItem + i < itemList.size() ? itemList.get(firstVisibleItem + i) : null;
@@ -88,9 +111,33 @@ public class MenuRow {
             ItemStack item = firstVisibleItem + size - 1 < itemList.size() ? itemList.get(firstVisibleItem + size - 1) : null;
             setItem(size - 1, item);
         } else {
-            setItem(size - 1, Menu.NEXT);
+            setItem(size - 1, ROW_NEXT);
         }
+    }
 
+    public boolean handleClick(InventoryClickEvent e) {
+        if (!isVisible) return false;
+
+        int slot = e.getSlot();
+        if (slot < startSlot || slot >= startSlot + size) { // check if the clicked item was inside this sliders space, since its possible to have many sliders on a page
+            return false;
+        }
+        ItemStack item = e.getCurrentItem();
+        if (item == null || !item.hasItemMeta()) return false;
+
+        String actionString = item.getItemMeta().getPersistentDataContainer() // check if it has a row action tag = its a button (prev/next)
+                .get(KEY_ROW_ACTION, PersistentDataType.STRING);
+
+        if (actionString == null) return false;
+
+        RowAction action = RowAction.valueOf(actionString);
+
+        if (action == RowAction.PREV) {
+            prevPage();
+        } else if (action == RowAction.NEXT) {
+            nextPage();
+        }
+        return true;
     }
 
     private void setItem(int index, ItemStack item) {

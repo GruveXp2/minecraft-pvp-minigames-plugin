@@ -113,6 +113,10 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         if (clickedItem == null) {
             clickedItem = new ItemStack(Material.AIR);
         }
+        if (maxAbilitiesRow.handleClick(e)) return;
+        if (cooldownMultiplierRow.handleClick(e)) return;
+        if (abilityRow.handleClick(e)) return;
+
         AbilitySettings abilitySettings = settings.getAbilitySettings();
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
@@ -181,10 +185,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                     settings.hazardMenu.open(clicker);
                 } else if (e.getSlot() == 49) {
                     clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
-                } else if (e.getSlot() == 37) {
-                    abilityRow.prevPage();
-                } else if (e.getSlot() == 44) {
-                    abilityRow.nextPage();
                 }
             }
             case MACE -> {
