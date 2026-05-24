@@ -248,31 +248,13 @@ public class Settings {
 
     public void joinGame(Player p) {
         BotBowsPlayer bp = new BotBowsPlayer(p, this);
-        lobby.registerBotBowsPlayer(bp);
-        players.add(bp);
-        if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
-            team1.join(bp);
-        } else {
-            team2.join(bp);
-        }
-        teamsMenu.recalculateTeam();
-        bp.setMaxHP(maxHP);
-        healthMenu.updateMenu();
-
-        MapMenu mapMenu = new MapMenu(this, bp);
-        mapMenus.put(bp, mapMenu);
-
-        abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
-        AbilityMenu abilityMenu = new AbilityMenu(this, bp);
-        abilityMenus.put(bp, abilityMenu);
-        abilitySettings.addListener(bp, abilityMenu);
-        players.forEach(abilityMenu::addPlayer);
+        joinGame(bp);
 
         if (getPlayers().size() == 1 || modPlayer == null || modPlayer.avatar instanceof NpcAvatar) {
             modPlayer = bp;
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
                     " and will be the settings moderator")));
-            mapMenu.open(p);
+            mapMenus.get(bp).open(p);
         } else {
             Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
         }
@@ -280,6 +262,11 @@ public class Settings {
 
     public void joinGame(Mannequin mannequin) {
         BotBowsPlayer bp = new BotBowsPlayer(mannequin, this);
+        joinGame(bp);
+        Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
+    }
+
+    private void joinGame(BotBowsPlayer bp) {
         lobby.registerBotBowsPlayer(bp);
         players.add(bp);
         if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
@@ -288,13 +275,16 @@ public class Settings {
             team2.join(bp);
         }
         teamsMenu.recalculateTeam();
-        healthMenu.updateMenu();
+
+        MapMenu mapMenu = new MapMenu(this, bp);
+        mapMenus.put(bp, mapMenu);
+        mapSettings.addListener(bp, mapMenu);
+
         abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
-        AbilityMenu newMenu = new AbilityMenu(this, bp);
-        abilityMenus.put(bp, newMenu);
-        abilitySettings.addListener(bp, newMenu);
-        players.forEach(newMenu::addPlayer);
-        Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
+        AbilityMenu abilityMenu = new AbilityMenu(this, bp);
+        abilityMenus.put(bp, abilityMenu);
+        abilitySettings.addListener(bp, abilityMenu);
+        players.forEach(abilityMenu::addPlayer);
     }
 
     public void leaveGame(BotBowsPlayer bp) {
