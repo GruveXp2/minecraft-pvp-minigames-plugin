@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic;
 
+import com.google.common.collect.ImmutableSet;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.menu.menus.*;
 import gruvexp.bbminigames.model.preset.AbilityPreset;
@@ -9,6 +10,7 @@ import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
@@ -29,8 +31,6 @@ public class Settings {
 
     public final Lobby lobby;
     public boolean useExperimentalFeatures = false;
-
-    public BotBowsMap currentMap; // default map
 
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
@@ -62,7 +62,7 @@ public class Settings {
 
     public void initMenus() {
         mapSettings = new MapSettings(map -> {
-            onMapChange(map);
+            onMapChange(map); // TODO: gjør om map = null til map = BotBowsMap.RANDOM, der tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
             return kotlin.Unit.INSTANCE; // void cant be returned in kotlin
         });
         players.forEach(bp -> {
@@ -128,7 +128,7 @@ public class Settings {
         return new BattlePreset(
                 presetName,
                 presetIcon,
-                currentMap,
+                mapSettings.getCurrentMap(),
                 team1.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
                 team2.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
                 healthPreset,
@@ -139,7 +139,7 @@ public class Settings {
     }
 
     public void applyBattlePreset(BattlePreset preset) {
-        mapSettings.setCurrentMap(preset.map());
+        mapSettings.setCurrentMap(preset.map() != null ? preset.map() : BotBowsMap.CLASSIC_ARENA);
 
         preset.team1().stream()
                 .map(BotBows::getBotBowsPlayer)
@@ -181,15 +181,14 @@ public class Settings {
         setRoundDuration(winConditionPreset.roundDuration());
         setDynamicScoring(winConditionPreset.dynamicPoints());
 
-        currentMap.allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
+        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap() != null ? getMapSettings().getCurrentMap().allowedHazards : ImmutableSet.copyOf(HazardType.values());
+        allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();
         abilitySettings.applyPreset(abilityPreset);
     }
 
     private void onMapChange(BotBowsMap map) {
-        if (map == currentMap) return;
-        currentMap = map;
         switch (map) {
             case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));

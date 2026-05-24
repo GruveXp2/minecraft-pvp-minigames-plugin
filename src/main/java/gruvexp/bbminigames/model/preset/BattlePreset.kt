@@ -10,7 +10,7 @@ import java.util.UUID
 data class BattlePreset(
     val name: String,
     val icon: Material,
-    val map: BotBowsMap,
+    val map: BotBowsMap?,
     val team1: Set<UUID>,
     val team2: Set<UUID>,
     val health: HealthPreset,
