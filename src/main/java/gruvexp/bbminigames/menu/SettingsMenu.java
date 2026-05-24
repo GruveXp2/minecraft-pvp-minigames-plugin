@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public abstract class SettingsMenu extends Menu {
+public abstract class SettingsMenu extends PaginatedMenu {
 
     protected final Settings settings;
 

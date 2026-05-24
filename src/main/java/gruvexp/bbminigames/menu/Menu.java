@@ -5,6 +5,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -12,18 +13,18 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public abstract class Menu implements InventoryHolder {
 
-    //Protected values that can be accessed in the menus
-    protected Inventory inventory;
-    public static final ItemStack VOID = makeItem("void", Component.empty());
-    public static final ItemStack PREV = makeItem("prev", Component.text("Prev"));
-    public static final ItemStack NEXT = makeItem("next", Component.text("Next"));
+    public static final NamespacedKey ACTION_KEY = new NamespacedKey("botbows", "menu_action");
     public static final ItemStack DISABLED_SLOT = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
+    public static final ItemStack VOID = makeItem("void", Component.empty());
+
+    protected Inventory inventory;
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
@@ -108,18 +109,6 @@ public abstract class Menu implements InventoryHolder {
 
         item.setItemMeta(itemMeta);
         return item;
-    }
-
-    protected void setPageButtons(int rowIndex, boolean prevMenuButton, boolean nextMenuButton) {
-        inventory.setItem(rowIndex*9    , VOID);
-        inventory.setItem(rowIndex*9 + 1, VOID);
-        inventory.setItem(rowIndex*9 + 2, VOID);
-        inventory.setItem(rowIndex*9 + 3, prevMenuButton ? PREV : VOID);
-        inventory.setItem(rowIndex*9 + 4, VOID);
-        inventory.setItem(rowIndex*9 + 5, nextMenuButton ? NEXT : VOID);
-        inventory.setItem(rowIndex*9 + 6, VOID);
-        inventory.setItem(rowIndex*9 + 7, VOID);
-        inventory.setItem(rowIndex*9 + 8, VOID);
     }
 }
 

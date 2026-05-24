@@ -53,6 +53,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         val p = e.whoClicked as Player
         if (e.clickedInventory !== inventory) return
         val clickedItem = e.getCurrentItem() ?: return
+        if (handlePageClick(e)) return
 
         val mapStr =
             clickedItem.persistentDataContainer.get<String, String>(BotBowsMap.KEY, PersistentDataType.STRING)
