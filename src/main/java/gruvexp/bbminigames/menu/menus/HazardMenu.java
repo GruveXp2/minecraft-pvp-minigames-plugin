@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
@@ -66,8 +67,9 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
+        if (handlePageClick(e)) return;
         BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(clicker);
-        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(bp)) return;
+        if (!settings.playerIsMod(bp)) return;
 
         HazardSettings hazardSettings = settings.getHazardSettings();
         switch (e.getCurrentItem().getType()) {
@@ -88,14 +90,17 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
                 HazardType type = hazardsSorted.get(row);
                 hazardSettings.setChance(type, HazardChance.DISABLED);
             }
-            case FIREWORK_STAR -> {
-                if (e.getSlot() == getSlots() - 6) {
-                    settings.winConditionMenu.open(clicker);
-                } else if (e.getSlot() == getSlots() - 4) {
-                    settings.abilityMenus.get(bp).open(clicker);
-                }
-            }
         }
+    }
+
+    @Override
+    public void prevPage(Player p) {
+        settings.winConditionMenu.open(p);
+    }
+
+    @Override
+    public void nextPage(Player p) {
+        settings.abilityMenus.get(BotBows.getBotBowsPlayer(p)).open(p);
     }
 
     void updateBar(HazardType hazardType, int row) {

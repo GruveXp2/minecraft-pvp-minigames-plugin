@@ -65,7 +65,8 @@ public class HealthMenu extends SettingsMenu {
     public void handleMenu(InventoryClickEvent e) {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
-        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        if (handlePageClick(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
@@ -116,17 +117,19 @@ public class HealthMenu extends SettingsMenu {
                     bp.setAttackDamage(attackDamage);
                     head.setAmount(attackDamage);
                 }
-
                 inventory.setItem(slot, head);
             }
-            case FIREWORK_STAR -> {
-                if (e.getSlot() == getSlots() - 6) {
-                    settings.teamsMenu.open(clicker);
-                } else if (e.getSlot() == getSlots() - 4) {
-                    settings.winConditionMenu.open(clicker);
-                }
-            }
         }
+    }
+
+    @Override
+    public void prevPage(Player p) {
+        settings.teamsMenu.open(p);
+    }
+
+    @Override
+    public void nextPage(Player p) {
+        settings.winConditionMenu.open(p);
     }
 
     public void updateMenu() {

@@ -113,6 +113,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         if (clickedItem == null) {
             clickedItem = new ItemStack(Material.AIR);
         }
+        if (handlePageClick(e)) return;
         if (maxAbilitiesRow.handleClick(e)) return;
         if (cooldownMultiplierRow.handleClick(e)) return;
         if (abilityRow.handleClick(e)) return;
@@ -181,9 +182,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 }
             }
             case FIREWORK_STAR -> {
-                if (e.getSlot() == getSlots() - 6) {
-                    settings.hazardMenu.open(clicker);
-                } else if (e.getSlot() == 49) {
+                if (e.getSlot() == 49) {
                     clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED));
                 }
             }
@@ -289,6 +288,11 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 }
             }
         }
+    }
+
+    @Override
+    public void prevPage(Player p) {
+        settings.hazardMenu.open(p);
     }
 
     public void handleMenuClose(InventoryCloseEvent e) {

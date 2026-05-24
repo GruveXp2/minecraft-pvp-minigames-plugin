@@ -47,7 +47,8 @@ public class TeamsMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(clicker);
         if (e.getClickedInventory() != inventory) return;
-        if (!clickedOnBottomButtons(e) && !settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        if (handlePageClick(e)) return;
+        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {
@@ -58,14 +59,17 @@ public class TeamsMenu extends SettingsMenu {
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
-            case FIREWORK_STAR -> {
-                if (e.getSlot() == getSlots() - 6) {
-                    settings.mapMenus.get(bp).open(clicker);
-                } else if (e.getSlot() == getSlots() - 4) {
-                    settings.healthMenu.open(clicker);
-                }
-            }
         }
+    }
+
+    @Override
+    public void prevPage(Player p) {
+        settings.mapMenus.get(BotBows.getBotBowsPlayer(p)).open(p);
+    }
+
+    @Override
+    public void nextPage(Player p) {
+        settings.healthMenu.open(p);
     }
 
     public void registerTeams() {
