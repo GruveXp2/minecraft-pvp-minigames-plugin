@@ -25,6 +25,10 @@ class MapVotingSession(private val onVoteRegistered: () -> Unit) {
         return votes.values.count { it == map }
     }
 
+    fun getVotedMaps(): Set<BotBowsMap> {
+        return votes.values.toSet()
+    }
+
     fun getLeadingMap(): VoteResult {
         val voteCounts = votes.values // <bb-map, #votes>
             .groupingBy { it }

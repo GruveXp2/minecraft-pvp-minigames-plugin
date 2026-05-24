@@ -91,7 +91,7 @@ public class TestCommand implements CommandExecutor {
                     abilitySettings.ban(AbilityType.BABY_POTION);
                     abilitySettings.setMaxAbilities(3);
                     abilitySettings.setCooldownMultiplier(1.25f);
-                    settings.setMap(BotBowsMap.ICY_RAVINE);
+                    settings.getMapSettings().setCurrentMap(BotBowsMap.ICY_RAVINE);
                     settings.setWinScoreThreshold(67);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
                     gxbp.equipAbility(AbilityType.THUNDER_BOW);
@@ -216,7 +216,7 @@ public class TestCommand implements CommandExecutor {
                     Lobby lobby = BotBows.getLobby(0);
                     lobby.joinGame(gruveXp);
                     lobby.joinGame(judith);
-                    lobby.settings.setMap(BotBowsMap.SPACE_STATION);
+                    lobby.settings.getMapSettings().setCurrentMap(BotBowsMap.SPACE_STATION);
                     //lobby.settings.getHazards().values().forEach(h -> h.setChance(HazardChance.DISABLED));
                     BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);

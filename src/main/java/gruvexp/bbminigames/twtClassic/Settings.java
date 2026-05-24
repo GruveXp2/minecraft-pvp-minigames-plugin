@@ -61,7 +61,10 @@ public class Settings {
     }
 
     public void initMenus() {
-        mapSettings = new MapSettings();
+        mapSettings = new MapSettings(map -> {
+            onMapChange(map);
+            return kotlin.Unit.INSTANCE; // void cant be returned in kotlin
+        });
         players.forEach(bp -> {
             mapMenus.put(bp, new MapMenu(this, bp));
             mapSettings.addListener(bp, mapMenus.get(bp));
@@ -89,7 +92,7 @@ public class Settings {
             abilitySettings.addListener(bp, abilityMenus.get(bp));
         });
 
-        setMap(BotBowsMap.CLASSIC_ARENA);
+        //setMap(BotBowsMap.CLASSIC_ARENA);
     }
 
     public HazardSettings getHazardSettings() {
@@ -136,7 +139,7 @@ public class Settings {
     }
 
     public void applyBattlePreset(BattlePreset preset) {
-        setMap(preset.map());
+        mapSettings.setCurrentMap(preset.map());
 
         preset.team1().stream()
                 .map(BotBows::getBotBowsPlayer)
@@ -184,7 +187,7 @@ public class Settings {
         abilitySettings.applyPreset(abilityPreset);
     }
 
-    public void setMap(BotBowsMap map) {
+    private void onMapChange(BotBowsMap map) {
         if (map == currentMap) return;
         currentMap = map;
         switch (map) {
@@ -236,7 +239,7 @@ public class Settings {
                 .append(Component.text(" won the vote with "))
                 .append(Component.text(result.getVoteCount(), NamedTextColor.GREEN))
                 .append(Component.text(" votes")));
-        setMap(result.getMap());
+        mapSettings.setCurrentMap(result.getMap());
     }
 
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {

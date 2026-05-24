@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.map.MapVotingSession
 
-class MapSettings {
+class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit)  {
     val mapVotingSession : MapVotingSession = MapVotingSession { notifyVote() }
 
     var isVoteMode: Boolean = true
@@ -15,6 +15,7 @@ class MapSettings {
     var currentMap: BotBowsMap? = null
         set(value) {
             field = value
+            onMapSet(value) // used in Settings to change other menus, like team colors
             notifyMapSet()
         }
 

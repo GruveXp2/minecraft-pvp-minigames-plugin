@@ -71,15 +71,27 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
-    public static ItemStack makeItem(Material material, TextComponent displayName, Component... lore) {
+    public static ItemStack makeItem(Material material, TextComponent displayName, String actionId, Component... lore) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
         itemMeta.lore(List.of(lore));
 
+        if (actionId != null) {
+            itemMeta.getPersistentDataContainer().set(ACTION_KEY, PersistentDataType.STRING, actionId);
+        }
+
         item.setItemMeta(itemMeta);
         return item;
+    }
+
+    public static ItemStack makeItem(Material material, TextComponent displayName, Component... lore) {
+        return makeItem(material, displayName, null, lore);
+    }
+
+    public static ItemStack makeItem(Material material, TextComponent displayName, String actionId) {
+        return makeItem(material, displayName, actionId, new Component[0]);
     }
 
     public static ItemStack makeItem(Material material, TextComponent displayName, int amount) {
@@ -94,10 +106,22 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public static ItemStack makeItem(String customModelData, TextComponent displayName, Component... lore) {
-        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), lore);
+        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, null, lore);
+    }
+
+    public static ItemStack makeItem(String customModelData, TextComponent displayName, String actionId, Component... lore) {
+        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, actionId, lore);
+    }
+
+    public static ItemStack makeItem(String customModelData, TextComponent displayName, NamespacedKey actionKey, String actionId, Component... lore) {
+        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), actionKey, actionId, lore);
     }
 
     public static ItemStack makeItem(Material material, String customModelData, TextComponent displayName, Component... lore) {
+        return makeItem(material, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, null, lore);
+    }
+
+    public static ItemStack makeItem(Material material, String customModelData, TextComponent displayName, NamespacedKey actionKey, String actionId, Component... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
@@ -106,6 +130,10 @@ public abstract class Menu implements InventoryHolder {
         CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
         customModelDataComponent.setStrings(List.of(customModelData));
         itemMeta.setCustomModelDataComponent(customModelDataComponent);
+
+        if (actionId != null) {
+            itemMeta.getPersistentDataContainer().set(actionKey != null ? actionKey : ACTION_KEY, PersistentDataType.STRING, actionId);
+        }
 
         item.setItemMeta(itemMeta);
         return item;
