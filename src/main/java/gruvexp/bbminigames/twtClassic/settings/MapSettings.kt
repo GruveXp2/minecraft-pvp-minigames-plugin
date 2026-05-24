@@ -4,7 +4,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.map.MapVotingSession
 
-class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit)  {
+class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit, private val onVote: () -> Unit)  {
     val mapVotingSession : MapVotingSession = MapVotingSession { notifyVote() }
 
     var isVoteMode: Boolean = true
@@ -31,6 +31,7 @@ class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit)  {
 
     private fun notifyVote() {
         listeners.values.forEach { it.onVote() }
+        onVote()
     }
 
     private fun notifyVoteToggle() {

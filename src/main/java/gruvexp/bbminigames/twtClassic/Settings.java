@@ -64,7 +64,7 @@ public class Settings {
         mapSettings = new MapSettings(map -> {
             onMapChange(map); // TODO: gjør om map = null til map = BotBowsMap.RANDOM, der tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
             return kotlin.Unit.INSTANCE; // void cant be returned in kotlin
-        });
+        }, () -> {onVote();return kotlin.Unit.INSTANCE;});
         players.forEach(bp -> {
             mapMenus.put(bp, new MapMenu(this, bp));
             mapSettings.addListener(bp, mapMenus.get(bp));
@@ -227,6 +227,16 @@ public class Settings {
 
         String mapName = map.name().charAt(0) + map.name().substring(1).toLowerCase().replace('_', ' ');
         lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
+    }
+
+    private void onVote() {
+        int totalVotes = mapSettings.getMapVotingSession().getTotalVotes();
+        long nonLobbyPlayers = Bukkit.getOnlinePlayers().stream() // players not yet in lobby could potentially join this lobby and want to vote
+                .filter(p -> BotBows.getBotBowsPlayer(p) == null).count();
+        if (totalVotes == players.size() + nonLobbyPlayers) {
+            lobby.messagePlayers(Component.text("All players have voted!"));
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::finishVoting, 20L);
+        }
     }
 
     public void finishVoting() {

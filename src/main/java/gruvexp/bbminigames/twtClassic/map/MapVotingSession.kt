@@ -25,6 +25,10 @@ class MapVotingSession(private val onVoteRegistered: () -> Unit) {
         return votes.values.count { it == map }
     }
 
+    fun getTotalVotes(): Int {
+        return votes.size
+    }
+
     fun getVotedMaps(): Set<BotBowsMap> {
         return votes.values.toSet()
     }
