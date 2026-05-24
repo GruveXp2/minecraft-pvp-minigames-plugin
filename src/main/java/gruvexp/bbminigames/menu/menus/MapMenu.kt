@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
 import gruvexp.bbminigames.twtClassic.settings.MapUpdateListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -57,6 +58,10 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                 bp.avatar.message(Component.text("This map is not added yet", NamedTextColor.RED))
                 return
             }
+            if (map == BotBowsMap.STEAMPUNK) {
+                sendBrokedLockedMessage(bp.avatar)
+                return
+            }
             if (mapSettings.isVoteMode) {
                 mapSettings.mapVotingSession.vote(bp, map)
             } else {
@@ -85,9 +90,17 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         settings.teamsMenu.open(p)
     }
 
-    private fun sendExperimentalLockedMessage(player: Player) {
-        player.sendMessage(
+    private fun sendExperimentalLockedMessage(avatar: BotBowsAvatar) {
+        avatar.message(
             Component.text("This map is not fully added yet. To play on it, run ", NamedTextColor.YELLOW)
+                .append(Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED))
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/test toggle_experimental")))
+        )
+    }
+
+    private fun sendBrokedLockedMessage(avatar: BotBowsAvatar) {
+        avatar.message(
+            Component.text("This map is currently broken (someone did /kill @e). To play on it, run ", NamedTextColor.YELLOW)
                 .append(Component.text("/test toggle_experimental", NamedTextColor.AQUA, TextDecoration.UNDERLINED))
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/test toggle_experimental")))
         )
