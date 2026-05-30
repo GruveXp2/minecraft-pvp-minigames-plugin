@@ -1,8 +1,10 @@
 package gruvexp.bbminigames;
 
 import gruvexp.bbminigames.commands.*;
+import gruvexp.bbminigames.database.StatsDatabase;
 import gruvexp.bbminigames.listeners.*;
 import gruvexp.bbminigames.service.BattlePresetService;
+import gruvexp.bbminigames.service.StatsService;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -28,8 +30,12 @@ public final class Main extends JavaPlugin {
         return PLUGIN;
     }
     private BattlePresetService presetService;
+    private StatsService statsService;
     public BattlePresetService getPresetService() {
         return presetService;
+    }
+    public StatsService getStatsService() {
+        return statsService;
     }
 
     @Override
@@ -56,6 +62,9 @@ public final class Main extends JavaPlugin {
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
         WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end");
+
+        File dbFolder = new File(this.getDataFolder(), "db");
+        statsService = new StatsService(this, new StatsDatabase(dbFolder));
         BotBows.init();
         BotBowsPlayer.armorInit();
         presetService = new BattlePresetService();

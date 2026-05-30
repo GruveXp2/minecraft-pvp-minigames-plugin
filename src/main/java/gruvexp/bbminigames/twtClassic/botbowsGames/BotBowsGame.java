@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.model.stat.MatchResult;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.tasks.RoundTimer;
@@ -40,6 +41,8 @@ public class BotBowsGame {
     protected int round = 0; // hvilken runde man er på
     private BukkitTask roundTimer;
 
+    public MatchResult matchResult;
+
     public BotBowsGame(Settings settings) {
         this.settings = settings;
         this.lobby = settings.lobby;
@@ -48,6 +51,7 @@ public class BotBowsGame {
         this.players = settings.getPlayers();
         this.hazards = settings.getHazardSettings().createActiveHazards();
         this.boardManager = new BoardManager(lobby);
+        matchResult = new MatchResult(settings.getMapSettings().getCurrentMap());
     }
 
     public void leaveGame(BotBowsPlayer p) {
@@ -221,11 +225,13 @@ public class BotBowsGame {
 
     public void postGame(BotBowsTeam winningTeam) {
         canMove = true;
+        matchResult.setRounds(round);
         if (winningTeam == null) {
             lobby.messagePlayers(Component.text("================\n" +
                     "The game ended in a tie after " + round + " round" + (round == 1 ? "" : "s") + "\n" +
-                    "================", NamedTextColor.LIGHT_PURPLE));
+                    "================", NamedTextColor.LIGHT_PURPLE)); // TODO: make the tie color be defined in the BotBowsMap as "neutralColor". For example, in blaudVwakcy, its purple, bc its between red & blue
         } else {
+            matchResult.setTeam1Won(winningTeam == team1);
             lobby.messagePlayers(Component.text("================\n" +
                     "TEAM " + winningTeam.name.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
                     "================", winningTeam.color));
@@ -239,6 +245,8 @@ public class BotBowsGame {
         team1.reset();
         team2.reset();
         lobby.reset();
+
+        Main.getPlugin().getStatsService().saveMatchResult(matchResult);
     }
 
     private void postGameTitle(BotBowsTeam winningTeam) {

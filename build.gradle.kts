@@ -22,6 +22,14 @@ repositories {
 dependencies {
     api("org.jetbrains:annotations:24.1.0")
     compileOnly("io.papermc.paper:paper-api:1.21.+")
+    // database
+    implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+    // ORM for database
+    implementation("org.jetbrains.exposed:exposed-core:0.50.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.50.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.50.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.50.0")
+
 }
 
 val buildNumberFile = file("build-number.txt")
@@ -35,7 +43,7 @@ val buildNumber: Int = if (buildNumberFile.exists()) {
 }
 
 group = "gruvexp"
-version = "1.4.3-$buildNumber"
+version = "1.4.4-$buildNumber"
 description = "The plugin used on the BotBows minigames server"
 
 java {
@@ -66,6 +74,7 @@ tasks.processResources {
 }
 
 tasks.register("incrementBuildNumber") {
+    description = "makes the buildnumber go up"
     doLast {
         val currentBuildNumber = buildNumberFile.readText().trim().toInt()
         val newBuildNumber = currentBuildNumber + 1

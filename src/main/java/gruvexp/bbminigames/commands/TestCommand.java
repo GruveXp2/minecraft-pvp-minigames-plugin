@@ -264,6 +264,7 @@ public class TestCommand implements CommandExecutor {
                     verboseDebugging = !verboseDebugging;
                     BotBows.debugMessage("Verbose debugging set to: " + verboseDebugging);
                 }
+                case "db" -> Main.getPlugin().getStatsService().printOutInfo();
                 case "c" -> {
                     String playerName = args[1];
                     if (playerName == null) playerName = "GruveXp";

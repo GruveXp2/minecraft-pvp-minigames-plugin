@@ -351,7 +351,11 @@ public class BotBowsPlayer {
         if (ctx instanceof DamageContext.Environment) {
             die(damageMessage);
         } else if (ctx instanceof DamageContext.Player playerCtx) {
+            lobby.botBowsGame.matchResult.registerDamage(this);
+            lobby.botBowsGame.matchResult.registerHit(playerCtx.getAttacker());
             if (isFatal) {
+                lobby.botBowsGame.matchResult.registerDeath(this);
+                lobby.botBowsGame.matchResult.registerKill(playerCtx.getAttacker());
                 damageMessage = damageMessage
                         .append(Component.text(" and got"))
                         .append(Component.text(" eliminated", NamedTextColor.DARK_RED));
