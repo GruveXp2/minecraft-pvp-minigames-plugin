@@ -1,22 +1,26 @@
 package gruvexp.bbminigames.service
 
+import gruvexp.bbminigames.database.MatchPlayerAbilityUsesTable
 import gruvexp.bbminigames.database.MatchPlayersTable
 import gruvexp.bbminigames.database.MatchesTable
 import gruvexp.bbminigames.database.StatsDatabase
 import gruvexp.bbminigames.model.stat.MatchResult
 import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsMap
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
 class StatsService(
     private val plugin: JavaPlugin,
     private val statsDatabase: StatsDatabase
 ) {
     fun saveMatchResult(matchResult: MatchResult) {
-        // database calls can take noticeable time, so souldnt run on main thread
+        // database calls can take noticeable time, so shouldnt run on main thread
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             transaction(statsDatabase.db) {
                 val matchId = MatchesTable.insert {
@@ -34,6 +38,14 @@ class StatsService(
                         it[deaths] = stats.deaths
                         it[hits] = stats.hits
                         it[damage] = stats.damage
+                    }
+                    stats.abilityUses.forEach { (type, amount) ->
+                        MatchPlayerAbilityUsesTable.insert {
+                            it[this.matchId] = matchId
+                            it[playerUuid] = uuid.toString()
+                            it[abilityType] = type.name
+                            it[uses] = amount
+                        }
                     }
                 }
             }

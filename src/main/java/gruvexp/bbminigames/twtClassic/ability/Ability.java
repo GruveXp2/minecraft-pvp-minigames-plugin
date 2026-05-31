@@ -75,6 +75,8 @@ public class Ability {
     public void use() {
         if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return; // null check used when testing ability outside of match
 
+        bp.lobby.botBowsGame.matchResult.registerAbilityUse(bp, type);
+
         if (type.category == AbilityCategory.DAMAGING) {
             bp.loseWeaponAbilities();
         } else {

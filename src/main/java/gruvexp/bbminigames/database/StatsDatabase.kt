@@ -24,7 +24,7 @@ class StatsDatabase(dataFolder: File) {
             url = "jdbc:sqlite:${dbFile.absolutePath}",
         )
         transaction(db) { // make the tables if they dont exist yet
-            SchemaUtils.create(MatchesTable, MatchPlayersTable)
+            SchemaUtils.create(MatchesTable, MatchPlayersTable, MatchPlayerAbilityUsesTable)
         }
     }
 }
@@ -48,4 +48,13 @@ object MatchPlayersTable : Table("match_players") {
     val damage = integer("damage").default(0)
 
     override val primaryKey = PrimaryKey(matchId, playerUuid)
+}
+
+object MatchPlayerAbilityUsesTable : Table("match_players_ability_uses") {
+    val matchId = integer("match_id").references(MatchesTable.id)
+    val playerUuid = varchar("player_uuid", 36)
+    val abilityType = varchar("ability_type", 36)
+    val uses = integer("uses").default(0)
+
+    override val primaryKey = PrimaryKey(matchId, playerUuid, abilityType)
 }
