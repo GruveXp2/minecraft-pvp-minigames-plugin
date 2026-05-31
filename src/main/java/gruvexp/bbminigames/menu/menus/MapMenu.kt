@@ -44,6 +44,11 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         return 18
     }
 
+    override fun open(p: Player) {
+        super.open(p)
+        uiMode = UiMode.MAIN
+    }
+
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
         val clickedItem = e.getCurrentItem() ?: return
@@ -77,11 +82,9 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         when (action) {
             MenuAction.VOTE -> uiMode = UiMode.VOTE
             MenuAction.SET -> uiMode = UiMode.SET
-            MenuAction.TOGGLE_VOTE -> {
-                BotBows.debugMessage("clicked toggle vote and lets see of it workssksses or nikt!")
-                mapSettings.isVoteMode = !mapSettings.isVoteMode
-            }
+            MenuAction.TOGGLE_VOTE -> mapSettings.isVoteMode = !mapSettings.isVoteMode
             MenuAction.CYCLE_MAP_CATEGORY -> isOldMapCategory = !isOldMapCategory
+            MenuAction.BACK -> uiMode = UiMode.MAIN
         }
     }
 
@@ -127,6 +130,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                 }
             }
             UiMode.VOTE, UiMode.SET -> {
+                inventory.setItem(0, BACK)
                 if (isOldMapCategory) {
                     inventory.setItem(1, BotBowsMap.INSIDE_BOTBASE.getMenuItem())
                     inventory.setItem(2, BotBowsMap.OUTSIDE_BOTBASE.getMenuItem())
@@ -202,6 +206,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
 
         val VOTE: ItemStack = makeItem(Material.PAPER, Component.text("Vote for map"), MenuAction.VOTE.name)
         val SET_MAP: ItemStack = makeItem(Material.PAPER, Component.text("Set the map"), MenuAction.SET.name)
+        val BACK: ItemStack = makeItem("prev", Component.text("Back"), MenuAction.BACK.name);
 
         val VOTE_MODE_ENABLED: ItemStack = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Vote mode"),
@@ -241,5 +246,6 @@ private enum class MenuAction {
     VOTE,
     SET,
     TOGGLE_VOTE,
-    CYCLE_MAP_CATEGORY
+    CYCLE_MAP_CATEGORY,
+    BACK
 }
