@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.menu;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
@@ -18,18 +18,8 @@ public class MenuRow {
     }
     public static final NamespacedKey KEY_ROW_ACTION = new NamespacedKey("botbows", "row_action");
 
-    private static final ItemStack ROW_PREV = PaginatedMenu.PAGE_PREV.clone();
-    private static final ItemStack ROW_NEXT = PaginatedMenu.PAGE_NEXT.clone();
-
-    static {
-        ItemMeta prevMeta = ROW_PREV.getItemMeta();
-        prevMeta.getPersistentDataContainer().set(KEY_ROW_ACTION, PersistentDataType.STRING, RowAction.PREV.name());
-        ROW_PREV.setItemMeta(prevMeta);
-
-        ItemMeta nextMeta = ROW_NEXT.getItemMeta();
-        nextMeta.getPersistentDataContainer().set(KEY_ROW_ACTION, PersistentDataType.STRING, RowAction.NEXT.name());
-        ROW_NEXT.setItemMeta(nextMeta);
-    }
+    private static final ItemStack ROW_PREV = Menu.makeItem("prev", Component.text("Prev"), KEY_ROW_ACTION, RowAction.PREV.name());
+    private static final ItemStack ROW_NEXT = Menu.makeItem("next", Component.text("Next"), KEY_ROW_ACTION, RowAction.NEXT.name());
 
     protected final Inventory inventory;
     public final int startSlot; // slotten i inventoriet som man begynner på
