@@ -10,6 +10,8 @@ import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -81,9 +83,79 @@ class StatsService(
                                 "Damage: ${row[MatchPlayersTable.damage]}"
                     )
                 }
-
                 BotBows.debugMessage("---------------------------")
             }
         })
     }
+
+    fun getLastMatchStats(playerUuid: UUID): LastMatchStatsResult? {
+        return transaction(statsDatabase.db) {
+            val lastMatchId = MatchPlayersTable
+                .select(MatchPlayersTable.matchId)
+                .where { MatchPlayersTable.playerUuid eq playerUuid.toString() } // must use eq instead of ==
+                .orderBy(MatchPlayersTable.matchId to SortOrder.DESC)
+                .limit(1)
+                .singleOrNull()?.get(MatchPlayersTable.matchId) ?: return@transaction null
+
+            val matchRow = MatchesTable
+                .selectAll()
+                .where { MatchesTable.id eq lastMatchId }
+                .single()
+
+            val botBowsMap = BotBowsMap.valueOf(matchRow[MatchesTable.map])
+
+            val allPlayersInMatch = MatchPlayersTable
+                .selectAll()
+                .where { MatchPlayersTable.matchId eq lastMatchId }
+                .toList()
+
+            val ownStats = allPlayersInMatch.first { it[MatchPlayersTable.playerUuid] == playerUuid.toString() }
+
+            val topKiller = allPlayersInMatch.maxBy { it[MatchPlayersTable.kills] }
+            val topDeather = allPlayersInMatch.maxBy { it[MatchPlayersTable.deaths] }
+            val topDamager = allPlayersInMatch.maxBy { it[MatchPlayersTable.damage] }
+
+            val topAbilities = MatchPlayerAbilityUsesTable
+                .select(MatchPlayerAbilityUsesTable.abilityType, MatchPlayerAbilityUsesTable.uses)
+                .where {
+                    (MatchPlayerAbilityUsesTable.matchId eq lastMatchId) and
+                            (MatchPlayerAbilityUsesTable.playerUuid eq playerUuid.toString())
+                }
+                .orderBy(MatchPlayerAbilityUsesTable.uses to SortOrder.DESC)
+                .limit(3)
+                .map {
+                    AbilityType.valueOf(it[MatchPlayerAbilityUsesTable.abilityType]) to it[MatchPlayerAbilityUsesTable.uses]
+                }
+
+            LastMatchStatsResult(
+                map = botBowsMap,
+                playerKills = ownStats[MatchPlayersTable.kills],
+                playerDeaths = ownStats[MatchPlayersTable.deaths],
+                playerHits = ownStats[MatchPlayersTable.hits],
+                playerDamage = ownStats[MatchPlayersTable.damage],
+                mostKillsPlayer = UUID.fromString(topKiller[MatchPlayersTable.playerUuid]),
+                mostKillsCount = topKiller[MatchPlayersTable.kills],
+                mostDeathsPlayer = UUID.fromString(topDeather[MatchPlayersTable.playerUuid]),
+                mostDeathsCount = topDeather[MatchPlayersTable.deaths],
+                mostDamagePlayer = UUID.fromString(topDamager[MatchPlayersTable.playerUuid]),
+                mostDamageCount = topDamager[MatchPlayersTable.damage],
+                topAbilities = topAbilities
+            )
+        }
+    }
 }
+
+data class LastMatchStatsResult(
+    val map: BotBowsMap, //TODO: gjør at når man trykker på statten som printes ut, akkurat på mappnavnet, går man i spectimode og tpes te mappet, hvor man kan gå rundt og se. man kan og gå i adventuremode. når man er ferdig går man i specti og flyr ut av mappet og det trigger at man tper tebake
+    val playerKills: Int,
+    val playerDeaths: Int,
+    val playerHits: Int,
+    val playerDamage: Int,
+    val mostKillsPlayer: UUID,
+    val mostKillsCount: Int,
+    val mostDeathsPlayer: UUID,
+    val mostDeathsCount: Int,
+    val mostDamagePlayer: UUID,
+    val mostDamageCount: Int,
+    val topAbilities: List<Pair<AbilityType, Int>> // top 3 abilities used
+)
