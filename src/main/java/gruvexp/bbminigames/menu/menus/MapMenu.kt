@@ -112,6 +112,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     fun updateMenu() {
         when (uiMode) {
             UiMode.MAIN -> {
+                inventory.setItem(13, VOID)
                 if (settings.mapSettings.isVoteMode) {
                     inventory.setItem(9, VOTE_MODE_ENABLED)
                     inventory.setItem(0, VOTE)
