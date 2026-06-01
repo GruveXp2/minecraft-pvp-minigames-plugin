@@ -71,6 +71,10 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                 mapSettings.mapVotingSession.vote(bp, map)
             } else {
                 mapSettings.currentMap = map
+
+                settings.lobby.messagePlayers(
+                    Component.text("Map set to ").append(Component.text(map.prettyName(), NamedTextColor.GREEN))
+                )
             }
             uiMode = UiMode.MAIN
             return
@@ -140,6 +144,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                     inventory.setItem(5, BotBowsMap.ROCKET.getMenuItem())
                     inventory.setItem(6, BotBowsMap.SPACE_STATION.getMenuItem())
                     inventory.setItem(7, BotBowsMap.MARS_BASE.getMenuItem())
+                    inventory.setItem(8, VOID)
                     inventory.setItem(13, MAP_CATEGORY_OLD)
                 } else {
                     inventory.setItem(1, VOID)
@@ -149,6 +154,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                     inventory.setItem(5, BotBowsMap.STEAMPUNK.getMenuItem())
                     inventory.setItem(6, BotBowsMap.PIGLIN_HIDEOUT.getMenuItem())
                     inventory.setItem(7, VOID)
+                    inventory.setItem(8, BotBowsMap.RANDOM.getMenuItem())
                     inventory.setItem(13, MAP_CATEGORY_MODERN)
                 }
             }
@@ -171,8 +177,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     fun displayCurrentMap() {
-        val mapItem = settings.mapSettings.currentMap?.menuItem?: RANDOM_MAP
-        inventory.setItem(2, mapItem)
+        inventory.setItem(2, settings.mapSettings.currentMap.menuItem)
     }
 
     override fun onVoteToggle() {
@@ -221,12 +226,6 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
             MenuAction.TOGGLE_VOTE.name,
             STATUS_DISABLED,
             Component.text("The map with most votes will be used in the match")
-        )
-
-        val RANDOM_MAP: ItemStack = makeItem(
-            Material.TARGET, Component.text("Random map"),
-            Component.text("A random map will be picked"),
-            Component.text("when the game starts")
         )
     }
 }

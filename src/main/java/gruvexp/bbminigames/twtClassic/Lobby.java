@@ -138,11 +138,15 @@ public class Lobby {
     }
 
     private void startGame() {
+        BotBowsMap randomMap = settings.getMapSettings().finalizeMapSelection();
+        if (randomMap != null) {
+            messagePlayers(Component.text("A random map was picked: ").append(Component.text(randomMap.prettyName(), NamedTextColor.GREEN)));
+        }
         botBowsGame = switch (settings.getMapSettings().getCurrentMap()) {
             case ICY_RAVINE -> new IcyRavineGame(settings);
             case STEAMPUNK -> new SteamPunkGame(settings);
             case SPACE_STATION -> new SpaceStationGame(settings);
-            case null, default -> new BotBowsGame(settings);
+            default -> new BotBowsGame(settings);
         };
         botBowsGame.startGame();
         activeGame = true;

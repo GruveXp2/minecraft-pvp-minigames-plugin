@@ -12,7 +12,7 @@ class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit, private val onVot
             field = value
             notifyVoteToggle()
         }
-    var currentMap: BotBowsMap? = null
+    var currentMap: BotBowsMap = BotBowsMap.RANDOM
         set(value) {
             field = value
             onMapSet(value) // used in Settings to change other menus, like team colors
@@ -40,5 +40,13 @@ class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit, private val onVot
 
     private fun notifyMapSet() {
         listeners.values.forEach { it.onMapSet() }
+    }
+
+    fun finalizeMapSelection(): BotBowsMap? {
+        if (currentMap == BotBowsMap.RANDOM) {
+            currentMap = mapVotingSession.classicMapList.random()
+            return currentMap
+        }
+        return null
     }
 }

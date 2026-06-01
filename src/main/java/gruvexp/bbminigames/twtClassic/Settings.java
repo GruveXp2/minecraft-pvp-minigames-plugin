@@ -139,7 +139,7 @@ public class Settings {
     }
 
     public void applyBattlePreset(BattlePreset preset) {
-        mapSettings.setCurrentMap(preset.map() != null ? preset.map() : BotBowsMap.CLASSIC_ARENA);
+        mapSettings.setCurrentMap(preset.map());
 
         preset.team1().stream()
                 .map(BotBows::getBotBowsPlayer)
@@ -190,7 +190,7 @@ public class Settings {
 
     private void onMapChange(BotBowsMap map) {
         switch (map) {
-            case CLASSIC_ARENA -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
+            case CLASSIC_ARENA, RANDOM -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
             case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
             case ROYAL_CASTLE -> setNewTeams(new TeamKjødd(team1), new TeamGoofy(team2));
             case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(team1), new TeamHoglin(team2));
@@ -224,9 +224,6 @@ public class Settings {
         healthMenu.updateMenu(); // update so the name colors match the new team color
 
         hazardSettings.syncWithMap(map);
-
-        String mapName = map.name().charAt(0) + map.name().substring(1).toLowerCase().replace('_', ' ');
-        lobby.messagePlayers(Component.text("Map set to ").append(Component.text(mapName, NamedTextColor.GREEN)));
     }
 
     private void onVote() {
@@ -244,7 +241,7 @@ public class Settings {
 
         VoteResult result = mapSettings.getMapVotingSession().getLeadingMap();
         lobby.messagePlayers(Component.empty()
-                .append(Component.text(result.getMap().name().toLowerCase(), NamedTextColor.AQUA))
+                .append(Component.text(result.getMap().prettyName(), NamedTextColor.AQUA))
                 .append(Component.text(" won the vote with "))
                 .append(Component.text(result.getVoteCount(), NamedTextColor.GREEN))
                 .append(Component.text(" votes")));

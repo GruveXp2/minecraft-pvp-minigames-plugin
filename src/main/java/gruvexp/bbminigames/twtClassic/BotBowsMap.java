@@ -13,6 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public enum BotBowsMap {
+    RANDOM(MapType.CLASSIC, ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
+            Menu.makeItem(Material.TARGET, Component.text("Random Map", NamedTextColor.WHITE),
+                    Component.text("Randomly picks one of the classic maps"))),
+
     CLASSIC_ARENA(MapType.CLASSIC, ImmutableSet.of(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
             Menu.makeItem(Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
                     Component.text("Blaud", NamedTextColor.BLUE)
@@ -115,5 +119,9 @@ public enum BotBowsMap {
         meta.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, this.name());
         item.setItemMeta(meta);
         return item;
+    }
+
+    public String prettyName() {
+        return name().charAt(0) + name().substring(1).toLowerCase().replace('_', ' ');
     }
 }
