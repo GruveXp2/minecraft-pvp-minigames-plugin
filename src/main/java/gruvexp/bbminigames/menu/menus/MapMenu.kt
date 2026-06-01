@@ -85,8 +85,8 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         val action = MenuAction.valueOf(actionId)
         when (action) {
             MenuAction.VOTE -> uiMode = UiMode.VOTE
-            MenuAction.SET -> uiMode = UiMode.SET
-            MenuAction.TOGGLE_VOTE -> mapSettings.isVoteMode = !mapSettings.isVoteMode
+            MenuAction.SET -> if (settings.playerIsMod(bp)) uiMode = UiMode.SET
+            MenuAction.TOGGLE_VOTE -> if (settings.playerIsMod(bp))  mapSettings.isVoteMode = !mapSettings.isVoteMode
             MenuAction.CYCLE_MAP_CATEGORY -> isOldMapCategory = !isOldMapCategory
             MenuAction.BACK -> uiMode = UiMode.MAIN
         }
@@ -211,7 +211,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         )
 
         val VOTE: ItemStack = makeItem(Material.PAPER, Component.text("Vote for map"), MenuAction.VOTE.name)
-        val SET_MAP: ItemStack = makeItem(Material.PAPER, Component.text("Set the map"), MenuAction.SET.name)
+        val SET_MAP: ItemStack = makeItem(Material.MAP, Component.text("Set the map"), MenuAction.SET.name)
         val BACK: ItemStack = makeItem("prev", Component.text("Back"), MenuAction.BACK.name)
 
         val VOTE_MODE_ENABLED: ItemStack = makeItem(
