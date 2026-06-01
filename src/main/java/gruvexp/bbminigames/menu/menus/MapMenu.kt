@@ -93,7 +93,6 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun nextPage(p: Player) {
-        BotBows.debugMessage("next page activated")
         settings.teamsMenu.open(p)
     }
 
@@ -181,7 +180,6 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun onVoteToggle() {
-        BotBows.debugMessage("vote mode toggeld!")
         updateMenu()
     }
 
@@ -191,7 +189,6 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun onMapSet() {
-        BotBows.debugMessage("onMapSet")
         displayCurrentMap()
     }
 

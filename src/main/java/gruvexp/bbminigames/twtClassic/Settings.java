@@ -227,13 +227,14 @@ public class Settings {
     }
 
     private void onVote() {
-        int totalVotes = mapSettings.getMapVotingSession().getTotalVotes();
-        long nonLobbyPlayers = Bukkit.getOnlinePlayers().stream() // players not yet in lobby could potentially join this lobby and want to vote
-                .filter(p -> BotBows.getBotBowsPlayer(p) == null).count();
-        if (totalVotes == players.size() + nonLobbyPlayers) {
-            lobby.messagePlayers(Component.text("All players have voted!"));
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::finishVoting, 20L);
+        var leadingVote = mapSettings.getMapVotingSession().getLeadingMap();
+        var leadingMap = leadingVote.getMap();
+        if (leadingMap != mapSettings.getCurrentMap()) {
+            lobby.messagePlayers(Component.text("New leading map with ")
+                    .append(Component.text(leadingVote.getVoteCount() + " votes", NamedTextColor.GREEN))
+                    .append(Component.text(": ")).append(Component.text(leadingMap.prettyName(), NamedTextColor.GOLD)));
         }
+        mapSettings.setCurrentMap(leadingMap);
     }
 
     public void finishVoting() {
