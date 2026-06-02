@@ -62,9 +62,13 @@ public class Settings {
 
     public void initMenus() {
         mapSettings = new MapSettings(map -> {
-            onMapChange(map); // TODO: gjør om map = null til map = BotBowsMap.RANDOM, der tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
+            onMapChange(map); // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
             return kotlin.Unit.INSTANCE; // void cant be returned in kotlin
-        }, () -> {onVote();return kotlin.Unit.INSTANCE;});
+        }, triggeredByNewVote -> {
+            updateLeadingMap(triggeredByNewVote);
+            return kotlin.Unit.INSTANCE;
+        });
+
         players.forEach(bp -> {
             mapMenus.put(bp, new MapMenu(this, bp));
             mapSettings.addListener(bp, mapMenus.get(bp));
@@ -226,11 +230,11 @@ public class Settings {
         hazardSettings.syncWithMap(map);
     }
 
-    private void onVote() {
+    private void updateLeadingMap(boolean triggeredByNewVote) {
         var leadingVote = mapSettings.getMapVotingSession().getLeadingMap();
         var leadingMap = leadingVote.getMap();
         if (leadingMap != mapSettings.getCurrentMap()) {
-            lobby.messagePlayers(Component.text("New leading map with ")
+            lobby.messagePlayers(Component.text((triggeredByNewVote ? "New" : "Current") + " leading map with ")
                     .append(Component.text(leadingVote.getVoteCount() + " votes", NamedTextColor.GREEN))
                     .append(Component.text(": ")).append(Component.text(leadingMap.prettyName(), NamedTextColor.GOLD)));
         }
