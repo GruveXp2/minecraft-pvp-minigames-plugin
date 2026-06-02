@@ -209,7 +209,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
 
         val VOTE: ItemStack = makeItem(Material.PAPER, Component.text("Vote for map"), MenuAction.VOTE.name)
         val SET_MAP: ItemStack = makeItem(Material.MAP, Component.text("Set the map"), MenuAction.SET.name)
-        val BACK: ItemStack = makeItem("prev", Component.text("Back"), MenuAction.BACK.name)
+        val BACK: ItemStack = makeItem("back", Component.text("Back"), MenuAction.BACK.name)
 
         val VOTE_MODE_ENABLED: ItemStack = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Vote mode"),
