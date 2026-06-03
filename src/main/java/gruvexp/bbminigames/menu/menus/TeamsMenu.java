@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -19,6 +20,8 @@ import java.util.UUID;
 
 public class TeamsMenu extends SettingsMenu {
 
+    public static final ItemStack SWITCH_SIDE = makeItem("switch", Component.text("Switch sides", NamedTextColor.LIGHT_PURPLE), Component.text("switches the teams to be their other"), Component.text("so the teams spawn on the opposite side"));
+
     BotBowsTeam team1;
     BotBowsTeam team2;
 
@@ -29,6 +32,7 @@ public class TeamsMenu extends SettingsMenu {
             inventory.setItem(i + 9, null);
         }
         setPageButtons(2, true, true);
+        inventory.setItem(22, SWITCH_SIDE);
     }
 
     @Override
@@ -58,6 +62,11 @@ public class TeamsMenu extends SettingsMenu {
                 headBp.getTeam().getOppositeTeam().join(headBp);
                 recalculateTeam();
                 settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
+            }
+            case FIREWORK_STAR -> {
+                if (e.getSlot() == 22) {
+                    settings.switchTeamSides();
+                }
             }
         }
     }

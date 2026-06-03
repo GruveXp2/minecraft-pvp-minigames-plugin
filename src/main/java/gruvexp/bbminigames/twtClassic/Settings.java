@@ -185,7 +185,7 @@ public class Settings {
         setRoundDuration(winConditionPreset.roundDuration());
         setDynamicScoring(winConditionPreset.dynamicPoints());
 
-        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap() != null ? getMapSettings().getCurrentMap().allowedHazards : ImmutableSet.copyOf(HazardType.values());
+        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap().allowedHazards;
         allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();
@@ -193,41 +193,46 @@ public class Settings {
     }
 
     private void onMapChange(BotBowsMap map) {
-        switch (map) {
-            case CLASSIC_ARENA, RANDOM -> setNewTeams(new TeamBlaud(team1), new TeamSauce(team2));
-            case ICY_RAVINE -> setNewTeams(new TeamGraut(team1), new TeamWacky(team2));
-            case ROYAL_CASTLE -> setNewTeams(new TeamKjødd(team1), new TeamGoofy(team2));
-            case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(team1), new TeamHoglin(team2));
-            case STEAMPUNK -> setNewTeams(new TeamBlocc(team1), new TeamQuicc(team2));
+        setNewTeams(false);
+        hazardSettings.syncWithMap(map);
+    }
+
+    private void setNewTeams(boolean flipped) {
+        BotBowsTeam newTeam1 = flipped ? team2 : team1;
+        BotBowsTeam newTeam2 = flipped ? team1 : team2;
+        switch (mapSettings.getCurrentMap()) {
+            case CLASSIC_ARENA, RANDOM -> setNewTeams(new TeamBlaud(newTeam1), new TeamSauce(newTeam2));
+            case ICY_RAVINE -> setNewTeams(new TeamGraut(newTeam1), new TeamWacky(newTeam2));
+            case ROYAL_CASTLE -> setNewTeams(new TeamKjødd(newTeam1), new TeamGoofy(newTeam2));
+            case PIGLIN_HIDEOUT -> setNewTeams(new TeamPiglin(newTeam1), new TeamHoglin(newTeam2));
+            case STEAMPUNK -> setNewTeams(new TeamBlocc(newTeam1), new TeamQuicc(newTeam2));
             case INSIDE_BOTBASE -> setNewTeams(
                     new BotBowsTeam("Corner", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.TEAM_1,
-                            new Location(Main.WORLD, -58.5, 30, -212.5, 180, -10), new Location(Main.WORLD, -29.5, 27, -211, 180, 10), team1),
+                            new Location(Main.WORLD, -58.5, 30, -212.5, 180, -10), new Location(Main.WORLD, -29.5, 27, -211, 180, 10), newTeam1),
                     new BotBowsTeam("Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TEAM_2,
-                            new Location(Main.WORLD, -6.5, 6, -264.5, 45, 30), new Location(Main.WORLD, -29.5, 27, -273, 0, -10), team2));
+                            new Location(Main.WORLD, -6.5, 6, -264.5, 45, 30), new Location(Main.WORLD, -29.5, 27, -273, 0, -10), newTeam2));
             case OUTSIDE_BOTBASE -> setNewTeams(
                     new BotBowsTeam("Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TEAM_1,
-                            new Location(Main.WORLD, -75.5, 26, -259.5, 45, -20), new Location(Main.WORLD, -67.5, 24.5, -267.5, -315, 15), team1),
+                            new Location(Main.WORLD, -75.5, 26, -259.5, 45, -20), new Location(Main.WORLD, -67.5, 24.5, -267.5, -315, 15), newTeam1),
                     new BotBowsTeam("Mountain", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TEAM_2,
-                            new Location(Main.WORLD, -106, 15.50, -205, 180, 0), new Location(Main.WORLD, -109.5, 28, -220.5, -150, 15), team2));
+                            new Location(Main.WORLD, -106, 15.50, -205, 180, 0), new Location(Main.WORLD, -109.5, 28, -220.5, -150, 15), newTeam2));
             case ROCKET_FOREST -> setNewTeams(
                     new BotBowsTeam("Door", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.TEAM_1,
-                            new Location(Main.WORLD, -75, 4, -201.5, 0, 10), new Location(Main.WORLD, -70.5, 15, -197, -25, 33), team1),
+                            new Location(Main.WORLD, -75, 4, -201.5, 0, 10), new Location(Main.WORLD, -70.5, 15, -197, -25, 33), newTeam1),
                     new BotBowsTeam("Tunnel", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TEAM_2,
-                            new Location(Main.WORLD, -34, 11.5, -197, 33, 0), new Location(Main.WORLD, -18.5, 29, -193.5, 55, 15), team2));
+                            new Location(Main.WORLD, -34, 11.5, -197, 33, 0), new Location(Main.WORLD, -18.5, 29, -193.5, 55, 15), newTeam2));
             case ROCKET -> setNewTeams(
                     new BotBowsTeam("Dropper", NamedTextColor.BLACK, DyeColor.BLACK, TeamSide.TEAM_1,
-                            new Location(Main.WORLD, 4.5, 74, 18.5, 0, 60), new Location(Main.WORLD, 1.5, 58, 20.5, -40, 17), team1),
+                            new Location(Main.WORLD, 4.5, 74, 18.5, 0, 60), new Location(Main.WORLD, 1.5, 58, 20.5, -40, 17), newTeam1),
                     new BotBowsTeam("Engine", NamedTextColor.RED, DyeColor.RED, TeamSide.TEAM_2,
-                            new Location(Main.WORLD, 2.5, 47, 36.5, 135, 10), new Location(Main.WORLD, -5.5, 50, 39.5, -130, 15), team2));
-            case SPACE_STATION -> setNewTeams(new TeamCold(team1), new TeamWarm(team2));
+                            new Location(Main.WORLD, 2.5, 47, 36.5, 135, 10), new Location(Main.WORLD, -5.5, 50, 39.5, -130, 15), newTeam2));
+            case SPACE_STATION -> setNewTeams(new TeamCold(newTeam1), new TeamWarm(newTeam2));
         }
         team1.postTeamSwap();
         team2.postTeamSwap();
         teamsMenu.registerTeams();
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
         healthMenu.updateMenu(); // update so the name colors match the new team color
-
-        hazardSettings.syncWithMap(map);
     }
 
     private void updateLeadingMap(boolean triggeredByNewVote) {
@@ -258,6 +263,10 @@ public class Settings {
         team2 = newTeam2;
         team1.setOppositeTeam(team2);
         team2.setOppositeTeam(team1);
+    }
+
+    public void switchTeamSides() {
+        setNewTeams(true);
     }
 
     public void joinGame(Player p) {
