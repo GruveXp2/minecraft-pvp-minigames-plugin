@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -76,6 +77,17 @@ public class BotBowsCommand implements CommandExecutor {
                 lobby.settings.applyBattlePreset(preset);
                 p.sendMessage(Component.text("Successfully applied preset ")
                         .append(Component.text(presetName, NamedTextColor.AQUA)));
+            }
+            case "transfer_mod" -> {
+                if (!bp.lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can transfer their mod role (bruh)");
+                String otherPlayerName = args[1];
+                Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+                if (otherPlayer == null) return Component.text("That player doesnt exist!", NamedTextColor.RED);
+
+                BotBowsPlayer otherBp = lobby.getBotBowsPlayer(otherPlayer);
+                if (otherBp == null) return Component.text("That player isnt in this lobby!", NamedTextColor.RED);
+
+                lobby.settings.setModPlayer(otherBp);
             }
             case "finish_vote" -> bp.lobby.settings.finishVoting();
             default -> {
