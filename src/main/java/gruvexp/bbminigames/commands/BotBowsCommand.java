@@ -65,11 +65,13 @@ public class BotBowsCommand implements CommandExecutor {
             }
             case "load_preset" -> {
                 if (args.length == 1) {
-                    return Component.text("You must spe/cify the preset to load!", NamedTextColor.RED);
+                    return Component.text("You must specify the preset to load!", NamedTextColor.RED);
                 }
                 String presetName = args[1];
                 BattlePreset preset = Main.getPlugin().getPresetService().getPreset(presetName);
                 if (preset == null) return Component.text("Error! No preset with name \"" + presetName + "\" exists");
+
+                if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets");
 
                 lobby.settings.applyBattlePreset(preset);
                 p.sendMessage(Component.text("Successfully applied preset ")
