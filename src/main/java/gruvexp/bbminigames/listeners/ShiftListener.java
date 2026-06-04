@@ -3,6 +3,8 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +23,7 @@ public class ShiftListener implements Listener {
         BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
 
         if (bp.isSneakingExhausted() && e.isSneaking()) {
-            BotBows.debugMessage("its not allowed to sneak");
+            p.sendActionBar(Component.text("You are exhausted and cant sneak", NamedTextColor.RED));
             e.setCancelled(true);
         }
     }

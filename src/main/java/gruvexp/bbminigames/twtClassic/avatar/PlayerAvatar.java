@@ -203,12 +203,10 @@ public class PlayerAvatar implements BotBowsAvatar{
     public void updateSneakStamina(float progress) {
         boolean isExhausted = bp.isSneakingExhausted();
         sneakBar.progress(progress);
-        BotBows.debugMessage("Progress: " + progress, TestCommand.test3);
         if (progress > 0) player.showBossBar(sneakBar); else player.hideBossBar(sneakBar);
-        BotBows.debugMessage("Show it: " + (progress > 0), TestCommand.test3);
         sneakBar.color(isExhausted ? BossBar.Color.RED : BossBar.Color.YELLOW);
         sneakBar.name(Component.text ("Sneaking", isExhausted ? NamedTextColor.RED : NamedTextColor.YELLOW));
-        if (progress >= 1) player.setSneaking(false);
+        if (progress >= 1 && isExhausted) player.setSneaking(false);
     }
 
     @Override
