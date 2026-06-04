@@ -25,7 +25,7 @@ public class BotBowsTabCompleter implements TabCompleter {
                 if (args.length == 3) return Arrays.stream(Material.values())
                         .map(e -> e.name().toLowerCase())
                         .filter(s -> !s.contains("legacy"))
-                        .filter(s -> args[1].startsWith(s))
+                        .filter(s -> s.startsWith(args[2]))
                         .toList();
             }
         }
