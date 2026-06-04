@@ -252,6 +252,10 @@ public class Settings {
         mapSettings.setCurrentMap(leadingMap);
     }
 
+    public void finishMapSelection() {
+        if (mapSettings.isVoteMode()) finishVoting();
+    }
+
     public void finishVoting() {
         if (lobby.isGameActive()) return;
 

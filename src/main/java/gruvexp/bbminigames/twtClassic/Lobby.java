@@ -195,7 +195,7 @@ public class Lobby {
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
         if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {
             messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN));
-            settings.finishVoting();
+            settings.finishMapSelection();
             startGame();
         }
     }
