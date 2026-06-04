@@ -98,7 +98,7 @@ public class Settings {
             abilitySettings.addListener(bp, abilityMenus.get(bp));
         });
 
-        //setMap(BotBowsMap.CLASSIC_ARENA);
+        mapSettings.setCurrentMap(BotBowsMap.RANDOM);
     }
 
     public HazardSettings getHazardSettings() {
