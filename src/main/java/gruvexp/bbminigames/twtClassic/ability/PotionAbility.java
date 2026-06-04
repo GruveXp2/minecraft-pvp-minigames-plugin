@@ -1,11 +1,8 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Player;
 
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.twtClassic.avatar;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
