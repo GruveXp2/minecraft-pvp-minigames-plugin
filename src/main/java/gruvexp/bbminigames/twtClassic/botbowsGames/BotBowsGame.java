@@ -51,8 +51,10 @@ public class BotBowsGame {
     }
 
     public void leaveGame(BotBowsPlayer p) {
+        BotBowsTeam team = p.getTeam();
         settings.leaveGame(p);
         boardManager.removePlayerScore(p);
+        if (team.isEmpty()) endGame();
     }
 
     public void startGame() {
