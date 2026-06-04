@@ -29,6 +29,7 @@ public abstract class PotionAbility extends Ability {
 
         players.forEach(p -> p.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
                 .append(Component.text(getEffectDuration()))
+                .append(Component.text("s "))
                 .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
                 .append(Component.text(" effect from "))
                 .append(bp.getName())));
