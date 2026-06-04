@@ -188,7 +188,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
     }
 
     override fun onMapSet() {
-        displayCurrentMap()
+        if (uiMode == UiMode.MAIN) displayCurrentMap()
     }
 
     companion object {
