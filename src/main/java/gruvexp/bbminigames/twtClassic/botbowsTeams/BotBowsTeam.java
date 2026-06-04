@@ -78,12 +78,12 @@ public class BotBowsTeam {
     public void join(BotBowsPlayer p) {
         players.add(p);
         p.teleport(tribunePos);
-        p.joinTeam(this);
+        p.onTeamJoin(this);
     }
 
     public void leave(BotBowsPlayer p) {
         players.remove(p);
-        p.leaveTeam();
+        p.onTeamLeave();
     }
 
     public void reset() {

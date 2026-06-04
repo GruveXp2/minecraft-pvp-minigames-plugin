@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -58,7 +57,7 @@ public class WinConditionMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
         if (handlePageClick(e)) return;
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
         int slot = e.getSlot();
         switch (e.getCurrentItem().getType()) {
             case RED_STAINED_GLASS_PANE -> {

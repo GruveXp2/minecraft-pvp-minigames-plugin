@@ -122,7 +122,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         switch (clickedItem.getType()) {
             case LIME_STAINED_GLASS_PANE -> {
                 if (e.getClickedInventory() != inventory) return;
-                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+                if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> {
@@ -136,7 +136,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             }
             case RED_STAINED_GLASS_PANE -> {
                 if (e.getClickedInventory() != inventory) return;
-                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+                if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 switch (e.getSlot()) {
                     case 0 -> abilitySettings.setIndividualMax(true);
@@ -146,7 +146,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 }
             }
             case WHITE_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE -> {
-                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+                if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
@@ -163,7 +163,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                     handleAbilityClick(e, clicker, bp, clickedItem);
                     return;
                 }
-                if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+                if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
                 NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
                 UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
@@ -188,7 +188,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             }
             case MACE -> {
                 BotBowsPlayer p = settings.lobby.getBotBowsPlayer(clicker);
-                if (!settings.playerIsMod(p)) return;
+                if (!settings.checkMod(p)) return;
 
                 p.toggleAbilityToggle();
             }

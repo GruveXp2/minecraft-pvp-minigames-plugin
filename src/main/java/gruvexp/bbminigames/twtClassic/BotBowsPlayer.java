@@ -94,7 +94,7 @@ public class BotBowsPlayer {
         return PlainTextComponentSerializer.plainText().serialize(getName());
     }
 
-    public void joinTeam(BotBowsTeam team) {
+    public void onTeamJoin(BotBowsTeam team) {
         if (this.team != null) {
             this.team.leave(this);
         }
@@ -105,7 +105,7 @@ public class BotBowsPlayer {
         this.team = team;
     }
 
-    public void leaveTeam() {
+    public void onTeamLeave() {
         this.team = null;
     }
 

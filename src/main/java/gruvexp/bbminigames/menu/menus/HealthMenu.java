@@ -66,7 +66,7 @@ public class HealthMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         if (e.getClickedInventory() != inventory) return;
         if (handlePageClick(e)) return;
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {

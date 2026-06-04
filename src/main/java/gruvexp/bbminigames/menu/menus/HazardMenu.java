@@ -69,7 +69,7 @@ public class HazardMenu extends SettingsMenu implements HazardUpdateListener {
         if (e.getClickedInventory() != inventory) return;
         if (handlePageClick(e)) return;
         BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(clicker);
-        if (!settings.playerIsMod(bp)) return;
+        if (!settings.checkMod(bp)) return;
 
         HazardSettings hazardSettings = settings.getHazardSettings();
         switch (e.getCurrentItem().getType()) {

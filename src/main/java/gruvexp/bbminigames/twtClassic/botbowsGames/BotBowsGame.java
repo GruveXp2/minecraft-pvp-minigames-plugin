@@ -54,7 +54,7 @@ public class BotBowsGame {
         BotBowsTeam team = p.getTeam();
         settings.leaveGame(p);
         boardManager.removePlayerScore(p);
-        if (team.isEmpty()) endGame();
+        if (team.isEmpty()) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGame(), 10L);
     }
 
     public void startGame() {

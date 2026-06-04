@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.menu.SettingsMenu
-import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
@@ -85,8 +84,8 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         val action = MenuAction.valueOf(actionId)
         when (action) {
             MenuAction.VOTE -> uiMode = UiMode.VOTE
-            MenuAction.SET -> if (settings.playerIsMod(bp)) uiMode = UiMode.SET
-            MenuAction.TOGGLE_VOTE -> if (settings.playerIsMod(bp))  mapSettings.isVoteMode = !mapSettings.isVoteMode
+            MenuAction.SET -> if (settings.checkMod(bp)) uiMode = UiMode.SET
+            MenuAction.TOGGLE_VOTE -> if (settings.checkMod(bp))  mapSettings.isVoteMode = !mapSettings.isVoteMode
             MenuAction.CYCLE_MAP_CATEGORY -> isOldMapCategory = !isOldMapCategory
             MenuAction.BACK -> uiMode = UiMode.MAIN
         }
@@ -122,7 +121,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
                     displayVotes()
                 } else {
                     inventory.setItem(9, VOTE_MODE_DISABLED)
-                    if (settings.playerIsMod(bp)) {
+                    if (settings.checkMod(bp)) {
                         inventory.setItem(0, SET_MAP)
                     } else {
                         inventory.setItem(0, DISABLED_SLOT)

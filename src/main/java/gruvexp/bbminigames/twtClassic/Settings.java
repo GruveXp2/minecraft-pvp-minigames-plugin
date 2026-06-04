@@ -325,7 +325,7 @@ public class Settings {
         abilityMenus.remove(bp);
         mapMenus.remove(bp);
         abilitySettings.removeListener(bp);
-        if (playerIsMod(bp) && !players.isEmpty()) {
+        if (isPlayerMod(bp) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
         }
 
@@ -350,10 +350,14 @@ public class Settings {
         lobby.messagePlayers(bp.getName().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
     }
 
-    public boolean playerIsMod(BotBowsPlayer bp) {
-        boolean isPlayerMod = bp == modPlayer;
+    public boolean checkMod(BotBowsPlayer bp) {
+        boolean isPlayerMod = isPlayerMod(bp);
         if (!isPlayerMod) bp.avatar.message(Component.text("Only mods can do this action", NamedTextColor.RED));
         return isPlayerMod;
+    }
+
+    public boolean isPlayerMod(BotBowsPlayer bp) {
+        return bp == modPlayer;
     }
 
     public void setDynamicScoring(boolean dynamicScoring) {

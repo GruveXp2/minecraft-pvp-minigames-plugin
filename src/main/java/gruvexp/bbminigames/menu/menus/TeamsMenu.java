@@ -52,7 +52,7 @@ public class TeamsMenu extends SettingsMenu {
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(clicker);
         if (e.getClickedInventory() != inventory) return;
         if (handlePageClick(e)) return;
-        if (!settings.playerIsMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
         switch (e.getCurrentItem().getType()) {
             case PLAYER_HEAD -> {
