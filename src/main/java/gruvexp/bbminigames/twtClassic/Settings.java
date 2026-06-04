@@ -317,10 +317,13 @@ public class Settings {
         }
         bp.leaveGame();
         players.remove(bp);
+        mapSettings.removeListener(bp);
+        mapSettings.getMapVotingSession().removeVote(bp);
         teamsMenu.recalculateTeam();
         healthMenu.updateMenu();
         abilityMenus.values().forEach(menu -> menu.removePlayer(bp));
         abilityMenus.remove(bp);
+        mapMenus.remove(bp);
         abilitySettings.removeListener(bp);
         if (playerIsMod(bp) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
