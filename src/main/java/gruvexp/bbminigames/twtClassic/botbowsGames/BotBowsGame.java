@@ -120,7 +120,7 @@ public class BotBowsGame {
         }
         lobby.messagePlayers(winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN)));
-        int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+        int winScore = settings.isDynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> postRound(winningTeam, winScore), 2L); // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
@@ -156,7 +156,7 @@ public class BotBowsGame {
             lobby.messagePlayers(winningTeam.toComponent()
                     .append(Component.text(" won the round!", NamedTextColor.GREEN)));
             BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-            int winScore = settings.dynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+            int winScore = settings.isDynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
             winningTeam.addPoints(winScore);
             postRound(winningTeam, winScore);
         } else {

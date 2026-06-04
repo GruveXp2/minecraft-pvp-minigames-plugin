@@ -41,9 +41,7 @@ public class HealthMenu extends SettingsMenu {
             Component.text("By enabling this, each player"),
             Component.text("can do different amounts of damage"));
 
-    private boolean customHP;
-    private boolean customDamage;
-    private MenuSlider healthSlider;
+    private final MenuSlider healthSlider;
 
     public HealthMenu(Settings settings) {
         super(settings);
@@ -78,16 +76,16 @@ public class HealthMenu extends SettingsMenu {
             }
             case RED_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) {
-                    enableCustomHP();
+                    settings.setCustomHPEnabled(true);
                 } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_DISABLED)) {
-                    enableCustomDamage();
+                    settings.setCustomDamageEnabled(true);
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) {
-                    disableCustomHP();
+                    settings.setCustomHPEnabled(false);
                 } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_ENABLED)) {
-                    disableCustomDamage();
+                    settings.setCustomDamageEnabled(false);
                 }
             }
             case PLAYER_HEAD -> {
@@ -133,12 +131,8 @@ public class HealthMenu extends SettingsMenu {
     }
 
     public void updateMenu() {
-        if (customHP) { // each player can have their own health
-            updateCustomHP();
-        } else { // The normal menu with a slider
-            healthSlider.setProgressSlots(settings.getMaxHP());
-        }
-        if (customDamage) {
+        updateHP();
+        if (settings.isCustomDamageEnabled()) {
             updateCustomDamage();
         }
     }
@@ -165,48 +159,42 @@ public class HealthMenu extends SettingsMenu {
         }
     }
 
-    private void updateCustomHP() {
-        updateCustomSetting(0, true);
+    public void updateHP() {
+        if (settings.isCustomHPEnabled()) {
+            updateCustomSetting(0, true);
+        } else {
+            healthSlider.setProgressSlots(settings.getMaxHP());
+        }
     }
 
-    private void updateCustomDamage() {
+    public void updateCustomDamage() {
         updateCustomSetting(9, false);
     }
-    
-    public void enableCustomHP() {
-        customHP = true;
-        inventory.setItem(0, CUSTOM_HP_ENABLED);
-        inventory.setItem(1, VOID);
-        updateCustomHP();
-    }
 
-    public void disableCustomHP() {
-        customHP = false;
-        inventory.setItem(0, CUSTOM_HP_DISABLED);
-        inventory.setItem(1, VOID);
-        inventory.setItem(7, VOID);
-        inventory.setItem(8, VOID);
-        settings.setMaxHP(3);
-    }
-
-    public void enableCustomDamage() {
-        customDamage = true;
-        inventory.setItem(9, CUSTOM_DAMAGE_ENABLED);
-        inventory.setItem(10, VOID);
-        updateCustomDamage();
-    }
-
-    public void disableCustomDamage() {
-        customDamage = false;
-        inventory.setItem(9, CUSTOM_DAMAGE_DISABLED);
-        inventory.setItem(10, VOID);
-        for (int i = 0; i < 7; i++) {
-            inventory.setItem(11 + i, DISABLED_SLOT);
+    public void onCustomHPToggle() {
+        if (settings.isCustomHPEnabled()) {
+            inventory.setItem(0, CUSTOM_HP_ENABLED);
+            inventory.setItem(1, VOID);
+        } else {
+            inventory.setItem(0, CUSTOM_HP_DISABLED);
+            inventory.setItem(1, VOID);
+            inventory.setItem(7, VOID);
+            inventory.setItem(8, VOID);
         }
-        settings.resetAttackDamage();
+        updateHP();
     }
 
-    public boolean isCustomHPEnabled() {return customHP;}
-
-    public boolean isCustomDamageEnabled() {return customDamage;}
+    public void onCustomDamageToggle() {
+        if (settings.isCustomDamageEnabled()) {
+            inventory.setItem(9, CUSTOM_DAMAGE_ENABLED);
+            inventory.setItem(10, VOID);
+            updateCustomDamage();
+        } else {
+            inventory.setItem(9, CUSTOM_DAMAGE_DISABLED);
+            inventory.setItem(10, VOID);
+            for (int i = 0; i < 7; i++) {
+                inventory.setItem(11 + i, DISABLED_SLOT);
+            }
+        }
+    }
 }

@@ -154,6 +154,7 @@ public class BotBowsPlayer {
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
         avatar.setMaxHP(maxHP);
+        lobby.settings.healthMenu.updateHP();
     }
 
     public int getHP() {return hp;}
@@ -170,6 +171,7 @@ public class BotBowsPlayer {
 
     public void setAttackDamage(int hearts) {
         this.attackDamage = hearts;
+        lobby.settings.healthMenu.updateCustomDamage();
     }
 
     public int getAttackDamage() {

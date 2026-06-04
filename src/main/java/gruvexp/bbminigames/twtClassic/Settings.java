@@ -36,6 +36,9 @@ public class Settings {
     public BotBowsTeam team2 = new TeamSauce();
     private final Set<BotBowsPlayer> players = new HashSet<>(); // liste med alle players som er i gamet
     private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
+    // health
+    private boolean customHP;
+    private boolean customDamage;
     // win condition
     private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
     private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
@@ -75,9 +78,8 @@ public class Settings {
         });
 
         healthMenu = new HealthMenu(this);
-        healthMenu.disableCustomHP();
-        healthMenu.disableCustomDamage();
-        setMaxHP(3);
+        setCustomHPEnabled(false);
+        setCustomDamageEnabled(false);
 
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
@@ -113,9 +115,9 @@ public class Settings {
 
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
-                healthMenu.isCustomHPEnabled() ? null : maxHP,
-                healthMenu.isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxHP)) : null,
-                healthMenu.isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAttackDamage)) : null
+                isCustomHPEnabled() ? null : maxHP,
+                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxHP)) : null,
+                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAttackDamage)) : null
         );
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
@@ -162,7 +164,9 @@ public class Settings {
             setMaxHP(maxHp);
         }
         var individualMaxHp = healthPreset.individualMaxHp();
-        if (individualMaxHp != null) {
+        boolean isIndividualMaxHp = individualMaxHp != null;
+        setCustomHPEnabled(isIndividualMaxHp);
+        if (isIndividualMaxHp) {
             individualMaxHp.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
                 if (bp != null) {
@@ -171,7 +175,9 @@ public class Settings {
             });
         }
         var individualDamage = healthPreset.customDamage();
-        if (individualDamage != null) {
+        boolean isIndividualDamage = individualDamage != null;
+        setCustomDamageEnabled(isIndividualDamage);
+        if (isIndividualDamage) {
             individualDamage.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
                 if (bp != null) {
@@ -360,11 +366,31 @@ public class Settings {
         return bp == modPlayer;
     }
 
-    public void setDynamicScoring(boolean dynamicScoring) {
-        this.dynamicScoring = dynamicScoring;
+    public boolean isCustomHPEnabled() {
+        return customHP;
     }
 
-    public boolean dynamicScoringEnabled() {
+    public void setCustomHPEnabled(boolean enabled) {
+        this.customHP = enabled;
+        if (!enabled) setMaxHP(3);
+        healthMenu.onCustomHPToggle();
+    }
+
+    public boolean isCustomDamageEnabled() {
+        return customDamage;
+    }
+
+    public void setCustomDamageEnabled(boolean enabled) {
+        this.customDamage = enabled;
+        if (!enabled) resetAttackDamage();
+        healthMenu.onCustomDamageToggle();
+    }
+
+    public void setDynamicScoring(boolean enabled) {
+        this.dynamicScoring = enabled;
+    }
+
+    public boolean isDynamicScoringEnabled() {
         return dynamicScoring;
     }
 
