@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     api("org.jetbrains:annotations:24.1.0")
-    compileOnly("io.papermc.paper:paper-api:1.21.+")
+    compileOnly("io.papermc.paper:paper-api:26.1.+")
 }
 
 val buildNumberFile = file("build-number.txt")
@@ -35,7 +35,7 @@ val buildNumber: Int = if (buildNumberFile.exists()) {
 }
 
 group = "gruvexp"
-version = "1.4.3-$buildNumber"
+version = "1.4.4-$buildNumber"
 description = "The plugin used on the BotBows minigames server"
 
 java {
