@@ -2,10 +2,13 @@ package gruvexp.bbminigames.sumo;
 
 import gruvexp.bbminigames.menu.Menu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.stream.Collectors;
 
 public class SumoMenu extends Menu {
 
@@ -17,13 +20,12 @@ public class SumoMenu extends Menu {
     ItemStack TOURNAMENTS = Menu.makeItem(Material.TUBE_CORAL_FAN, Component.text("Tournaments"),
             Component.text("Everybody plays against"), Component.text("everyone, and the one"), Component.text("with most points win"));
 
-    //golden helmet
     ItemStack CROWN = Menu.makeItem(Material.GOLDEN_HELMET, Component.text("Crown"),
             Component.text("The one who survives the"), Component.text("longest with the crown, wins"));
 
     @Override
     public Component getMenuName() {
-        return Component.text(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Menu");
+        return Component.text("Select sumo gamemode");
     }
 
     @Override
@@ -33,31 +35,31 @@ public class SumoMenu extends Menu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        if (e.getCurrentItem() == null) return;
+        ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null) return;
 
         Player p = (Player) e.getWhoClicked();
-        if (e.getCurrentItem().getType() == Material.TUBE_CORAL_FAN) {
+        if (clickedItem.getType() == Material.TUBE_CORAL_FAN) {
             if (SumoData.playerList.contains(p)) {
-                p.sendMessage(ChatColor.RED + "Nothing happened, you already joined. Ther are currently " + SumoData.playerList.size() + " players.");
-                e.setCancelled(true);//disable item movements
+                p.sendMessage(Component.text("Nothing happened, you already joined. Ther are currently " + SumoData.playerList.size() + " players.", NamedTextColor.RED));
                 return;
             } //cant join the same game many times
-            p.sendMessage(ChatColor.GREEN + "Joining SUMO Tournaments" );
+            p.sendMessage(Component.text("Joining SUMO Tournaments", NamedTextColor.GREEN));
             p.teleport(new Location(p.getWorld(),-114.7, 36.0, -126.3));
             p.setGameMode(GameMode.ADVENTURE);
             SumoData.playerList.add(p);
 
             for (Player q : Bukkit.getOnlinePlayers()) {
-                q.sendMessage(ChatColor.YELLOW + p.getPlayerListName() + " joined Sumo! (" + SumoData.playerList.size() + ")");
+                q.sendMessage(Component.text("", NamedTextColor.YELLOW)
+                        .append(p.name())
+                        .append(Component.text(" joined Sumo! (" + SumoData.playerList.size() + ")")));
             }
-
-            for (Player q : SumoData.playerList) {
-                p.sendMessage(q.getPlayerListName());
-            }
-        } else if (e.getCurrentItem().getType() == Material.GOLDEN_HELMET) {
-            p.sendMessage(ChatColor.GREEN + "Joining SUMO Crown" );
+            p.sendMessage(Component.text("Current players: ")
+                    .append(Component.text(SumoData.playerList.stream()
+                            .map(Player::getName).collect(Collectors.joining(", ")), NamedTextColor.GREEN)));
+        } else if (clickedItem.getType() == Material.GOLDEN_HELMET) {
+            p.sendMessage(Component.text("Joining SUMO Crown", NamedTextColor.GREEN));
             p.teleport(new Location(p.getWorld(),-114.7, 36.0, -126.3));
         }
-        e.setCancelled(true);//disable item movements
     }
 }
