@@ -95,7 +95,7 @@ public class SumoData {
 
     // ---------------- Tournament progression ----------------
     public static void startNextRound() {
-        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextRound), and round number is: " + round));
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextRound), and round number is: " + round, NamedTextColor.GRAY));
         if (round == MAX_ROUNDS - 1 || rounds.get(round + 1).isEmpty()) { // viss man er på siste tilatte runde eller det ikke er noen fler
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(Component.text(round + " == " + (MAX_ROUNDS - 1) + "   or   " + rounds.get(round + 1).size() + " == 0", NamedTextColor.GRAY));
@@ -114,12 +114,12 @@ public class SumoData {
 
     public static void startNextTourney(boolean increaseTourney) { //starter en sub turnament. i bynnelsen er det alle sammen
 
-        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney), and round number is: " + round));
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney), and round number is: " + round, NamedTextColor.GRAY));
         if (tourney == rounds.get(round).size() - 1 && increaseTourney) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(Component.text("Starting next round...", NamedTextColor.GRAY));
             }
-            Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney2), and round number is: " + round));
+            Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney2), and round number is: " + round, NamedTextColor.GRAY));
             startNextRound();
             return;
         }
@@ -271,7 +271,7 @@ public class SumoData {
             messagePlayers(Component.text("Rematch count: " + rounds.get(round + 1).size(), NamedTextColor.GRAY));
         }
 
-        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (postTourney), and round number is: " + round));
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (postTourney), and round number is: " + round, NamedTextColor.GRAY));
         startNextTourney(true);
     }
 
