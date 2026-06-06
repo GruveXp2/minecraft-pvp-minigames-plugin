@@ -272,13 +272,13 @@ public class SumoData {
 
 
         for (Player p : playerlistSorted) { // Alle blir telportert til podium
-            p.teleport(new Location(Bukkit.getWorld("Sumo"), 35.0, 23.0, -138.0));
+            p.teleport(new Location(Main.WORLD, 35.0, 23.0, -138.0));
         }
         // telporterer top 3 oppå podium
-        playerlistSorted.get(playerlistSorted.size() - 1).teleport(new Location(Bukkit.getWorld("Sumo"), 35.5, 27.0, -131.5));
-        playerlistSorted.get(playerlistSorted.size() - 2).teleport(new Location(Bukkit.getWorld("Sumo"), 39.5, 26.0, -131.5));
+        playerlistSorted.get(playerlistSorted.size() - 1).teleport(new Location(Main.WORLD, 35.5, 27.0, -131.5));
+        playerlistSorted.get(playerlistSorted.size() - 2).teleport(new Location(Main.WORLD, 39.5, 26.0, -131.5));
         if (playerList.size() > 2) {
-            playerlistSorted.get(playerlistSorted.size() - 3).teleport(new Location(Bukkit.getWorld("Sumo"), 31.5, 25.0, -131.5));
+            playerlistSorted.get(playerlistSorted.size() - 3).teleport(new Location(Main.WORLD, 31.5, 25.0, -131.5));
         }
 
         //printer resultater

@@ -35,7 +35,7 @@ public class PreBattle extends BukkitRunnable {
             Bar.SetVisible(bar, false);
             SumoData.startNextTourney(false); //starter den første turneen
             for (Player p : SumoData.playerList) {
-                p.teleport(new Location(Bukkit.getWorld("Sumo"), 33.5, 31.0, -200.5));
+                p.teleport(new Location(Main.WORLD, 33.5, 31.0, -200.5));
             }
 
             cancel(); // stopper runnable
