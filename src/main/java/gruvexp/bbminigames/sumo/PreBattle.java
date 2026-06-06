@@ -30,15 +30,17 @@ public class PreBattle extends BukkitRunnable {
                 p.sendMessage(Component.text("Tournament starting in " + (12 - time/10)));
             }
         }
+        if (time == 60) {
+            for (Player p : SumoData.playerList) {
+                p.teleport(new Location(Main.WORLD, 33.5, 31.0, -200.5));
+            }
+        }
         if (time > 119) {
             Board.createTourneyBoard(SumoData.playerList);  // scoreboard med alle
                                                             // playersane som registrerte seg
 
             Bar.SetVisible(bar, false);
             SumoData.startNextTourney(false); //starter den første turneen
-            for (Player p : SumoData.playerList) {
-                p.teleport(new Location(Main.WORLD, 33.5, 31.0, -200.5));
-            }
 
             cancel(); // stopper runnable
         }
