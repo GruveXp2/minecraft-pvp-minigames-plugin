@@ -3,6 +3,8 @@ package gruvexp.bbminigames;
 import gruvexp.bbminigames.commands.*;
 import gruvexp.bbminigames.listeners.*;
 import gruvexp.bbminigames.service.BattlePresetService;
+import gruvexp.bbminigames.sumo.SumoCommand;
+import gruvexp.bbminigames.sumo.SumoTabCompleter;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -52,6 +54,8 @@ public final class Main extends JavaPlugin {
         getCommand("settings").setExecutor(new SettingsCommand());
         getCommand("botbows").setExecutor(new BotBowsCommand());
         getCommand("botbows").setTabCompleter(new BotBowsTabCompleter());
+        getCommand("sumo").setExecutor(new SumoCommand());
+        getCommand("sumo").setTabCompleter(new SumoTabCompleter());
         getCommand("test").setExecutor(new TestCommand());
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
