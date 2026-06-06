@@ -115,6 +115,12 @@ public class BotBowsPlayer {
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
     }
 
+    public void destroy() {
+        avatar.remove();
+        sneakManager.destroy();
+        abilities.values().forEach(Ability::destroy);
+    }
+
     public void start() {
         sneakManager = new SneakManager(avatar);
     }

@@ -153,11 +153,17 @@ public class Lobby {
     }
 
     public void reset() {
-        activeGame = false;
-        new HashSet<>(players.keySet()).forEach(this::leaveGame);
+        new HashSet<>(players.keySet()).forEach( playerId -> {
+            players.get(playerId).destroy();
+            players.remove(playerId);
+            BotBows.unRegisterPlayerLobby(playerId);
+        });
+
         botBowsGame = null;
         settings = new Settings(this);
         settings.initMenus();
+        BotBows.lobbyMenu.updateLobbyItem(this);
+        activeGame = false;
     }
 
     public void messagePlayers(Component message) {
