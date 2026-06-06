@@ -2,6 +2,7 @@ package gruvexp.bbminigames.sumo;
 
 import gruvexp.bbminigames.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRules;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -27,7 +28,7 @@ public class BattleInit extends BukkitRunnable {
         switch (time) { //gjør at det kommer 321-GO title.
             case 0://gjør sånn at serveren ikke blir spamma av commands
                 //Bukkit.broadcastMessage("BattleInit.java");
-                Bukkit.dispatchCommand(console, "gamerule logAdminCommands false");
+                Main.WORLD.setGameRule(GameRules.LOG_ADMIN_COMMANDS, false);
                 players = SumoData.getBattle();
                 for (Player p:players) {
                     p.sendMessage("Battle starting in 3..");
@@ -69,7 +70,7 @@ public class BattleInit extends BukkitRunnable {
             case 32:
                 Bukkit.dispatchCommand(console, SumoData.frame(7, "north"));
                 Bukkit.dispatchCommand(console, SumoData.frame(7, "south"));
-                Bukkit.dispatchCommand(console, "gamerule logAdminCommands true");
+                Main.WORLD.setGameRule(GameRules.LOG_ADMIN_COMMANDS, true);
         }
         time++;
     }
