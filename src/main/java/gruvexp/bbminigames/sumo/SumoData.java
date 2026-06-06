@@ -39,7 +39,7 @@ public class SumoData {
 
     public static void init() {
         // Spawnpoint
-        for (Entity e: getServer().getWorld("Sumo").getEntities()) {
+        for (Entity e: Main.WORLD.getEntities()) {
             if (e instanceof ArmorStand) {
                 try {
                     if (e.getCustomName().equals("north_spawn")) {
@@ -335,8 +335,8 @@ public class SumoData {
     }
 
     public static String frame(int frame, String rotation) { //frame 0 er den røde
-        Location startPos = new Location(getServer().getWorld("Sumo"), 21, 22, -204);
-        Location endPos = new Location(getServer().getWorld("Sumo"), 23, 26, -200);
+        Location startPos = new Location(Main.WORLD, 21, 22, -204);
+        Location endPos = new Location(Main.WORLD, 23, 26, -200);
         String offset = "~-1 ~-1 ~-2";
         switch (rotation) { //east er default og location er start:location
             case "west":
