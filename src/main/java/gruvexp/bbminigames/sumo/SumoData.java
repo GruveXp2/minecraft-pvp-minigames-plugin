@@ -272,13 +272,13 @@ public class SumoData {
 
 
         for (Player p : playerlistSorted) { // Alle blir telportert til podium
-            p.teleport(new Location(Bukkit.getWorld("Sumo"), -109.0, 23.0, -90.0));
+            p.teleport(new Location(Bukkit.getWorld("Sumo"), 35.0, 23.0, -138.0));
         }
         // telporterer top 3 oppå podium
-        playerlistSorted.get(playerlistSorted.size() - 1).teleport(new Location(Bukkit.getWorld("Sumo"), -108.5, 27.0, -83.5));
-        playerlistSorted.get(playerlistSorted.size() - 2).teleport(new Location(Bukkit.getWorld("Sumo"), -104.5, 26.0, -83.5));
+        playerlistSorted.get(playerlistSorted.size() - 1).teleport(new Location(Bukkit.getWorld("Sumo"), 35.5, 27.0, -131.5));
+        playerlistSorted.get(playerlistSorted.size() - 2).teleport(new Location(Bukkit.getWorld("Sumo"), 39.5, 26.0, -131.5));
         if (playerList.size() > 2) {
-            playerlistSorted.get(playerlistSorted.size() - 3).teleport(new Location(Bukkit.getWorld("Sumo"), -112.5, 25.0, -83.5));
+            playerlistSorted.get(playerlistSorted.size() - 3).teleport(new Location(Bukkit.getWorld("Sumo"), 31.5, 25.0, -131.5));
         }
 
         //printer resultater
@@ -320,8 +320,8 @@ public class SumoData {
     }
 
     public static String frame(int frame, String rotation) { //frame 0 er den røde
-        Location startPos = new Location(getServer().getWorld("Sumo"), -123, 22, -156);
-        Location endPos = new Location(getServer().getWorld("Sumo"), -121, 26, -152);
+        Location startPos = new Location(getServer().getWorld("Sumo"), 21, 22, -204);
+        Location endPos = new Location(getServer().getWorld("Sumo"), 23, 26, -200);
         String offset = "~-1 ~-1 ~-2";
         switch (rotation) { //east er default og location er start:location
             case "west":

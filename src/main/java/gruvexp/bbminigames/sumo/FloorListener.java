@@ -27,8 +27,8 @@ public class FloorListener implements Listener {
         Board.saveResult(q, true);
         Board.saveResult(p, false); //p er den som hitta golvet
 
-        p.teleport(new Location(Bukkit.getWorld("Sumo"), -110.5, 31.0, -152.5));
-        q.teleport(new Location(Bukkit.getWorld("Sumo"), -110.5, 31.0, -152.5));
+        p.teleport(new Location(Bukkit.getWorld("Sumo"), 33.5, 31.0, -200.5));
+        q.teleport(new Location(Bukkit.getWorld("Sumo"), 33.5, 31.0, -200.5));
 
         SumoData.postBattle(); // kalkulerer score
         SumoData.startNextBattle(); //går videre til neste

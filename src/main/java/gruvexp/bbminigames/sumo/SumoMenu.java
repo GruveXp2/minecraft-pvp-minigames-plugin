@@ -45,7 +45,7 @@ public class SumoMenu extends Menu {
                 return;
             } //cant join the same game many times
             p.sendMessage(Component.text("Joining SUMO Tournaments", NamedTextColor.GREEN));
-            p.teleport(new Location(p.getWorld(),-114.7, 36.0, -126.3));
+            p.teleport(new Location(p.getWorld(), 29.3, 36.0, -174.3));
             p.setGameMode(GameMode.ADVENTURE);
             SumoData.playerList.add(p);
 
@@ -59,7 +59,7 @@ public class SumoMenu extends Menu {
                             .map(Player::getName).collect(Collectors.joining(", ")), NamedTextColor.GREEN)));
         } else if (clickedItem.getType() == Material.GOLDEN_HELMET) {
             p.sendMessage(Component.text("Joining SUMO Crown", NamedTextColor.GREEN));
-            p.teleport(new Location(p.getWorld(),-114.7, 36.0, -126.3));
+            p.teleport(new Location(p.getWorld(), 29.3, 36.0, -174.3));
         }
     }
 }
