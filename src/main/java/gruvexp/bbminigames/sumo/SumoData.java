@@ -164,7 +164,7 @@ public class SumoData {
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage(Component.text("Battle #" + (battleNum + 1) + " has started! ")
                     .append(inBattle[0].name())
-                    .append(Component.text("vs"))
+                    .append(Component.text(" vs "))
                     .append(inBattle[1].name()));
             p.sendMessage(Component.text("Battle starting in 5.."));
         }
