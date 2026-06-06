@@ -1,6 +1,9 @@
 package gruvexp.bbminigames.sumo;
 
 import gruvexp.bbminigames.Main;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -50,7 +53,7 @@ public class SumoData {
             }
         }
         if (SPAWNPOS[0] == null) {
-            Bukkit.broadcastMessage("ERROR!! CANT FIND ARMOR STAND FOR SPAWNPOINT");
+            messagePlayers(Component.text("ERROR!! CANT FIND ARMOR STAND FOR SPAWNPOINT", NamedTextColor.RED));
         }
 
         // Round init, legger til runder som tomme lists
@@ -92,17 +95,17 @@ public class SumoData {
 
     // ---------------- Tournament progression ----------------
     public static void startNextRound() {
-        Bukkit.getPlayer("GruveXp").sendMessage("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextRound), and round number is: " + round);
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextRound), and round number is: " + round));
         if (round == MAX_ROUNDS - 1 || rounds.get(round + 1).isEmpty()) { // viss man er på siste tilatte runde eller det ikke er noen fler
             for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendMessage(ChatColor.GRAY + Integer.toString(round)  + " == " + (MAX_ROUNDS - 1) + "   or   " + rounds.get(round + 1).size() + " == 0");
+                p.sendMessage(Component.text(round + " == " + (MAX_ROUNDS - 1) + "   or   " + rounds.get(round + 1).size() + " == 0", NamedTextColor.GRAY));
             }
 
             postGame();
             return;
         }
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage("Someone got the same score and will have a rematch!");
+            p.sendMessage(Component.text("Someone got the same score and will have a rematch!"));
         }
         round ++;
         tourney = -1; //kommer til å bli 0 med en gang startNextTourney blir kjørt!
@@ -111,12 +114,12 @@ public class SumoData {
 
     public static void startNextTourney(boolean increaseTourney) { //starter en sub turnament. i bynnelsen er det alle sammen
 
-        Bukkit.getPlayer("GruveXp").sendMessage("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney), and round number is: " + round);
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney), and round number is: " + round));
         if (tourney == rounds.get(round).size() - 1 && increaseTourney) {
             for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendMessage(ChatColor.GRAY + "Starting next round...");
+                p.sendMessage(Component.text("Starting next round...", NamedTextColor.GRAY));
             }
-            Bukkit.getPlayer("GruveXp").sendMessage("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney2), and round number is: " + round);
+            Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (startNextTourney2), and round number is: " + round));
             startNextRound();
             return;
         }
@@ -146,7 +149,7 @@ public class SumoData {
             }
         }
         for (int i = 0; i < battleList.size(); i++) {
-            Bukkit.getLogger().info("Battle " + i + ": " + battleList.get(i)[0].getPlayerListName() + " vs " + battleList.get(i)[1].getPlayerListName());
+            Main.getPlugin().getLogger().info("[SUMO]: Battle " + i + ": " + battleList.get(i)[0].getName() + " vs " + battleList.get(i)[1].getName());
         }
     }
 
@@ -159,9 +162,11 @@ public class SumoData {
 
         inBattle = battleList.get(battleNum);
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage(String.format("Battle #%d has started! %s vs %s",
-                    (battleNum + 1), inBattle[0].getPlayerListName(), inBattle[1].getPlayerListName()));
-            p.sendMessage("Battle starting in 5..");
+            p.sendMessage(Component.text("Battle #" + (battleNum + 1) + " has started! ")
+                    .append(inBattle[0].name())
+                    .append(Component.text("vs"))
+                    .append(inBattle[1].name()));
+            p.sendMessage(Component.text("Battle starting in 5.."));
         }
         inBattle[0].teleport(SPAWNPOS[0]);
         inBattle[1].teleport(SPAWNPOS[1]);
@@ -221,46 +226,52 @@ public class SumoData {
         for (int i = 1; i < tourneyData.size(); i++) {
 
             if (tourneyData.get(i).getWins() == tourneyData.get(i - 1).getWins()) {
-                Bukkit.broadcastMessage(ChatColor.GRAY + tourneyData.get(i).PLAYER.getPlayerListName() +
-                        "("+ tourneyData.get(i).getScore() + ") has the same score as " +
-                        tourneyData.get(i - 1).PLAYER.getPlayerListName() + "(" + tourneyData.get(i - 1).getScore() +
-                        "), adding to rematch-list.");
+                messagePlayers(Component.text("", NamedTextColor.GRAY)
+                        .append(tourneyData.get(i).PLAYER.name())
+                        .append(Component.text("("+ tourneyData.get(i).getScore() + ") has the same score as "))
+                        .append(tourneyData.get(i - 1).PLAYER.name())
+                        .append(Component.text("(" + tourneyData.get(i - 1).getScore() + "), adding to rematch-list.")));
                 if (rematchPlayers.isEmpty()) {
                     rematchPlayers.add(tourneyData.get(i - 1).PLAYER);
                 }
                 rematchPlayers.add(tourneyData.get(i).PLAYER);
             } else if (!rematchPlayers.isEmpty()) {
-                Bukkit.broadcastMessage(ChatColor.GRAY + tourneyData.get(i).PLAYER.getPlayerListName() +
-                        "(" + tourneyData.get(i).getScore() + ") didnt have the the same score as " + tourneyData.get(i - 1).PLAYER.getPlayerListName() +
-                        "(" + tourneyData.get(i - 1).getScore() + "), those in the rematch list will rematch.");
+                messagePlayers(Component.text("", NamedTextColor.GRAY)
+                        .append(tourneyData.get(i).PLAYER.name())
+                        .append(Component.text("(" + tourneyData.get(i).getScore() + ") didnt have the the same score as "))
+                        .append(tourneyData.get(i - 1).PLAYER.name())
+                        .append(Component.text("(" + tourneyData.get(i - 1).getScore() + "), those in the rematch list will rematch.")));
 
-                Bukkit.broadcastMessage(ChatColor.GRAY + "Some players got the same amount of points and will rematch! These players are:");
+                messagePlayers(Component.text("Some players got the same amount of points and will rematch! These players are:", NamedTextColor.GRAY));
+
                 rounds.get(round + 1).add(rematchPlayers);
                 for (Player q : rounds.get(round + 1).get(0)) {
-                    Bukkit.broadcastMessage(ChatColor.GRAY + q.getPlayerListName());
+                    messagePlayers(q.name().color(NamedTextColor.GRAY));
                 }
-                Bukkit.broadcastMessage(ChatColor.GRAY + "Rematch count: " + rounds.get(round + 1).size());
+                messagePlayers(Component.text("Rematch count: " + rounds.get(round + 1).size(), NamedTextColor.GRAY));
 
                 rematchPlayers.clear();
             } else {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendMessage(ChatColor.GRAY + tourneyData.get(i).PLAYER.getPlayerListName() +"(" + tourneyData.get(i).getScore() +
-                            ") has the same score as " + tourneyData.get(i - 1).PLAYER.getPlayerListName() + "(" + tourneyData.get(i - 1).getScore() +
-                            "), and nobody are in rematch list.");
+                    p.sendMessage(Component.text("", NamedTextColor.GRAY)
+                            .append(tourneyData.get(i).PLAYER.name())
+                            .append(Component.text("(" + tourneyData.get(i).getScore() + ") has the same score as "))
+                            .append(tourneyData.get(i - 1).PLAYER.name())
+                            .append(Component.text("(" + tourneyData.get(i - 1).getScore() + "), and nobody are in rematch list.")));
                 }
             }
         }
 
         if (!rematchPlayers.isEmpty()) {
-            Bukkit.broadcastMessage(ChatColor.GRAY + "Some players got the same amount of points and will rematch! These players are:");
+            messagePlayers(Component.text("Some players got the same amount of points and will rematch! These players are:", NamedTextColor.GRAY));
             rounds.get(round + 1).add(rematchPlayers);
             for (Player q : rounds.get(round + 1).get(0)) {
-                Bukkit.broadcastMessage(ChatColor.GRAY + q.getPlayerListName());
+                messagePlayers(q.name().color(NamedTextColor.GRAY));
             }
-            Bukkit.broadcastMessage(ChatColor.GRAY + "Rematch count: " + rounds.get(round + 1).size());
+            messagePlayers(Component.text("Rematch count: " + rounds.get(round + 1).size(), NamedTextColor.GRAY));
         }
 
-        Bukkit.getPlayer("GruveXp").sendMessage("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (postTourney), and round number is: " + round);
+        Bukkit.getPlayer("GruveXp").sendMessage(Component.text("rounds.get(round + 1).size() = " + rounds.get(round + 1).size() + " (postTourney), and round number is: " + round));
         startNextTourney(true);
     }
 
@@ -283,7 +294,7 @@ public class SumoData {
 
         //printer resultater
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "==== Tournament results ====");
+            p.sendMessage(Component.text("==== Tournament results ====", NamedTextColor.GREEN, TextDecoration.BOLD));
         }
         for (int i = playerList.size() - 1; i >= 0; i--) {
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -303,6 +314,10 @@ public class SumoData {
     }
 
     // ---------------- Other ----------------
+    public static void messagePlayers(Component component) {
+        playerList.forEach(p -> p.sendMessage(component));
+    }
+
     private static List<PlayerData> getTourneyPlayersSorted() { // gir liste over players i denne turneen sortert etter wins
 
         ArrayList<Player> currentTourney = rounds.get(round).get(tourney); // liste med playersene i denne turneen

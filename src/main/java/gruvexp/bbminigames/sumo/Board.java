@@ -1,5 +1,7 @@
 package gruvexp.bbminigames.sumo;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,9 +24,9 @@ public class Board {
         l1.setScore(players.size() + 1); //øverst
         objective = obj;
         for (Player p : players) { //repeater "|" for hver player. scoren(layer) er hvor mye score(points) de har
-            p.sendMessage("There is "+players.size()+" players. These players are:");
+            p.sendMessage(Component.text("There is " + players.size() + " players. These players are:"));
             for (Player q : players) {
-                p.sendMessage(q.getPlayerListName()+", ");
+                p.sendMessage(q.name().append(Component.text(", ")));
             }
             updateScore(p);
         }
@@ -39,10 +41,10 @@ public class Board {
         Objective obj = objective;
         Scoreboard scoreboard = obj.getScoreboard();
 
-        //fjerner scoren hvis den allerede er der, siden man skal bytte den ut med den oppdaterte versjonen
+        //fjerner scoren hvis den allerede er der, pga man skal bytte den ut med den oppdaterte versjonen
         for (Objective ignored : scoreboard.getObjectives()) {
             for (String entries : scoreboard.getEntries()) {
-                if (entries.contains(p.getPlayerListName())) {
+                if (entries.contains(p.getName())) {
                     scoreboard.resetScores(entries);
                 }
             }
@@ -66,7 +68,8 @@ public class Board {
                 pd = SumoData.playerPoints.get(r).get(SumoData.playerIDs.get(p));
             } catch (NullPointerException e) {
                 for (Player q : Bukkit.getOnlinePlayers()) {
-                    q.sendMessage(ChatColor.RED + "ERROR! " + p.getPlayerListName() + " is not registered in the match but is in the system?! bugzzzz tell gruvexp to fix");
+                    q.sendMessage(Component.text("ERROR! ", NamedTextColor.RED)
+                            .append(p.name()).append(Component.text(" is not registered in the match but is in the system?! bugzzzz tell gruvexp to fix")));
                 }
                 continue;
             }

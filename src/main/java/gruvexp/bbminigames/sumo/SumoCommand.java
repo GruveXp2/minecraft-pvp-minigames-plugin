@@ -30,7 +30,7 @@ public class SumoCommand implements CommandExecutor {
                 p.sendMessage(Component.text("Not enough players! You need " + (2 - players) + " more.", NamedTextColor.RED));
             } else {
                 SumoData.init();
-                p.sendMessage("Starting tournament " + players + "v" + players);
+                p.sendMessage(Component.text("Starting tournament " + players + "v" + players));
                 Bar.CreateBar("Game starting soon!_", BarColor.GREEN, BarStyle.SEGMENTED_12, 0);
                 new PreBattle().runTaskTimer(Main.getPlugin(), 0L, 1L); //period 2T
             }

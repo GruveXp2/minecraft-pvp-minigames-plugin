@@ -1,7 +1,9 @@
 package gruvexp.bbminigames.sumo;
 
+import gruvexp.bbminigames.Main;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
@@ -17,7 +19,7 @@ public class PreBattle extends BukkitRunnable {
 
         SumoManager.activeBattle = 1;
         if (time == 0) {
-            Bukkit.broadcastMessage(ChatColor.GRAY + "Temporary short wait time");
+            SumoData.messagePlayers(Component.text("Temporary short wait time", NamedTextColor.GRAY));
             bar  = Bar.GetBar(0); //endrer bar nr 1
             Bar.SetVisible(bar, true);
         }
@@ -25,7 +27,7 @@ public class PreBattle extends BukkitRunnable {
 
         if (time > 69 && time%10 == 0) {
             for (Player p:Bukkit.getOnlinePlayers()) {
-                p.sendMessage("Tournament starting in "+(12 - time/10));
+                p.sendMessage(Component.text("Tournament starting in " + (12 - time/10)));
             }
         }
         if (time > 119) {

@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.sumo;
 
-import org.bukkit.Bukkit;
+import gruvexp.bbminigames.Main;
+import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,8 +23,8 @@ public class FloorListener implements Listener {
         if (p.getGameMode() != GameMode.ADVENTURE) return;
 
         Player q = SumoData.getBattle()[Math.abs(Arrays.asList(SumoData.getBattle()).indexOf(p) - 1)];
-        p.sendMessage(q.getPlayerListName()+" Won the match!");
-        q.sendMessage("You won the match!");
+        p.sendMessage(q.name().append(Component.text(" Won the match!")));
+        q.sendMessage(Component.text("You won the match!"));
         Board.saveResult(q, true);
         Board.saveResult(p, false); //p er den som hitta golvet
 
