@@ -58,18 +58,21 @@ public class DamageListener implements Listener {
             if (e.getDamager() instanceof Player attacker) {
                 ItemStack weapon = attacker.getInventory().getItemInMainHand();
                 if (weapon.getType() == Material.STICK) {
-                    e.setCancelled(true); // hvis man bruker stick så skjer det ikke noe
+                    e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
                     return;
                 } else if (weapon.getType() == Material.BLAZE_ROD) {
                     StickSlap.handleHit(attacker);
                     e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
                     return;
                 } else {
-                    AbilityListener.onSlap(e, attacker, defender, weapon);
+                    if (BotBows.isPlayerJoined(attacker)) AbilityListener.onSlap(e, attacker, defender, weapon);
                 }
             }
             if (!BotBows.isPlayerJoined(defender)) {
-                e.setCancelled(true); // cant damage ingame players without bow
+                if (e.getDamager() instanceof Player attacker && BotBows.isPlayerJoined(attacker)) {
+                    e.setCancelled(true); // cant damage ingame players without bow
+                }
+                e.setDamage(0.01);
             }// entitien som utførte damag
         }
     }
