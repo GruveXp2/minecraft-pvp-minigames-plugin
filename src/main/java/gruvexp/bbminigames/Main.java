@@ -3,6 +3,7 @@ package gruvexp.bbminigames;
 import gruvexp.bbminigames.commands.*;
 import gruvexp.bbminigames.listeners.*;
 import gruvexp.bbminigames.service.BattlePresetService;
+import gruvexp.bbminigames.sumo.FloorListener;
 import gruvexp.bbminigames.sumo.SumoCommand;
 import gruvexp.bbminigames.sumo.SumoTabCompleter;
 import gruvexp.bbminigames.twtClassic.BotBows;
@@ -47,7 +48,8 @@ public final class Main extends JavaPlugin {
                 new ShiftListener(),
                 new SwitchSpectator(),
                 new AbilityListener(),
-                new ItemListener()
+                new ItemListener(),
+                new FloorListener()
         );
 
         getCommand("menu").setExecutor(new MenuCommand());
