@@ -19,8 +19,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.scheduler.BukkitTask;
 
@@ -96,7 +96,9 @@ public class BotBowsGame {
     }
 
     public Hazard getStormHazard() { // temporary until trident ability is revamped
-        return hazards.stream().filter(hazard -> hazard instanceof StormHazard).collect(Collectors.toSet()).iterator().next();
+        List<Hazard> stormHazard = hazards.stream().filter(hazard -> hazard instanceof StormHazard).toList();
+        if (!stormHazard.isEmpty()) return stormHazard.getFirst();
+        return null;
     }
 
     public void handleMovement(PlayerMoveEvent e) {
