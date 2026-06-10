@@ -41,6 +41,8 @@ public class Lobby {
     public static ItemStack LOADING = Menu.makeItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
             Component.text("Please wait for your action to be processed"));
 
+    private static int botId = 0;
+
     public Lobby(int ID) {
         this.ID = ID;
         BotBows.lobbyMenu.updateLobbyItem(this);
@@ -71,7 +73,7 @@ public class Lobby {
 
     public UUID addBot() {
         Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
-        mannequin.customName(Component.text("BotBowBot"));
+        mannequin.customName(Component.text("BotBowBot " + botId++));
         mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
         settings.joinGame(mannequin);
         BotBows.lobbyMenu.updateLobbyItem(this);

@@ -52,8 +52,6 @@ public class BotBowsPlayer {
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
 
-    private static int botId = 0;
-
     public BotBowsPlayer(Player player, Settings settings) {
         avatar = new PlayerAvatar(player, this);
         name = player.name();
@@ -68,7 +66,7 @@ public class BotBowsPlayer {
 
     public BotBowsPlayer(Mannequin mannequin, Settings settings) {
         avatar = new NpcAvatar(mannequin, this);
-        name = mannequin.name().append(Component.text(" " + botId++));
+        name = mannequin.name();
         lobby = settings.lobby;
         maxHP = settings.getMaxHP();
         hp = maxHP;

@@ -68,6 +68,19 @@ public class TestCommand implements CommandExecutor {
                     lobby.addBot();
                     lobby.startGame(p);
                 }
+                case "vote" -> {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                    String playerName = args[1].replace("_" ," ");
+                    BotBowsPlayer votingBp = bp.lobby.getPlayers().stream().filter(lbp -> lbp.avatar.getEntity().getName().equals(playerName)).findFirst().orElse(null);
+                    if (votingBp == null) {
+                        p.sendMessage(Component.text("That botbowsplayer doesnt exist.", NamedTextColor.RED));
+                        return true;
+                    }
+                    String mapName = args[2].toUpperCase();
+                    BotBowsMap map = BotBowsMap.valueOf(mapName);
+                    bp.lobby.settings.getMapSettings().getMapVotingSession().vote(votingBp, map);
+                    BotBows.debugMessage(playerName + " voted for " + mapName);
+                }
                 case "get_karma" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {
