@@ -164,8 +164,8 @@ public class Lobby {
         botBowsGame = null;
         settings = new Settings(this);
         settings.initMenus();
-        BotBows.lobbyMenu.updateLobbyItem(this);
         activeGame = false;
+        BotBows.lobbyMenu.updateLobbyItem(this);
     }
 
     public void messagePlayers(Component message) {
