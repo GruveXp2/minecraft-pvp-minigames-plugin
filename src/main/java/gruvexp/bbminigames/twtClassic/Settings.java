@@ -242,14 +242,18 @@ public class Settings {
     }
 
     private void updateLeadingMap(boolean triggeredByNewVote) {
-        var leadingVote = mapSettings.getMapVotingSession().getLeadingMap();
-        var leadingMap = leadingVote.getMap();
-        if (leadingMap != mapSettings.getCurrentMap()) {
-            lobby.messagePlayers(Component.text((triggeredByNewVote ? "New" : "Current") + " leading map with ")
-                    .append(Component.text(leadingVote.getVoteCount() + " votes", NamedTextColor.GREEN))
-                    .append(Component.text(": ")).append(Component.text(leadingMap.prettyName(), NamedTextColor.GOLD)));
+        VoteResult leading = mapSettings.getMapVotingSession().getLeadingMaps();
+        Set<BotBowsMap> leadingMaps = leading.getMaps();
+        int mapCount = leadingMaps.size();
+        if (mapCount == 0) return;
+
+        if (!leadingMaps.contains(mapSettings.getCurrentMap())) {
+            String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
+            lobby.messagePlayers(Component.text((triggeredByNewVote ? "New" : "Current") + " leading map" + (mapCount == 1 ? "" : "s") + " with ")
+                    .append(Component.text(leading.getVoteCount() + " votes", NamedTextColor.GREEN))
+                    .append(Component.text(": ")).append(Component.text(mapsString, NamedTextColor.GOLD)));
+            if (mapCount == 1) mapSettings.setCurrentMap(leadingMaps.iterator().next());
         }
-        mapSettings.setCurrentMap(leadingMap);
     }
 
     public void finishMapSelection() {
@@ -259,13 +263,44 @@ public class Settings {
     public void finishVoting() {
         if (lobby.isGameActive()) return;
 
-        VoteResult result = mapSettings.getMapVotingSession().getLeadingMap();
+        VoteResult leading = mapSettings.getMapVotingSession().getLeadingMaps();
+        Set<BotBowsMap> leadingMaps = leading.getMaps();
+        int mapCount = leadingMaps.size();
+        if (mapCount == 1) {
+            BotBowsMap winningMap = leadingMaps.iterator().next();
+            lobby.messagePlayers(Component.empty()
+                    .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
+                    .append(Component.text(" won the vote with "))
+                    .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
+                    .append(Component.text(" votes")));
+            if (winningMap == BotBowsMap.RANDOM) {
+                pickRandomMap();
+            }
+        } else if (mapCount > 1) {
+            String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
+            lobby.messagePlayers(Component.text("Vote is tied between ")
+                    .append(Component.text(mapsString, NamedTextColor.YELLOW))
+                    .append(Component.text(", both have "))
+                    .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
+                    .append(Component.text(" votes! One of them will be picked randomly")));
+            pickRandomMap(leadingMaps);
+        } else {
+            lobby.messagePlayers(Component.text("Nobody voted for a map! A random map will be picked"));
+            pickRandomMap();
+        }
+    }
+
+    private void pickRandomMap() {
+        Set<BotBowsMap> classicMaps = mapSettings.getMapVotingSession().getClassicMapList();
+        pickRandomMap(classicMaps);
+    }
+
+    private void pickRandomMap(Set<BotBowsMap> maps) {
+        BotBowsMap pickedMap = maps.stream().skip(new Random().nextInt(maps.size())).findFirst().orElse(BotBowsMap.RANDOM);
         lobby.messagePlayers(Component.empty()
-                .append(Component.text(result.getMap().prettyName(), NamedTextColor.AQUA))
-                .append(Component.text(" won the vote with "))
-                .append(Component.text(result.getVoteCount(), NamedTextColor.GREEN))
-                .append(Component.text(" votes")));
-        mapSettings.setCurrentMap(result.getMap());
+                .append(Component.text(pickedMap.prettyName(), NamedTextColor.AQUA))
+                .append(Component.text(" was picked!")));
+        mapSettings.setCurrentMap(pickedMap);
     }
 
     private void setNewTeams(BotBowsTeam newTeam1, BotBowsTeam newTeam2) {

@@ -5,7 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
-data class VoteResult(val map: BotBowsMap, val voteCount: Int)
+data class VoteResult(val maps: Set<BotBowsMap>, val voteCount: Int)
 
 class MapVotingSession(private val onVoteChange: () -> Unit) {
     val votes : MutableMap<BotBowsPlayer, BotBowsMap> = mutableMapOf()
@@ -38,13 +38,15 @@ class MapVotingSession(private val onVoteChange: () -> Unit) {
         return votes.values.toSet()
     }
 
-    fun getLeadingMap(): VoteResult {
+    fun getLeadingMaps(): VoteResult {
         val voteCounts = votes.values // <bb-map, #votes>
             .groupingBy { it }
             .eachCount()
 
-        return voteCounts.maxByOrNull { it.value }?.let {
-            VoteResult(it.key, it.value)
-        } ?: VoteResult(classicMapList.random(), 0)
+        val maxVotes = voteCounts.values.maxOrNull() ?: 0
+
+        val leadingMaps = voteCounts.filterValues { it == maxVotes }.keys
+
+        return VoteResult(leadingMaps, maxVotes)
     }
 }
