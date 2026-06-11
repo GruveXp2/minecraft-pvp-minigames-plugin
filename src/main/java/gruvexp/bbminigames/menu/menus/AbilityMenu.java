@@ -14,6 +14,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -273,6 +274,10 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                     bp.equipAbility(-1, clickedAbility);
                 }
             } else { // places ability down in that slot
+                if (e.getAction() == InventoryAction.COLLECT_TO_CURSOR) { // otherwise, players could collect menu items by double clicking similar items in their inventory
+                    e.setCancelled(true);
+                    return;
+                }
                 if (bp.getTotalAbilities() == bp.getMaxAbilities() && !bp.hasAbilityEquipped(cursorAbility)) {
                     p.setItemOnCursor(null);
                     return;
