@@ -353,6 +353,7 @@ public class Settings {
         abilityMenus.put(bp, abilityMenu);
         abilitySettings.addListener(bp, abilityMenu);
         players.forEach(abilityMenu::addPlayer);
+        bp.setMaxHP(maxHP);
     }
 
     public void leaveGame(BotBowsPlayer bp) {
