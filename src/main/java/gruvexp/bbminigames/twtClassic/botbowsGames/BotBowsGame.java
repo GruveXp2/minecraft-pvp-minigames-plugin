@@ -5,7 +5,6 @@ import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.tasks.RoundTimer;
 import gruvexp.bbminigames.twtClassic.*;
-import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
@@ -170,7 +169,7 @@ public class BotBowsGame {
     protected void postRound(BotBowsTeam winningTeam, int winScore) {
         if (!activeRound) return;
         activeRound = false;
-        CreeperTrap.igniteAllCreepers();
+        players.forEach(BotBowsPlayer::resetAbilities);
         lobby.messagePlayers( // team1: %d points, team2: %d points
                 team1.toComponent()
                         .append(Component.text(": ", NamedTextColor.WHITE))

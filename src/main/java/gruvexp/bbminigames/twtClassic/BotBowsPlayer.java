@@ -142,6 +142,11 @@ public class BotBowsPlayer {
 
     public void readyAbilities() {
         abilities.values().forEach(Ability::obtain);
+    }
+
+    public void resetAbilities() {
+        BotBows.debugMessage("resetAbilities()");
+        abilities.values().forEach(ability -> BotBows.debugMessage("calling reset(" + ability.getType().name() + ")"));
         abilities.values().forEach(Ability::reset);
     }
 

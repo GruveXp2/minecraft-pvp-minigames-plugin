@@ -54,6 +54,16 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
         super(bp, hotBarSlot, AbilityType.CREEPER_TRAP);
     }
 
+    @Override
+    public void reset() {
+        if (creeperTicker != null) creeperTicker.ignite();
+    }
+
+    @Override
+    public void destroy() {
+        if (creeperTicker != null) creeperTicker.destroy();
+    }
+
     public static void ignite(Creeper creeper) {
         if (!creeperOwners.containsKey(creeper)) {
             creeper.ignite();
@@ -61,11 +71,6 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
         }
         CreeperTrap ability = (CreeperTrap) creeperOwners.get(creeper).getAbility(AbilityType.CREEPER_TRAP);
         ability.creeperTicker.ignite();
-    }
-
-    public static void igniteAllCreepers() {
-        Set<Creeper> creepers = new HashSet<>(creeperOwners.keySet());
-        creepers.forEach(CreeperTrap::ignite);
     }
 
     @Override
@@ -85,12 +90,12 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
 
 
         // Center location of the top face of the creeper's head (assuming head is 2 blocks tall)
-        loc.add(-3*CREEPER_PX, 23*CREEPER_PX, -3*CREEPER_PX); // creeper height
+        loc.add(-3 * CREEPER_PX, 23 * CREEPER_PX, -3 * CREEPER_PX); // creeper height
 
         // Outer display (Red Stained Glass with 75% of the Creeper's head size)
         BlockDisplay glassDisplay = (BlockDisplay) loc.getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
         glassDisplay.setBlock(Bukkit.createBlockData(Material.getMaterial(bp.getTeam().dyeColor.name() + "_STAINED_GLASS")));
-        float glassSize = 6*CREEPER_PX; // headSize * % of headSize to use
+        float glassSize = 6 * CREEPER_PX; // headSize * % of headSize to use
         glassDisplay.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 0, 0, 1), new Vector3f(glassSize, glassSize, glassSize), new AxisAngle4f(0, 0, 0, 1)));
 
         loc.add(CREEPER_PX, CREEPER_PX, CREEPER_PX); // creeper height
@@ -98,7 +103,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
         // Inner display (Redstone Lamp with 50% of the Creeper's head size)
         BlockDisplay lampDisplay = (BlockDisplay) loc.getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
         lampDisplay.setBlock(Bukkit.createBlockData(Material.WEATHERED_COPPER_BULB));
-        float lampSize = 4*CREEPER_PX;
+        float lampSize = 4 * CREEPER_PX;
         lampDisplay.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 0, 0, 1), new Vector3f(lampSize, lampSize, lampSize), new AxisAngle4f(0, 0, 0, 1)));
 
         creeperTicker = new CreeperTicker(creeper, lampDisplay, glassDisplay, bp);
@@ -159,6 +164,14 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
             igniting = true;
             ticks = -20;
             creeperOwners.remove(creeper);
+        }
+
+        public void destroy() {
+            creeper.remove();
+            lampDisplay.remove();
+            glassDisplay.remove();
+            creeperOwners.remove(creeper);
+            cancel();
         }
 
         public void explode() {

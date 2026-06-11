@@ -268,6 +268,9 @@ public class TestCommand implements CommandExecutor {
                     lobby.joinGame(judith);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
                     judithBp.setReady(true, 4);
+                    BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
+                    gruveBp.equipAbility(AbilityType.CREEPER_TRAP);
+                    gruveBp.equipAbility(AbilityType.LASER_TRAP);
                 }
                 case "a" -> {
                     rotation = !rotation;

@@ -33,7 +33,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
     @Override
     public void onPlace(AbilityContext.BlockPlace ctx) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            if (emitter != null) emitter.remove();
+            removeLaser();
             emitter = new LaserEmitter(ctx.block(), ctx.face());
             emitter.runTaskTimer(Main.getPlugin(), 0, 1);
             use();
@@ -42,11 +42,20 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
 
     @Override
     public void unequip() {
-        reset();
+        removeLaser();
     }
 
     @Override
     public void reset() {
+        removeLaser();
+    }
+
+    @Override
+    public void destroy() {
+        removeLaser();
+    }
+
+    private void removeLaser() {
         if (emitter != null) {
             emitter.remove();
         }
