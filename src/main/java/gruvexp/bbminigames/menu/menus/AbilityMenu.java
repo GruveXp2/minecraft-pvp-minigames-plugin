@@ -275,7 +275,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 if (bp.getTotalAbilities() == bp.getMaxAbilities() && !bp.hasAbilityEquipped(cursorAbility)) {
                     p.setItemOnCursor(null);
                     return;
-                };
+                }
 
                 if (e.getSlot() >= 9) { // clicks somewhere else than hotbar
                     p.setItemOnCursor(null);
