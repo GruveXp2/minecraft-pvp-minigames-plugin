@@ -48,43 +48,43 @@ public class BoardManager {
     }
 
     public void initPlayers() {
-        for (BotBowsPlayer p : team1().getPlayers()) {
-            p.avatar.setColor((NamedTextColor) team1().color);
+        for (BotBowsPlayer bp : team1().getPlayers()) {
+            bp.avatar.setColor((NamedTextColor) team1().color);
         }
-        for (BotBowsPlayer p : team2().getPlayers()) {
-            p.avatar.setColor((NamedTextColor) team2().color);
+        for (BotBowsPlayer bp : team2().getPlayers()) {
+            bp.avatar.setColor((NamedTextColor) team2().color);
         }
     }
 
     public TeamManager getTeamManager() {return teamManager;}
 
-    public void updatePlayerScore(BotBowsPlayer p) {
-        removePlayerScore(p);
+    public void updatePlayerScore(BotBowsPlayer bp) {
+        removePlayerScore(bp);
 
-        int hp = p.getHP();
-        int maxHp = p.settings.getMaxHp();
+        int hp = bp.getHP();
+        int maxHp = bp.settings.getMaxHp();
         int playerLineIndex; // which line of the scoreboard the player stats will be shown
-        if (team1().hasPlayer(p)) { //
-            playerLineIndex = team1().getPlayerID(p) + team2().size() + 1;
+        if (team1().hasPlayer(bp)) { //
+            playerLineIndex = team1().getPlayerID(bp) + team2().size() + 1;
         } else {
-            playerLineIndex = team2().getPlayerID(p);
+            playerLineIndex = team2().getPlayerID(bp);
         }
 
         String healthBar;
         if (maxHp > 5) {
-            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeamColor()) + " " + p.getPlainName();
+            healthBar = ChatColor.RED + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor((NamedTextColor) bp.getTeamColor()) + " " + bp.getPlainName();
         } else {
-            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) p.getTeamColor()) + " " + p.getPlainName();
+            healthBar = ChatColor.RED + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor((NamedTextColor) bp.getTeamColor()) + " " + bp.getPlainName();
         }
 
         setScore(healthBar, playerLineIndex);
     }
 
-    public void removePlayerScore(BotBowsPlayer p) {
+    public void removePlayerScore(BotBowsPlayer bp) {
         Scoreboard sb = objective.getScoreboard();
         for (Objective ignored : sb.getObjectives()) {
             for (String entries : sb.getEntries()) {
-                if (entries.contains(p.getPlainName())) {
+                if (entries.contains(bp.getPlainName())) {
                     sb.resetScores(entries);
                 }
             }

@@ -494,13 +494,13 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         cooldownMultiplierRow.addItem(cooldownHead);
     }
 
-    public void removePlayer(BotBowsPlayer p) {
-        removePlayerFromRow(p, maxAbilitiesRow);
-        removePlayerFromRow(p, cooldownMultiplierRow);
+    public void removePlayer(BotBowsPlayer bp) {
+        removePlayerFromRow(bp, maxAbilitiesRow);
+        removePlayerFromRow(bp, cooldownMultiplierRow);
     }
 
-    private void removePlayerFromRow(BotBowsPlayer p, PlayerMenuRow row) {
-        row.removeItem(row.getItem(p));
+    private void removePlayerFromRow(BotBowsPlayer bp, PlayerMenuRow row) {
+        row.removeItem(row.getItem(bp));
     }
 
     @Override

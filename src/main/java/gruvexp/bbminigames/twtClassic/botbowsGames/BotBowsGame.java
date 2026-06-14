@@ -49,10 +49,10 @@ public class BotBowsGame {
         this.boardManager = new BoardManager(lobby);
     }
 
-    public void leaveGame(BotBowsPlayer p) {
-        BotBowsTeam team = p.getTeam();
-        settings.leaveGame(p);
-        boardManager.removePlayerScore(p);
+    public void leaveGame(BotBowsPlayer bp) {
+        BotBowsTeam team = bp.getTeam();
+        settings.leaveGame(bp);
+        boardManager.removePlayerScore(bp);
         if (team.isEmpty()) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGame(), 10L);
     }
 
@@ -62,9 +62,9 @@ public class BotBowsGame {
         hazards.forEach(hazard -> hazard.init(players));
 
         // legger til player liv osv
-        for (BotBowsPlayer q : players) {
-            q.initBattle(boardManager.getTeamManager());
-            boardManager.updatePlayerScore(q);
+        for (BotBowsPlayer bp : players) {
+            bp.initBattle(boardManager.getTeamManager());
+            boardManager.updatePlayerScore(bp);
         }
         boardManager.initPlayers(); // makes the player join the Team's to get the correct color outline
         boardManager.updateTeamScores();
@@ -74,9 +74,9 @@ public class BotBowsGame {
     public void startRound() {
         round ++;
         // alle har fullt med liv
-        for (BotBowsPlayer p : players) {
-            p.revive();
-            p.readyAbilities();
+        for (BotBowsPlayer bp : players) {
+            bp.revive();
+            bp.readyAbilities();
         }
         // teleporterer til spawn
         team1.tpPlayersToSpawn();
@@ -208,8 +208,8 @@ public class BotBowsGame {
 
     private int calculateDynamicScore(BotBowsTeam winningTeam, BotBowsTeam losingTeam) {
         int HPLeft = 0;
-        for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            HPLeft += p.getHP();
+        for (BotBowsPlayer bp : winningTeam.getPlayers()) {
+            HPLeft += bp.getHP();
         }
         lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.color));
 
@@ -249,12 +249,12 @@ public class BotBowsGame {
             return;
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-        for (BotBowsPlayer p : winningTeam.getPlayers()) {
-            p.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
+        for (BotBowsPlayer bp : winningTeam.getPlayers()) {
+            bp.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
-        for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            p.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
+        for (BotBowsPlayer bp : losingTeam.getPlayers()) {
+            bp.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
     }

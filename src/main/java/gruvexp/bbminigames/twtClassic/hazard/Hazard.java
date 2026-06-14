@@ -39,10 +39,10 @@ public abstract class Hazard {
     protected abstract HazardMessage getAnnounceMessage();
     private void announce(Collection<BotBowsPlayer> players) {
         HazardMessage msg = getAnnounceMessage();
-        players.forEach(p -> {
-            p.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
+        players.forEach(bp -> {
+            bp.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
                     .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
-            p.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
+            bp.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
         });
     }
     public abstract String getName();

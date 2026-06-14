@@ -116,8 +116,8 @@ public class Settings {
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
                 isCustomHPEnabled() ? null : maxHP,
-                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getMaxHp())) : null,
-                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
+                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxHp())) : null,
+                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
         );
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
@@ -126,17 +126,17 @@ public class Settings {
         Set<AbilityType> bannedAbilities = abilitySettings.getBanned();
         AbilityPreset abilityPreset = new AbilityPreset(
                 abilitySettings.isIndividualMax() ? null : abilitySettings.getMaxAbilities(),
-                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getMaxAbilities())) : null,
+                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxAbilities())) : null,
                 abilitySettings.isIndividualCooldown() ? null : abilitySettings.getCooldownMultiplier(),
-                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getAbilityCooldownMultiplier())) : null,
+                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAbilityCooldownMultiplier())) : null,
                 !bannedAbilities.isEmpty() ? bannedAbilities : null
         );
         return new BattlePreset(
                 presetName,
                 presetIcon,
                 mapSettings.getCurrentMap(),
-                team1.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
-                team2.getPlayers().stream().map(p -> p.avatar.getUUID()).collect(Collectors.toSet()),
+                team1.getPlayers().stream().map(bp -> bp.avatar.getUUID()).collect(Collectors.toSet()),
+                team2.getPlayers().stream().map(bp -> bp.avatar.getUUID()).collect(Collectors.toSet()),
                 healthPreset,
                 winConditionPreset,
                 hazardSettings.getChances(),
@@ -438,7 +438,7 @@ public class Settings {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        players.forEach(p -> p.settings.setMaxHp(maxHP));
+        players.forEach(bp -> bp.settings.setMaxHp(maxHP));
         healthMenu.updateMenu();
     }
 
@@ -447,7 +447,7 @@ public class Settings {
     }
 
     public void resetAttackDamage() {
-        players.forEach(p -> p.settings.setAttackDamage(1));
+        players.forEach(bp -> bp.settings.setAttackDamage(1));
     }
 
     public int getWinScoreThreshold() {

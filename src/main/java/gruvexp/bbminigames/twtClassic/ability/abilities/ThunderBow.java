@@ -60,7 +60,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
 
     private static void handleChain(BotBowsPlayer attacker, BotBowsPlayer defender, Set<BotBowsPlayer> handledPlayers) {
         Set<BotBowsPlayer> nearbyPlayers = defender.getNearbyPlayers(CHAIN_RADIUS).stream()
-                .filter(p -> p.getTeam() != attacker.getTeam() && !handledPlayers.contains(p))
+                .filter(nearbyPlayer -> nearbyPlayer.getTeam() != attacker.getTeam() && !handledPlayers.contains(nearbyPlayer))
                 .collect(Collectors.toSet());
         if (nearbyPlayers.isEmpty()) return;
 

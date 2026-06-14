@@ -69,21 +69,21 @@ public class BotBowsTeam {
     }
 
     public void postTeamSwap() { // when the map is changed and the teams are swapped out
-        for (BotBowsPlayer p : players) {
-            p.updateTeam(this);
-            p.teleport(tribunePos);
+        for (BotBowsPlayer bp : players) {
+            bp.updateTeam(this);
+            bp.teleport(tribunePos);
         }
     }
 
-    public void join(BotBowsPlayer p) {
-        players.add(p);
-        p.teleport(tribunePos);
-        p.onTeamJoin(this);
+    public void join(BotBowsPlayer bp) {
+        players.add(bp);
+        bp.teleport(tribunePos);
+        bp.onTeamJoin(this);
     }
 
-    public void leave(BotBowsPlayer p) {
-        players.remove(p);
-        p.onTeamLeave();
+    public void leave(BotBowsPlayer bp) {
+        players.remove(bp);
+        bp.onTeamLeave();
     }
 
     public void reset() {
@@ -92,20 +92,20 @@ public class BotBowsTeam {
 
     public int size() {return players.size();}
 
-    public boolean hasPlayer(BotBowsPlayer p) {
-        return players.contains(p);
+    public boolean hasPlayer(BotBowsPlayer bp) {
+        return players.contains(bp);
     }
 
     public BotBowsPlayer getPlayer(int id) {return players.get(id);}
 
-    public int getPlayerID(BotBowsPlayer p) {return players.indexOf(p);}
+    public int getPlayerID(BotBowsPlayer bp) {return players.indexOf(bp);}
 
     public List<BotBowsPlayer> getPlayers() {return players;}
 
     public boolean isEmpty() {return players.isEmpty();}
 
-    public Location getSpawnPos(BotBowsPlayer p) {
-        return spawnPos[players.indexOf(p)];
+    public Location getSpawnPos(BotBowsPlayer bp) {
+        return spawnPos[players.indexOf(bp)];
     }
 
     public int getPoints() {return points;}
@@ -117,17 +117,17 @@ public class BotBowsTeam {
     public int getHealthPercentage() {
         int totalHealth = 0;
         int currentHealth = 0;
-        for (BotBowsPlayer player : players) {
-            totalHealth += player.settings.getMaxHp();
-            currentHealth += player.getHP();
+        for (BotBowsPlayer bp : players) {
+            totalHealth += bp.settings.getMaxHp();
+            currentHealth += bp.getHP();
         }
         double healthLevel = (float) currentHealth / totalHealth;
         return (int) (healthLevel * 100);
     }
 
     public boolean isEliminated() {
-        for (BotBowsPlayer p : players) {
-            if (p.getHP() > 0) {
+        for (BotBowsPlayer bp : players) {
+            if (bp.getHP() > 0) {
                 return false;
             }
         }
@@ -135,13 +135,13 @@ public class BotBowsTeam {
     }
 
     public void glow(int seconds) {
-        players.forEach(p -> p.avatar.setGlowing(true));
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p -> p.avatar.setGlowing(false)), 20L * seconds);
+        players.forEach(bp -> bp.avatar.setGlowing(true));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(bp -> bp.avatar.setGlowing(false)), 20L * seconds);
     }
 
     public void setGlowColor(NamedTextColor color, int ticks) {
-        players.forEach(p -> p.avatar.setColor(color));
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(p ->  p.avatar.setColor((NamedTextColor) this.color)), ticks);
+        players.forEach(bp -> bp.avatar.setColor(color));
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> players.forEach(bp ->  bp.avatar.setColor((NamedTextColor) this.color)), ticks);
     }
 
     public Material getGlassPane() {

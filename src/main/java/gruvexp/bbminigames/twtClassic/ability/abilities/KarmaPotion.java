@@ -21,10 +21,10 @@ public class KarmaPotion extends PotionAbility {
     @Override
     protected void applyPotionEffect(Set<BotBowsPlayer> players) {
         bp.setKarmaEffect(true);
-        players.forEach(p -> p.setKarmaEffect(true));
+        players.forEach(bp -> bp.setKarmaEffect(true));
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> bp.setKarmaEffect(false), 20L * DURATION);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> players.forEach(p -> p.setKarmaEffect(false)), 15L * DURATION);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> players.forEach(bp -> bp.setKarmaEffect(false)), 15L * DURATION);
     }
 
     @Override

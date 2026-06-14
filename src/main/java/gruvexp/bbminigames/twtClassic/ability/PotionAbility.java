@@ -18,13 +18,13 @@ public abstract class PotionAbility extends Ability {
     @Override
     public void use() {
         super.use();
-        Set<BotBowsPlayer> players = bp.getNearbyPlayers(RADIUS).stream()
-                .filter(p -> p.getTeam() == bp.getTeam())
+        Set<BotBowsPlayer> nearbyPlayers = bp.getNearbyPlayers(RADIUS).stream()
+                .filter(nearbyPlayer -> nearbyPlayer.getTeam() == this.bp.getTeam())
                 .collect(Collectors.toSet());
-        players.remove(bp);
-        applyPotionEffect(players);
+        nearbyPlayers.remove(bp);
+        applyPotionEffect(nearbyPlayers);
 
-        players.forEach(p -> p.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
+        nearbyPlayers.forEach(nearbyPlayer -> nearbyPlayer.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
                 .append(Component.text(getEffectDuration()))
                 .append(Component.text("s "))
                 .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))

@@ -21,12 +21,12 @@ public class PlayerMenuRow extends MenuRow{
         super.addItem(item);
     }
 
-    public ItemStack getItem(BotBowsPlayer p) {
+    public ItemStack getItem(BotBowsPlayer bp) {
         for (ItemStack item : itemList) {
             SkullMeta meta = (SkullMeta) item.getItemMeta();
             NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
             String storedUUID = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            if (storedUUID.equals(p.avatar.getUUID().toString())) {
+            if (storedUUID.equals(bp.avatar.getUUID().toString())) {
                 return item;
             }
         }

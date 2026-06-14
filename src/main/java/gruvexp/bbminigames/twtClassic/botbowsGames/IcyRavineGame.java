@@ -23,12 +23,12 @@ public class IcyRavineGame extends BotBowsGame {
     }
 
     @Override
-    public void leaveGame(BotBowsPlayer p) {
-        super.leaveGame(p);
-        if (dungeonScanners.containsKey(p)) {
-            dungeonScanners.get(p).cancel();
-            dungeonScanners.remove(p);
-            dungeonGhosters.remove(p);
+    public void leaveGame(BotBowsPlayer bp) {
+        super.leaveGame(bp);
+        if (dungeonScanners.containsKey(bp)) {
+            dungeonScanners.get(bp).cancel();
+            dungeonScanners.remove(bp);
+            dungeonGhosters.remove(bp);
         }
     }
 
@@ -65,29 +65,29 @@ public class IcyRavineGame extends BotBowsGame {
     }
 
     private void initDungeon() {
-        for (BotBowsPlayer p : players) {
-            dungeonGhosters.put(p, new DungeonGhoster(p));
+        for (BotBowsPlayer bp : players) {
+            dungeonGhosters.put(bp, new DungeonGhoster(bp));
         }
     }
 
     private void startScanners() {
-        for (BotBowsPlayer p : players) {
-            GvwDungeonProximityScanner scanner = new GvwDungeonProximityScanner(p);
-            dungeonScanners.put(p, scanner);
+        for (BotBowsPlayer bp : players) {
+            GvwDungeonProximityScanner scanner = new GvwDungeonProximityScanner(bp);
+            dungeonScanners.put(bp, scanner);
             scanner.runTaskTimer(Main.getPlugin(), 140L, 5L);
         }
         //debugMessage("starting scanners");
     }
 
-    public boolean isInDungeon(BotBowsPlayer p) {
-        return dungeonScanners.get(p).isInDungeon();
+    public boolean isInDungeon(BotBowsPlayer bp) {
+        return dungeonScanners.get(bp).isInDungeon();
     }
 
-    public String getSection(BotBowsPlayer p) {
-        return dungeonGhosters.get(p).getSection();
+    public String getSection(BotBowsPlayer bp) {
+        return dungeonGhosters.get(bp).getSection();
     }
 
-    public void handleDungeonMovement(BotBowsPlayer p) {
-        dungeonGhosters.get(p).handleMovement();
+    public void handleDungeonMovement(BotBowsPlayer bp) {
+        dungeonGhosters.get(bp).handleMovement();
     }
 }

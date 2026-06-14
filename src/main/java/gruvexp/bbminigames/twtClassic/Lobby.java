@@ -117,9 +117,9 @@ public class Lobby {
         return players.get(playerId);
     }
 
-    public void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (players.containsKey(p.avatar.getUUID())) return;
-        players.put(p.avatar.getUUID(), p);
+    public void registerBotBowsPlayer(BotBowsPlayer bp) {
+        if (players.containsKey(bp.avatar.getUUID())) return;
+        players.put(bp.avatar.getUUID(), bp);
     }
 
     public Collection<BotBowsPlayer> getPlayers() {
@@ -169,14 +169,14 @@ public class Lobby {
     }
 
     public void messagePlayers(Component message) {
-        for (BotBowsPlayer p : settings.getPlayers()) {
-            p.avatar.message(message);
+        for (BotBowsPlayer bp : settings.getPlayers()) {
+            bp.avatar.message(message);
         }
     }
 
     public void titlePlayers(Component component, int seconds) {
-        for (BotBowsPlayer p : players.values()) {
-            p.avatar.showTitle(Title.title(component, Component.text(""),
+        for (BotBowsPlayer bp : players.values()) {
+            bp.avatar.showTitle(Title.title(component, Component.text(""),
                     Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
         }
     }
