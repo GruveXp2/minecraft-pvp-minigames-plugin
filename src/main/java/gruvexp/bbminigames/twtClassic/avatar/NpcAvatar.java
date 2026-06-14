@@ -233,7 +233,7 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.getMaxHP();
+        int maxHP = bp.settings.getMaxHp();
         if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
             mannequin.getEquipment().setArmorContents(new ItemStack[] {
                     getArmorPiece(Material.LEATHER_BOOTS),

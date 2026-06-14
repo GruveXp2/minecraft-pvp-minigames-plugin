@@ -139,9 +139,9 @@ public enum AbilityType {
         if (category == AbilityCategory.DAMAGING) {
             return Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW));
         }
-        int percentage = (int) ((bp.getAbilityCooldownMultiplier() - 1) * 100);
+        int percentage = (int) ((bp.settings.getAbilityCooldownMultiplier() - 1) * 100);
         Component cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
-                .append(Component.text((int) (getBaseCooldown() * bp.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
+                .append(Component.text((int) (getBaseCooldown() * bp.settings.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
         if (percentage != 0) {
             cooldownComponent = cooldownComponent
                     .append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));

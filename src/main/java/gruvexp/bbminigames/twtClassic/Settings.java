@@ -116,8 +116,8 @@ public class Settings {
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
                 isCustomHPEnabled() ? null : maxHP,
-                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxHP)) : null,
-                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAttackDamage)) : null
+                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getMaxHp())) : null,
+                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
         );
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
@@ -126,9 +126,9 @@ public class Settings {
         Set<AbilityType> bannedAbilities = abilitySettings.getBanned();
         AbilityPreset abilityPreset = new AbilityPreset(
                 abilitySettings.isIndividualMax() ? null : abilitySettings.getMaxAbilities(),
-                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getMaxAbilities)) : null,
+                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getMaxAbilities())) : null,
                 abilitySettings.isIndividualCooldown() ? null : abilitySettings.getCooldownMultiplier(),
-                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), BotBowsPlayer::getAbilityCooldownMultiplier)) : null,
+                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(p -> p.avatar.getUUID(), bp -> bp.settings.getAbilityCooldownMultiplier())) : null,
                 !bannedAbilities.isEmpty() ? bannedAbilities : null
         );
         return new BattlePreset(
@@ -170,7 +170,7 @@ public class Settings {
             individualMaxHp.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
                 if (bp != null) {
-                    bp.setMaxHP(value);
+                    bp.settings.setMaxHp(value);
                 }
             });
         }
@@ -181,7 +181,7 @@ public class Settings {
             individualDamage.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
                 if (bp != null) {
-                    bp.setAttackDamage(value);
+                    bp.settings.setAttackDamage(value);
                 }
             });
         }
@@ -353,7 +353,7 @@ public class Settings {
         abilityMenus.put(bp, abilityMenu);
         abilitySettings.addListener(bp, abilityMenu);
         players.forEach(abilityMenu::addPlayer);
-        bp.setMaxHP(maxHP);
+        bp.settings.setMaxHp(maxHP);
     }
 
     public void leaveGame(BotBowsPlayer bp) {
@@ -438,7 +438,7 @@ public class Settings {
 
     public void setMaxHP(int maxHP) {
         this.maxHP = maxHP;
-        players.forEach(p -> p.setMaxHP(maxHP));
+        players.forEach(p -> p.settings.setMaxHp(maxHP));
         healthMenu.updateMenu();
     }
 
@@ -447,7 +447,7 @@ public class Settings {
     }
 
     public void resetAttackDamage() {
-        players.forEach(p -> p.setAttackDamage(1));
+        players.forEach(p -> p.settings.setAttackDamage(1));
     }
 
     public int getWinScoreThreshold() {

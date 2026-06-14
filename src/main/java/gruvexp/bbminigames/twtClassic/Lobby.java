@@ -193,12 +193,12 @@ public class Lobby {
         return activeGame;
     }
 
-    public void handlePlayerReady(BotBowsPlayer p) {
-        boolean ready = p.isReady();
-        long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
+    public void handlePlayerReady(BotBowsPlayer bp) {
+        boolean ready = bp.settings.isReady();
+        long readyPlayers = players.values().stream().filter(lobbyBp -> lobbyBp.settings.isReady()).count();
         int totalPlayers = Math.max(players.size(), 2);
 
-        messagePlayers(Component.text(p.getPlainName() +
+        messagePlayers(Component.text(bp.getPlainName() +
                 (ready ? " has readied up " : " is no longer ready ") +
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
         if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {

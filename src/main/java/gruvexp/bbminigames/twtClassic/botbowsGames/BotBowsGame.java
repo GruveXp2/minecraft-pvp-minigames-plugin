@@ -214,8 +214,8 @@ public class BotBowsGame {
         lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.color));
 
         int enemyHPTaken = 0;
-        for (BotBowsPlayer p : losingTeam.getPlayers()) {
-            enemyHPTaken += p.getMaxHP();
+        for (BotBowsPlayer bp : losingTeam.getPlayers()) {
+            enemyHPTaken += bp.settings.getMaxHp();
         }
         lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.color));
 

@@ -104,7 +104,7 @@ public class HealthMenu extends SettingsMenu {
                     } else {
                         maxHP += 1;
                     }
-                    bp.setMaxHP(maxHP);
+                    bp.settings.setMaxHp(maxHP);
                     head.setAmount(maxHP);
                 } else {
                     int attackDamage = head.getAmount();
@@ -112,7 +112,7 @@ public class HealthMenu extends SettingsMenu {
                     if (attackDamage > 5) {
                         attackDamage = 1;
                     }
-                    bp.setAttackDamage(attackDamage);
+                    bp.settings.setAttackDamage(attackDamage);
                     head.setAmount(attackDamage);
                 }
                 inventory.setItem(slot, head);
@@ -146,15 +146,15 @@ public class HealthMenu extends SettingsMenu {
             start = 1;
         }
         for (int i = 0; i < settings.team1.size(); i++) {
-            BotBowsPlayer p = settings.team1.getPlayer(i);
-            ItemStack item = p.avatar.getHeadItem();
-            item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
+            BotBowsPlayer bp = settings.team1.getPlayer(i);
+            ItemStack item = bp.avatar.getHeadItem();
+            item.setAmount(isHealth ? bp.settings.getMaxHp() : bp.settings.getAttackDamage());
             inventory.setItem(i + start + slotOffset, item);
         }
         for (int i = 0; i < settings.team2.size(); i++) {
-            BotBowsPlayer p = settings.team2.getPlayer(i);
-            ItemStack item = p.avatar.getHeadItem();
-            item.setAmount(isHealth ? p.getMaxHP() : p.getAttackDamage());
+            BotBowsPlayer bp = settings.team2.getPlayer(i);
+            ItemStack item = bp.avatar.getHeadItem();
+            item.setAmount(isHealth ? bp.settings.getMaxHp() : bp.settings.getAttackDamage());
             inventory.setItem(8 - i + slotOffset, item);
         }
     }

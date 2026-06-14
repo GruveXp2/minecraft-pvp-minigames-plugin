@@ -170,16 +170,16 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
                 BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
                 if (e.getSlot() < 9) {
-                    int maxAbilities = headBp.getMaxAbilities(); // oppdaterer max abilities
+                    int maxAbilities = headBp.settings.getMaxAbilities(); // oppdaterer max abilities
                     maxAbilities++;
                     if (maxAbilities > 3) maxAbilities = 1;
-                    headBp.setMaxAbilities(maxAbilities);
+                    headBp.settings.setMaxAbilities(maxAbilities);
                 } else if (e.getSlot() <=27) {
-                    float cooldownMultiplier = headBp.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
+                    float cooldownMultiplier = headBp.settings.getAbilityCooldownMultiplier(); // oppdaterer cooldownmultiplier
                     String prev = String.format(Locale.US, "%.2fx", cooldownMultiplier);
                     String next = cooldownMultiplierSlider.getNext(prev);
                     float newCooldownMultiplier = Float.parseFloat(next.substring(0, next.length() - 1));
-                    headBp.setAbilityCooldownMultiplier(newCooldownMultiplier);
+                    headBp.settings.setAbilityCooldownMultiplier(newCooldownMultiplier);
                 }
             }
             case FIREWORK_STAR -> {
@@ -200,7 +200,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 List<AbilityType> abilityTypes = new ArrayList<>(List.of(AbilityType.values()));
                 Collections.shuffle(abilityTypes);
                 for (AbilityType abilityType : abilityTypes) {
-                    if (bp.getTotalAbilities() == bp.getMaxAbilities()) break;
+                    if (bp.getTotalAbilities() == bp.settings.getMaxAbilities()) break;
                     if (!abilitySettings.isBanned(abilityType)) bp.equipAbility(abilityType);
                 }
             }
@@ -243,8 +243,8 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                 } else { // picking up ability from menu
                     boolean clickedOnMenuAbilityRow = e.getSlot() > 36 && e.getSlot() < 45;
                     if (clickedOnMenuAbilityRow) {
-                        if (bp.getTotalAbilities() == bp.getMaxAbilities()) {
-                            if (bp.getMaxAbilities() == 0) {
+                        if (bp.getTotalAbilities() == bp.settings.getMaxAbilities()) {
+                            if (bp.settings.getMaxAbilities() == 0) {
                                 p.sendMessage(Component.text("The mod has disabled abilities for you", NamedTextColor.RED));
                             } else {
                                 p.sendMessage(Component.text("Ability limit reached", NamedTextColor.RED));
@@ -278,7 +278,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
                     e.setCancelled(true);
                     return;
                 }
-                if (bp.getTotalAbilities() == bp.getMaxAbilities() && !bp.hasAbilityEquipped(cursorAbility)) {
+                if (bp.getTotalAbilities() == bp.settings.getMaxAbilities() && !bp.hasAbilityEquipped(cursorAbility)) {
                     p.setItemOnCursor(null);
                     return;
                 }
@@ -358,7 +358,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
             maxAbilitiesRow.hide();
             maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
-            settings.getPlayers().forEach(p -> p.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
+            settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
             inventory.setItem(5, VOID);
             inventory.setItem(6, VOID);
         }
@@ -388,14 +388,14 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
             settings.getPlayers().forEach(this::updateMaxAbilities);
         } else {
             maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities()); // oppdaterer slideren
-            settings.getPlayers().forEach(p -> p.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
+            settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
         }
     }
 
-    public void updateMaxAbilities(BotBowsPlayer p) {
+    public void updateMaxAbilities(BotBowsPlayer bp) {
         if (!settings.getAbilitySettings().isIndividualMax()) return;
-        ItemStack headItem = maxAbilitiesRow.getItem(p);
-        headItem.setAmount(Math.max(p.getMaxAbilities(), 1)); // oppdaterer head count
+        ItemStack headItem = maxAbilitiesRow.getItem(bp);
+        headItem.setAmount(Math.max(bp.settings.getMaxAbilities(), 1)); // oppdaterer head count
         maxAbilitiesRow.displayRow();
     }
 
@@ -413,12 +413,12 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         }
     }
 
-    public void updateCooldownMultiplier(BotBowsPlayer p) {
+    public void updateCooldownMultiplier(BotBowsPlayer bp) {
         if (!settings.getAbilitySettings().isIndividualCooldown()) return;
-        ItemStack headItem = cooldownMultiplierRow.getItem(p);
+        ItemStack headItem = cooldownMultiplierRow.getItem(bp);
         ItemMeta meta = headItem.getItemMeta();
         meta.lore(List.of(Component.text("Cooldown multiplier: ")
-                .append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+                .append(Component.text(String.format(Locale.US, "%.2fx", bp.settings.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         headItem.setItemMeta(meta);
         cooldownMultiplierRow.displayRow();
     }
@@ -481,15 +481,15 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
         return slot;
     }
 
-    public void addPlayer(BotBowsPlayer p) {
+    public void addPlayer(BotBowsPlayer bp) {
         //max abilities
-        ItemStack abilitiesHead = p.avatar.getHeadItem();
-        abilitiesHead.setAmount(Math.max(p.getMaxAbilities(), 1));
+        ItemStack abilitiesHead = bp.avatar.getHeadItem();
+        abilitiesHead.setAmount(Math.max(bp.settings.getMaxAbilities(), 1));
         maxAbilitiesRow.addItem(abilitiesHead);
         // cooldown multiplier
-        ItemStack cooldownHead = p.avatar.getHeadItem();
+        ItemStack cooldownHead = bp.avatar.getHeadItem();
         ItemMeta meta = cooldownHead.getItemMeta();
-        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", p.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
+        meta.lore(List.of(Component.text("Cooldown multiplier: ").append(Component.text(String.format(Locale.US, "%.2fx", bp.settings.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
         cooldownHead.setItemMeta(meta);
         cooldownMultiplierRow.addItem(cooldownHead);
     }

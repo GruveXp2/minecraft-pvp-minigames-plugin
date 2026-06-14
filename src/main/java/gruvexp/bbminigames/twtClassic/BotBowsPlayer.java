@@ -12,7 +12,7 @@ import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -36,44 +36,32 @@ public class BotBowsPlayer {
     private final Component name;
 
     public final Lobby lobby;
+    public final PlayerSettings settings;
     private BotBowsTeam team;
     private int hp;
-    private int maxHP;
-    private int attackDamage;
     private boolean isDamaged = false; // cooldown når playeren er hitta
-    private boolean ready = false; // om playeren er klar for å spille
     public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
     private SneakManager sneakManager;
 
-    private int maxAbilities;
-    private float abilityCooldownMultiplier;
     private boolean toggleAbilityMode = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
 
-    public BotBowsPlayer(Player player, Settings settings) {
+    public BotBowsPlayer(Player player, Settings lobbySettings) {
         avatar = new PlayerAvatar(player, this);
         name = player.name();
-        lobby = settings.lobby;
-        maxHP = settings.getMaxHP();
-        hp = maxHP;
-        attackDamage = 1;
-        AbilitySettings abilitySettings = settings.getAbilitySettings();
-        maxAbilities = abilitySettings.getMaxAbilities();
-        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
+        settings = new PlayerSettings(lobbySettings);
+        lobby = lobbySettings.lobby;
+        hp = settings.getMaxHp();
     }
 
-    public BotBowsPlayer(Mannequin mannequin, Settings settings) {
+    public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
         avatar = new NpcAvatar(mannequin, this);
         name = mannequin.name();
-        lobby = settings.lobby;
-        maxHP = settings.getMaxHP();
-        hp = maxHP;
-        attackDamage = 1;
-        AbilitySettings abilitySettings = settings.getAbilitySettings();
-        maxAbilities = abilitySettings.getMaxAbilities();
-        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
+        settings = new PlayerSettings(lobbySettings);
+        lobby = lobbySettings.lobby;
+        hp = settings.getMaxHp();
         setReady(true, 4); // bots are always ready for match
     }
 
@@ -124,7 +112,7 @@ public class BotBowsPlayer {
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
-        setHP(maxHP);
+        setHP(settings.getMaxHp());
         avatar.revive();
         isDamaged = false;
     }
@@ -137,7 +125,7 @@ public class BotBowsPlayer {
 
     public void initBattle(TeamManager teamManager) {
         avatar.readyBattle(teamManager);
-        abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
+        abilities.values().forEach(ability -> ability.setCooldownMultiplier(settings.getAbilityCooldownMultiplier()));
     }
 
     public void readyAbilities() {
@@ -158,11 +146,9 @@ public class BotBowsPlayer {
         return thrownAbilityAmount;
     }
 
-    public int getMaxHP() {return maxHP;}
-
-    public void setMaxHP(int maxHP) {
-        this.maxHP = maxHP;
-        avatar.setMaxHP(maxHP);
+    public void setMaxHp(int maxHP) {
+        // TODO: FLYTT INN I LISTENERS!
+        avatar.setMaxHP(maxHP); // fjern og gjør heller at avatar er inni playersettings som playerhealthsettingslistener
         lobby.settings.healthMenu.updateHP();
     }
 
@@ -179,12 +165,8 @@ public class BotBowsPlayer {
     }
 
     public void setAttackDamage(int hearts) {
-        this.attackDamage = hearts;
+        // TODO: FLYTT INN I LISTENERS!
         lobby.settings.healthMenu.updateCustomDamage();
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
     }
 
     private AbilityMenu getAbilityMenu() {
@@ -200,7 +182,7 @@ public class BotBowsPlayer {
     }
 
     public void setMaxAbilities(int maxAbilities) {
-        this.maxAbilities = maxAbilities;
+        // TODO: FLYTT INN I LISTENERS!
         lobby.settings.abilityMenus.values().forEach(menu -> menu.updateMaxAbilities(this));
         if (getTotalAbilities() <= maxAbilities) return;
         int excess = getTotalAbilities() - maxAbilities;
@@ -213,17 +195,9 @@ public class BotBowsPlayer {
         }
     }
 
-    public int getMaxAbilities() {
-        return maxAbilities;
-    }
-
     public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        this.abilityCooldownMultiplier = cooldownMultiplier;
-        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateCooldownMultiplier(this));
-    }
-
-    public float getAbilityCooldownMultiplier() {
-        return abilityCooldownMultiplier;
+        // TODO: FLYTT INN I LISTENERS! (når man setter i PlayerSettings, så kalles listenerane, listener.doTheCodeThatsBelow()) (koden rett under skal inn der)
+        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateCooldownMultiplier(this)); // TODO denne koden altså
     }
 
     public void disableAbilityToggle() {
@@ -231,7 +205,7 @@ public class BotBowsPlayer {
         toggleAbilityMode = false;
     }
 
-    public void enableAbilityToggle() {
+    public void enableAbilityToggle() { // TODO: flytt inn i AbilityMenu, dette er kun en greie for å endre på menyvisninga når man skal velge om man skal toggle abilitier eller equippe, og er ikke en instilling
         getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_ENABLED);
         toggleAbilityMode = true;
     }
@@ -357,7 +331,7 @@ public class BotBowsPlayer {
         avatar.damage();
         Component damageMessage = ctx.formatMessage(this);
 
-        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().attackDamage;
+        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().settings.getAttackDamage();
 
         if (ctx instanceof DamageContext.Environment) {
             die(damageMessage);
@@ -369,7 +343,7 @@ public class BotBowsPlayer {
                 die(damageMessage);
                 return;
             }
-            setHP(hp - playerCtx.getAttacker().getAttackDamage());
+            setHP(hp - playerCtx.getAttacker().settings.getAttackDamage());
             lobby.messagePlayers(ctx.formatMessage(this));
             abilities.values().forEach(Ability::hit); // pauses the cooldowns etc
             isDamaged = true;
@@ -409,14 +383,10 @@ public class BotBowsPlayer {
         HEALTH_ARMOR.add(hp5);
     }
 
-    public boolean isReady() {
-        return ready;
-    }
-
     public void setReady(boolean ready, int itemIndex) {
-        if (this.ready == ready) return;
-        this.ready = ready;
-        avatar.setReady(ready, itemIndex);
+        if (settings.isReady() == ready) return; //TODO: skal inn i listneren og
+        settings.setReady(ready); // todo, flytt inn i playersettings det med itemindex. det må og med tror jeg
+        avatar.setReady(ready, itemIndex); // listener og ikke her. playersettings skal ha full ctrl
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> lobby.handlePlayerReady(this), 3L);
     }

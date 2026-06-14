@@ -82,12 +82,12 @@ class AbilitySettings {
         preset.maxAbilities?.let { maxAbilities = it }
 
         preset.individualMaxAbilities?.forEach { (uuid, max) ->
-            BotBows.getBotBowsPlayer(uuid)?.maxAbilities = max
+            BotBows.getBotBowsPlayer(uuid).settings?.maxAbilities = max
         }
         preset.cooldownMultiplier?.let { cooldownMultiplier = it }
 
         preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
-            BotBows.getBotBowsPlayer(uuid)?.abilityCooldownMultiplier = cooldown
+            BotBows.getBotBowsPlayer(uuid).settings?.abilityCooldownMultiplier = cooldown
         }
         preset.bannedAbilities?.let { it ->
             val changed = bannedAbilities xor it

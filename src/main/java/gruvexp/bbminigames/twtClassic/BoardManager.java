@@ -62,7 +62,7 @@ public class BoardManager {
         removePlayerScore(p);
 
         int hp = p.getHP();
-        int maxHp = p.getMaxHP();
+        int maxHp = p.settings.getMaxHp();
         int playerLineIndex; // which line of the scoreboard the player stats will be shown
         if (team1().hasPlayer(p)) { //
             playerLineIndex = team1().getPlayerID(p) + team2().size() + 1;
