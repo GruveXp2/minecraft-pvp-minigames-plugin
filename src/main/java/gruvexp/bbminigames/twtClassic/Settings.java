@@ -377,9 +377,9 @@ public class Settings {
             setModPlayer(players.iterator().next());
         }
 
-        bp.reset();
         bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
         lobby.messagePlayers(Component.text(bp.getPlainName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
+        bp.destroy();
     }
 
     public Set<BotBowsPlayer> getPlayers() {

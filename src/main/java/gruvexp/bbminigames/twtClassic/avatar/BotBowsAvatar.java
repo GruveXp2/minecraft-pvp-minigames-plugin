@@ -22,7 +22,7 @@ public interface BotBowsAvatar {
     void setHP(int hp);
     void setMaxHP(int maxHP);
     ArmorSet getArmor();
-    void remove(); // removes the player from the game
+    void destroy(); // removes the player from the game
     void reset(); // its like removing and recreating this avatar, but reusing the object
     void readyBattle(TeamManager teamManager);
     void setReady(boolean ready, int itemIndex);

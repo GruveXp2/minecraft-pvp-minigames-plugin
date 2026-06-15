@@ -98,7 +98,7 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void remove() {
+    public void destroy() {
         mannequin.remove();
     }
 
