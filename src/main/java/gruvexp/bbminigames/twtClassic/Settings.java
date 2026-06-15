@@ -353,6 +353,7 @@ public class Settings {
         abilityMenus.put(bp, abilityMenu);
         abilitySettings.addListener(bp, abilityMenu);
         players.forEach(abilityMenu::addPlayer);
+        players.forEach(lobbyPlayer -> lobbyPlayer.settings.addListener(bp, abilityMenu));
         bp.settings.setMaxHp(maxHP);
     }
 
@@ -371,6 +372,7 @@ public class Settings {
         abilityMenus.remove(bp);
         mapMenus.remove(bp);
         abilitySettings.removeListener(bp);
+        players.forEach(lobbyPlayer -> lobbyPlayer.settings.removeListener(bp));
         if (isPlayerMod(bp) && !players.isEmpty()) {
             setModPlayer(players.iterator().next());
         }

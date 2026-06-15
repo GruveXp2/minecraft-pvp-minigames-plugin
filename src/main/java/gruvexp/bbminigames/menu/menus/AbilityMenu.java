@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.AbilityUpdateListener;
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerAbilityUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
+public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener, PlayerAbilityUpdateListener {
 
     private static final ItemStack ABILITIES_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.RED),
             SettingsMenu.STATUS_DISABLED,
@@ -384,15 +385,14 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     @Override
     public void onMaxAbilitiesChange() {
         AbilitySettings abilitySettings = settings.getAbilitySettings();
-        if (abilitySettings.isIndividualMax()) {
-            settings.getPlayers().forEach(this::updateMaxAbilities);
-        } else {
-            maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities()); // oppdaterer slideren
-            settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
-        }
+        if (abilitySettings.isIndividualMax()) return;
+
+        maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
+        settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities()));
     }
 
-    public void updateMaxAbilities(BotBowsPlayer bp) {
+    @Override
+    public void onMaxAbilitiesChange(@NotNull BotBowsPlayer bp) {
         if (!settings.getAbilitySettings().isIndividualMax()) return;
         ItemStack headItem = maxAbilitiesRow.getItem(bp);
         headItem.setAmount(Math.max(bp.settings.getMaxAbilities(), 1)); // oppdaterer head count
@@ -403,23 +403,21 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener {
     public void onIndividualMaxToggle() {
         updateMaxAbilitiesUIState();
     }
+
     @Override
     public void onCooldownMultiplierChange() {
         AbilitySettings abilitySettings = settings.getAbilitySettings();
-        if (abilitySettings.isIndividualCooldown()) {
-            settings.getPlayers().forEach(this::updateCooldownMultiplier);
-        } else {
-            cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", abilitySettings.getCooldownMultiplier()));
-        }
+        if (abilitySettings.isIndividualCooldown()) return;
+
+        cooldownMultiplierSlider.setProgress(String.format(Locale.US, "%.2fx", abilitySettings.getCooldownMultiplier()));
     }
 
-    public void updateCooldownMultiplier(BotBowsPlayer bp) {
+    @Override
+    public void onCooldownMultiplierChange(@NotNull BotBowsPlayer bp) {
         if (!settings.getAbilitySettings().isIndividualCooldown()) return;
         ItemStack headItem = cooldownMultiplierRow.getItem(bp);
-        ItemMeta meta = headItem.getItemMeta();
-        meta.lore(List.of(Component.text("Cooldown multiplier: ")
-                .append(Component.text(String.format(Locale.US, "%.2fx", bp.settings.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE))));
-        headItem.setItemMeta(meta);
+        headItem.editMeta(meta -> meta.lore(List.of(Component.text("Cooldown multiplier: ")
+                .append(Component.text(String.format(Locale.US, "%.2fx", bp.settings.getAbilityCooldownMultiplier()), NamedTextColor.LIGHT_PURPLE)))));
         cooldownMultiplierRow.displayRow();
     }
 

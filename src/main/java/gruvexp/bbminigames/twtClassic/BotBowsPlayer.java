@@ -51,7 +51,7 @@ public class BotBowsPlayer {
     public BotBowsPlayer(Player player, Settings lobbySettings) {
         avatar = new PlayerAvatar(player, this);
         name = player.name();
-        settings = new PlayerSettings(lobbySettings);
+        settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHp();
     }
@@ -59,7 +59,7 @@ public class BotBowsPlayer {
     public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
         avatar = new NpcAvatar(mannequin, this);
         name = mannequin.name();
-        settings = new PlayerSettings(lobbySettings);
+        settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHp();
         setReady(true, 4); // bots are always ready for match
@@ -97,12 +97,12 @@ public class BotBowsPlayer {
 
     public void leaveGame() {
         team.leave(this);
-        avatar.remove();
+        avatar.destroy();
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
     }
 
     public void destroy() {
-        avatar.remove();
+        avatar.destroy();
         sneakManager.destroy();
         abilities.values().forEach(Ability::destroy);
     }
@@ -181,9 +181,8 @@ public class BotBowsPlayer {
         return abilities.get(type);
     }
 
-    public void setMaxAbilities(int maxAbilities) {
-        // TODO: FLYTT INN I LISTENERS!
-        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateMaxAbilities(this));
+    public void onMaxAbilitiesChange() {
+        int maxAbilities = settings.getMaxAbilities();
         if (getTotalAbilities() <= maxAbilities) return;
         int excess = getTotalAbilities() - maxAbilities;
         for (int i = 0; i < excess; i++) {
@@ -193,11 +192,6 @@ public class BotBowsPlayer {
                 break;
             }
         }
-    }
-
-    public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        // TODO: FLYTT INN I LISTENERS! (når man setter i PlayerSettings, så kalles listenerane, listener.doTheCodeThatsBelow()) (koden rett under skal inn der)
-        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateCooldownMultiplier(this)); // TODO denne koden altså
     }
 
     public void disableAbilityToggle() {
