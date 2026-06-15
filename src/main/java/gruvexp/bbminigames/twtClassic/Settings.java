@@ -353,7 +353,7 @@ public class Settings {
         abilityMenus.put(bp, abilityMenu);
         abilitySettings.addListener(bp, abilityMenu);
         players.forEach(abilityMenu::addPlayer);
-        players.forEach(lobbyPlayer -> lobbyPlayer.settings.addListener(bp, abilityMenu));
+        players.forEach(lobbyPlayer -> lobbyPlayer.settings.addListener(bp, healthMenu, abilityMenu));
         bp.settings.setMaxHp(maxHP);
     }
 

@@ -146,12 +146,6 @@ public class BotBowsPlayer {
         return thrownAbilityAmount;
     }
 
-    public void setMaxHp(int maxHP) {
-        // TODO: FLYTT INN I LISTENERS!
-        avatar.setMaxHP(maxHP); // fjern og gjør heller at avatar er inni playersettings som playerhealthsettingslistener
-        lobby.settings.healthMenu.updateHP();
-    }
-
     public int getHP() {return hp;}
 
     private void setHP(int hp) { // heile hjerter
@@ -162,11 +156,6 @@ public class BotBowsPlayer {
 
     public boolean isAlive() {
         return hp > 0;
-    }
-
-    public void setAttackDamage(int hearts) {
-        // TODO: FLYTT INN I LISTENERS!
-        lobby.settings.healthMenu.updateCustomDamage();
     }
 
     private AbilityMenu getAbilityMenu() {
