@@ -5,6 +5,7 @@ import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerHealthUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -14,12 +15,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class HealthMenu extends SettingsMenu {
+public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListener {
 
     private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
             SettingsMenu.STATUS_DISABLED,
@@ -89,7 +91,7 @@ public class HealthMenu extends SettingsMenu {
                 }
             }
             case PLAYER_HEAD -> {
-                ItemStack head = e.getCurrentItem();
+                ItemStack head = e.getCurrentItem(); // TODO: this code sux, make it use listeners instead (only set the value and it will update by itself)
                 NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
                 UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
                 BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
@@ -196,5 +198,19 @@ public class HealthMenu extends SettingsMenu {
                 inventory.setItem(11 + i, DISABLED_SLOT);
             }
         }
+    }
+
+    @Override
+    public void onMaxHpChange(@NotNull BotBowsPlayer bp) {
+        if (!settings.isCustomHPEnabled()) return;
+
+        updateCustomSetting(0, true);
+    }
+
+    @Override
+    public void onAttackDamageChange(@NotNull BotBowsPlayer bp) {
+        if (!settings.isCustomDamageEnabled()) return;
+
+        updateCustomSetting(9, false);
     }
 }
