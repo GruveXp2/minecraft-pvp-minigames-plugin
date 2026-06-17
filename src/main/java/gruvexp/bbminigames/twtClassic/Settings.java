@@ -14,6 +14,7 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
+import gruvexp.bbminigames.twtClassic.settings.HealthSettings;
 import gruvexp.bbminigames.twtClassic.settings.MapSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -35,8 +36,9 @@ public class Settings {
     public BotBowsTeam team1 = new TeamBlaud(); // dersom man endrer team, vil team1 og team2 feks byttes ut med TeamGraut og TeamWacky objekter, ettersom det er forskjell på dem
     public BotBowsTeam team2 = new TeamSauce();
     private final Set<BotBowsPlayer> players = new HashSet<>(); // liste med alle players som er i gamet
-    private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
     // health
+    private HealthSettings healthSettings;
+    private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
     private boolean customHP;
     private boolean customDamage;
     // win condition
@@ -80,6 +82,7 @@ public class Settings {
         healthMenu = new HealthMenu(this);
         setCustomHPEnabled(false);
         setCustomDamageEnabled(false);
+        healthSettings = new HealthSettings(healthMenu);
 
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
@@ -99,6 +102,10 @@ public class Settings {
         });
 
         mapSettings.setCurrentMap(BotBowsMap.RANDOM);
+    }
+
+    public HealthSettings getHealthSettings() {
+        return healthSettings;
     }
 
     public HazardSettings getHazardSettings() {
