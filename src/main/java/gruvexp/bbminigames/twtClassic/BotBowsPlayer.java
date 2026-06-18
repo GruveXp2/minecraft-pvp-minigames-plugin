@@ -53,7 +53,7 @@ public class BotBowsPlayer {
         name = player.name();
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
-        hp = settings.getMaxHp();
+        hp = settings.getMaxHealth();
     }
 
     public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
@@ -61,7 +61,7 @@ public class BotBowsPlayer {
         name = mannequin.name();
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
-        hp = settings.getMaxHp();
+        hp = settings.getMaxHealth();
         setReady(true, 4); // bots are always ready for match
     }
 
@@ -112,7 +112,7 @@ public class BotBowsPlayer {
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
-        setHP(settings.getMaxHp());
+        setHP(settings.getMaxHealth());
         avatar.revive();
         isDamaged = false;
     }

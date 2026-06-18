@@ -268,7 +268,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.settings.getMaxHp();
+        int maxHP = bp.settings.getMaxHealth();
         if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
             player.getInventory().setArmorContents(new ItemStack[] {
                     getArmorPiece(Material.LEATHER_BOOTS),

@@ -5,7 +5,7 @@ import gruvexp.bbminigames.twtClassic.Settings
 
 class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
 
-    var maxHp: Int = settings.maxHP
+    var maxHealth: Int = settings.healthSettings.maxHealth
         set(value) {
             field = value
             notifyMaxHealthChange()
@@ -45,7 +45,7 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
     }
 
     fun notifyMaxHealthChange() {
-        healthListeners.values.forEach { it.onMaxHpChange(bp) }
+        healthListeners.values.forEach { it.onMaxHealthChange(bp) }
     }
 
     fun notifyAttackDamageChange() {

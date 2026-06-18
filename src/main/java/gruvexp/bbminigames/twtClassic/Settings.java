@@ -16,6 +16,7 @@ import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
 import gruvexp.bbminigames.twtClassic.settings.HealthSettings;
 import gruvexp.bbminigames.twtClassic.settings.MapSettings;
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -38,9 +39,6 @@ public class Settings {
     private final Set<BotBowsPlayer> players = new HashSet<>(); // liste med alle players som er i gamet
     // health
     private HealthSettings healthSettings;
-    private int maxHP = 3; // hvor mye hp man har hvis custom hp er disabla
-    private boolean customHP;
-    private boolean customDamage;
     // win condition
     private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
     private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
@@ -80,9 +78,7 @@ public class Settings {
         });
 
         healthMenu = new HealthMenu(this);
-        setCustomHPEnabled(false);
-        setCustomDamageEnabled(false);
-        healthSettings = new HealthSettings(healthMenu);
+        healthSettings = new HealthSettings(healthMenu, this::getPlayerSettings);
 
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
@@ -120,11 +116,15 @@ public class Settings {
         return mapSettings;
     }
 
+    public Set<PlayerSettings> getPlayerSettings() {
+        return players.stream().map(bp -> bp.settings).collect(Collectors.toSet());
+    }
+
     public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
         HealthPreset healthPreset = new HealthPreset(
-                isCustomHPEnabled() ? null : maxHP,
-                isCustomHPEnabled() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxHp())) : null,
-                isCustomDamageEnabled() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
+                healthSettings.isIndividualMaxHealth() ? null : healthSettings.getMaxHealth(),
+                healthSettings.isIndividualMaxHealth() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxHealth())) : null,
+                healthSettings.isCustomDamage() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
         );
         WinConditionPreset winConditionPreset = new WinConditionPreset(
                 winScoreThreshold, roundDuration, dynamicScoring
@@ -168,22 +168,22 @@ public class Settings {
         HealthPreset healthPreset = preset.health();
         Integer maxHp = healthPreset.maxHp();
         if (maxHp != null) {
-            setMaxHP(maxHp);
+            healthSettings.setMaxHealth(maxHp);
         }
         var individualMaxHp = healthPreset.individualMaxHp();
         boolean isIndividualMaxHp = individualMaxHp != null;
-        setCustomHPEnabled(isIndividualMaxHp);
+        healthSettings.setIndividualMaxHealth(isIndividualMaxHp);
         if (isIndividualMaxHp) {
             individualMaxHp.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
                 if (bp != null) {
-                    bp.settings.setMaxHp(value);
+                    bp.settings.setMaxHealth(value);
                 }
             });
         }
         var individualDamage = healthPreset.customDamage();
         boolean isIndividualDamage = individualDamage != null;
-        setCustomDamageEnabled(isIndividualDamage);
+        healthSettings.setCustomDamage(isIndividualDamage);
         if (isIndividualDamage) {
             individualDamage.forEach((key, value) -> {
                 BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
@@ -208,6 +208,12 @@ public class Settings {
     private void onMapChange(BotBowsMap map) {
         setNewTeams(false);
         hazardSettings.syncWithMap(map);
+    }
+
+    private void onMaxHealthChange() {
+        if (healthSettings.isIndividualMaxHealth()) return;
+
+        players.forEach(bp -> bp.settings.setMaxHealth(healthSettings.getMaxHealth()));
     }
 
     private void setNewTeams(boolean flipped) {
@@ -361,7 +367,7 @@ public class Settings {
         abilitySettings.addListener(bp, abilityMenu);
         players.forEach(abilityMenu::addPlayer);
         players.forEach(lobbyPlayer -> lobbyPlayer.settings.addListener(bp, healthMenu, abilityMenu));
-        bp.settings.setMaxHp(maxHP);
+        bp.settings.setMaxHealth(healthSettings.getMaxHealth());
     }
 
     public void leaveGame(BotBowsPlayer bp) {
@@ -417,46 +423,12 @@ public class Settings {
         return bp == modPlayer;
     }
 
-    public boolean isCustomHPEnabled() {
-        return customHP;
-    }
-
-    public void setCustomHPEnabled(boolean enabled) {
-        this.customHP = enabled;
-        if (!enabled) setMaxHP(3);
-        healthMenu.onCustomHPToggle();
-    }
-
-    public boolean isCustomDamageEnabled() {
-        return customDamage;
-    }
-
-    public void setCustomDamageEnabled(boolean enabled) {
-        this.customDamage = enabled;
-        if (!enabled) resetAttackDamage();
-        healthMenu.onCustomDamageToggle();
-    }
-
     public void setDynamicScoring(boolean enabled) {
         this.dynamicScoring = enabled;
     }
 
     public boolean isDynamicScoringEnabled() {
         return dynamicScoring;
-    }
-
-    public void setMaxHP(int maxHP) {
-        this.maxHP = maxHP;
-        players.forEach(bp -> bp.settings.setMaxHp(maxHP));
-        healthMenu.updateMenu();
-    }
-
-    public int getMaxHP() {
-        return maxHP;
-    }
-
-    public void resetAttackDamage() {
-        players.forEach(bp -> bp.settings.setAttackDamage(1));
     }
 
     public int getWinScoreThreshold() {

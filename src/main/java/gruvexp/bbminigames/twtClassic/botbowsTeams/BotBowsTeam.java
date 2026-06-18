@@ -118,7 +118,7 @@ public class BotBowsTeam {
         int totalHealth = 0;
         int currentHealth = 0;
         for (BotBowsPlayer bp : players) {
-            totalHealth += bp.settings.getMaxHp();
+            totalHealth += bp.settings.getMaxHealth();
             currentHealth += bp.getHP();
         }
         double healthLevel = (float) currentHealth / totalHealth;

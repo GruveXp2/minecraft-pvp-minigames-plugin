@@ -5,6 +5,7 @@ import gruvexp.bbminigames.menu.MenuSlider;
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.settings.HealthUpdateListener;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerHealthUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListener {
+public class HealthMenu extends SettingsMenu implements HealthUpdateListener, PlayerHealthUpdateListener {
 
     private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
             SettingsMenu.STATUS_DISABLED,
@@ -73,21 +74,21 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
                 Component c = e.getCurrentItem().getItemMeta().displayName();
                 assert c != null;
                 String s = PlainTextComponentSerializer.plainText().serialize(c);
-                settings.setMaxHP(Integer.parseInt(s));
+                settings.getHealthSettings().setMaxHealth(Integer.parseInt(s));
                 updateMenu();
             }
             case RED_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) {
-                    settings.setCustomHPEnabled(true);
+                    settings.getHealthSettings().setIndividualMaxHealth(true);
                 } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_DISABLED)) {
-                    settings.setCustomDamageEnabled(true);
+                    settings.getHealthSettings().setCustomDamage(true);
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
                 if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) {
-                    settings.setCustomHPEnabled(false);
+                    settings.getHealthSettings().setIndividualMaxHealth(false);
                 } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_ENABLED)) {
-                    settings.setCustomDamageEnabled(false);
+                    settings.getHealthSettings().setCustomDamage(false);
                 }
             }
             case PLAYER_HEAD -> {
@@ -106,7 +107,7 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
                     } else {
                         maxHP += 1;
                     }
-                    bp.settings.setMaxHp(maxHP);
+                    bp.settings.setMaxHealth(maxHP);
                     head.setAmount(maxHP);
                 } else {
                     int attackDamage = head.getAmount();
@@ -134,7 +135,7 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
 
     public void updateMenu() {
         updateHP();
-        if (settings.isCustomDamageEnabled()) {
+        if (settings.getHealthSettings().isCustomDamage()) {
             updateCustomDamage();
         }
     }
@@ -150,22 +151,22 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
         for (int i = 0; i < settings.team1.size(); i++) {
             BotBowsPlayer bp = settings.team1.getPlayer(i);
             ItemStack item = bp.avatar.getHeadItem();
-            item.setAmount(isHealth ? bp.settings.getMaxHp() : bp.settings.getAttackDamage());
+            item.setAmount(isHealth ? bp.settings.getMaxHealth() : bp.settings.getAttackDamage());
             inventory.setItem(i + start + slotOffset, item);
         }
         for (int i = 0; i < settings.team2.size(); i++) {
             BotBowsPlayer bp = settings.team2.getPlayer(i);
             ItemStack item = bp.avatar.getHeadItem();
-            item.setAmount(isHealth ? bp.settings.getMaxHp() : bp.settings.getAttackDamage());
+            item.setAmount(isHealth ? bp.settings.getMaxHealth() : bp.settings.getAttackDamage());
             inventory.setItem(8 - i + slotOffset, item);
         }
     }
 
     public void updateHP() {
-        if (settings.isCustomHPEnabled()) {
+        if (settings.getHealthSettings().isIndividualMaxHealth()) {
             updateCustomSetting(0, true);
         } else {
-            healthSlider.setProgressSlots(settings.getMaxHP());
+            onMaxHealthChange();
         }
     }
 
@@ -173,8 +174,9 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
         updateCustomSetting(9, false);
     }
 
-    public void onCustomHPToggle() {
-        if (settings.isCustomHPEnabled()) {
+    @Override
+    public void onIndividualMaxHealthToggle() {
+        if (settings.getHealthSettings().isIndividualMaxHealth()) {
             inventory.setItem(0, CUSTOM_HP_ENABLED);
             inventory.setItem(1, VOID);
         } else {
@@ -187,7 +189,7 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
     }
 
     public void onCustomDamageToggle() {
-        if (settings.isCustomDamageEnabled()) {
+        if (settings.getHealthSettings().isCustomDamage()) {
             inventory.setItem(9, CUSTOM_DAMAGE_ENABLED);
             inventory.setItem(10, VOID);
             updateCustomDamage();
@@ -201,16 +203,21 @@ public class HealthMenu extends SettingsMenu implements PlayerHealthUpdateListen
     }
 
     @Override
-    public void onMaxHpChange(@NotNull BotBowsPlayer bp) {
-        if (!settings.isCustomHPEnabled()) return;
+    public void onMaxHealthChange(@NotNull BotBowsPlayer bp) {
+        if (!settings.getHealthSettings().isIndividualMaxHealth()) return;
 
         updateCustomSetting(0, true);
     }
 
     @Override
     public void onAttackDamageChange(@NotNull BotBowsPlayer bp) {
-        if (!settings.isCustomDamageEnabled()) return;
+        if (!settings.getHealthSettings().isCustomDamage()) return;
 
         updateCustomSetting(9, false);
+    }
+
+    @Override
+    public void onMaxHealthChange() {
+        healthSlider.setProgressSlots(settings.getHealthSettings().getMaxHealth());
     }
 }
