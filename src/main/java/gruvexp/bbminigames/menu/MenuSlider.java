@@ -13,6 +13,7 @@ import java.util.List;
 public class MenuSlider {
 
     protected final Inventory inventory;
+    protected final String menuActionId;
     protected int startSlot;
     protected final Material filledTrackMaterial;
     protected final NamedTextColor filledTrackColor;
@@ -22,7 +23,12 @@ public class MenuSlider {
     protected final String description;
 
     public MenuSlider(Inventory inventory, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps, String description) {
+        this(inventory, null, startSlot, filledTrackMaterial, filledTrackColor, sliderSteps, description);
+    }
+
+    public MenuSlider(Inventory inventory, String menuActionId, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps, String description) {
         this.inventory = inventory;
+        this.menuActionId = menuActionId;
         this.startSlot = startSlot;
         this.filledTrackMaterial = filledTrackMaterial;
         this.filledTrackColor = filledTrackColor;
@@ -33,9 +39,9 @@ public class MenuSlider {
     public void setProgressSlots(int slots) {
         slots = Math.min(slots, sliderSteps.size()); // Begrenser slots til sliderens størrelse
         for (int i = 0; i < sliderSteps.size(); i++) {
-            ItemStack is = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), Component.text(description))
-                    : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR), Component.text(description));
-            inventory.setItem(i + startSlot, is);
+            ItemStack item = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), menuActionId, Component.text(description))
+                    : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR), menuActionId, Component.text(description));
+            inventory.setItem(i + startSlot, item);
         }
     }
 

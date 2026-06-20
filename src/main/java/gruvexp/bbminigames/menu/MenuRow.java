@@ -22,6 +22,7 @@ public class MenuRow {
     private static final ItemStack ROW_NEXT = Menu.makeItem("next", Component.text("Next"), KEY_ROW_ACTION, RowAction.NEXT.name());
 
     protected final Inventory inventory;
+    protected final String menuActionId;
     public final int startSlot; // slotten i inventoriet som man begynner på
     protected final List<ItemStack> itemList = new ArrayList<>();
     public final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
@@ -30,10 +31,15 @@ public class MenuRow {
     protected int firstVisibleItem = 0;
 
 
-    public MenuRow(Inventory inventory, int startSlot, int size) {
+    public MenuRow(Inventory inventory, String menuActionId, int startSlot, int size) {
         this.inventory = inventory;
+        this.menuActionId = menuActionId;
         this.startSlot = startSlot;
         this.size = size;
+    }
+
+    public MenuRow(Inventory inventory, int startSlot, int size) {
+        this(inventory, null, startSlot, size);
     }
 
     public int getStartSlot() {
@@ -135,6 +141,7 @@ public class MenuRow {
     }
 
     public void addItem(ItemStack item) {
+        if (menuActionId != null) item.editMeta(meta -> meta.getPersistentDataContainer().set(Menu.ACTION_KEY, PersistentDataType.STRING, menuActionId));
         itemList.add(item);
         if (isVisible && currentPage == getTotalPages()) {
             displayRow();

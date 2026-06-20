@@ -15,6 +15,10 @@ public class PlayerMenuRow extends MenuRow{
         super(inventory, startSlot, size);
     }
 
+    public PlayerMenuRow(Inventory inventory, String menuActionId, int startSlot, int size) {
+        super(inventory, menuActionId, startSlot, size);
+    }
+
     @Override
     public void addItem(ItemStack item) {
         if (item.getType() != Material.PLAYER_HEAD) throw new IllegalArgumentException("The item must be a player head");
