@@ -224,24 +224,24 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
             Component.text("The map with most votes will be used in the match")
         )
     }
-}
 
-private enum class UiMode(menuTitle: TextComponent) {
-    MAIN(Component.text("Arena map (1/6)")),
-    VOTE(Component.text("Vote for map")),
-    SET(Component.text("Set map"));
+    private enum class UiMode(menuTitle: TextComponent) {
+        MAIN(Component.text("Arena map (1/6)")),
+        VOTE(Component.text("Vote for map")),
+        SET(Component.text("Set map"));
 
-    val menuTitle: TextComponent
+        val menuTitle: TextComponent
 
-    init {
-        this.menuTitle = menuTitle
+        init {
+            this.menuTitle = menuTitle
+        }
     }
-}
 
-private enum class MenuAction {
-    VOTE,
-    SET,
-    TOGGLE_VOTE,
-    CYCLE_MAP_CATEGORY,
-    BACK
+    private enum class MenuAction {
+        VOTE,
+        SET,
+        TOGGLE_VOTE,
+        CYCLE_MAP_CATEGORY,
+        BACK
+    }
 }
