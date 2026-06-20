@@ -127,10 +127,7 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener, 
                 if (!settings.checkMod(bp)) return;
 
                 switch (e.getSlot()) {
-                    case 0 -> {
-                        abilitySettings.setIndividualMax(false);
-                        abilitySettings.setMaxAbilities(2);
-                    }
+                    case 0 -> abilitySettings.setIndividualMax(false);
                     case 8 -> abilitySettings.setMaxAbilities(0);
                     case 18 -> abilitySettings.setIndividualCooldown(false);
                     case 53 -> abilitySettings.setUniqueMode(false);
@@ -359,7 +356,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener, 
             inventory.setItem(0, INDIVIDUAL_MAX_ABILITIES_DISABLED);
             maxAbilitiesRow.hide();
             maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
-            settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities())); // temporary until individual ability settings get moved into AbilitySettings
             inventory.setItem(5, VOID);
             inventory.setItem(6, VOID);
         }
@@ -372,7 +368,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener, 
             cooldownMultiplierRow.show();
         } else {
             inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED);
-            abilitySettings.setCooldownMultiplier(1.0f);
             cooldownMultiplierRow.hide();
         }
     }
@@ -388,7 +383,6 @@ public class AbilityMenu extends SettingsMenu implements AbilityUpdateListener, 
         if (abilitySettings.isIndividualMax()) return;
 
         maxAbilitiesSlider.setProgressSlots(abilitySettings.getMaxAbilities());
-        settings.getPlayers().forEach(bp -> bp.settings.setMaxAbilities(abilitySettings.getMaxAbilities()));
     }
 
     @Override

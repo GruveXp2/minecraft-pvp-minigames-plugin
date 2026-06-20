@@ -5,30 +5,35 @@ import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.botbowsTeams.TeamSide
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 
-class AbilitySettings {
+class AbilitySettings(private val getPlayerSettings: () -> Set<PlayerSettings>) {
     var maxAbilities = 0
         set(value) {
             val toggle: Boolean = field == 0 || value == 0
             field = value
             if (toggle) notifyAbilitiesToggle() else notifyMaxAbilities()
+            if (!isIndividualMax) getPlayerSettings().forEach { it.maxAbilities = value }
         }
 
     var isIndividualMax = false
         set(value) {
             field = value
+            if (!value) getPlayerSettings().forEach { it.maxAbilities = maxAbilities }
             notifyIndividualMaxToggle()
         }
 
     var cooldownMultiplier = 1.0f
         set(value) {
             field = value
+            if (!isIndividualCooldown) getPlayerSettings().forEach { it.abilityCooldownMultiplier = value }
             notifyCooldown()
         }
 
     var isIndividualCooldown = false
         set(value) {
             field = value
+            if (!value) getPlayerSettings().forEach { it.abilityCooldownMultiplier = cooldownMultiplier }
             notifyIndividualCooldownToggle()
         }
 
