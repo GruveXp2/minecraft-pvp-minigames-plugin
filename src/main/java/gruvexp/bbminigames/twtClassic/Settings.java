@@ -91,7 +91,7 @@ public class Settings {
         hazardMenu = new HazardMenu(this);
         hazardSettings = new HazardSettings(hazardMenu);
 
-        abilitySettings = new AbilitySettings();
+        abilitySettings = new AbilitySettings(this::getPlayerSettings);
         players.forEach(bp -> {
             abilityMenus.put(bp, new AbilityMenu(this, bp));
             abilitySettings.addListener(bp, abilityMenus.get(bp));
