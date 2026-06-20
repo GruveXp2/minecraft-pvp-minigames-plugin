@@ -251,7 +251,7 @@ public class Settings {
         team2.postTeamSwap();
         teamsMenu.registerTeams();
         teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
-        healthMenu.updateMenu(); // update so the name colors match the new team color
+        healthMenu.updateColors(); // update so the name colors match the new team color
     }
 
     private void updateLeadingMap(boolean triggeredByNewVote) {
@@ -357,6 +357,8 @@ public class Settings {
         }
         teamsMenu.recalculateTeam();
 
+        healthMenu.addPlayer(bp);
+
         MapMenu mapMenu = new MapMenu(this, bp);
         mapMenus.put(bp, mapMenu);
         mapSettings.addListener(bp, mapMenu);
@@ -380,7 +382,7 @@ public class Settings {
         mapSettings.removeListener(bp);
         mapSettings.getMapVotingSession().removeVote(bp);
         teamsMenu.recalculateTeam();
-        healthMenu.updateMenu();
+        healthMenu.removePlayer(bp);
         abilityMenus.values().forEach(menu -> menu.removePlayer(bp));
         abilityMenus.remove(bp);
         mapMenus.remove(bp);

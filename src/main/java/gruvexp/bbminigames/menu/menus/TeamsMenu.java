@@ -61,7 +61,7 @@ public class TeamsMenu extends SettingsMenu {
                 BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
                 headBp.getTeam().getOppositeTeam().join(headBp);
                 recalculateTeam();
-                settings.healthMenu.updateMenu(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
+                settings.healthMenu.updateColors(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
             }
             case FIREWORK_STAR -> {
                 if (e.getSlot() == 22) {

@@ -1,223 +1,224 @@
-package gruvexp.bbminigames.menu.menus;
+package gruvexp.bbminigames.menu.menus
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.menu.MenuSlider;
-import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.settings.HealthUpdateListener;
-import gruvexp.bbminigames.twtClassic.settings.player.PlayerHealthUpdateListener;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.menu.MenuSlider
+import gruvexp.bbminigames.menu.PlayerMenuRow
+import gruvexp.bbminigames.menu.SettingsMenu
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.settings.HealthUpdateListener
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerHealthUpdateListener
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import java.util.*
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateListener, PlayerHealthUpdateListener {
+    private val healthSlider: MenuSlider
+    private val healthRow: PlayerMenuRow
+    private val damageRow: PlayerMenuRow
 
-public class HealthMenu extends SettingsMenu implements HealthUpdateListener, PlayerHealthUpdateListener {
-
-    private static final ItemStack CUSTOM_HP_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
-            SettingsMenu.STATUS_DISABLED,
-            Component.text("By enabling this, each player"),
-            Component.text("can have a different amount of hp"));
-
-    private static final ItemStack CUSTOM_HP_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.GREEN),
-            SettingsMenu.STATUS_ENABLED,
-            Component.text("By enabling this, each player"),
-            Component.text("can have a different amount of hp"));
-
-    private static final ItemStack CUSTOM_DAMAGE_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.RED),
-            SettingsMenu.STATUS_DISABLED,
-            Component.text("By enabling this, each player"),
-            Component.text("ca do different amounts of damage"));
-
-    private static final ItemStack CUSTOM_DAMAGE_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.GREEN),
-            SettingsMenu.STATUS_ENABLED,
-            Component.text("By enabling this, each player"),
-            Component.text("can do different amounts of damage"));
-
-    private final MenuSlider healthSlider;
-
-    public HealthMenu(Settings settings) {
-        super(settings);
-        setPageButtons(2, true, true);
-        healthSlider = new MenuSlider(inventory, 2, Material.PINK_STAINED_GLASS_PANE, NamedTextColor.RED, List.of("1", "2", "3", "4", "5"), "Health");
+    init {
+        setPageButtons(2, true, true)
+        healthSlider = MenuSlider(
+            inventory,
+            MenuAction.SET_HEALTH.name,
+            2,
+            Material.PINK_STAINED_GLASS_PANE,
+            NamedTextColor.RED,
+            mutableListOf<String?>("1", "2", "3", "4", "5"),
+            "Health"
+        )
+        healthRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_HEALTH.name, 2, 5)
+        damageRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_DAMAGE.name, 11, 5)
     }
 
-    @Override
-    public Component getMenuName() {
-        return Component.text("Health & Damage (3/6)");
+    override fun getMenuName(): Component {
+        return Component.text("Health & Damage (3/6)")
     }
 
-    @Override
-    public int getSlots() {
-        return 27;
+    override fun getSlots(): Int {
+        return 27
     }
 
-    @Override
-    public void handleMenu(InventoryClickEvent e) {
-        Player clicker = (Player) e.getWhoClicked();
-        if (e.getClickedInventory() != inventory) return;
-        if (handlePageClick(e)) return;
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+    override fun handleMenu(e: InventoryClickEvent) {
+        if (e.clickedInventory !== inventory) return
+        val clickedItem = e.getCurrentItem() ?: return
+        if (handlePageClick(e)) return
+        val clicker = e.whoClicked as Player
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
 
-        switch (e.getCurrentItem().getType()) {
-            case WHITE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE -> {
-                Component c = e.getCurrentItem().getItemMeta().displayName();
-                assert c != null;
-                String s = PlainTextComponentSerializer.plainText().serialize(c);
-                settings.getHealthSettings().setMaxHealth(Integer.parseInt(s));
-                updateMenu();
+        val actionId =
+            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
+
+        val action = MenuAction.valueOf(actionId)
+        val healthSettings = settings.healthSettings
+        when (action) {
+            MenuAction.TOGGLE_INDIVIDUAL_HEALTH -> healthSettings.isIndividualMaxHealth = !healthSettings.isIndividualMaxHealth
+            MenuAction.SET_HEALTH -> {
+                val component = clickedItem.itemMeta.displayName() ?: return
+                val string = PlainTextComponentSerializer.plainText().serialize(component)
+                healthSettings.maxHealth = string.toInt()
             }
-            case RED_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(CUSTOM_HP_DISABLED)) {
-                    settings.getHealthSettings().setIndividualMaxHealth(true);
-                } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_DISABLED)) {
-                    settings.getHealthSettings().setCustomDamage(true);
-                }
-            }
-            case LIME_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(CUSTOM_HP_ENABLED)) {
-                    settings.getHealthSettings().setIndividualMaxHealth(false);
-                } else if (e.getCurrentItem().equals(CUSTOM_DAMAGE_ENABLED)) {
-                    settings.getHealthSettings().setCustomDamage(false);
-                }
-            }
-            case PLAYER_HEAD -> {
-                ItemStack head = e.getCurrentItem(); // TODO: this code sux, make it use listeners instead (only set the value and it will update by itself)
-                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
-                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
-                BotBowsPlayer bp = settings.lobby.getBotBowsPlayer(playerId);
-                int slot = e.getSlot();
-                if (slot < 9) {
-                    int maxHP = head.getAmount();
-                    if (maxHP > 9) {
-                        maxHP += 5;
-                        if (maxHP > 20) {
-                            maxHP = 1;
-                        }
-                    } else {
-                        maxHP += 1;
-                    }
-                    bp.settings.setMaxHealth(maxHP);
-                    head.setAmount(maxHP);
+            MenuAction.SET_INDIVIDUAL_HEALTH -> {
+                val bp = getPlayerFromHead(clickedItem) ?: return
+
+                var maxHealth = clickedItem.amount
+                if (maxHealth > 9) {
+                    maxHealth += 5
+                    if (maxHealth > 20) maxHealth = 1
                 } else {
-                    int attackDamage = head.getAmount();
-                    attackDamage += 1;
-                    if (attackDamage > 5) {
-                        attackDamage = 1;
-                    }
-                    bp.settings.setAttackDamage(attackDamage);
-                    head.setAmount(attackDamage);
+                    maxHealth += 1
                 }
-                inventory.setItem(slot, head);
+                bp.settings.maxHealth = maxHealth
+            }
+            MenuAction.TOGGLE_CUSTOM_DAMAGE -> healthSettings.isCustomDamage = !healthSettings.isCustomDamage
+            MenuAction.SET_INDIVIDUAL_DAMAGE -> {
+                val bp = getPlayerFromHead(clickedItem) ?: return
+
+                var attackDamage = clickedItem.amount
+                attackDamage += 1
+                if (attackDamage > 5) attackDamage = 1
+
+                bp.settings.attackDamage = attackDamage
             }
         }
     }
 
-    @Override
-    public void prevPage(Player p) {
-        settings.teamsMenu.open(p);
+    fun getPlayerFromHead(item: ItemStack) : BotBowsPlayer? {
+        val key = NamespacedKey(Main.getPlugin(), "uuid")
+        val playerIdStr = item.itemMeta.persistentDataContainer.get<String, String>(key, PersistentDataType.STRING) ?: return null
+        val playerId = UUID.fromString(playerIdStr)
+        val bp = settings.lobby.getBotBowsPlayer(playerId)
+        return bp
     }
 
-    @Override
-    public void nextPage(Player p) {
-        settings.winConditionMenu.open(p);
+    public override fun prevPage(p: Player) {
+        settings.teamsMenu.open(p)
     }
 
-    public void updateMenu() {
-        updateHP();
-        if (settings.getHealthSettings().isCustomDamage()) {
-            updateCustomDamage();
-        }
+    public override fun nextPage(p: Player) {
+        settings.winConditionMenu.open(p)
     }
 
-    private void updateCustomSetting(int slotOffset, boolean isHealth) {
-        for (int i = 2; i < 9; i++) {
-            inventory.setItem(i + slotOffset, null);
-        }
-        int start = 2;
-        if (settings.lobby.getTotalPlayers() == 8) {
-            start = 1;
-        }
-        for (int i = 0; i < settings.team1.size(); i++) {
-            BotBowsPlayer bp = settings.team1.getPlayer(i);
-            ItemStack item = bp.avatar.getHeadItem();
-            item.setAmount(isHealth ? bp.settings.getMaxHealth() : bp.settings.getAttackDamage());
-            inventory.setItem(i + start + slotOffset, item);
-        }
-        for (int i = 0; i < settings.team2.size(); i++) {
-            BotBowsPlayer bp = settings.team2.getPlayer(i);
-            ItemStack item = bp.avatar.getHeadItem();
-            item.setAmount(isHealth ? bp.settings.getMaxHealth() : bp.settings.getAttackDamage());
-            inventory.setItem(8 - i + slotOffset, item);
+    fun updateColors() {
+        for (bp in settings.players) {
+            healthRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
+            damageRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
         }
     }
 
-    public void updateHP() {
-        if (settings.getHealthSettings().isIndividualMaxHealth()) {
-            updateCustomSetting(0, true);
+    override fun onIndividualMaxHealthToggle() {
+        if (settings.healthSettings.isIndividualMaxHealth) {
+            inventory.setItem(0, CUSTOM_HEALTH_ENABLED)
+            inventory.setItem(1, VOID)
+            healthRow.show()
         } else {
-            onMaxHealthChange();
+            inventory.setItem(0, CUSTOM_HEALTH_DISABLED)
+            inventory.setItem(1, VOID)
+            inventory.setItem(7, VOID)
+            inventory.setItem(8, VOID)
+            healthRow.hide()
+            healthSlider.setProgressSlots(settings.healthSettings.maxHealth)
         }
     }
 
-    public void updateCustomDamage() {
-        updateCustomSetting(9, false);
+    override fun onMaxHealthChange() {
+        healthSlider.setProgressSlots(settings.healthSettings.maxHealth)
     }
 
-    @Override
-    public void onIndividualMaxHealthToggle() {
-        if (settings.getHealthSettings().isIndividualMaxHealth()) {
-            inventory.setItem(0, CUSTOM_HP_ENABLED);
-            inventory.setItem(1, VOID);
-        } else {
-            inventory.setItem(0, CUSTOM_HP_DISABLED);
-            inventory.setItem(1, VOID);
-            inventory.setItem(7, VOID);
-            inventory.setItem(8, VOID);
-        }
-        updateHP();
+    override fun onMaxHealthChange(bp: BotBowsPlayer) {
+        if (!settings.healthSettings.isIndividualMaxHealth) return
+
+        val headItem = healthRow.getItem(bp)
+        headItem.amount = bp.settings.maxHealth
+        healthRow.displayRow()
     }
 
-    public void onCustomDamageToggle() {
-        if (settings.getHealthSettings().isCustomDamage()) {
-            inventory.setItem(9, CUSTOM_DAMAGE_ENABLED);
-            inventory.setItem(10, VOID);
-            updateCustomDamage();
+    override fun onCustomDamageToggle() {
+        if (settings.healthSettings.isCustomDamage) {
+            inventory.setItem(9, CUSTOM_DAMAGE_ENABLED)
+            inventory.setItem(10, VOID)
+            damageRow.show()
         } else {
-            inventory.setItem(9, CUSTOM_DAMAGE_DISABLED);
-            inventory.setItem(10, VOID);
-            for (int i = 0; i < 7; i++) {
-                inventory.setItem(11 + i, DISABLED_SLOT);
+            inventory.setItem(9, CUSTOM_DAMAGE_DISABLED)
+            inventory.setItem(10, VOID)
+            for (i in 0..6) {
+                inventory.setItem(11 + i, DISABLED_SLOT)
             }
+            damageRow.hide()
         }
     }
 
-    @Override
-    public void onMaxHealthChange(@NotNull BotBowsPlayer bp) {
-        if (!settings.getHealthSettings().isIndividualMaxHealth()) return;
+    override fun onAttackDamageChange(bp: BotBowsPlayer) {
+        if (!settings.healthSettings.isCustomDamage) return
 
-        updateCustomSetting(0, true);
+        val headItem = damageRow.getItem(bp)
+        headItem.amount = bp.settings.attackDamage
+        damageRow.displayRow()
     }
 
-    @Override
-    public void onAttackDamageChange(@NotNull BotBowsPlayer bp) {
-        if (!settings.getHealthSettings().isCustomDamage()) return;
-
-        updateCustomSetting(9, false);
+    fun addPlayer(bp: BotBowsPlayer) {
+        //max health
+        val healthHead = bp.avatar.getHeadItem()
+        healthHead.amount = bp.settings.maxHealth
+        healthRow.addItem(healthHead)
+        //max health
+        val damageHead = bp.avatar.getHeadItem()
+        damageHead.amount = bp.settings.attackDamage
+        damageRow.addItem(damageHead)
     }
 
-    @Override
-    public void onMaxHealthChange() {
-        healthSlider.setProgressSlots(settings.getHealthSettings().getMaxHealth());
+    fun removePlayer(bp: BotBowsPlayer) {
+        healthRow.removeItem(healthRow.getItem(bp))
+        damageRow.removeItem(damageRow.getItem(bp))
+    }
+
+    companion object {
+        private val CUSTOM_HEALTH_DISABLED: ItemStack = makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
+            MenuAction.TOGGLE_INDIVIDUAL_HEALTH.name,
+            STATUS_DISABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("can have a different amount of hp")
+        )
+
+        private val CUSTOM_HEALTH_ENABLED: ItemStack = makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_INDIVIDUAL_HEALTH.name,
+            STATUS_ENABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("can have a different amount of hp")
+        )
+
+        private val CUSTOM_DAMAGE_DISABLED: ItemStack = makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.RED),
+            MenuAction.TOGGLE_CUSTOM_DAMAGE.name,
+            STATUS_DISABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("ca do different amounts of damage")
+        )
+
+        private val CUSTOM_DAMAGE_ENABLED: ItemStack = makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_CUSTOM_DAMAGE.name,
+            STATUS_ENABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("can do different amounts of damage")
+        )
+    }
+
+    private enum class MenuAction {
+        SET_HEALTH,
+        SET_INDIVIDUAL_DAMAGE,
+        SET_INDIVIDUAL_HEALTH,
+        TOGGLE_INDIVIDUAL_HEALTH,
+        TOGGLE_CUSTOM_DAMAGE
     }
 }
