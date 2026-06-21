@@ -37,6 +37,10 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
         )
         healthRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_HEALTH.name, 2, 5)
         damageRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_DAMAGE.name, 11, 5)
+
+        onIndividualMaxHealthToggle()
+        onMaxHealthChange()
+        onCustomDamageToggle()
     }
 
     override fun getMenuName(): Component {
