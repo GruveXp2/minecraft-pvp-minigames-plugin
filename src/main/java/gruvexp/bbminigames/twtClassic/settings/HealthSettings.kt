@@ -13,13 +13,13 @@ class HealthSettings(private val getPlayerSettings: () -> Set<PlayerSettings>) {
         set(value) {
             field = value
             listener?.onIndividualMaxHealthToggle()
-            if (!isIndividualMaxHealth) getPlayerSettings().forEach { bp -> bp.maxHealth = maxHealth }
+            getPlayerSettings().forEach { bp -> bp.maxHealth = maxHealth }
         }
     var isCustomDamage = false
         set(value) {
             field = value
             listener?.onCustomDamageToggle()
-            if (!isCustomDamage) getPlayerSettings().forEach { bp -> bp.attackDamage = 1 }
+            getPlayerSettings().forEach { bp -> bp.attackDamage = 1 }
         }
 
     var listener: HealthUpdateListener? = null
