@@ -77,8 +77,9 @@ public class Settings {
             mapSettings.addListener(bp, mapMenus.get(bp));
         });
 
+        healthSettings = new HealthSettings(this::getPlayerSettings);
         healthMenu = new HealthMenu(this);
-        healthSettings = new HealthSettings(healthMenu, this::getPlayerSettings);
+        healthSettings.setListener(healthMenu);
 
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
