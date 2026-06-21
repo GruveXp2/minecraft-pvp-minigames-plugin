@@ -91,7 +91,9 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
                 val row = e.slot / 9
                 val type = hazardsSorted[row]
                 if (hazardSettings.getChance(type) == HazardChance.DISABLED) {
-                    hazardSettings.resetChance(type)
+                    var chance = type.defaultChance
+                    if (chance == HazardChance.DISABLED) chance = HazardChance.FIVE
+                    hazardSettings.setChance(type, chance)
                 } else {
                     hazardSettings.setChance(type, HazardChance.DISABLED)
                 }

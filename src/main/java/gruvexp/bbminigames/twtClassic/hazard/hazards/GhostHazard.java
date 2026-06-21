@@ -8,7 +8,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -32,13 +32,12 @@ public class GhostHazard extends Hazard {
     private static final ItemStack GHOST_SWORD = getGhostSword();
     private static final ItemStack GHOST_SWORD_NETHERITE = getGhostSwordNetherite();
 
-    @Override
-    public void init(Collection<BotBowsPlayer> players) {}
+    public GhostHazard() {
+        super(HazardType.GHOST);
+    }
 
     @Override
-    public HazardChance getDefaultChance() {
-        return HazardChance.DISABLED;
-    }
+    public void init(Collection<BotBowsPlayer> players) {}
 
     @Override
     protected void trigger(Collection<BotBowsPlayer> players) {

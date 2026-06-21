@@ -16,11 +16,6 @@ class HazardSettings(val listener: HazardUpdateListener) {
         }
     }
 
-    fun resetChance(type: HazardType) {
-        val default = hazards[type]?.defaultChance ?: return
-        setChance(type, default)
-    }
-
     fun getChance(type: HazardType): HazardChance? {
         return hazards[type]?.chance
     }

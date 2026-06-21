@@ -22,6 +22,10 @@ import java.util.Set;
 public class EarthquakeHazard extends Hazard {
     Set<Location> anvilLocations = new HashSet<>();
 
+    public EarthquakeHazard() {
+        super(HazardType.EARTHQUAKE);
+    }
+
     @Override
     public void init(Collection<BotBowsPlayer> players) { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
@@ -29,11 +33,6 @@ public class EarthquakeHazard extends Hazard {
             BossBar bar = BossBar.bossBar(Component.text("Anvil timer", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_6);
             bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar);
         }
-    }
-
-    @Override
-    public HazardChance getDefaultChance() {
-        return HazardChance.FIVE;
     }
 
     @Override
