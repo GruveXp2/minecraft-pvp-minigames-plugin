@@ -36,7 +36,7 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
             "Health"
         )
         healthRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_HEALTH.name, 2, 5)
-        damageRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_DAMAGE.name, 11, 5)
+        damageRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_DAMAGE.name, 11, 7)
 
         onIndividualMaxHealthToggle()
         onMaxHealthChange()
