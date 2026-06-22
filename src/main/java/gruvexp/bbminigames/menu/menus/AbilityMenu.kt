@@ -53,11 +53,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     var isToggleAbilityMode: Boolean = false
         set(value) {
             field = value
-            if (value) {
-                inventory.setItem(27, MOD_TOGGLE_DISABLED);
-            } else {
-                inventory.setItem(27, MOD_TOGGLE_ENABLED);
-            }
+            inventory.setItem(27, if (value) MOD_TOGGLE_ENABLED else MOD_TOGGLE_DISABLED)
         }
 
     init {
