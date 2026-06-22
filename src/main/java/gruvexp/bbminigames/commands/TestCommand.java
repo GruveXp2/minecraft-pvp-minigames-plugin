@@ -105,7 +105,7 @@ public class TestCommand implements CommandExecutor {
                     abilitySettings.setMaxAbilities(3);
                     abilitySettings.setCooldownMultiplier(1.25f);
                     settings.getMapSettings().setCurrentMap(BotBowsMap.ICY_RAVINE);
-                    settings.setWinScoreThreshold(67);
+                    settings.getWinConditionSettings().setWinScoreThreshold(67);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
                     gxbp.equipAbility(AbilityType.THUNDER_BOW);
                     gxbp.equipAbility(AbilityType.SPLASH_BOW);

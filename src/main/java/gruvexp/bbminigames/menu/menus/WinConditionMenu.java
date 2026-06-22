@@ -2,6 +2,8 @@ package gruvexp.bbminigames.menu.menus;
 
 import gruvexp.bbminigames.menu.SettingsMenu;
 import gruvexp.bbminigames.twtClassic.Settings;
+import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
+import gruvexp.bbminigames.twtClassic.settings.WinConditionUpdateListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -9,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class WinConditionMenu extends SettingsMenu {
+public class WinConditionMenu extends SettingsMenu implements WinConditionUpdateListener {
     private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
             SettingsMenu.STATUS_DISABLED,
             Component.text("If enabled, winning team gets 1"),
@@ -64,16 +66,16 @@ public class WinConditionMenu extends SettingsMenu {
                 if (e.getCurrentItem().equals(DYNAMIC_POINTS_DISABLED)) {
                     enableDynamicPoints();
                 } else if (slot < 9) {
-                    settings.changeWinScoreThreshold(-10);
+                    changeWinScoreThreshold(-10);
                 } else {
-                    settings.changeRoundDuration(-10);
+                    changeRoundDuration(-10);
                 }
             }
             case PINK_STAINED_GLASS_PANE -> {
                 if (slot < 9) {
-                    settings.changeWinScoreThreshold(-1);
+                    changeWinScoreThreshold(-1);
                 } else {
-                    settings.changeRoundDuration(-1);
+                    changeRoundDuration(-1);
                 }
             }
             case LIME_STAINED_GLASS_PANE -> {
@@ -81,18 +83,29 @@ public class WinConditionMenu extends SettingsMenu {
                     disableDynamicPoints();
                 } else
                 if (slot < 9) {
-                    settings.changeWinScoreThreshold(1);
+                    changeWinScoreThreshold(1);
                 } else {
-                    settings.changeRoundDuration(1);
+                    changeRoundDuration(1);
                 }
             }
-            case GREEN_STAINED_GLASS_PANE -> {if (slot < 9) {
-                    settings.changeWinScoreThreshold(10);
+            case GREEN_STAINED_GLASS_PANE -> {
+                if (slot < 9) {
+                    changeWinScoreThreshold(10);
                 } else {
-                    settings.changeRoundDuration(10);
+                    changeRoundDuration(10);
                 }
             }
         }
+    }
+
+    private void changeWinScoreThreshold(int Δthreshold) {
+        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
+        winConditionSettings.setWinScoreThreshold(winConditionSettings.getWinScoreThreshold() + Δthreshold);
+    }
+
+    private void changeRoundDuration(int Δduration) {
+        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
+        winConditionSettings.setRoundDuration(winConditionSettings.getRoundDuration() + Δduration);
     }
 
     @Override
@@ -107,7 +120,7 @@ public class WinConditionMenu extends SettingsMenu {
 
     public void updateWinScoreThreshold() {
         ItemStack is;
-        int threshold = settings.getWinScoreThreshold();
+        int threshold = settings.getWinConditionSettings().getWinScoreThreshold();
         if (threshold > 0) {
             is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE),
                     Component.text(threshold, NamedTextColor.LIGHT_PURPLE).append(Component.text(" points to win", NamedTextColor.DARK_PURPLE)));
@@ -121,7 +134,7 @@ public class WinConditionMenu extends SettingsMenu {
 
     public void updateRoundDuration() {
         ItemStack is;
-        int roundDuration = settings.getRoundDuration();
+        int roundDuration = settings.getWinConditionSettings().getRoundDuration();
         if (roundDuration > 0) {
             is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Round duration", NamedTextColor.BLUE), Component.text(roundDuration, NamedTextColor.LIGHT_PURPLE).append(Component.text(" min", NamedTextColor.DARK_PURPLE)));
             is.setAmount(roundDuration);
@@ -134,11 +147,30 @@ public class WinConditionMenu extends SettingsMenu {
 
     public void enableDynamicPoints() {
         inventory.setItem(8, DYNAMIC_POINTS_ENABLED);
-        settings.setDynamicScoring(true);
+        settings.getWinConditionSettings().setDynamicScoring(true);
     }
 
     public void disableDynamicPoints() {
         inventory.setItem(8, DYNAMIC_POINTS_DISABLED);
-        settings.setDynamicScoring(false);
+        settings.getWinConditionSettings().setDynamicScoring(false);
+    }
+
+    @Override
+    public void onDynamicScoreToggle() {
+        if (settings.getWinConditionSettings().isDynamicScoring()) {
+            inventory.setItem(8, DYNAMIC_POINTS_ENABLED);
+        } else {
+            inventory.setItem(8, DYNAMIC_POINTS_DISABLED);
+        }
+    }
+
+    @Override
+    public void onWinScoreThresholdChange() {
+
+    }
+
+    @Override
+    public void onRoundDurationChange() {
+
     }
 }

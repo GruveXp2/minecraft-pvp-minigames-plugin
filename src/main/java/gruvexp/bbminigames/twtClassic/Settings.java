@@ -12,10 +12,7 @@ import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;
-import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
-import gruvexp.bbminigames.twtClassic.settings.HazardSettings;
-import gruvexp.bbminigames.twtClassic.settings.HealthSettings;
-import gruvexp.bbminigames.twtClassic.settings.MapSettings;
+import gruvexp.bbminigames.twtClassic.settings.*;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,9 +37,7 @@ public class Settings {
     // health
     private HealthSettings healthSettings;
     // win condition
-    private boolean dynamicScoring = true; // If true, når alle på et lag dauer så gis et poeng for hvert liv som er igjen + totalt liv som er tatt ut
-    private int winScoreThreshold = 30; // hvor mange poeng man skal spille til. Hvis den er 0, så fortsetter det for alltid til man tar /stopgame (/botbows stop)
-    private int roundDuration = 5;
+    private WinConditionSettings winConditionSettings;
     // hazards
     private HazardSettings hazardSettings;
     // abilities
@@ -84,7 +79,10 @@ public class Settings {
         teamsMenu = new TeamsMenu(this);
         teamsMenu.registerTeams();
 
+        winConditionSettings = new WinConditionSettings();
         winConditionMenu = new WinConditionMenu(this);
+        winConditionSettings.setListener(winConditionMenu);
+
         winConditionMenu.enableDynamicPoints();
         winConditionMenu.updateWinScoreThreshold();
         winConditionMenu.updateRoundDuration();
@@ -109,6 +107,10 @@ public class Settings {
         return hazardSettings;
     }
 
+    public WinConditionSettings getWinConditionSettings() {
+        return winConditionSettings;
+    }
+
     public AbilitySettings getAbilitySettings() {
         return abilitySettings;
     }
@@ -128,7 +130,9 @@ public class Settings {
                 healthSettings.isCustomDamage() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
         );
         WinConditionPreset winConditionPreset = new WinConditionPreset(
-                winScoreThreshold, roundDuration, dynamicScoring
+                winConditionSettings.getWinScoreThreshold(),
+                winConditionSettings.getRoundDuration(),
+                winConditionSettings.isDynamicScoring()
         );
 
         Set<AbilityType> bannedAbilities = abilitySettings.getBanned();
@@ -195,9 +199,9 @@ public class Settings {
         }
 
         WinConditionPreset winConditionPreset = preset.winCondition();
-        setWinScoreThreshold(winConditionPreset.winScoreThreshold());
-        setRoundDuration(winConditionPreset.roundDuration());
-        setDynamicScoring(winConditionPreset.dynamicPoints());
+        winConditionSettings.setWinScoreThreshold(winConditionPreset.winScoreThreshold());
+        winConditionSettings.setRoundDuration(winConditionPreset.roundDuration());
+        winConditionSettings.setDynamicScoring(winConditionPreset.dynamicPoints());
 
         ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap().allowedHazards;
         allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
@@ -209,12 +213,6 @@ public class Settings {
     private void onMapChange(BotBowsMap map) {
         setNewTeams(false);
         hazardSettings.syncWithMap(map);
-    }
-
-    private void onMaxHealthChange() {
-        if (healthSettings.isIndividualMaxHealth()) return;
-
-        players.forEach(bp -> bp.settings.setMaxHealth(healthSettings.getMaxHealth()));
     }
 
     private void setNewTeams(boolean flipped) {
@@ -426,37 +424,4 @@ public class Settings {
         return bp == modPlayer;
     }
 
-    public void setDynamicScoring(boolean enabled) {
-        this.dynamicScoring = enabled;
-    }
-
-    public boolean isDynamicScoringEnabled() {
-        return dynamicScoring;
-    }
-
-    public int getWinScoreThreshold() {
-        return winScoreThreshold;
-    }
-
-    public void changeWinScoreThreshold(int Δthreshold) {
-        setWinScoreThreshold(winScoreThreshold + Δthreshold);
-    }
-
-    public void setWinScoreThreshold(int threshold) {
-        winScoreThreshold = Math.max(threshold, 0);
-        winConditionMenu.updateWinScoreThreshold();
-    }
-
-    public int getRoundDuration() {
-        return roundDuration;
-    }
-
-    public void changeRoundDuration(int Δduration) {
-        setRoundDuration(roundDuration + Δduration);
-    }
-
-    public void setRoundDuration(int duration) {
-        roundDuration = Math.max(duration, 0);
-        winConditionMenu.updateRoundDuration();
-    }
 }

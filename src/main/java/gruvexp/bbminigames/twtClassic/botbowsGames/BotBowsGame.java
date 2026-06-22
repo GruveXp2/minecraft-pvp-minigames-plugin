@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
+import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -85,8 +86,9 @@ public class BotBowsGame {
         canInteract = false;
         activeRound = true;
         new RoundCountdown(this, round).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
-        if (settings.getRoundDuration() != 0) {
-            roundTimer = new RoundTimer(this, settings.getRoundDuration()).runTaskTimer(Main.getPlugin(), 200L, 20L);
+        int roundDuration = settings.getWinConditionSettings().getRoundDuration();
+        if (roundDuration != 0) {
+            roundTimer = new RoundTimer(this, roundDuration).runTaskTimer(Main.getPlugin(), 200L, 20L);
         }
     }
 
@@ -121,7 +123,7 @@ public class BotBowsGame {
         }
         lobby.messagePlayers(winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN)));
-        int winScore = settings.isDynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+        int winScore = settings.getWinConditionSettings().isDynamicScoring() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
         winningTeam.addPoints(winScore);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> postRound(winningTeam, winScore), 2L); // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
@@ -157,7 +159,7 @@ public class BotBowsGame {
             lobby.messagePlayers(winningTeam.toComponent()
                     .append(Component.text(" won the round!", NamedTextColor.GREEN)));
             BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-            int winScore = settings.isDynamicScoringEnabled() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
+            int winScore = settings.getWinConditionSettings().isDynamicScoring() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
             winningTeam.addPoints(winScore);
             postRound(winningTeam, winScore);
         } else {
@@ -177,7 +179,7 @@ public class BotBowsGame {
                         .append(team2.toComponent())
                         .append(Component.text(": ", NamedTextColor.WHITE))
                         .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
-        if (settings.getRoundDuration() > 0) {
+        if (settings.getWinConditionSettings().getRoundDuration() > 0) {
             roundTimer.cancel();
         }
         if (settings.rain > 0) {
@@ -198,7 +200,8 @@ public class BotBowsGame {
         lobby.titlePlayers(Component.text(winningTeam.name + " +" + winScore, winningTeam.color), 2);
         boardManager.updateTeamScores();
 
-        if (winningTeam.getPoints() >= settings.getWinScoreThreshold() && settings.getWinScoreThreshold() > 0) {
+        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
+        if (winningTeam.getPoints() >= winConditionSettings.getWinScoreThreshold() && winConditionSettings.getWinScoreThreshold() > 0) {
             postGame(winningTeam);
         } else {
             canInteract = false;
@@ -265,7 +268,7 @@ public class BotBowsGame {
     }
 
     public void endGame() { // the game has ended, check who won
-        if (settings.getRoundDuration() > 0) {
+        if (settings.getWinConditionSettings().getRoundDuration() > 0) {
             roundTimer.cancel();
         }
         hazards.stream()

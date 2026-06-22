@@ -93,7 +93,7 @@ public class BoardManager {
 
     public void updateTeamScores() {
         Scoreboard sb = objective.getScoreboard();
-        int winThreshold = lobby.settings.getWinScoreThreshold();
+        int winThreshold = lobby.settings.getWinConditionSettings().getWinScoreThreshold();
 
         for (Objective ignored : sb.getObjectives()) {
             for (String entries : sb.getEntries()) {
@@ -114,8 +114,8 @@ public class BoardManager {
             setScore(toChatColor((NamedTextColor) team2().color) + team2().name + ": " + ChatColor.RESET + team2().getPoints() + " / " + ChatColor.GRAY + winThreshold, 3 + totalPlayers);
         } else { // få plass til mest mulig streker
             String healthSymbol = getHealthSymbol(winThreshold);
-            int team1Points = Math.min(lobby.settings.getWinScoreThreshold(), team1().getPoints());
-            int team2Points = Math.min(lobby.settings.getWinScoreThreshold(), team2().getPoints());
+            int team1Points = Math.min(lobby.settings.getWinConditionSettings().getWinScoreThreshold(), team1().getPoints());
+            int team2Points = Math.min(lobby.settings.getWinConditionSettings().getWinScoreThreshold(), team2().getPoints());
 
             setScore(toChatColor((NamedTextColor) team1().color) + team1().name + ": " + ChatColor.GREEN + healthSymbol.repeat(team1Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team1Points), 4 + totalPlayers); // legger inn scoren til hvert team
             setScore(toChatColor((NamedTextColor) team2().color) + team2().name + ": " + ChatColor.GREEN + healthSymbol.repeat(team2Points) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team2Points), 3 + totalPlayers);
