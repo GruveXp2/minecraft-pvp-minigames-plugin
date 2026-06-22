@@ -294,13 +294,14 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     fun updateCooldownMultiplierUIState() {
-        val abilitySettings = settings.getAbilitySettings()
+        val abilitySettings = settings.abilitySettings
         if (abilitySettings.isIndividualCooldown) {
             inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED)
             cooldownMultiplierRow.show()
         } else {
             inventory.setItem(18, INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED)
             cooldownMultiplierRow.hide()
+            cooldownMultiplierSlider.setProgress("%.2fx".format(Locale.US, bp.settings.abilityCooldownMultiplier))
         }
     }
 
