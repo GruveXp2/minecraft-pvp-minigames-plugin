@@ -14,8 +14,8 @@ public class AbilityMenuRow extends MenuRow {
 
     private final AbilityMenu menu;
 
-    public AbilityMenuRow(Inventory inventory, int startSlot, int size, AbilityMenu menu) {
-        super(inventory, startSlot, size);
+    public AbilityMenuRow(Inventory inventory, String menuActionId, int startSlot, int size, AbilityMenu menu) {
+        super(inventory, menuActionId, startSlot, size);
         this.menu = menu;
         initItems();
     }
