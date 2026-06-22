@@ -50,6 +50,16 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     private val cooldownMultiplierRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_COOLDOWN_MULTIPLIER.name, 20, 7)
     private val abilityRow = AbilityMenuRow(inventory, MenuAction.CLICK_ABILITY.name, 37, 8, this)
 
+    var isToggleAbilityMode: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                inventory.setItem(27, MOD_TOGGLE_DISABLED);
+            } else {
+                inventory.setItem(27, MOD_TOGGLE_ENABLED);
+            }
+        }
+
     init {
         setPageButtons(5, true, false)
         updateUIState()
@@ -106,7 +116,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                 val next = cooldownMultiplierSlider.getNext(current).dropLast(1)
                 clickedBp.settings.abilityCooldownMultiplier = next.toFloat()
             }
-            MenuAction.TOGGLE_BAN_HAMMER -> bp.toggleAbilityToggle()
+            MenuAction.TOGGLE_BAN_HAMMER -> isToggleAbilityMode = !isToggleAbilityMode
             MenuAction.RANDOMIZE_ABILITIES -> {
                 bp.abilities.toSet().forEach { bp.unequipAbility(it.type, true) }
 
@@ -145,7 +155,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                     bp.unequipAbility(cursorAbility)
                 }
             } else {
-                if (bp.isToggleAbilityMode) {
+                if (isToggleAbilityMode) {
                     abilitySettings.toggle(clickedAbility!!)
                     return
                 }
@@ -362,12 +372,14 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun onAbilityStatusChange(type: AbilityType) { // TODO: huskelapp, om non andre banner abilitis som ikke er på riktig page, så bøgger det kankjse
-        val slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot()
-        if (settings.abilitySettings.isBanned(type)) {
-            inventory.setItem(slot - 9, ABILITY_DISABLED)
-        } else {
-            inventory.setItem(slot - 9, VOID)
+        val abilitySlot = getRelativeAbilitySlot(type) ?: return
+        val statusItem = when {
+            bp.hasAbilityEquipped(type) -> ABILITY_EQUIPPED
+            settings.abilitySettings.isBanned(type) -> ABILITY_DISABLED
+            settings.abilitySettings.isUniqueMode && settings.abilitySettings.isEquippedByTeam(bp, type) -> ABILITY_TAKEN
+            else -> VOID
         }
+        inventory.setItem(abilitySlot - 9, statusItem)
     }
 
     fun updateAbilityStatuses() {
@@ -386,10 +398,9 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         }
     }
 
-    fun getRelativeAbilitySlot(type: AbilityType): Int { // åssen rad det er, 0-9. negative verdier hvis det er på feil side
+    fun getRelativeAbilitySlot(type: AbilityType): Int? { // åssen rad det er, 1-9. negative verdier hvis det er på feil side
         val slot = abilityRow.getAbilitySlot(type) + 1
-        if (slot > abilityRow.size) return -1
-        return slot
+        return if (slot > abilityRow.size) null else slot
     }
 
     fun addPlayer(bp: BotBowsPlayer) {

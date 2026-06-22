@@ -404,7 +404,7 @@ public class Settings {
 
     public void setModPlayer(BotBowsPlayer bp) {
         String first = modPlayer == null ? "" : "new ";
-        if (modPlayer != null && modPlayer.isToggleAbilityMode()) modPlayer.disableAbilityToggle();
+        if (modPlayer != null) abilityMenus.get(modPlayer).setToggleAbilityMode(false);
 
         modPlayer = bp;
         lobby.messagePlayers(bp.getName().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));

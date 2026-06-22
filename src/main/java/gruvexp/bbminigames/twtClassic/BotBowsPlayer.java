@@ -43,7 +43,6 @@ public class BotBowsPlayer {
     public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
     private SneakManager sneakManager;
 
-    private boolean toggleAbilityMode = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
@@ -183,28 +182,6 @@ public class BotBowsPlayer {
         }
     }
 
-    public void disableAbilityToggle() {
-        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_DISABLED);
-        toggleAbilityMode = false;
-    }
-
-    public void enableAbilityToggle() { // TODO: flytt inn i AbilityMenu, dette er kun en greie for å endre på menyvisninga når man skal velge om man skal toggle abilitier eller equippe, og er ikke en instilling
-        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_ENABLED);
-        toggleAbilityMode = true;
-    }
-
-    public void toggleAbilityToggle() {
-        if (toggleAbilityMode) {
-            disableAbilityToggle();
-        } else {
-            enableAbilityToggle();
-        }
-    }
-
-    public boolean isToggleAbilityMode() {
-        return toggleAbilityMode;
-    }
-
     public void equipAbility(AbilityType type) {
         int slot = avatar.getNextFreeSlot();
         equipAbility(slot, type);
@@ -243,13 +220,11 @@ public class BotBowsPlayer {
         }
         if (abilityAlreadyEquipped) return;
 
-        int relativeAbilitySlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (slot > 0 && updateInventory) {
             avatar.setItem(slot, type.getAbilityItem(this));
         }
-        if (relativeAbilitySlot > 0) { // slot -1 means cursor
-            getAbilityMenu().getInventory().setItem(relativeAbilitySlot + 27, AbilityMenu.ABILITY_EQUIPPED);
-        }
+        getAbilityMenu().onAbilityStatusChange(type);
+
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
@@ -272,14 +247,7 @@ public class BotBowsPlayer {
             avatar.setItem(slot, null);
         }
 
-        int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
-        if (abilityEquipSlot > 0) {
-            if (lobby.settings.getAbilitySettings().isBanned(type)) {
-                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
-            } else {
-                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
-            }
-        }
+        getAbilityMenu().onAbilityStatusChange(type);
         abilities.remove(type);
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--;
 
