@@ -83,10 +83,6 @@ public class Settings {
         winConditionMenu = new WinConditionMenu(this);
         winConditionSettings.setListener(winConditionMenu);
 
-        winConditionMenu.enableDynamicPoints();
-        winConditionMenu.updateWinScoreThreshold();
-        winConditionMenu.updateRoundDuration();
-
         hazardMenu = new HazardMenu(this);
         hazardSettings = new HazardSettings(hazardMenu);
 

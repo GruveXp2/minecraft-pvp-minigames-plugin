@@ -1,176 +1,185 @@
-package gruvexp.bbminigames.menu.menus;
+package gruvexp.bbminigames.menu.menus
 
-import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
-import gruvexp.bbminigames.twtClassic.settings.WinConditionUpdateListener;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.menu.SettingsMenu
+import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.settings.WinConditionUpdateListener
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
-public class WinConditionMenu extends SettingsMenu implements WinConditionUpdateListener {
-    private static final ItemStack DYNAMIC_POINTS_DISABLED = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
-            SettingsMenu.STATUS_DISABLED,
+class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditionUpdateListener {
+    init {
+        setPageButtons(2, true, true)
+
+        inventory.setItem(2, SUB_10)
+        inventory.setItem(3, SUB_1)
+        inventory.setItem(5, ADD_1)
+        inventory.setItem(6, ADD_10)
+
+        inventory.setItem(11, SUB_10)
+        inventory.setItem(12, SUB_1)
+        inventory.setItem(14, ADD_1)
+        inventory.setItem(15, ADD_10)
+
+        onWinScoreThresholdChange()
+        onRoundDurationChange()
+        onDynamicScoreToggle()
+    }
+
+    override fun getMenuName(): Component {
+        return Component.text("Win condition (4/6)")
+    }
+
+    override fun getSlots(): Int {
+        return 27
+    }
+
+    override fun handleMenu(e: InventoryClickEvent) {
+        if (e.clickedInventory !== inventory) return
+        val clickedItem = e.getCurrentItem() ?: return
+        if (handlePageClick(e)) return
+        val clicker = e.whoClicked as Player
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
+        val slot = e.slot
+
+        val actionId =
+            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
+
+        val action = MenuAction.valueOf(actionId)
+        val winConditionSettings = settings.winConditionSettings
+        when (action) {
+            MenuAction.TOGGLE_DYNAMIC_POINTS ->
+                winConditionSettings.isDynamicScoring = !winConditionSettings.isDynamicScoring
+            MenuAction.SUB_10 -> {
+                if (slot < 9) {
+                    changeWinScoreThreshold(-10)
+                } else {
+                    changeRoundDuration(-10)
+                }
+            }
+            MenuAction.SUB_1 -> {
+                if (slot < 9) {
+                    changeWinScoreThreshold(-1)
+                } else {
+                    changeRoundDuration(-1)
+                }
+            }
+            MenuAction.ADD_1 -> {
+                if (slot < 9) {
+                    changeWinScoreThreshold(1)
+                } else {
+                    changeRoundDuration(1)
+                }
+            }
+            MenuAction.ADD_10 -> {
+                if (slot < 9) {
+                    changeWinScoreThreshold(10)
+                } else {
+                    changeRoundDuration(10)
+                }
+            }
+        }
+    }
+
+    private fun changeWinScoreThreshold(Δthreshold: Int) {
+        val winConditionSettings = settings.winConditionSettings
+        winConditionSettings.winScoreThreshold += Δthreshold
+    }
+
+    private fun changeRoundDuration(Δduration: Int) {
+        val winConditionSettings = settings.winConditionSettings
+        winConditionSettings.roundDuration += Δduration
+    }
+
+    public override fun prevPage(p: Player) {
+        settings.healthMenu.open(p)
+    }
+
+    public override fun nextPage(p: Player) {
+        settings.hazardMenu.open(p)
+    }
+
+    override fun onWinScoreThresholdChange() {
+        val threshold = settings.winConditionSettings.winScoreThreshold
+
+        val item = if (threshold > 0) {
+            makeItem(
+                Material.BLUE_TERRACOTTA,
+                Component.text("Win score threshold", NamedTextColor.BLUE),
+                Component.text(threshold, NamedTextColor.LIGHT_PURPLE)
+                    .append(Component.text(" points to win", NamedTextColor.DARK_PURPLE))
+            ).apply { amount = threshold }
+        } else {
+            makeItem(
+                Material.YELLOW_TERRACOTTA,
+                Component.text("Infinite rounds", NamedTextColor.YELLOW),
+                Component.text("Run /stopgame to stop the game")
+            )
+        }
+        inventory.setItem(4, item)
+    }
+
+    override fun onRoundDurationChange() {
+        val roundDuration = settings.winConditionSettings.roundDuration
+
+        val item = if (roundDuration > 0) {
+            makeItem(
+                Material.BLUE_TERRACOTTA,
+                Component.text("Round duration", NamedTextColor.BLUE),
+                Component.text("$roundDuration min", NamedTextColor.LIGHT_PURPLE)
+            ).apply { amount = roundDuration }
+        } else {
+            makeItem(
+                Material.YELLOW_TERRACOTTA,
+                Component.text("No timer", NamedTextColor.YELLOW),
+                Component.text("Run /stopgame to stop the game")
+            )
+        }
+        inventory.setItem(13, item)
+    }
+
+    override fun onDynamicScoreToggle() {
+        if (settings.winConditionSettings.isDynamicScoring) {
+            inventory.setItem(8, DYNAMIC_POINTS_ENABLED)
+        } else {
+            inventory.setItem(8, DYNAMIC_POINTS_DISABLED)
+        }
+    }
+
+    companion object {
+        private val DYNAMIC_POINTS_DISABLED: ItemStack = makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
+            MenuAction.TOGGLE_DYNAMIC_POINTS.name,
+            STATUS_DISABLED,
             Component.text("If enabled, winning team gets 1"),
             Component.text("point for each remaining hp."),
-            Component.text("If disbabled, winning team only gets 1 point."));
+            Component.text("If disbabled, winning team only gets 1 point.")
+        )
 
-    private static final ItemStack DYNAMIC_POINTS_ENABLED = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
-            SettingsMenu.STATUS_ENABLED,
+        private val DYNAMIC_POINTS_ENABLED: ItemStack = makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_DYNAMIC_POINTS.name,
+            STATUS_ENABLED,
             Component.text("If enabled, winning team gets 1"),
             Component.text("point for each remaining hp."),
-            Component.text("If disbabled, winning team only gets 1 point."));
+            Component.text("If disbabled, winning team only gets 1 point.")
+        )
 
-    public WinConditionMenu(Settings settings) {
-        super(settings);
-        ItemStack sub10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"));
-        ItemStack sub1= makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"));
-        ItemStack add1 = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"));
-        ItemStack add10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, Component.text("+10"));
+        private val SUB_10 = makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("-10"), MenuAction.SUB_10.name)
+        private val SUB_1  = makeItem(Material.PINK_STAINED_GLASS_PANE, Component.text("-1"), MenuAction.SUB_1.name)
+        private val ADD_1  = makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("+1"), MenuAction.ADD_1.name)
+        private val ADD_10 = makeItem(Material.GREEN_STAINED_GLASS_PANE, Component.text("+10"), MenuAction.ADD_10.name)
 
-        inventory.setItem(2, sub10);
-        inventory.setItem(3, sub1);
-        inventory.setItem(5, add1);
-        inventory.setItem(6, add10);
-
-        inventory.setItem(11, sub10);
-        inventory.setItem(12, sub1);
-        inventory.setItem(14, add1);
-        inventory.setItem(15, add10);
-
-        setPageButtons(2, true, true);
-    }
-
-    @Override
-    public Component getMenuName() {
-        return Component.text("Win condition (4/6)");
-    }
-
-    @Override
-    public int getSlots() {
-        return 27;
-    }
-
-    @Override
-    public void handleMenu(InventoryClickEvent e) {
-        Player clicker = (Player) e.getWhoClicked();
-        if (e.getClickedInventory() != inventory) return;
-        if (handlePageClick(e)) return;
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
-        int slot = e.getSlot();
-        switch (e.getCurrentItem().getType()) {
-            case RED_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(DYNAMIC_POINTS_DISABLED)) {
-                    enableDynamicPoints();
-                } else if (slot < 9) {
-                    changeWinScoreThreshold(-10);
-                } else {
-                    changeRoundDuration(-10);
-                }
-            }
-            case PINK_STAINED_GLASS_PANE -> {
-                if (slot < 9) {
-                    changeWinScoreThreshold(-1);
-                } else {
-                    changeRoundDuration(-1);
-                }
-            }
-            case LIME_STAINED_GLASS_PANE -> {
-                if (e.getCurrentItem().equals(DYNAMIC_POINTS_ENABLED)) {
-                    disableDynamicPoints();
-                } else
-                if (slot < 9) {
-                    changeWinScoreThreshold(1);
-                } else {
-                    changeRoundDuration(1);
-                }
-            }
-            case GREEN_STAINED_GLASS_PANE -> {
-                if (slot < 9) {
-                    changeWinScoreThreshold(10);
-                } else {
-                    changeRoundDuration(10);
-                }
-            }
+        private enum class MenuAction {
+            ADD_1,
+            ADD_10,
+            SUB_1,
+            SUB_10,
+            TOGGLE_DYNAMIC_POINTS
         }
-    }
-
-    private void changeWinScoreThreshold(int Δthreshold) {
-        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
-        winConditionSettings.setWinScoreThreshold(winConditionSettings.getWinScoreThreshold() + Δthreshold);
-    }
-
-    private void changeRoundDuration(int Δduration) {
-        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
-        winConditionSettings.setRoundDuration(winConditionSettings.getRoundDuration() + Δduration);
-    }
-
-    @Override
-    public void prevPage(Player p) {
-        settings.healthMenu.open(p);
-    }
-
-    @Override
-    public void nextPage(Player p) {
-        settings.hazardMenu.open(p);
-    }
-
-    public void updateWinScoreThreshold() {
-        ItemStack is;
-        int threshold = settings.getWinConditionSettings().getWinScoreThreshold();
-        if (threshold > 0) {
-            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Win score threshold", NamedTextColor.BLUE),
-                    Component.text(threshold, NamedTextColor.LIGHT_PURPLE).append(Component.text(" points to win", NamedTextColor.DARK_PURPLE)));
-            is.setAmount(threshold);
-        } else {
-            is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("Infinite rounds", NamedTextColor.YELLOW),
-                    Component.text("Run /stopgame to stop the game"));
-        }
-        inventory.setItem(4, is);
-    }
-
-    public void updateRoundDuration() {
-        ItemStack is;
-        int roundDuration = settings.getWinConditionSettings().getRoundDuration();
-        if (roundDuration > 0) {
-            is = makeItem(Material.BLUE_TERRACOTTA, Component.text("Round duration", NamedTextColor.BLUE), Component.text(roundDuration, NamedTextColor.LIGHT_PURPLE).append(Component.text(" min", NamedTextColor.DARK_PURPLE)));
-            is.setAmount(roundDuration);
-        } else {
-            is = makeItem(Material.YELLOW_TERRACOTTA, Component.text("No timer", NamedTextColor.YELLOW),
-                    Component.text("Run /stopgame to stop the game"));
-        }
-        inventory.setItem(13, is);
-    }
-
-    public void enableDynamicPoints() {
-        inventory.setItem(8, DYNAMIC_POINTS_ENABLED);
-        settings.getWinConditionSettings().setDynamicScoring(true);
-    }
-
-    public void disableDynamicPoints() {
-        inventory.setItem(8, DYNAMIC_POINTS_DISABLED);
-        settings.getWinConditionSettings().setDynamicScoring(false);
-    }
-
-    @Override
-    public void onDynamicScoreToggle() {
-        if (settings.getWinConditionSettings().isDynamicScoring()) {
-            inventory.setItem(8, DYNAMIC_POINTS_ENABLED);
-        } else {
-            inventory.setItem(8, DYNAMIC_POINTS_DISABLED);
-        }
-    }
-
-    @Override
-    public void onWinScoreThresholdChange() {
-
-    }
-
-    @Override
-    public void onRoundDurationChange() {
-
     }
 }
