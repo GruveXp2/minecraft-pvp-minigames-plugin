@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -149,7 +150,7 @@ public enum AbilityType {
         return cooldownComponent.decoration(TextDecoration.ITALIC, false);
     }
 
-    public static AbilityType fromItem(ItemStack item) {
+    public static @Nullable AbilityType fromItem(ItemStack item) {
         if (item == null) return null;
         for (AbilityType ability : values()) {
             ItemStack abilityItem = ability.getAbilityItem();

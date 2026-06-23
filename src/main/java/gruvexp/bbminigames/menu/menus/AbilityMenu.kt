@@ -68,7 +68,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     override fun handlesEmptySlots(): Boolean = true
 
     override fun handleMenu(e: InventoryClickEvent) {
-        val clickedItem = e.currentItem ?: makeItem(Material.AIR, Component.empty(), MenuAction.CLICK_AIR.name)
+        val clickedItem = e.currentItem
 
         if (handlePageClick(e)) return
         if (maxAbilitiesRow.handleClick(e)) return
@@ -77,6 +77,11 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         val clicker = e.whoClicked as Player
         val bp = settings.lobby.getBotBowsPlayer(clicker)
+
+        clickedItem ?: run {
+            handleAbilityClick(e, clicker, bp, clickedItem)
+            return
+        }
 
         if (clickedItem.type == Material.ARROW && e.clickedInventory !== inventory) e.isCancelled = true
 
@@ -135,7 +140,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         return bp
     }
 
-    private fun handleAbilityClick(e: InventoryClickEvent, p: Player, bp: BotBowsPlayer, clickedItem: ItemStack) {
+    private fun handleAbilityClick(e: InventoryClickEvent, p: Player, bp: BotBowsPlayer, clickedItem: ItemStack?) {
         val cursorItem = e.cursor
         val cursorAbility = AbilityType.fromItem(cursorItem)
         val clickedAbility = AbilityType.fromItem(clickedItem)
@@ -150,14 +155,14 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                 if (bp.hasAbilityEquipped(cursorAbility)) {
                     bp.unequipAbility(cursorAbility)
                 }
-            } else {
+            } else if (clickedAbility != null) {
                 if (isToggleAbilityMode) {
-                    abilitySettings.toggle(clickedAbility!!)
+                    abilitySettings.toggle(clickedAbility)
                     return
                 }
                 if (cursorItem.type != Material.AIR) return
 
-                if (abilitySettings.isBanned(clickedAbility!!)) {
+                if (abilitySettings.isBanned(clickedAbility)) {
                     p.sendMessage(Component.text("This ability is disabled", NamedTextColor.RED))
                     return
                 }
@@ -179,7 +184,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                             return
                         }
 
-                        val abilityItem = clickedItem.clone()
+                        val abilityItem = clickedItem!!.clone()
                         val cooldownComponent = clickedAbility.getCooldownComponent(bp)
 
                         abilityItem.editMeta {
@@ -192,7 +197,6 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                             }
                             it.lore(lore)
                         }
-
                         p.setItemOnCursor(abilityItem)
                     }
                 }
