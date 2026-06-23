@@ -388,15 +388,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         for (i in 0..<abilityRow.size) {
             val abilitySlot = abilityRow.startSlot + i
             val abilityItem = inventory.getItem(abilitySlot)
-            val abilityType = AbilityType.fromItem(abilityItem)
-            val statusItem = when {
-                abilityType == null -> VOID
-                bp.hasAbilityEquipped(abilityType) -> ABILITY_EQUIPPED
-                settings.abilitySettings.isBanned(abilityType) -> ABILITY_DISABLED
-                settings.abilitySettings.isUniqueMode && settings.abilitySettings.isEquippedByTeam(bp, abilityType) -> ABILITY_TAKEN
-                else -> VOID
-            }
-            inventory.setItem(abilitySlot - 9, statusItem)
+            val abilityType = AbilityType.fromItem(abilityItem) ?: continue
+            onAbilityStatusChange(abilityType)
         }
     }
 
