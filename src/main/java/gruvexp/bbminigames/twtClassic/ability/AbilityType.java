@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +78,9 @@ public enum AbilityType {
     LINGERING_POTION(makeLingeringPotion(),
             LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
 
+    public static final NamespacedKey KEY = new NamespacedKey("botbows", "ability_item");
+    private final NamespacedKey OWN_KEY = new NamespacedKey("botbows", "ability_item");
+
     private final ItemStack abilityItem;
     private final ItemStack[] cooldownItems;
     private final int baseCooldown;
@@ -84,6 +88,8 @@ public enum AbilityType {
 
     AbilityType(ItemStack item, int baseCooldown, String cooldownItemType, AbilityCategory category) {
         appendCooldownInfo(item, category, baseCooldown);
+        item.editMeta(meta ->
+                meta.getPersistentDataContainer().set(OWN_KEY, PersistentDataType.STRING, this.name()));
 
         this.abilityItem = item;
         this.baseCooldown = baseCooldown;
@@ -152,41 +158,9 @@ public enum AbilityType {
 
     public static @Nullable AbilityType fromItem(ItemStack item) {
         if (item == null) return null;
-        for (AbilityType ability : values()) {
-            ItemStack abilityItem = ability.getAbilityItem();
-
-            if (item.getType() != abilityItem.getType()) continue;
-
-            boolean itemHasMeta = item.hasItemMeta();
-            boolean abilityHasMeta = abilityItem.hasItemMeta();
-
-            if (!itemHasMeta || !abilityHasMeta) {
-                if (itemHasMeta == abilityHasMeta) return ability;
-                continue;
-            }
-
-            ItemMeta meta = item.getItemMeta();
-            ItemMeta abilityMeta = abilityItem.getItemMeta();
-
-            boolean itemHasDisplayName = meta.hasDisplayName();
-            boolean abilityHasDisplayName = abilityMeta.hasDisplayName();
-
-            if (itemHasDisplayName != abilityHasDisplayName) continue;
-
-            if (itemHasDisplayName) {
-                Component itemDisplayName = meta.displayName();
-                Component abilityDisplayName = abilityMeta.displayName();
-                assert itemDisplayName != null;
-                assert abilityDisplayName != null;
-
-                if (itemDisplayName.equals(abilityDisplayName)) {
-                    return ability;
-                }
-            } else {
-                return ability;
-            }
-        }
-        return null;
+        String mapStr = item.getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
+        if (mapStr == null) return null;
+        return valueOf(mapStr);
     }
 
     private static @NotNull TextComponent getDurationInfo(int seconds) {

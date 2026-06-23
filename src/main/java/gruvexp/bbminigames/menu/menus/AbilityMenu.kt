@@ -373,7 +373,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun onAbilityStatusChange(type: AbilityType) { // TODO: huskelapp, om non andre banner abilitis som ikke er på riktig page, så bøgger det kankjse
-        val abilitySlot = getRelativeAbilitySlot(type) ?: return
+        val relativeAbilitySlot = getRelativeAbilitySlot(type) ?: return
+        val abilitySlot = abilityRow.startSlot + relativeAbilitySlot
         val statusItem = when {
             bp.hasAbilityEquipped(type) -> ABILITY_EQUIPPED
             settings.abilitySettings.isBanned(type) -> ABILITY_DISABLED
@@ -400,7 +401,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     fun getRelativeAbilitySlot(type: AbilityType): Int? { // åssen rad det er, 1-9. negative verdier hvis det er på feil side
-        val slot = abilityRow.getAbilitySlot(type) + 1
+        val slot = abilityRow.getAbilitySlot(type) ?: return null
         return if (slot > abilityRow.size) null else slot
     }
 
