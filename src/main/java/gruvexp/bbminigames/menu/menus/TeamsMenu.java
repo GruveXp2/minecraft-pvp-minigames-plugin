@@ -51,13 +51,15 @@ public class TeamsMenu extends SettingsMenu {
         Player clicker = (Player) e.getWhoClicked();
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(clicker);
         if (e.getClickedInventory() != inventory) return;
+        ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null) return;
         if (handlePageClick(e)) return;
         if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
 
-        switch (e.getCurrentItem().getType()) {
+        switch (clickedItem.getType()) {
             case PLAYER_HEAD -> {
                 NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
-                UUID playerId = UUID.fromString(Objects.requireNonNull(e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
+                UUID playerId = UUID.fromString(Objects.requireNonNull(clickedItem.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
                 BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
                 headBp.getTeam().getOppositeTeam().join(headBp);
                 recalculateTeam();
