@@ -58,10 +58,8 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
         val clicker = e.whoClicked as Player
         if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
 
-        val actionId =
-            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
 
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         val healthSettings = settings.healthSettings
         when (action) {
             MenuAction.TOGGLE_INDIVIDUAL_HEALTH -> healthSettings.isIndividualMaxHealth = !healthSettings.isIndividualMaxHealth

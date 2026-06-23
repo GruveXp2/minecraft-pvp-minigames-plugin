@@ -8,7 +8,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 class GameMenu : Menu() {
     init {
@@ -23,10 +22,8 @@ class GameMenu : Menu() {
         val p = e.whoClicked as Player
         val clickedItem = e.currentItem ?: return
 
-        val actionId =
-            clickedItem.persistentDataContainer.get(ACTION_KEY, PersistentDataType.STRING) ?: return
 
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
             MenuAction.JOIN_BOTBOWS -> BotBows.lobbyMenu.open(p)
             MenuAction.JOIN_SUMO -> SumoManager.sumoMenu.open(p)

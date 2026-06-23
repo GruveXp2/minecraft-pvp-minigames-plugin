@@ -9,7 +9,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditionUpdateListener {
     init {
@@ -46,10 +45,7 @@ class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditi
         if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
         val slot = e.slot
 
-        val actionId =
-            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
-
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         val winConditionSettings = settings.winConditionSettings
         when (action) {
             MenuAction.TOGGLE_DYNAMIC_POINTS ->

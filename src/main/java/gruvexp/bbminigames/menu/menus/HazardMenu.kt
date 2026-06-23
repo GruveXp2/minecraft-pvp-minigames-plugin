@@ -15,7 +15,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateListener {
@@ -81,10 +80,8 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
         val bp = settings.lobby.getBotBowsPlayer(clicker)
         if (!settings.checkMod(bp)) return
 
-        val actionId =
-            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
 
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         val hazardSettings = settings.hazardSettings
         when (action) {
             MenuAction.TOGGLE_HAZARD -> {

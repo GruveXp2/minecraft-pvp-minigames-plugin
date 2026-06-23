@@ -67,6 +67,10 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
+    public static String getActionId(ItemStack item) {
+        return item.getPersistentDataContainer().get(ACTION_KEY, PersistentDataType.STRING);
+    }
+
     public static ItemStack makeItem(Material material, TextComponent displayName, String actionId, Component... lore) {
 
         ItemStack item = new ItemStack(material);

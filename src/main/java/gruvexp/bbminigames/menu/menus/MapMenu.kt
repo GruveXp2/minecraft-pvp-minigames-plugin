@@ -78,10 +78,8 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
             uiMode = UiMode.MAIN
             return
         }
-        val actionId =
-            clickedItem.persistentDataContainer.get<String, String>(ACTION_KEY, PersistentDataType.STRING) ?: return
 
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
             MenuAction.VOTE -> uiMode = UiMode.VOTE
             MenuAction.SET -> if (settings.checkMod(bp)) uiMode = UiMode.SET

@@ -85,10 +85,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         if (clickedItem.type == Material.ARROW && e.clickedInventory !== inventory) e.isCancelled = true
 
-        val actionId =
-            clickedItem.persistentDataContainer.get(ACTION_KEY, PersistentDataType.STRING) ?: return
-
-        val action = MenuAction.valueOf(actionId)
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         if (action in modActions && !settings.checkMod(bp)) return
 
         val abilitySettings = settings.abilitySettings
