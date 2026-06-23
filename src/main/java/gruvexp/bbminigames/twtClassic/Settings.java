@@ -199,7 +199,7 @@ public class Settings {
         winConditionSettings.setRoundDuration(winConditionPreset.roundDuration());
         winConditionSettings.setDynamicScoring(winConditionPreset.dynamicPoints());
 
-        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap().allowedHazards;
+        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap().getAllowedHazards();
         allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();
