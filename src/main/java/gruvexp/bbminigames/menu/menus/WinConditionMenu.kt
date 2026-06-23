@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditionUpdateListener {
+class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditionUpdateListener {
     init {
         setPageButtons(2, true, true)
 
@@ -29,13 +29,8 @@ class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditi
         onDynamicScoreToggle()
     }
 
-    override fun getMenuName(): Component {
-        return Component.text("Win condition (4/6)")
-    }
-
-    override fun getSlots(): Int {
-        return 27
-    }
+    override fun getMenuName(): Component = Component.text("Win condition (4/6)")
+    override fun getSlots(): Int = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -82,22 +77,15 @@ class WinConditionMenu(settings: Settings?) : SettingsMenu(settings), WinConditi
     }
 
     private fun changeWinScoreThreshold(Δthreshold: Int) {
-        val winConditionSettings = settings.winConditionSettings
-        winConditionSettings.winScoreThreshold += Δthreshold
+        settings.winConditionSettings.winScoreThreshold += Δthreshold
     }
 
     private fun changeRoundDuration(Δduration: Int) {
-        val winConditionSettings = settings.winConditionSettings
-        winConditionSettings.roundDuration += Δduration
+        settings.winConditionSettings.roundDuration += Δduration
     }
 
-    public override fun prevPage(p: Player) {
-        settings.healthMenu.open(p)
-    }
-
-    public override fun nextPage(p: Player) {
-        settings.hazardMenu.open(p)
-    }
+    public override fun prevPage(p: Player) = settings.healthMenu.open(p)
+    public override fun nextPage(p: Player) = settings.hazardMenu.open(p)
 
     override fun onWinScoreThresholdChange() {
         val threshold = settings.winConditionSettings.winScoreThreshold

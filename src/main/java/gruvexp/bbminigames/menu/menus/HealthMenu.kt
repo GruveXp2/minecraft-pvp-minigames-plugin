@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateListener, PlayerHealthUpdateListener {
+class HealthMenu(settings: Settings) : SettingsMenu(settings), HealthUpdateListener, PlayerHealthUpdateListener {
     private val healthSlider: MenuSlider
     private val healthRow: PlayerMenuRow
     private val damageRow: PlayerMenuRow
@@ -32,7 +32,7 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
             2,
             Material.PINK_STAINED_GLASS_PANE,
             NamedTextColor.RED,
-            mutableListOf<String?>("1", "2", "3", "4", "5"),
+            mutableListOf("1", "2", "3", "4", "5"),
             "Health"
         )
         healthRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_HEALTH.name, 2, 5)
@@ -43,13 +43,8 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
         onCustomDamageToggle()
     }
 
-    override fun getMenuName(): Component {
-        return Component.text("Health & Damage (3/6)")
-    }
-
-    override fun getSlots(): Int {
-        return 27
-    }
+    override fun getMenuName(): Component = Component.text("Health & Damage (3/6)")
+    override fun getSlots(): Int = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -95,19 +90,14 @@ class HealthMenu(settings: Settings?) : SettingsMenu(settings), HealthUpdateList
 
     fun getPlayerFromHead(item: ItemStack) : BotBowsPlayer? {
         val key = NamespacedKey(Main.getPlugin(), "uuid")
-        val playerIdStr = item.itemMeta.persistentDataContainer.get<String, String>(key, PersistentDataType.STRING) ?: return null
+        val playerIdStr = item.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING) ?: return null
         val playerId = UUID.fromString(playerIdStr)
         val bp = settings.lobby.getBotBowsPlayer(playerId)
         return bp
     }
 
-    public override fun prevPage(p: Player) {
-        settings.teamsMenu.open(p)
-    }
-
-    public override fun nextPage(p: Player) {
-        settings.winConditionMenu.open(p)
-    }
+    public override fun prevPage(p: Player) = settings.teamsMenu.open(p)
+    public override fun nextPage(p: Player) = settings.winConditionMenu.open(p)
 
     fun updateColors() {
         for (bp in settings.players) {

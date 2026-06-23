@@ -62,9 +62,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun getMenuName(): Component = Component.text("Abilities (6/6)")
-
     override fun getSlots(): Int = 54
-
     override fun handlesEmptySlots(): Boolean = true
 
     override fun handleMenu(e: InventoryClickEvent) {
@@ -131,7 +129,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
     fun getPlayerFromHead(item: ItemStack) : BotBowsPlayer? {
         val key = NamespacedKey(Main.getPlugin(), "uuid")
-        val playerIdStr = item.itemMeta.persistentDataContainer.get<String, String>(key, PersistentDataType.STRING) ?: return null
+        val playerIdStr = item.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING) ?: return null
         val playerId = UUID.fromString(playerIdStr)
         val bp = settings.lobby.getBotBowsPlayer(playerId)
         return bp
@@ -227,9 +225,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         }
     }
 
-    public override fun prevPage(p: Player) {
-        settings.hazardMenu.open(p)
-    }
+    public override fun prevPage(p: Player) = settings.hazardMenu.open(p)
 
     fun handleMenuClose(e: InventoryCloseEvent) {
         handleMenuClose(e.player as Player)

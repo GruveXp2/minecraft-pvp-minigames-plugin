@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
+class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
     private var isOldMapCategory = false
         set(value) {
             field = value
@@ -35,13 +35,8 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         updateMenu()
     }
 
-    override fun getMenuName(): Component {
-        return Component.text("Arena map (1/6)")
-    }
-
-    override fun getSlots(): Int {
-        return 18
-    }
+    override fun getMenuName(): Component = Component.text("Arena map (1/6)")
+    override fun getSlots(): Int = 18
 
     override fun open(p: Player) {
         super.open(p)
@@ -50,12 +45,11 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
-        val clickedItem = e.getCurrentItem() ?: return
+        val clickedItem = e.currentItem ?: return
         if (handlePageClick(e)) return
         val mapSettings = settings.mapSettings
 
-        val mapStr =
-            clickedItem.persistentDataContainer.get<String, String>(BotBowsMap.KEY, PersistentDataType.STRING)
+        val mapStr = clickedItem.persistentDataContainer.get(BotBowsMap.KEY, PersistentDataType.STRING)
         if (mapStr != null) {
             val map = BotBowsMap.valueOf(mapStr)
             if (map == BotBowsMap.MARS_BASE) {
@@ -89,9 +83,7 @@ class MapMenu(settings: Settings?, val bp: BotBowsPlayer) : SettingsMenu(setting
         }
     }
 
-    override fun nextPage(p: Player) {
-        settings.teamsMenu.open(p)
-    }
+    override fun nextPage(p: Player) = settings.teamsMenu.open(p)
 
     private fun sendExperimentalLockedMessage(avatar: BotBowsAvatar) {
         avatar.message(

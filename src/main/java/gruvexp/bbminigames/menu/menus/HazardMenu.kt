@@ -17,64 +17,21 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateListener {
+class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListener {
     private val hazardsSorted = ArrayList<HazardType>()
 
-    private val hazardSliders = HashMap<HazardType?, MenuSlider>()
+    private val hazardSliders = HashMap<HazardType, MenuSlider>()
 
     init {
         setPageButtons(3, true, true)
     }
 
-    private fun getHazardItem(hazard: Hazard?): ItemStack {
-        if (hazard == null) {
-            return makeItem(
-                Material.BARRIER, Component.text("Unavailable", NamedTextColor.RED),
-                Component.text("This hazard is not compatible with this map", NamedTextColor.RED)
-            )
-        }
-        val item: ItemStack
-        val loreDesc = hazard.getDescription()
-        if (hazard.chance == HazardChance.DISABLED) {
-            item = makeItem(
-                Material.RED_STAINED_GLASS_PANE,
-                Component.text(hazard.getName(), NamedTextColor.RED),
-                MenuAction.TOGGLE_HAZARD.name,
-                STATUS_DISABLED,
-                Component.text("If enabled, x% of rounds " + hazard.getActionDescription() + "."),
-                loreDesc[0],
-                loreDesc[1],
-                loreDesc[2]
-            )
-        } else {
-            val percentage: Component =
-                Component.text(hazard.chance.percent.toString() + "%", NamedTextColor.LIGHT_PURPLE)
-            item = makeItem(
-                Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
-                MenuAction.TOGGLE_HAZARD.name,
-                STATUS_ENABLED,
-                percentage.append(
-                    Component.text(
-                        " of rounds " + hazard.getActionDescription() + ".",
-                        NamedTextColor.DARK_PURPLE
-                    )
-                ), loreDesc[0], loreDesc[1], loreDesc[2]
-            )
-        }
-        return item
-    }
-
-    override fun getMenuName(): Component {
-        return Component.text("Hazards (5/6)")
-    }
-
-    override fun getSlots(): Int {
-        return 36
-    }
+    override fun getMenuName(): Component = Component.text("Hazards (5/6)")
+    override fun getSlots(): Int = 36
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
-        val clickedItem = e.getCurrentItem() ?: return
+        val clickedItem = e.currentItem ?: return
         if (handlePageClick(e)) return
         val clicker = e.whoClicked as Player
         val bp = settings.lobby.getBotBowsPlayer(clicker)
@@ -96,9 +53,9 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
                 }
             }
             MenuAction.SET_HAZARD_CHANCE -> {
-                val c: Component = checkNotNull(e.getCurrentItem()!!.itemMeta.displayName())
-                val s = PlainTextComponentSerializer.plainText().serialize(c)
-                val chance = HazardChance.of(s)
+                val component = clickedItem.itemMeta.displayName() ?: return
+                val string = PlainTextComponentSerializer.plainText().serialize(component)
+                val chance = HazardChance.of(string)
                 val row = e.slot / 9
                 val type = hazardsSorted[row]
                 hazardSettings.setChance(type, chance)
@@ -106,13 +63,41 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
         }
     }
 
-    public override fun prevPage(p: Player) {
-        settings.winConditionMenu.open(p)
+    private fun getHazardItem(hazard: Hazard?): ItemStack {
+        if (hazard == null) {
+            return makeItem(
+                Material.BARRIER, Component.text("Unavailable", NamedTextColor.RED),
+                Component.text("This hazard is not compatible with this map", NamedTextColor.RED)
+            )
+        }
+        val item: ItemStack
+        val loreDesc = hazard.description
+        if (hazard.chance == HazardChance.DISABLED) {
+            item = makeItem(
+                Material.RED_STAINED_GLASS_PANE,
+                Component.text(hazard.getName(), NamedTextColor.RED),
+                MenuAction.TOGGLE_HAZARD.name,
+                STATUS_DISABLED,
+                Component.text("If enabled, x% of rounds " + hazard.getActionDescription() + "."),
+                loreDesc[0], loreDesc[1], loreDesc[2]
+            )
+        } else {
+            val percentage: Component =
+                Component.text(hazard.chance.percent.toString() + "%", NamedTextColor.LIGHT_PURPLE)
+            item = makeItem(
+                Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
+                MenuAction.TOGGLE_HAZARD.name,
+                STATUS_ENABLED,
+                percentage.append(
+                    Component.text(" of rounds " + hazard.getActionDescription() + ".", NamedTextColor.DARK_PURPLE)
+                ), loreDesc[0], loreDesc[1], loreDesc[2]
+            )
+        }
+        return item
     }
 
-    public override fun nextPage(p: Player) {
-        settings.abilityMenus[BotBows.getBotBowsPlayer(p)]!!.open(p)
-    }
+    public override fun prevPage(p: Player) = settings.winConditionMenu.open(p)
+    public override fun nextPage(p: Player) = settings.abilityMenus[BotBows.getBotBowsPlayer(p)]!!.open(p)
 
     fun updateBar(hazardType: HazardType, row: Int) {
         val hazardSettings = settings.hazardSettings
@@ -121,14 +106,11 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
     }
 
     override fun onSchemaUpdate() {
-        val newHazards: Set<HazardType> = settings.hazardSettings.getHazardTypes()
-        val updated = Arrays.stream(HazardType.entries.toTypedArray())
-            .filter { hazard: HazardType -> newHazards.contains(hazard) }
-            .toList()
+        val newHazards = settings.hazardSettings.getHazardTypes()
+        val updated = HazardType.entries.filter { it in newHazards }
 
-        hazardsSorted.stream()
-            .filter { hazard: HazardType -> !updated.contains(hazard) }
-            .forEach { hazard: HazardType -> hazardSliders.remove(hazard) }
+        hazardsSorted.filter { it !in updated }
+            .forEach { hazardSliders.remove(it) }
 
         hazardsSorted.clear()
         hazardsSorted.addAll(updated)
@@ -150,7 +132,7 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
             updateBar(hazardType, hazardsSorted.indexOf(hazardType))
         }
 
-        for (i in hazardsSorted.size * 9..<slots - 9) {
+        for (i in hazardsSorted.size * 9..slots - 8) {
             inventory.setItem(i, VOID)
         }
     }
@@ -161,7 +143,7 @@ class HazardMenu(settings: Settings?) : SettingsMenu(settings), HazardUpdateList
     }
 
     companion object {
-        private val PERCENT: MutableList<String?> = HazardChance.getPercentStrings()
+        private val PERCENT = HazardChance.getPercentStrings()
     }
 
     private enum class MenuAction {
