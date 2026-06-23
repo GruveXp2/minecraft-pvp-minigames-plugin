@@ -1,43 +1,55 @@
-package gruvexp.bbminigames.menu.menus;
+package gruvexp.bbminigames.menu.menus
 
-import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.sumo.SumoManager;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.sumo.SumoManager
+import gruvexp.bbminigames.twtClassic.BotBows
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
-public class GameMenu extends Menu {
-
-    public GameMenu() {
-        ItemStack botbows = makeItem(Material.BOW, Component.text("BotBows Classic"), Component.text("The classic game of BotBows"));
-        ItemStack sumo = makeItem(Material.STICK, Component.text("Sumo"), Component.text("The Sumo minigame"));
-        inventory.setItem(3, botbows);
-        inventory.setItem(5, sumo);
+class GameMenu : Menu() {
+    init {
+        inventory.setItem(3, BOTBOWS)
+        inventory.setItem(5, SUMO)
     }
 
-    @Override
-    public Component getMenuName() {
-        return Component.text("Game Menu");
-    }
+    override fun getMenuName(): Component = Component.text("Game Menu")
+    override fun getSlots(): Int = 9
 
-    @Override
-    public int getSlots() {
-        return 9;
-    }
+    override fun handleMenu(e: InventoryClickEvent) {
+        val p = e.whoClicked as Player
+        val clickedItem = e.currentItem ?: return
 
-    @Override
-    public void handleMenu(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-        ItemStack item = e.getCurrentItem();
-        if (item == null) return;
+        val actionId =
+            clickedItem.persistentDataContainer.get(ACTION_KEY, PersistentDataType.STRING) ?: return
 
-        if (item.getType() == Material.BOW) {
-            BotBows.lobbyMenu.open(p);
-        } else if (item.getType() == Material.STICK) {
-            SumoManager.sumoMenu.open(p);
+        val action = MenuAction.valueOf(actionId)
+        when (action) {
+            MenuAction.JOIN_BOTBOWS -> BotBows.lobbyMenu.open(p)
+            MenuAction.JOIN_SUMO -> SumoManager.sumoMenu.open(p)
         }
+    }
+
+    companion object {
+        val BOTBOWS: ItemStack = makeItem(
+            Material.BOW,
+            MenuAction.JOIN_BOTBOWS.name,
+            Component.text("BotBows Classic"),
+            Component.text("The classic game of BotBows")
+        )
+        val SUMO: ItemStack = makeItem(
+            Material.STICK,
+            MenuAction.JOIN_SUMO.name,
+            Component.text("Sumo"),
+            Component.text("Knockback pvp with sticks")
+        )
+    }
+
+    private enum class MenuAction {
+        JOIN_BOTBOWS,
+        JOIN_SUMO,
     }
 }
