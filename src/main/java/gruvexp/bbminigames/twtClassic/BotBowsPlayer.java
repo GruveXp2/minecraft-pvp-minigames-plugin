@@ -102,7 +102,7 @@ public class BotBowsPlayer {
 
     public void destroy() {
         avatar.destroy();
-        sneakManager.destroy();
+        if (sneakManager != null) sneakManager.destroy();
         abilities.values().forEach(Ability::destroy);
     }
 
