@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.model.preset
 
-import gruvexp.bbminigames.twtClassic.BotBowsMap
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import org.bukkit.Material

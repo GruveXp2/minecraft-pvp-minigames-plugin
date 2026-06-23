@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.menu.SettingsMenu
-import gruvexp.bbminigames.twtClassic.BotBowsMap
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
@@ -158,14 +158,14 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             .sortedByDescending { map -> mapVotingSession.getVotes(map) }
             .take(7)
             .forEachIndexed { i, map ->
-                val mapItem = map.menuItem.clone()
+                val mapItem = map.getMenuItem()
                 mapItem.amount = mapVotingSession.getVotes(map)
                 inventory.setItem(2 + i, mapItem)
             }
     }
 
     fun displayCurrentMap() {
-        inventory.setItem(2, settings.mapSettings.currentMap.menuItem)
+        inventory.setItem(2, settings.mapSettings.currentMap.getMenuItem())
     }
 
     override fun onVoteToggle() {

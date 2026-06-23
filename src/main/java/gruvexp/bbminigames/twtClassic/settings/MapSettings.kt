@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.twtClassic.settings
 
-import gruvexp.bbminigames.twtClassic.BotBowsMap
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.map.MapVotingSession
 
