@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

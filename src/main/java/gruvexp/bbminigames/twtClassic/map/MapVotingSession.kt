@@ -1,6 +1,5 @@
 package gruvexp.bbminigames.twtClassic.map
 
-import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

@@ -11,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;

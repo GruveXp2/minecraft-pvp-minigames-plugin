@@ -11,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;
 import gruvexp.bbminigames.twtClassic.settings.*;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
@@ -199,7 +200,7 @@ public class Settings {
         winConditionSettings.setRoundDuration(winConditionPreset.roundDuration());
         winConditionSettings.setDynamicScoring(winConditionPreset.dynamicPoints());
 
-        ImmutableSet<HazardType> allowedHazards = getMapSettings().getCurrentMap().getAllowedHazards();
+        Set<HazardType> allowedHazards = getMapSettings().getCurrentMap().getAllowedHazards();
         allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
 
         AbilityPreset abilityPreset = preset.abilities();

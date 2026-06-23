@@ -2,7 +2,7 @@ package gruvexp.bbminigames.commands;
 
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsMap;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

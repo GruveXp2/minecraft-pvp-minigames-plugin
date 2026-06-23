@@ -1,8 +1,7 @@
-package gruvexp.bbminigames.twtClassic
+package gruvexp.bbminigames.twtClassic.map
 
 import gruvexp.bbminigames.menu.Menu
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
-import gruvexp.bbminigames.twtClassic.map.MapType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -13,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType
 enum class BotBowsMap(
     val mapType: MapType,
     val allowedHazards: Set<HazardType>,
-    private val menuItem: ItemStack
+    private val item: ItemStack
 ) {
     RANDOM(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
@@ -152,7 +151,7 @@ enum class BotBowsMap(
     );
 
     fun getMenuItem(): ItemStack {
-        val item = menuItem.clone()
+        val item = item.clone()
         item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name) }
         return item
     }
