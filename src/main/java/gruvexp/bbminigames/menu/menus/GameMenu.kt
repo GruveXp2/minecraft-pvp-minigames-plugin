@@ -22,7 +22,6 @@ class GameMenu : Menu() {
         val p = e.whoClicked as Player
         val clickedItem = e.currentItem ?: return
 
-
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
             MenuAction.JOIN_BOTBOWS -> BotBows.lobbyMenu.open(p)
@@ -33,14 +32,14 @@ class GameMenu : Menu() {
     companion object {
         val BOTBOWS: ItemStack = makeItem(
             Material.BOW,
-            MenuAction.JOIN_BOTBOWS.name,
             Component.text("BotBows Classic"),
+            MenuAction.JOIN_BOTBOWS.name,
             Component.text("The classic game of BotBows")
         )
         val SUMO: ItemStack = makeItem(
             Material.STICK,
-            MenuAction.JOIN_SUMO.name,
             Component.text("Sumo"),
+            MenuAction.JOIN_SUMO.name,
             Component.text("Knockback pvp with sticks")
         )
     }
