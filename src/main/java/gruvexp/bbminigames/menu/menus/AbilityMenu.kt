@@ -480,8 +480,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         private val UNIQUE_MODE_DISABLED: ItemStack = makeItem(
             Material.RED_STAINED_GLASS_PANE,
-            MenuAction.TOGGLE_UNIQUE_MODE.name,
             Component.text("Unique mode", NamedTextColor.RED),
+            MenuAction.TOGGLE_UNIQUE_MODE.name,
             STATUS_DISABLED,
             Component.text("By enabling this, each ability"),
             Component.text("can can only be equipped by max team member")
@@ -489,8 +489,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         private val UNIQUE_MODE_ENABLED: ItemStack = makeItem(
             Material.LIME_STAINED_GLASS_PANE,
-            MenuAction.TOGGLE_UNIQUE_MODE.name,
             Component.text("Unique mode", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_UNIQUE_MODE.name,
             STATUS_ENABLED,
             Component.text("By enabling this, each player"),
             Component.text("can can only be equipped by max team member")
@@ -498,8 +498,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         val MOD_TOGGLE: ItemStack = makeItem(
             Material.MACE,
-            MenuAction.TOGGLE_BAN_HAMMER.name,
             Component.text("Mod Toggle"),
+            MenuAction.TOGGLE_BAN_HAMMER.name,
             Component.text("When enabled, you can toggle"),
             Component.text("which abilities will be allowed")
         )
@@ -512,8 +512,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         private val RANDOMIZE_ABILITIES: ItemStack = makeItem(
             Material.TARGET,
-            MenuAction.RANDOMIZE_ABILITIES.name,
             Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
+            MenuAction.RANDOMIZE_ABILITIES.name,
             Component.text("Click this to randomize your abilities"),
             Component.text("from the allowed abilities")
         )
