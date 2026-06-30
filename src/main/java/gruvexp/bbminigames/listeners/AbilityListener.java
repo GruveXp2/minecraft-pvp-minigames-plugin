@@ -89,7 +89,7 @@ public class AbilityListener implements Listener {
 
                         Location particleLoc = new Location(loc.getWorld(), x, y, z);
                         p.getWorld().spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
-                                new Particle.DustOptions(bp.getTeam().dyeColor.getColor(), 2.5f));
+                                new Particle.DustOptions(bp.getTeam().getDyeColor().getColor(), 2.5f));
                     }
                 }
             }

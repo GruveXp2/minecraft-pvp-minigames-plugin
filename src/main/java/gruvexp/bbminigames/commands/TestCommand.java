@@ -285,15 +285,15 @@ public class TestCommand implements CommandExecutor {
                     String playerName = args[1];
                     if (playerName == null) playerName = "GruveXp";
                     BotBowsTeam team = BotBows.getLobby(Bukkit.getPlayer(playerName)).getBotBowsPlayer(Bukkit.getPlayer(playerName)).getTeam();
-                    BotBows.debugMessage("The team of " + playerName + " is " + team.name);
+                    BotBows.debugMessage("The team of " + playerName + " is " + team.getDisplayName());
                 }
                 case "toggle_debugging" -> {
                     debugging = !debugging;
                     BotBows.debugMessage("Debugging set to: " + debugging);
                 }
                 case "t" -> {
-                    BotBows.debugMessage("Team1: " + BotBows.getLobby(0).settings.team1.name);
-                    BotBows.debugMessage("Team2: " + BotBows.getLobby(0).settings.team2.name);
+                    BotBows.debugMessage("Team1: " + BotBows.getLobby(0).settings.team1.getDisplayName());
+                    BotBows.debugMessage("Team2: " + BotBows.getLobby(0).settings.team2.getDisplayName());
                 }
                 case "t1" -> {
                     test1 = !test1;

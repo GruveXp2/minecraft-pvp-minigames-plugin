@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.map
 
 import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -12,10 +13,14 @@ import org.bukkit.persistence.PersistentDataType
 enum class BotBowsMap(
     val mapType: MapType,
     val allowedHazards: Set<HazardType>,
+    val team1: BotBowsTeam,
+    val team2: BotBowsTeam,
     private val item: ItemStack
-) {
+) { // TODO: gjør at 2 lobbies ikke kan ha samme map, pga nå er jo mapsane enums, og det ville bøgga te playersa i teamsa
     RANDOM(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
+        BotBowsTeam.BLAUD,
+        BotBowsTeam.SAUCE,
         Menu.makeItem(
             Material.TARGET, Component.text("Random Map", NamedTextColor.WHITE),
             Component.text("Randomly picks one of the classic maps")
@@ -24,6 +29,8 @@ enum class BotBowsMap(
 
     CLASSIC_ARENA(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
+        BotBowsTeam.BLAUD,
+        BotBowsTeam.SAUCE,
         Menu.makeItem(
             Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
             Component.text("Blaud", NamedTextColor.BLUE)
@@ -36,6 +43,7 @@ enum class BotBowsMap(
 
     ICY_RAVINE(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
+        BotBowsTeam.GRAUT, BotBowsTeam.WACKY,
         Menu.makeItem(
             Material.SPRUCE_SAPLING, Component.text("Icy Ravine", NamedTextColor.AQUA),
             Component.text("Graut", NamedTextColor.LIGHT_PURPLE)
@@ -48,6 +56,7 @@ enum class BotBowsMap(
 
     ROYAL_CASTLE(
         MapType.CLASSIC, setOf(HazardType.GHOST),
+        BotBowsTeam.KJØDD, BotBowsTeam.GOOFY,
         Menu.makeItem(
             Material.STONE_BRICK_STAIRS, Component.text("Royal Castle", NamedTextColor.GREEN),
             Component.text("Kjødd", NamedTextColor.DARK_AQUA)
@@ -56,8 +65,10 @@ enum class BotBowsMap(
             Component.text("A castle themed arena")
         )
     ),
+
     STEAMPUNK(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
+        BotBowsTeam.BLOCC, BotBowsTeam.QUICC,
         Menu.makeItem(
             Material.COPPER_BULB, Component.text("Steampunk", NamedTextColor.GOLD),
             Component.text("Blocc", NamedTextColor.GOLD)
@@ -69,6 +80,7 @@ enum class BotBowsMap(
 
     PIGLIN_HIDEOUT(
         MapType.CLASSIC, setOf(HazardType.EARTHQUAKE, HazardType.GHOST),
+        BotBowsTeam.PIGLIN, BotBowsTeam.HOGLIN,
         Menu.makeItem(
             Material.MAGMA_BLOCK, Component.text("Piglin Hideout", NamedTextColor.RED),
             Component.text("Piglin", NamedTextColor.GOLD)
@@ -80,6 +92,7 @@ enum class BotBowsMap(
 
     INSIDE_BOTBASE(
         MapType.OLD, setOf(HazardType.STORM, HazardType.GHOST),
+        BotBowsTeam.CORNER, BotBowsTeam.CORE_INSIDE,
         Menu.makeItem(
             Material.GREEN_GLAZED_TERRACOTTA, Component.text("Inside the BotBase", NamedTextColor.GREEN),
             Component.text("Corner", NamedTextColor.GRAY)
@@ -92,6 +105,7 @@ enum class BotBowsMap(
 
     OUTSIDE_BOTBASE(
         MapType.OLD, setOf(HazardType.STORM, HazardType.GHOST),
+        BotBowsTeam.CORE_OUTSIDE, BotBowsTeam.MOUNTAIN,
         Menu.makeItem(
             Material.GRASS_BLOCK, Component.text("Outside the BotBase", NamedTextColor.GREEN),
             Component.text("Core", NamedTextColor.GREEN)
@@ -104,6 +118,7 @@ enum class BotBowsMap(
 
     ROCKET_FOREST(
         MapType.OLD, setOf(HazardType.STORM, HazardType.GHOST),
+        BotBowsTeam.DOOR, BotBowsTeam.TUNNEL,
         Menu.makeItem(
             Material.SPRUCE_SAPLING, Component.text("Rocket Forest", NamedTextColor.DARK_GREEN),
             Component.text("Door", NamedTextColor.GRAY)
@@ -116,6 +131,7 @@ enum class BotBowsMap(
 
     ROCKET(
         MapType.OLD, setOf(HazardType.GHOST),
+        BotBowsTeam.DROPPER, BotBowsTeam.ENGINE,
         Menu.makeItem(
             Material.CRAFTER, Component.text("Inside the Rocket", NamedTextColor.RED),
             Component.text("Dropper", NamedTextColor.BLACK)
@@ -128,6 +144,7 @@ enum class BotBowsMap(
 
     SPACE_STATION(
         MapType.OLD, setOf(HazardType.GHOST),
+        BotBowsTeam.WARM, BotBowsTeam.COLD,
         Menu.makeItem(
             Material.GLASS, Component.text("Space Station", NamedTextColor.AQUA),
             Component.text("Warm", NamedTextColor.RED)
@@ -140,6 +157,7 @@ enum class BotBowsMap(
 
     MARS_BASE(
         MapType.OLD, setOf(HazardType.STORM, HazardType.GHOST),
+        BotBowsTeam.BLAUD, BotBowsTeam.SAUCE,
         Menu.makeItem(
             Material.RED_SAND, Component.text("Mars Base", NamedTextColor.GOLD),
             Component.text("???", NamedTextColor.GRAY)
@@ -149,6 +167,11 @@ enum class BotBowsMap(
             Component.text("if it ever will be...")
         )
     );
+
+    init {
+        team1.oppositeTeam = team2
+        team2.oppositeTeam = team1
+    }
 
     fun getMenuItem(): ItemStack {
         val item = item.clone()

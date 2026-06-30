@@ -109,7 +109,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
             offset.setX(Math.abs(offset.getX())).setY(Math.abs(offset.getY())).setZ(Math.abs(offset.getZ())); // Its just abs() for every x y z
 
             this.length = length;
-            this.color = bp.getTeam().dyeColor.getColor();
+            this.color = bp.getTeam().getDyeColor().getColor();
             this.opponents = bp.getTeam().getOppositeTeam().getPlayers();
             this.world = center.getWorld();
         }

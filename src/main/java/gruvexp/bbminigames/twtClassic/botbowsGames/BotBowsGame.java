@@ -197,7 +197,7 @@ public class BotBowsGame {
             return;
         }
 
-        lobby.titlePlayers(Component.text(winningTeam.name + " +" + winScore, winningTeam.color), 2);
+        lobby.titlePlayers(Component.text(winningTeam.getDisplayName() + " +" + winScore, winningTeam.getColor()), 2);
         boardManager.updateTeamScores();
 
         WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
@@ -214,13 +214,13 @@ public class BotBowsGame {
         for (BotBowsPlayer bp : winningTeam.getPlayers()) {
             HPLeft += bp.getHP();
         }
-        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.color));
+        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.getColor()));
 
         int enemyHPTaken = 0;
         for (BotBowsPlayer bp : losingTeam.getPlayers()) {
             enemyHPTaken += bp.settings.getMaxHealth();
         }
-        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.color));
+        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.getColor()));
 
         return HPLeft + enemyHPTaken;
     }
@@ -233,8 +233,8 @@ public class BotBowsGame {
                     "================", NamedTextColor.LIGHT_PURPLE));
         } else {
             lobby.messagePlayers(Component.text("================\n" +
-                    "TEAM " + winningTeam.name.toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
-                    "================", winningTeam.color));
+                    "TEAM " + winningTeam.getDisplayName().toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
+                    "================", winningTeam.getColor()));
         }
         postGameTitle(winningTeam);
 
@@ -253,11 +253,11 @@ public class BotBowsGame {
         }
         BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
         for (BotBowsPlayer bp : winningTeam.getPlayers()) {
-            bp.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.color), Component.text(""),
+            bp.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.getColor()), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
         for (BotBowsPlayer bp : losingTeam.getPlayers()) {
-            bp.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.color), Component.text(""),
+            bp.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.getColor()), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
     }

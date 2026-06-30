@@ -94,7 +94,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
 
         // Outer display (Red Stained Glass with 75% of the Creeper's head size)
         BlockDisplay glassDisplay = (BlockDisplay) loc.getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-        glassDisplay.setBlock(Bukkit.createBlockData(Material.getMaterial(bp.getTeam().dyeColor.name() + "_STAINED_GLASS")));
+        glassDisplay.setBlock(Bukkit.createBlockData(Material.getMaterial(bp.getTeam().getDyeColor().name() + "_STAINED_GLASS")));
         float glassSize = 6 * CREEPER_PX; // headSize * % of headSize to use
         glassDisplay.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 0, 0, 1), new Vector3f(glassSize, glassSize, glassSize), new AxisAngle4f(0, 0, 0, 1)));
 
@@ -175,7 +175,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
         }
 
         public void explode() {
-            Color attackerTeamColor = owner.getTeam().dyeColor.getColor();
+            Color attackerTeamColor = owner.getTeam().getDyeColor().getColor();
             World world = creeper.getWorld();
             world.spawnParticle(Particle.EXPLOSION_EMITTER, creeper.getLocation(), 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
             world.spawnParticle(Particle.DUST, creeper.getLocation(), 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color

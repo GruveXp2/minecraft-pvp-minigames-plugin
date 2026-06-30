@@ -59,7 +59,7 @@ public class NpcAvatar implements BotBowsAvatar{
 
     @Override
     public void eliminate() {
-        Mannequin newMannequin = (Mannequin) Main.WORLD.spawnEntity(bp.getTeam().tribunePos, EntityType.MANNEQUIN);
+        Mannequin newMannequin = (Mannequin) Main.WORLD.spawnEntity(bp.getTeam().getTribunePos(), EntityType.MANNEQUIN);
         newMannequin.setProfile(mannequin.getProfile());
         newMannequin.customName(mannequin.customName());
         newMannequin.setCustomNameVisible(true);
@@ -265,7 +265,7 @@ public class NpcAvatar implements BotBowsAvatar{
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
-        meta.setColor(bp.getTeam().dyeColor.getColor());
+        meta.setColor(bp.getTeam().getDyeColor().getColor());
         armor.setItemMeta(meta);
         return armor;
     }

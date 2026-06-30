@@ -64,7 +64,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
                 .collect(Collectors.toSet());
         if (nearbyPlayers.isEmpty()) return;
 
-        Color attackerTeamColor = attacker.getTeam().dyeColor.getColor();
+        Color attackerTeamColor = attacker.getTeam().getDyeColor().getColor();
         World world = attacker.getLocation().getWorld();
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
             Location nearbyPlayerLoc = nearbyPlayer.getLocation().add(0, 1, 0); // the arc will hit the middle of the player
@@ -145,7 +145,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
     public void onLaunch(AbilityContext.Launch ctx) {
         Arrow arrow = (Arrow) ctx.projectile();
         arrow.setColor(Color.AQUA);
-        BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+        BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
                 .runTaskTimer(Main.getPlugin(), 1L, 1L);
         activeArrows.put(arrow, arrowTrail);
         arrow.setMetadata("botbows_ability", new FixedMetadataValue(Main.getPlugin(), this));

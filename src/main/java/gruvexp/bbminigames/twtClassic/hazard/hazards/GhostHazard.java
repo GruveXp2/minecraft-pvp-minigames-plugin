@@ -51,8 +51,8 @@ public class GhostHazard extends Hazard {
 
                 float randomPitch = 0.8f + (float) Math.random() * 0.4f;
                 // 2DO: get the spawnpoint in a cleaner way
-                Main.WORLD.playSound(bp.lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
-                Main.WORLD.playSound(bp.lobby.settings.team2.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(bp.lobby.settings.team1.getSpawnPos()[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(bp.lobby.settings.team2.getSpawnPos()[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
             }, 60L); // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
         BotBows.setTimeSmooth(6000, 18000, 5);

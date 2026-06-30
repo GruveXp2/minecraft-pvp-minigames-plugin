@@ -300,7 +300,7 @@ public class PlayerAvatar implements BotBowsAvatar{
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
-        meta.setColor(bp.getTeam().dyeColor.getColor());
+        meta.setColor(bp.getTeam().getDyeColor().getColor());
         armor.setItemMeta(meta);
         return armor;
     }

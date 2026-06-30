@@ -67,7 +67,7 @@ public class BotBowsPlayer {
     public BotBowsTeam getTeam() {return team;}
 
     public TextColor getTeamColor() {
-        if (team != null) return team.color;
+        if (team != null) return team.getColor();
         return NamedTextColor.WHITE;
     }
 

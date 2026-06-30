@@ -28,7 +28,7 @@ public class SwitchSpectator implements Listener {
                 .toList();
 
         if (alivePlayers.isEmpty()) {
-            p.sendMessage(Component.text("Cant spectate, " + team.name + " has no alive players", NamedTextColor.GRAY));
+            p.sendMessage(Component.text("Cant spectate, " + team.getDisplayName() + " has no alive players", NamedTextColor.GRAY));
             return;
         }
 

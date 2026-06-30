@@ -35,7 +35,7 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
     }
 
     public static void handleArrowHit(Player attacker, Location hitLoc) {
-        Color attackerTeamColor = BotBows.getLobby(attacker).getBotBowsPlayer(attacker).getTeam().dyeColor.getColor();
+        Color attackerTeamColor = BotBows.getLobby(attacker).getBotBowsPlayer(attacker).getTeam().getDyeColor().getColor();
         attacker.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
         attacker.getWorld().spawnParticle(Particle.DUST, hitLoc, 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
         BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
@@ -52,7 +52,7 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
         if (ctx.projectile() instanceof Arrow arrow) {
             use();
             arrow.setColor(Color.RED);
-            BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().dyeColor.getColor())
+            BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
                     .runTaskTimer(Main.getPlugin(), 1L, 1L);
             arrow.getVelocity().multiply(0.5f);
             activeArrows.put(arrow, arrowTrail);
