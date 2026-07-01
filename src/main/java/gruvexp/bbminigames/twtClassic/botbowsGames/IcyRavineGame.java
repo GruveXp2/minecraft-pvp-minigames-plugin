@@ -5,7 +5,7 @@ import gruvexp.bbminigames.tasks.GvwDungeonProximityScanner;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.DungeonGhoster;
 import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 

@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.twtClassic.map
 
 import gruvexp.bbminigames.menu.Menu
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

@@ -4,7 +4,7 @@ import gruvexp.bbminigames.model.preset.AbilityPreset
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
-import gruvexp.bbminigames.twtClassic.botbowsTeams.TeamSide
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 
 class AbilitySettings(private val getPlayerSettings: () -> Set<PlayerSettings>) {

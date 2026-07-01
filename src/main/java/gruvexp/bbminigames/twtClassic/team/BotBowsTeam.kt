@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.twtClassic.botbowsTeams
+package gruvexp.bbminigames.twtClassic.team
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer

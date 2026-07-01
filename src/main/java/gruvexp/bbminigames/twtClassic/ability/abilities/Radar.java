@@ -4,7 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.scheduler.BukkitRunnable;
 

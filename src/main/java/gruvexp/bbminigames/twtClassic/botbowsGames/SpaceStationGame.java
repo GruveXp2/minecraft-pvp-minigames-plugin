@@ -4,7 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.mechanics.SpaceStationDoor;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.World;

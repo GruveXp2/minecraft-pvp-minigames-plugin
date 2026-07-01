@@ -7,7 +7,7 @@ import gruvexp.bbminigames.mechanics.Spinner;
 import gruvexp.bbminigames.mechanics.SteamPipe;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import org.bukkit.Axis;
 import org.bukkit.Chunk;
 import org.bukkit.Location;

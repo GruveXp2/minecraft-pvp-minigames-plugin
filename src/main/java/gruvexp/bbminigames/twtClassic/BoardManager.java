@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.twtClassic;
 
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;

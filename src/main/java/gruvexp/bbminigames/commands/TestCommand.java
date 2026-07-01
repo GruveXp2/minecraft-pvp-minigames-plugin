@@ -8,7 +8,7 @@ import gruvexp.bbminigames.model.preset.BattlePreset;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap;

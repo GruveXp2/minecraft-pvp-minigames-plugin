@@ -11,7 +11,7 @@ import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

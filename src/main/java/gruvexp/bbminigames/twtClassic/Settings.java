@@ -7,7 +7,7 @@ import gruvexp.bbminigames.model.preset.HealthPreset;
 import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.*;
+import gruvexp.bbminigames.twtClassic.team.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.map.VoteResult;

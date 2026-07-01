@@ -5,7 +5,7 @@ import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.tasks.RoundTimer;
 import gruvexp.bbminigames.twtClassic.*;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
