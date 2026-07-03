@@ -209,8 +209,8 @@ public class Settings {
     }
 
     private void setNewTeams(boolean flipped) {
-        List<BotBowsPlayer> team1Players = team1.getPlayers(); // TODO: bøgger, getter referanse så bør kanskje gjør en copy her
-        List<BotBowsPlayer> team2Players = team2.getPlayers();
+        List<BotBowsPlayer> team1Players = new ArrayList<>(team1.getPlayers());
+        List<BotBowsPlayer> team2Players = new ArrayList<>(team2.getPlayers());
         team1.clearPlayers();
         team2.clearPlayers();
 
