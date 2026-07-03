@@ -229,7 +229,7 @@ enum class BotBowsTeam(
 
     var oppositeTeam: BotBowsTeam? = null
         set(oppositeTeam) {
-            check(field == null) { "This team already has an assigned opposite team" }
+            if (field != null) return
             field = oppositeTeam
         }
     val players: MutableList<BotBowsPlayer> = ArrayList(4)
