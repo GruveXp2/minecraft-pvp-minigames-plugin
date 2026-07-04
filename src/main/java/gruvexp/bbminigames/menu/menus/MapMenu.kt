@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.menu.SettingsMenu
-import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.settings.MapUpdateListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -56,7 +56,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
                 bp.avatar.message(Component.text("This map is not added yet", NamedTextColor.RED))
                 return
             }
-            if (map == BotBowsMap.STEAMPUNK) {
+            if (map == BotBowsMap.STEAMPUNK && !settings.useExperimentalFeatures) {
                 sendBrokedLockedMessage(bp.avatar)
                 return
             }
