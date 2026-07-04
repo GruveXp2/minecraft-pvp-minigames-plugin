@@ -1,10 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.mechanics.Gate;
-import gruvexp.bbminigames.mechanics.Hatch;
-import gruvexp.bbminigames.mechanics.Spinner;
-import gruvexp.bbminigames.mechanics.SteamPipe;
+import gruvexp.bbminigames.mechanics.*;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
@@ -12,6 +9,7 @@ import org.bukkit.Axis;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
@@ -179,20 +177,40 @@ public class SteamPunkGame extends BotBowsGame {
         Vector3i gateSize = new Vector3i(3, 7, 7);
         Location gateFramesSrc = new Location(world, -400, 1, -327);
         // copper
-        gates.add(new Gate(gateFramesSrc                             , 3, gateSize, new Location(world, -347, 22, -397), 2, true,
-                Map.of("steampunk_gate_copper_cog1", 25f, "steampunk_gate_copper_cog2", 25f, "steampunk_gate_copper_cog3", -12f)));
+        gates.add(new Gate(gateFramesSrc, 3, gateSize, new Location(world, -347, 22, -397), 2, true,
+                Set.of(
+                        new Gear.GearConfig(1, new Location(world, -348, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear.GearConfig(2, new Location(world, -344, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear.GearConfig(3, new Location(world, -348, 24, -389), StructureRotation.NONE, "copper_wheel", -12)
+                )
+        ));
 
         // exposed
         gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false,
-                Map.of("steampunk_gate_exposed_cog1", 16f, "steampunk_gate_exposed_cog2", 16f, "steampunk_gate_exposed_cog3", -8f)));
+                Set.of(
+                        new Gear.GearConfig(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
+                        new Gear.GearConfig(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
+                        new Gear.GearConfig(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8)
+                )
+        ));
 
         // weathered
         gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false,
-                Map.of("steampunk_gate_weathered_cog1", 9f, "steampunk_gate_weathered_cog2", 9f, "steampunk_gate_weathered_cog3", -4.5f)));
+                Set.of(
+                        new Gear.GearConfig(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
+                        new Gear.GearConfig(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
+                        new Gear.GearConfig(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f)
+                )
+        ));
 
         // oxidized
         gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
-                Map.of("steampunk_gate_oxidized_cog1", 5f, "steampunk_gate_oxidized_cog2", 5f, "steampunk_gate_oxidized_cog3", -2.5f)));
+                Set.of(
+                        new Gear.GearConfig(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
+                        new Gear.GearConfig(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
+                        new Gear.GearConfig(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_weathered", -2.5f)
+                )
+        ));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {

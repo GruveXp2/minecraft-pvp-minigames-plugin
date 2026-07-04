@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.joml.Vector3i;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Gate {
@@ -28,7 +27,7 @@ public class Gate {
 
     private boolean open;
 
-    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Map<String, Float> gears) {
+    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Set<Gear.GearConfig> gears) {
         this.structureSrc = structureSrc;
         this.animationSteps = animationSteps;
         this.size = size;
@@ -36,16 +35,17 @@ public class Gate {
         this.animationStepTicks = animationStepTicks;
         this.open = startsOpen;
 
-        gears.forEach((tag, speed) -> {
+        gears.forEach(gearConfig -> {
             Set<BlockDisplay> displays = new HashSet<>();
             for (Entity nearbyEntity : location.getNearbyEntities(20, 10, 10)) {
                 if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-                if (!display.getScoreboardTags().contains(tag)) continue;
+                if (!display.getScoreboardTags().contains(gearConfig.structureName() + "_" + gearConfig.id())) continue;
 
                 displays.add(display);
                 display.setRotation(display.getYaw(), 0);
             }
-            this.gears.add(new Gear(displays, speed, tag));
+            Gear gear = displays.isEmpty() ? new Gear(gearConfig) : new Gear(displays, gearConfig.speed(), gearConfig.structureName());
+            this.gears.add(gear);
         });
     }
 
