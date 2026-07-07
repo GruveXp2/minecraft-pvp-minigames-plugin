@@ -3,6 +3,7 @@ package gruvexp.bbminigames.commands;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.extras.StickSlap;
+import gruvexp.bbminigames.mechanics.Hatch;
 import gruvexp.bbminigames.mechanics.RotatingStructure;
 import gruvexp.bbminigames.model.preset.BattlePreset;
 import gruvexp.bbminigames.twtClassic.*;
@@ -23,6 +24,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.structure.Structure;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -48,6 +51,7 @@ public class TestCommand implements CommandExecutor {
     public static boolean testAbilities = false;
     public static RotatingStructure rotatingStructure;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
+    private static Hatch hatch;
 
     public static Directional orientable;
 
@@ -68,6 +72,24 @@ public class TestCommand implements CommandExecutor {
                     lobby.joinGame(Bukkit.getPlayer("GruveXp"));
                     lobby.addBot();
                     lobby.startGame(p);
+                }
+                case "h" -> {
+                    Location loc = new Location(Main.WORLD, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                    StructureRotation rotation = StructureRotation.valueOf(args[4]);
+                    Hatch.HatchConfig config = new Hatch.HatchConfig(7, loc, rotation, "copper_hatch_weathered");
+                    hatch = new Hatch(config);
+                }
+                case "ha" -> {
+                    hatch.toggle();
+                }
+                case "gg" -> {
+                    Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", "copper_wheel"));
+                    if (structure == null) {
+                        BotBows.debugMessage("ERROR! Structure \"botbows:copper_wheel\" failed to load"); // TODO: apparently pga man måtte legge strukturfilan inn i datapk folder systemer
+                        return true;
+                    }
+                    BotBows.debugMessage("it wørk.");
+                    return true;
                 }
                 case "vote" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);

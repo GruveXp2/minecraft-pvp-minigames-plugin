@@ -1,15 +1,19 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.structure.Structure;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -26,36 +30,100 @@ public class Hatch {
     private final HashSet<Block> openHitbox;
     private final HashSet<Block> closedHitbox;
 
-    public Hatch(String displayTag, Vector closedHitboxOrigin, Vector closedHitboxSize, Vector openHitboxOrigin, Vector openHitboxSize) {
+    public Hatch(HatchConfig config) {
         this.displays = new HashSet<>();
         this.closedHitbox = new HashSet<>();
         this.openHitbox = new HashSet<>();
-        Location hatchArea = new Location(Main.WORLD, openHitboxOrigin.getX(), openHitboxOrigin.getY(), openHitboxOrigin.getZ());
+
+        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", config.structureName));
+        if (structure == null) {
+            BotBows.debugMessage("ERROR! Structure \"botbows:" + config.structureName + "\" failed to load");
+            return;
+        }
+
+        Vector size = structure.getSize();
+        Vector closedSize = rotateVector(size, config.rotation);
+        Location originLoc = config.location.clone().add(-1, 0, 0);
+        Vector origin = originLoc.toVector();
+        Vector openSize = rotateVector(new Vector(size.getBlockX(), size.getBlockZ(), size.getBlockY()), config.rotation);
+
+        Vector[] closedBounds = getBounds(origin, closedSize);
+        Vector[] openBounds = getBounds(origin, openSize);
+
+        Location hatchArea = new Location(Main.WORLD, origin.getX(), origin.getY(), origin.getZ());
         for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
             if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(displayTag)) continue;
+            if (!display.getScoreboardTags().contains(config.structureName + "_" + config.id)) continue;
 
             displays.add(display);
             display.setRotation(display.getYaw(), 0);
         }
-        for (int x = (int) closedHitboxOrigin.getX(); x < closedHitboxOrigin.getX() + closedHitboxSize.getX(); x++) {
-            for (int y = (int) closedHitboxOrigin.getY(); y < closedHitboxOrigin.getY() + closedHitboxSize.getY(); y++) {
-                for (int z = (int) closedHitboxOrigin.getZ(); z < closedHitboxOrigin.getZ() + closedHitboxSize.getZ(); z++) {
+
+        if (displays.isEmpty()) {
+            BotBows.placeSymmetricalStructure(structure, originLoc, config.location.clone().add(0.5, 0.5, 0.5), config.rotation, config.structureName + "_" + config.id, displays);
+        }
+
+        for (int x = (int) closedBounds[0].getX(); x < closedBounds[1].getX(); x++) { //TODO: bøgga! se i chatten og bytt ut size, med hitboxStart og hitboxEnd, og gjør max/min greier for å finne riktig
+            for (int y = (int) closedBounds[0].getY(); y < closedBounds[1].getY(); y++) {
+                for (int z = (int) closedBounds[0].getZ(); z < closedBounds[1].getZ(); z++) {
                     Block block = Main.WORLD.getBlockAt(x, y, z);
                     block.setType(Material.BARRIER);
                     closedHitbox.add(block);
                 }
             }
         }
-        for (int x = (int) openHitboxOrigin.getX(); x < openHitboxOrigin.getX() + openHitboxSize.getX(); x++) {
-            for (int y = (int) openHitboxOrigin.getY(); y < openHitboxOrigin.getY() + openHitboxSize.getY(); y++) {
-                for (int z = (int) openHitboxOrigin.getZ(); z < openHitboxOrigin.getZ() + openHitboxSize.getZ(); z++) {
+
+        for (int x = (int) openBounds[0].getX(); x < openBounds[1].getX(); x++) {
+            for (int y = (int) openBounds[0].getY(); y < openBounds[1].getY(); y++) {
+                for (int z = (int) openBounds[0].getZ(); z < openBounds[1].getZ(); z++) {
                     Block block = Main.WORLD.getBlockAt(x, y, z);
                     block.setType(Material.AIR);
                     openHitbox.add(block);
                 }
             }
         }
+    }
+
+    private Vector[] getBounds(Vector origin, Vector size) {
+        Vector end = origin.clone().add(size);
+
+        Vector min = new Vector(
+                Math.min(origin.getX(), end.getX()),
+                Math.min(origin.getY(), end.getY()),
+                Math.min(origin.getZ(), end.getZ())
+        );
+
+        Vector max = new Vector(
+                Math.max(origin.getX(), end.getX()),
+                Math.max(origin.getY(), end.getY()),
+                Math.max(origin.getZ(), end.getZ())
+        );
+
+        return new Vector[]{min, max};
+    }
+
+    private Vector rotateVector(Vector vec, StructureRotation rotation) {
+        double x = vec.getX();
+        double z = vec.getZ();
+
+        switch (rotation) {
+            case CLOCKWISE_90 -> {
+                vec.setX(-z);
+                vec.setZ(x);
+            }
+            case COUNTERCLOCKWISE_90 -> {
+                vec.setX(z);
+                vec.setZ(-x);
+            }
+            case CLOCKWISE_180 -> {
+                vec.setX(-x);
+                vec.setZ(-z);
+            }
+            case NONE -> {
+                // Nothing
+            }
+        }
+        return vec;
     }
 
     public void toggle() {
@@ -116,4 +184,6 @@ public class Hatch {
             }
         }, 0, 1);
     }
+
+    public record HatchConfig(int id, Location location, StructureRotation rotation, String structureName) {}
 }

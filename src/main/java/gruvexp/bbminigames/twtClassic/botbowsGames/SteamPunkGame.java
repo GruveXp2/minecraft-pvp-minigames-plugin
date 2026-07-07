@@ -134,30 +134,12 @@ public class SteamPunkGame extends BotBowsGame {
         ), Axis.Z, Axis.X));
 
         // hatches
-        // copper
-        hatches.add(new Hatch("steampunk_hatch_copper",
-                new Vector(-356, 21, -396),
-                new Vector(4, 1, 3),
-                new Vector(-357, 22, -396),
-                new Vector(1, 4, 3)));
-        // weathered
-        hatches.add(new Hatch("steampunk_hatch_weathered",
-                new Vector(-362, 21, -396),
-                new Vector(4, 1, 3),
-                new Vector(-358, 22, -396),
-                new Vector(1, 4, 3)));
         // exposed
-        hatches.add(new Hatch("steampunk_hatch_exposed",
-                new Vector(-356, 21, -359),
-                new Vector(4, 1, 3),
-                new Vector(-357, 22, -359),
-                new Vector(1, 4, 3)));
-        // oxidized
-        hatches.add(new Hatch("steampunk_hatch_oxidized",
-                new Vector(-362, 21, -359),
-                new Vector(4, 1, 3),
-                new Vector(-358, 22, -359),
-                new Vector(1, 4, 3)));
+        hatches.add(new Hatch(new Hatch.HatchConfig(1, new Location(world, -357, 21, -395), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_exposed"))); // copper
+        hatches.add(new Hatch(new Hatch.HatchConfig(2, new Location(world, -358, 21, -395), StructureRotation.CLOCKWISE_90, "copper_hatch_exposed"))); // weathered
+        // weathered
+        hatches.add(new Hatch(new Hatch.HatchConfig(1, new Location(world, -357, 21, -358), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_weathered"))); // exposed
+        hatches.add(new Hatch(new Hatch.HatchConfig(2, new Location(world, -358, 21, -358), StructureRotation.CLOCKWISE_90, "copper_hatch_weathered"))); // oxidized
 
         // spinners
         // oxidized
