@@ -124,22 +124,16 @@ public class BotBows {
     }
 
     public static void placeSymmetricalStructure(Structure structure, Location location, Location centerLocation, StructureRotation rotation, String tag, Set<BlockDisplay> displays) {
-        structure.place(location, false, rotation, Mirror.NONE, 0, 1, new Random(0));
-        BlockVector start = location.toVector().toBlockVector();
+        Location bottomLocation = location.clone().add(0, -50, 0);
+        structure.place(bottomLocation, false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
+        BlockVector start = bottomLocation.toVector().toBlockVector();
         BlockVector size = structure.getSize();
         World world = location.getWorld();
 
-        int sizeX = size.getBlockX();
-        int sizeY = size.getBlockY();
-        int sizeZ = size.getBlockZ();
-
-        if (rotation == StructureRotation.CLOCKWISE_90 || rotation == StructureRotation.COUNTERCLOCKWISE_90) {
-            sizeX = size.getBlockZ();
-            sizeZ = size.getBlockX();
-        }
-        for (int relX = 0; relX < sizeX; relX++) {
-            for (int relY = 0; relY < sizeY; relY++) {
-                for (int relZ = 0; relZ < sizeZ; relZ++) {
+        Location bottomCenter = centerLocation.clone().add(0, -50, 0);
+        for (int relX = 0; relX < size.getBlockX(); relX++) {
+            for (int relY = 0; relY < size.getBlockY(); relY++) {
+                for (int relZ = 0; relZ < size.getBlockZ(); relZ++) {
                     int x = start.getBlockX() + relX;
                     int y = start.getBlockY() + relY;
                     int z = start.getBlockZ() + relZ;
@@ -154,7 +148,7 @@ public class BotBows {
                         block.setType(Material.AIR);
 
                         // tp the block to the center, but make it display where it was
-                        Vector3f Δpos = display.getLocation().subtract(centerLocation).toVector().toVector3f();
+                        Vector3f Δpos = display.getLocation().subtract(bottomCenter).toVector().toVector3f();
                         display.teleport(centerLocation);
                         Transformation transformation = display.getTransformation();
                         transformation.getTranslation().set(Δpos);
@@ -164,6 +158,18 @@ public class BotBows {
                 }
             }
         }
+
+        int yaw = switch (rotation) {
+            case NONE -> 0;
+            case CLOCKWISE_90 -> 90;
+            case CLOCKWISE_180 -> 180;
+            case COUNTERCLOCKWISE_90 -> -90;
+        };
+        displays.forEach(display -> {
+            Location loc = display.getLocation();
+            loc.setYaw(yaw);
+            display.teleport(loc);
+        });
     }
 
     public static void accessSettings(Player p) {
