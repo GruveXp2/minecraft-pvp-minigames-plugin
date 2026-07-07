@@ -7,6 +7,7 @@ import gruvexp.bbminigames.model.preset.HealthPreset;
 import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.team.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
@@ -353,7 +354,12 @@ public class Settings {
         abilitySettings.removeListener(bp);
         players.forEach(lobbyPlayer -> lobbyPlayer.settings.removeListener(bp));
         if (isPlayerMod(bp) && !players.isEmpty()) {
-            setModPlayer(players.iterator().next());
+            for (BotBowsPlayer nextBp : players) {
+                if (nextBp.avatar instanceof PlayerAvatar) {
+                    setModPlayer(nextBp);
+                    break;
+                }
+            }
         }
 
         bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
