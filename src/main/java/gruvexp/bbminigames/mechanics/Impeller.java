@@ -1,8 +1,6 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Util;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.BlockDisplay;
@@ -13,7 +11,7 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Spinner {
+public class Impeller {
 
     private final Set<BlockDisplay> displays;
     private final Location centerLocation;
@@ -22,20 +20,20 @@ public class Spinner {
     private float jaw = 0f;
     private final Set<Player> players = new HashSet<>();
 
-    public Spinner(String displayTag, Location centerLocation, float rotationSpeed) {
+    public Impeller(int id, String structureName, Location centerLocation, float rotationSpeed) {
         this.centerLocation = centerLocation;
         this.rotationSpeed = rotationSpeed;
         displays = new HashSet<>();
         for (Entity nearbyEntity : centerLocation.getNearbyEntities(2, 2, 2)) {
             if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(displayTag)) continue;
+            if (!display.getScoreboardTags().contains(structureName)) continue;
 
             displays.add(display);
             display.setRotation(0, 0);
-        }
+        } // TODO: hvis det ikke er non entities, så lag de! fra structure blocks
     }
 
-    // the chunks close to this spinner, only check for players if players are in these chunks
+    // the chunks close to this impeller, only check for players if players are in these chunks
     public Set<Chunk> getTickedChunks() {
         return Util.getChunksAround(centerLocation, 3);
     }
@@ -68,10 +66,10 @@ public class Spinner {
             double θ = Math.atan2(z, x);
 
             double pJaw = Math.toDegrees(θ) - 90;
-            pJaw -= jaw; // relative to the rotation of the spinner
+            pJaw -= jaw; // relative to the rotation of the impeller
             // make into interval [0,90)
             pJaw = (pJaw + 720) % 90;
-            if (rotationSpeed > 0 ? pJaw < 20 : pJaw > 70) { // they hit the spinner and will get pushed
+            if (rotationSpeed > 0 ? pJaw < 20 : pJaw > 70) { // they hit the impeller and will get pushed
                 double divide = 5 + (rotationSpeed > 0 ? pJaw : 90 - pJaw) * 7;
                 Vector push = relDir.crossProduct(new Vector(0, -rotationSpeed, 0)).multiply(r/(divide)); // retning x up||down = vel from hitting the bl8d
 
@@ -80,7 +78,7 @@ public class Spinner {
                 double vAlongPushDir = v.dot(pushDir);
                 v.subtract(pushDir.multiply(vAlongPushDir)).add(push); // the part of v in the direction pushed gets completly replaced with the push value
                 p.setVelocity(v);
-            } else if (rotationSpeed > 0 ? pJaw > 70 : pJaw < 20) { // they hit the spinner and will get pushed
+            } else if (rotationSpeed > 0 ? pJaw > 70 : pJaw < 20) { // they hit the impeller and will get pushed
                 Vector dv = relDir.crossProduct(new Vector(0, rotationSpeed, 0)).multiply(r/25); // retning x up||down = vel from hitting the bl8d
                 Vector v = p.getVelocity();
                 v.add(dv);

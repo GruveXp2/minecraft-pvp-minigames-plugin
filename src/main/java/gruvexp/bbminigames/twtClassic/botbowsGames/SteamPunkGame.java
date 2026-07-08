@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.joml.Vector3i;
 
 import java.util.*;
@@ -30,9 +29,9 @@ public class SteamPunkGame extends BotBowsGame {
     private final Set<Hatch> hatches = new HashSet<>();
     private final Map<Hatch, HatchMotor> hatchMotors = new HashMap<>();
 
-    private final Set<Spinner> spinners = new HashSet<>();
-    private final Map<Chunk, Set<Spinner>> spinnerChunks = new HashMap<>();
-    private SpinnerMotor spinnerMotor; // responsible for powering the pipes by giving them 20 ticks/s
+    private final Set<Impeller> impellers = new HashSet<>();
+    private final Map<Chunk, Set<Impeller>> impellerChunks = new HashMap<>();
+    private ImpellerMotor impellerMotor; // responsible for powering the pipes by giving them 20 ticks/s
 
     private final Set<Gate> gates = new HashSet<>();
     private GateMotor gateMotor;
@@ -141,17 +140,14 @@ public class SteamPunkGame extends BotBowsGame {
         hatches.add(new Hatch(new Hatch.HatchConfig(1, new Location(world, -357, 21, -358), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_weathered"))); // exposed
         hatches.add(new Hatch(new Hatch.HatchConfig(2, new Location(world, -358, 21, -358), StructureRotation.CLOCKWISE_90, "copper_hatch_weathered"))); // oxidized
 
-        // spinners
-        // oxidized
-        registerSpinner(new Spinner("steampunk_spinner_oxidized",
+        // impellers
+        registerImpeller(new Impeller(1, "copper_impeller_oxidized",
                 new Location(world, -370.5, 17, -380.5),
                 2));
-        // center
-        registerSpinner(new Spinner("steampunk_spinner_center",
+        registerImpeller(new Impeller(1, "copper_impeller_exposed", // center
                 new Location(world, -370.5, 17, -386.5),
                 -4));
-        // pipe
-        registerSpinner(new Spinner("steampunk_spinner_pipe",
+        registerImpeller(new Impeller(2, "copper_impeller_exposed", // next to pipe
                 new Location(world, -370.5, 17, -391.5),
                 4));
 
@@ -203,11 +199,11 @@ public class SteamPunkGame extends BotBowsGame {
         }
     }
 
-    private void registerSpinner(Spinner spinner) {
-        spinners.add(spinner);
-        Set<Chunk> chunks = spinner.getTickedChunks();
+    private void registerImpeller(Impeller impeller) {
+        impellers.add(impeller);
+        Set<Chunk> chunks = impeller.getTickedChunks();
         for (Chunk chunk : chunks) {
-            spinnerChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(spinner);
+            impellerChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(impeller);
         }
     }
 
@@ -221,8 +217,8 @@ public class SteamPunkGame extends BotBowsGame {
             hatchMotors.put(hatch, new HatchMotor(hatch));
             scheduleHatch(hatch);
         });
-        spinnerMotor = new SpinnerMotor(spinners);
-        spinnerMotor.runTaskTimer(plugin, 200, 1);
+        impellerMotor = new ImpellerMotor(impellers);
+        impellerMotor.runTaskTimer(plugin, 200, 1);
         gateMotor = new GateMotor(gates);
         gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
     }
@@ -233,8 +229,8 @@ public class SteamPunkGame extends BotBowsGame {
         steamPipeMotor = null;
         hatchMotors.values().forEach(BukkitRunnable::cancel);
         hatchMotors.clear();
-        spinnerMotor.cancel();
-        spinnerMotor = null;
+        impellerMotor.cancel();
+        impellerMotor = null;
         gateMotor.cancel();
         gateMotor = null;
         super.postRound(winningTeam, winScore);
@@ -251,9 +247,9 @@ public class SteamPunkGame extends BotBowsGame {
             pipes.forEach(pipe -> pipe.checkProximity(p));
         }
 
-        Set<Spinner> spinners = spinnerChunks.get(chunk);
-        if (spinners != null) {
-            spinners.forEach(spinner -> spinner.checkProximity(p));
+        Set<Impeller> impellers = impellerChunks.get(chunk);
+        if (impellers != null) {
+            impellers.forEach(impeller -> impeller.checkProximity(p));
         }
     }
 
@@ -294,17 +290,17 @@ public class SteamPunkGame extends BotBowsGame {
         }
     }
 
-    private static class SpinnerMotor extends BukkitRunnable {
+    private static class ImpellerMotor extends BukkitRunnable {
 
-        public final Set<Spinner> spinners;
+        public final Set<Impeller> impellers;
 
-        public SpinnerMotor(Set<Spinner> spinners) {
-            this.spinners = spinners;
+        public ImpellerMotor(Set<Impeller> impellers) {
+            this.impellers = impellers;
         }
 
         @Override
         public void run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
-            spinners.forEach(Spinner::tick);
+            impellers.forEach(Impeller::tick);
         }
     }
 
