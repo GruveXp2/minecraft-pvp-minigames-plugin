@@ -35,11 +35,8 @@ public class Hatch {
         this.closedHitbox = new HashSet<>();
         this.openHitbox = new HashSet<>();
 
-        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", config.structureName));
-        if (structure == null) {
-            BotBows.debugMessage("ERROR! Structure \"botbows:" + config.structureName + "\" failed to load");
-            return;
-        }
+        Structure structure = BotBows.loadStructure(config.structureName);
+        if (structure == null) return;
 
         Vector offset = structure.getSize().add(new Vector(-1, -1, -1));
         Vector openOffset = new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY());

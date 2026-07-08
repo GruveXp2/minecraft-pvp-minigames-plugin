@@ -32,11 +32,8 @@ public class Gear {
         rotationStep = config.speed;
         jaw = config.rotation == StructureRotation.CLOCKWISE_90 || config.rotation == StructureRotation.COUNTERCLOCKWISE_90 ? 90 : 0;
         tag = config.structureName;
-        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", config.structureName));
-        if (structure == null) {
-            BotBows.debugMessage("ERROR! Structure \"botbows:" + config.structureName + "\" failed to load");
-            return;
-        }
+        Structure structure = BotBows.loadStructure(config.structureName);
+        if (structure == null) return;
         Location location = config.location;
         StructureRotation rotation = config.rotation;
         BotBows.placeSymmetricalStructure(structure, location.clone().add(0, -2, -2), location.clone().add(0, 0.5, 0.5), rotation, 1, tag + "_" + config.id(), displays);
