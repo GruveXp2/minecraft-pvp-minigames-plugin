@@ -43,15 +43,14 @@ public class Hatch {
         }
 
         Vector offset = structure.getSize().add(new Vector(-1, -1, -1));
-        Vector closedSize = rotateVector(offset, config.rotation);
+        Vector openOffset = new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY());
+        Vector closedTarget = rotateVector(offset, config.rotation);
         Location originLoc = config.location.clone().add(-1, 0, 0);
         Vector origin = config.location.toVector().add(rotateVector(new Vector(-1, 0, 0), config.rotation));
-        Vector openSize = rotateVector(new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY()), config.rotation);
+        Vector openTarget = rotateVector(openOffset, config.rotation);
 
-        Vector[] closedBounds = getBounds(origin, closedSize);
-        Vector[] openBounds = getBounds(origin, openSize);
-
-        BotBows.debugMessage("Open: " + Util.print(openBounds[0]) + ", " + Util.print(openBounds[1]));
+        Vector[] closedBounds = getBounds(origin, closedTarget);
+        Vector[] openBounds = getBounds(origin, openTarget);
 
         Location hatchArea = new Location(Main.WORLD, origin.getX(), origin.getY(), origin.getZ());
         for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
@@ -70,7 +69,7 @@ public class Hatch {
             for (int y = (int) closedBounds[0].getY(); y <= closedBounds[1].getY(); y++) {
                 for (int z = (int) closedBounds[0].getZ(); z <= closedBounds[1].getZ(); z++) {
                     Block block = Main.WORLD.getBlockAt(x, y, z);
-                    block.setType(Material.RED_STAINED_GLASS);
+                    block.setType(Material.BARRIER);
                     closedHitbox.add(block);
                 }
             }
@@ -139,7 +138,7 @@ public class Hatch {
         // shoot up players that stand on the hatch when it opens
         Set<Player> players = closedHitbox.iterator().next().getLocation().getNearbyEntities(4, 2, 3).stream()
                 .filter(entity -> entity instanceof Player)
-                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_STAINED_GLASS)
+                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER)
                 .map(entity -> (Player) entity)
                 .collect(Collectors.toSet());
 
@@ -152,7 +151,7 @@ public class Hatch {
             }
         });
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                openHitbox.forEach(block -> block.setType(Material.RED_STAINED_GLASS)), TOTAL_STEPS / 2);
+                openHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
         // rotate them upwards
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             final float jaw = displays.iterator().next().getYaw();
@@ -172,7 +171,7 @@ public class Hatch {
     public void close() {
         openHitbox.forEach(block -> block.setType(Material.AIR));
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                closedHitbox.forEach(block -> block.setType(Material.RED_STAINED_GLASS)), TOTAL_STEPS / 2);
+                closedHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             final float jaw = displays.iterator().next().getYaw();
             float pitch = -90;
