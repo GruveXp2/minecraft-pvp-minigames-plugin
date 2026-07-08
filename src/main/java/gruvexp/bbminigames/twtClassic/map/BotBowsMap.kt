@@ -1,8 +1,8 @@
 package gruvexp.bbminigames.twtClassic.map
 
 import gruvexp.bbminigames.menu.Menu
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -19,8 +19,7 @@ enum class BotBowsMap(
 ) { // TODO: gjør at 2 lobbies ikke kan ha samme map, pga nå er jo mapsane enums, og det ville bøgga te playersa i teamsa
     RANDOM(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
-        BotBowsTeam.BLAUD,
-        BotBowsTeam.SAUCE,
+        BotBowsTeam.BLAUD, BotBowsTeam.SAUCE,
         Menu.makeItem(
             Material.TARGET, Component.text("Random Map", NamedTextColor.WHITE),
             Component.text("Randomly picks one of the classic maps")
@@ -29,8 +28,7 @@ enum class BotBowsMap(
 
     CLASSIC_ARENA(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
-        BotBowsTeam.BLAUD,
-        BotBowsTeam.SAUCE,
+        BotBowsTeam.BLAUD, BotBowsTeam.SAUCE,
         Menu.makeItem(
             Material.SLIME_BALL, Component.text("Classic Arena", NamedTextColor.GRAY),
             Component.text("Blaud", NamedTextColor.BLUE)
