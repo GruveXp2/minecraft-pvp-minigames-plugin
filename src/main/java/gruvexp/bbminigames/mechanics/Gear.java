@@ -39,7 +39,7 @@ public class Gear {
         }
         Location location = config.location;
         StructureRotation rotation = config.rotation;
-        BotBows.placeSymmetricalStructure(structure, location.clone().add(0, -2, -2), location.clone().add(0, 0.5, 0.5), rotation, tag + "_" + config.id(), displays);
+        BotBows.placeSymmetricalStructure(structure, location.clone().add(0, -2, -2), location.clone().add(0, 0.5, 0.5), rotation, 1, tag + "_" + config.id(), displays);
     }
 
     private void rotate() {

@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -62,7 +61,7 @@ public class Hatch {
         }
 
         if (displays.isEmpty()) {
-            BotBows.placeSymmetricalStructure(structure, originLoc, config.location.clone().add(0.5, 0.5, 0.5), config.rotation, config.structureName + "_" + config.id, displays);
+            BotBows.placeSymmetricalStructure(structure, originLoc, config.location.clone().add(0.5, 0.5, 0.5), config.rotation, 2, config.structureName + "_" + config.id, displays);
         }
 
         for (int x = (int) closedBounds[0].getX(); x <= closedBounds[1].getX(); x++) {
