@@ -123,7 +123,7 @@ public class BotBows {
         if (showMessage) debugMessage(message);
     }
 
-    public static void placeSymmetricalStructure(Structure structure, Location location, Location centerLocation, StructureRotation rotation, String tag, Set<BlockDisplay> displays) {
+    public static void placeSymmetricalStructure(Structure structure, Location location, Location centerLocation, StructureRotation rotation, int teleportDuration, String tag, Set<BlockDisplay> displays) {
         Location bottomLocation = location.clone().add(0, -50, 0);
         structure.place(bottomLocation, false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
         BlockVector start = bottomLocation.toVector().toBlockVector();
@@ -153,7 +153,7 @@ public class BotBows {
                         Transformation transformation = display.getTransformation();
                         transformation.getTranslation().set(Δpos);
                         display.setTransformation(transformation);
-                        display.setTeleportDuration(1);
+                        display.setTeleportDuration(teleportDuration);
                     }
                 }
             }
@@ -170,6 +170,15 @@ public class BotBows {
             loc.setYaw(yaw);
             display.teleport(loc);
         });
+    }
+
+    public static Structure loadStructure(String name) {
+        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", name));
+        if (structure == null) {
+            debugMessage("ERROR! Structure \"botbows:" + name + "\" failed to load");
+            return null;
+        }
+        return structure;
     }
 
     public static void accessSettings(Player p) {

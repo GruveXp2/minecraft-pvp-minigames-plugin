@@ -1,11 +1,14 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Util;
+import gruvexp.bbminigames.twtClassic.BotBows;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.structure.Structure;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -26,11 +29,18 @@ public class Impeller {
         displays = new HashSet<>();
         for (Entity nearbyEntity : centerLocation.getNearbyEntities(2, 2, 2)) {
             if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(structureName)) continue;
+            if (!display.getScoreboardTags().contains(structureName + "_" + id)) continue;
 
             displays.add(display);
             display.setRotation(0, 0);
-        } // TODO: hvis det ikke er non entities, så lag de! fra structure blocks
+        }
+        if (displays.isEmpty()) {
+            Structure structure = BotBows.loadStructure(structureName);
+            if (structure == null) return;
+
+            Location originLoc = centerLocation.clone().add(-2, 0, -2);
+            BotBows.placeSymmetricalStructure(structure, originLoc, centerLocation.clone().add(0.5, 0.5, 0.5), StructureRotation.NONE, 5, structureName + "_" + id, displays);
+        }
     }
 
     // the chunks close to this impeller, only check for players if players are in these chunks
