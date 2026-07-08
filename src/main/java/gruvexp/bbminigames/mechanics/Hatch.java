@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,14 +42,16 @@ public class Hatch {
             return;
         }
 
-        Vector size = structure.getSize();
-        Vector closedSize = rotateVector(size, config.rotation);
+        Vector offset = structure.getSize().add(new Vector(-1, -1, -1));
+        Vector closedSize = rotateVector(offset, config.rotation);
         Location originLoc = config.location.clone().add(-1, 0, 0);
-        Vector origin = originLoc.toVector();
-        Vector openSize = rotateVector(new Vector(size.getBlockX(), size.getBlockZ(), size.getBlockY()), config.rotation);
+        Vector origin = config.location.toVector().add(rotateVector(new Vector(-1, 0, 0), config.rotation));
+        Vector openSize = rotateVector(new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY()), config.rotation);
 
         Vector[] closedBounds = getBounds(origin, closedSize);
         Vector[] openBounds = getBounds(origin, openSize);
+
+        BotBows.debugMessage("Open: " + Util.print(openBounds[0]) + ", " + Util.print(openBounds[1]));
 
         Location hatchArea = new Location(Main.WORLD, origin.getX(), origin.getY(), origin.getZ());
         for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
@@ -63,19 +66,19 @@ public class Hatch {
             BotBows.placeSymmetricalStructure(structure, originLoc, config.location.clone().add(0.5, 0.5, 0.5), config.rotation, config.structureName + "_" + config.id, displays);
         }
 
-        for (int x = (int) closedBounds[0].getX(); x < closedBounds[1].getX(); x++) { //TODO: bøgga! se i chatten og bytt ut size, med hitboxStart og hitboxEnd, og gjør max/min greier for å finne riktig
-            for (int y = (int) closedBounds[0].getY(); y < closedBounds[1].getY(); y++) {
-                for (int z = (int) closedBounds[0].getZ(); z < closedBounds[1].getZ(); z++) {
+        for (int x = (int) closedBounds[0].getX(); x <= closedBounds[1].getX(); x++) {
+            for (int y = (int) closedBounds[0].getY(); y <= closedBounds[1].getY(); y++) {
+                for (int z = (int) closedBounds[0].getZ(); z <= closedBounds[1].getZ(); z++) {
                     Block block = Main.WORLD.getBlockAt(x, y, z);
-                    block.setType(Material.BARRIER);
+                    block.setType(Material.RED_STAINED_GLASS);
                     closedHitbox.add(block);
                 }
             }
         }
 
-        for (int x = (int) openBounds[0].getX(); x < openBounds[1].getX(); x++) {
-            for (int y = (int) openBounds[0].getY(); y < openBounds[1].getY(); y++) {
-                for (int z = (int) openBounds[0].getZ(); z < openBounds[1].getZ(); z++) {
+        for (int x = (int) openBounds[0].getX(); x <= openBounds[1].getX(); x++) {
+            for (int y = (int) openBounds[0].getY(); y <= openBounds[1].getY(); y++) {
+                for (int z = (int) openBounds[0].getZ(); z <= openBounds[1].getZ(); z++) {
                     Block block = Main.WORLD.getBlockAt(x, y, z);
                     block.setType(Material.AIR);
                     openHitbox.add(block);
@@ -136,7 +139,7 @@ public class Hatch {
         // shoot up players that stand on the hatch when it opens
         Set<Player> players = closedHitbox.iterator().next().getLocation().getNearbyEntities(4, 2, 3).stream()
                 .filter(entity -> entity instanceof Player)
-                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER)
+                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_STAINED_GLASS)
                 .map(entity -> (Player) entity)
                 .collect(Collectors.toSet());
 
@@ -149,7 +152,7 @@ public class Hatch {
             }
         });
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                openHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
+                openHitbox.forEach(block -> block.setType(Material.RED_STAINED_GLASS)), TOTAL_STEPS / 2);
         // rotate them upwards
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             final float jaw = displays.iterator().next().getYaw();
@@ -169,7 +172,7 @@ public class Hatch {
     public void close() {
         openHitbox.forEach(block -> block.setType(Material.AIR));
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                closedHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
+                closedHitbox.forEach(block -> block.setType(Material.RED_STAINED_GLASS)), TOTAL_STEPS / 2);
         Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
             final float jaw = displays.iterator().next().getYaw();
             float pitch = -90;
