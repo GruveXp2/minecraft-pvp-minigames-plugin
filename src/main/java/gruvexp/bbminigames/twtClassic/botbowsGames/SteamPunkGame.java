@@ -142,13 +142,13 @@ public class SteamPunkGame extends BotBowsGame {
 
         // impellers
         registerImpeller(new Impeller(1, "copper_impeller_oxidized",
-                new Location(world, -370.5, 17, -380.5),
+                new Location(world, -371, 16, -381),
                 2));
         registerImpeller(new Impeller(1, "copper_impeller_exposed", // center
-                new Location(world, -370.5, 17, -386.5),
+                new Location(world, -371, 16, -387),
                 -4));
         registerImpeller(new Impeller(2, "copper_impeller_exposed", // next to pipe
-                new Location(world, -370.5, 17, -391.5),
+                new Location(world, -371, 16, -392),
                 4));
 
         // gates
