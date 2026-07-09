@@ -5,12 +5,9 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.joml.Vector3i;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Gate {
