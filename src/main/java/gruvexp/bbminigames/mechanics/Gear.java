@@ -7,6 +7,7 @@ import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.structure.Structure;
+import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +37,8 @@ public class Gear {
         if (structure == null) return;
         Location location = config.location;
         StructureRotation rotation = config.rotation;
-        BotBows.placeSymmetricalStructure(structure, location.clone().add(0, -2, -2), location.clone().add(0, 0.5, 0.5), rotation, 1, tag + "_" + config.id(), displays);
+        Vector size = structure.getSize().multiply(0.5);
+        BotBows.placeSymmetricalStructure(structure, location.clone().add(-size.getBlockX(), -size.getBlockY(), -size.getBlockZ()), location.clone().add(0, 0.5, 0.5), rotation, 1, tag + "_" + config.id(), displays);
     }
 
     private void rotate() {
