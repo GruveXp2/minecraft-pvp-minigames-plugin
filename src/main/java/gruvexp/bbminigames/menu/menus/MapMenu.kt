@@ -56,10 +56,6 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
                 bp.avatar.message(Component.text("This map is not added yet", NamedTextColor.RED))
                 return
             }
-            if (map == BotBowsMap.STEAMPUNK) {
-                sendBrokedLockedMessage(bp.avatar)
-                return
-            }
             if (mapSettings.isVoteMode) {
                 mapSettings.mapVotingSession.vote(bp, map)
             } else {
