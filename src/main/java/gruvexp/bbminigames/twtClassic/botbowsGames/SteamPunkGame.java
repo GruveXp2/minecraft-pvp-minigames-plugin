@@ -134,11 +134,11 @@ public class SteamPunkGame extends BotBowsGame {
 
         // hatches
         // exposed
-        hatches.add(new Hatch(new Hatch.HatchConfig(1, new Location(world, -357, 21, -395), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_exposed"))); // copper
-        hatches.add(new Hatch(new Hatch.HatchConfig(2, new Location(world, -358, 21, -395), StructureRotation.CLOCKWISE_90, "copper_hatch_exposed"))); // weathered
+        hatches.add(new Hatch(1, new Location(world, -357, 21, -395), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_exposed")); // copper
+        hatches.add(new Hatch(2, new Location(world, -358, 21, -395), StructureRotation.CLOCKWISE_90, "copper_hatch_exposed")); // weathered
         // weathered
-        hatches.add(new Hatch(new Hatch.HatchConfig(1, new Location(world, -357, 21, -358), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_weathered"))); // exposed
-        hatches.add(new Hatch(new Hatch.HatchConfig(2, new Location(world, -358, 21, -358), StructureRotation.CLOCKWISE_90, "copper_hatch_weathered"))); // oxidized
+        hatches.add(new Hatch(1, new Location(world, -357, 21, -358), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_weathered")); // exposed
+        hatches.add(new Hatch(2, new Location(world, -358, 21, -358), StructureRotation.CLOCKWISE_90, "copper_hatch_weathered")); // oxidized
 
         // impellers
         registerImpeller(new Impeller(1, "copper_impeller_oxidized",

@@ -5,7 +5,6 @@ import gruvexp.bbminigames.twtClassic.BotBows;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.structure.StructureRotation;
@@ -30,20 +29,20 @@ public class Hatch {
     private final HashSet<Block> openHitbox;
     private final HashSet<Block> closedHitbox;
 
-    public Hatch(HatchConfig config) {
+    public Hatch(int id, Location location, StructureRotation rotation, String structureName) {
         this.displays = new HashSet<>();
         this.closedHitbox = new HashSet<>();
         this.openHitbox = new HashSet<>();
 
-        Structure structure = BotBows.loadStructure(config.structureName);
+        Structure structure = BotBows.loadStructure(structureName);
         if (structure == null) return;
 
         Vector offset = structure.getSize().add(new Vector(-1, -1, -1));
         Vector openOffset = new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY());
-        Vector closedTarget = rotateVector(offset, config.rotation);
-        Location originLoc = config.location.clone().add(-1, 0, 0);
-        Vector origin = config.location.toVector().add(rotateVector(new Vector(-1, 0, 0), config.rotation));
-        Vector openTarget = rotateVector(openOffset, config.rotation);
+        Vector closedTarget = rotateVector(offset, rotation);
+        Location originLoc = location.clone().add(-1, 0, 0);
+        Vector origin = location.toVector().add(rotateVector(new Vector(-1, 0, 0), rotation));
+        Vector openTarget = rotateVector(openOffset, rotation);
 
         Vector[] closedBounds = getBounds(origin, closedTarget);
         Vector[] openBounds = getBounds(origin, openTarget);
@@ -51,14 +50,14 @@ public class Hatch {
         Location hatchArea = new Location(Main.WORLD, origin.getX(), origin.getY(), origin.getZ());
         for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
             if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(config.structureName + "_" + config.id)) continue;
+            if (!display.getScoreboardTags().contains(structureName + "_" + id)) continue;
 
             displays.add(display);
             display.setRotation(display.getYaw(), 0);
         }
 
         if (displays.isEmpty()) {
-            BotBows.placeSymmetricalStructure(structure, originLoc, config.location.clone().add(0.5, 0.5, 0.5), config.rotation, 2, config.structureName + "_" + config.id, displays);
+            BotBows.placeSymmetricalStructure(structure, originLoc, location.clone().add(0.5, 0.5, 0.5), rotation, 2, structureName + "_" + id, displays);
         }
 
         for (int x = (int) closedBounds[0].getX(); x <= closedBounds[1].getX(); x++) {
@@ -182,6 +181,4 @@ public class Hatch {
             }
         }, 0, 1);
     }
-
-    public record HatchConfig(int id, Location location, StructureRotation rotation, String structureName) {}
 }

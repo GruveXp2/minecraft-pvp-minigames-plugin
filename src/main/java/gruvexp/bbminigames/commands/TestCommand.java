@@ -76,8 +76,7 @@ public class TestCommand implements CommandExecutor {
                 case "h" -> {
                     Location loc = new Location(Main.WORLD, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                     StructureRotation rotation = StructureRotation.valueOf(args[4]);
-                    Hatch.HatchConfig config = new Hatch.HatchConfig(7, loc, rotation, "copper_hatch_weathered");
-                    hatch = new Hatch(config);
+                    hatch = new Hatch(7, loc, rotation, "copper_hatch_weathered");
                 }
                 case "ha" -> {
                     hatch.toggle();
