@@ -38,6 +38,8 @@ public class SteamPunkGame extends BotBowsGame {
 
     private final Set<Gear> bigWheels = new HashSet<>();
 
+    private final Set<Rotor> rotors = new HashSet<>(); // spinning blades that hold up the upper parts of the arena
+
     public SteamPunkGame(Settings settings) {
         super(settings);
         World world = Main.WORLD;
@@ -196,6 +198,35 @@ public class SteamPunkGame extends BotBowsGame {
         bigWheels.add(new Gear(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", -5, 5));
         bigWheels.add(new Gear(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3, 5));
         bigWheels.add(new Gear(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", -2, 5));
+
+        rotors.add(new Rotor(1, new Location(world, -332, 39, -391), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(2, new Location(world, -336, 39, -391), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(3, new Location(world, -344, 39, -395), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(4, new Location(world, -344, 39, -392), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(5, new Location(world, -343, 39, -381), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(6, new Location(world, -343, 39, -372), "copper_rotor", 32, 2));
+        rotors.add(new Rotor(1, new Location(world, -332, 39, -362), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(2, new Location(world, -336, 39, -362), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(3, new Location(world, -344, 39, -358), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(4, new Location(world, -344, 39, -361), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(5, new Location(world, -351, 39, -389), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(6, new Location(world, -358, 39, -391), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(7, new Location(world, -358, 39, -394), "copper_rotor_exposed", 25, 3));
+        rotors.add(new Rotor(1, new Location(world, -351, 39, -364), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(2, new Location(world, -357, 39, -359), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(3, new Location(world, -357, 39, -362), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(4, new Location(world, -364, 39, -389), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(5, new Location(world, -371, 39, -395), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(6, new Location(world, -371, 39, -392), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(7, new Location(world, -372, 39, -381), "copper_rotor_weathered", 16, 4));
+        rotors.add(new Rotor(7, new Location(world, -363, 39, -364), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -371, 39, -358), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -371, 39, -361), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -372, 39, -372), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -379, 39, -391), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -383, 39, -391), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -383, 39, -362), "copper_rotor_oxidized", 9, 7));
+        rotors.add(new Rotor(7, new Location(world, -379, 39, -362), "copper_rotor_oxidized", 9, 7));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
@@ -230,6 +261,7 @@ public class SteamPunkGame extends BotBowsGame {
         gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
 
         bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
+        rotors.forEach(Rotor::startRotating);
     }
 
     @Override
@@ -243,6 +275,7 @@ public class SteamPunkGame extends BotBowsGame {
         gateMotor.cancel();
         gateMotor = null;
         bigWheels.forEach(Gear::stop);
+        rotors.forEach(Rotor::stop); // TODO: FIKS: ROTERANS GREIER STOPPER IKKE NÅR MAN TAR /BB STOP
         super.postRound(winningTeam, winScore);
     }
 
