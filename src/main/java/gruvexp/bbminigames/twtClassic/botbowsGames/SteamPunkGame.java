@@ -36,6 +36,8 @@ public class SteamPunkGame extends BotBowsGame {
     private final Set<Gate> gates = new HashSet<>();
     private GateMotor gateMotor;
 
+    private final Set<Gear> bigWheels = new HashSet<>();
+
     public SteamPunkGame(Settings settings) {
         super(settings);
         World world = Main.WORLD;
@@ -189,6 +191,11 @@ public class SteamPunkGame extends BotBowsGame {
                         new Gear.GearConfig(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_weathered", -2.5f)
                 )
         ));
+
+        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8)));
+        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", 5)));
+        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3)));
+        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", 2)));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
@@ -221,6 +228,8 @@ public class SteamPunkGame extends BotBowsGame {
         impellerMotor.runTaskTimer(plugin, 200, 1);
         gateMotor = new GateMotor(gates);
         gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
+
+        bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
     }
 
     @Override
@@ -233,6 +242,7 @@ public class SteamPunkGame extends BotBowsGame {
         impellerMotor = null;
         gateMotor.cancel();
         gateMotor = null;
+        bigWheels.forEach(Gear::stop);
         super.postRound(winningTeam, winScore);
     }
 
