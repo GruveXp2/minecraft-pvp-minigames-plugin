@@ -17,6 +17,7 @@ public class Gear {
     private final Set<BlockDisplay> displays;
     private final float rotationStep;
     private final float jaw;
+    private BukkitRunnable runnable;
 
     private float pitch = 0f;
     public final String tag;
@@ -54,7 +55,7 @@ public class Gear {
     public void rotate(float degrees) {
         float stepDegrees = Math.abs(rotationStep);
 
-        new BukkitRunnable() {
+        runnable = new BukkitRunnable() {
             float degreesLeft = degrees;
 
             @Override
@@ -64,12 +65,17 @@ public class Gear {
                 rotate();
                 degreesLeft -= stepDegrees;
             }
-        }.runTaskTimer(Main.getPlugin(), 0, 1);
+        };
+        runnable.runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
     private void rotateTo(float newPitch) {
         displays.forEach(display -> display.setRotation(jaw, newPitch));
         pitch = newPitch;
+    }
+
+    public void stop() {
+        runnable.cancel();
     }
 
     public float getRotationSpeed() {
