@@ -24,6 +24,10 @@ public class Gear {
     public final String tag;
 
     public Gear(int id, Location location, StructureRotation rotation, String structureName, float speed) {
+        this(id, location, rotation, structureName, speed, 1);
+    }
+
+    public Gear(int id, Location location, StructureRotation rotation, String structureName, float speed, int teleportDuration) {
         displays = new HashSet<>();
         rotationStep = speed;
         jaw = rotation == StructureRotation.CLOCKWISE_90 || rotation == StructureRotation.COUNTERCLOCKWISE_90 ? 90 : 0;
@@ -40,7 +44,7 @@ public class Gear {
             Structure structure = BotBows.loadStructure(structureName);
             if (structure == null) return;
             Vector size = structure.getSize().multiply(0.5);
-            BotBows.placeSymmetricalStructure(structure, location.clone().add(-size.getBlockX(), -size.getBlockY(), -size.getBlockZ()), location.clone().add(0, 0.5, 0.5), rotation, 1, tag + "_" + id, displays);
+            BotBows.placeSymmetricalStructure(structure, location.clone().add(-size.getBlockX(), -size.getBlockY(), -size.getBlockZ()), location.clone().add(0, 0.5, 0.5), rotation, teleportDuration, tag + "_" + id, displays);
         }
     }
 

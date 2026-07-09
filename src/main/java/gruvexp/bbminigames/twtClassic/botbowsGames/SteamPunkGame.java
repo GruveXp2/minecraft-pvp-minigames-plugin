@@ -192,10 +192,10 @@ public class SteamPunkGame extends BotBowsGame {
                 )
         ));
 
-        bigWheels.add(new Gear(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8));
-        bigWheels.add(new Gear(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", 5));
-        bigWheels.add(new Gear(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3));
-        bigWheels.add(new Gear(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", 2));
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8, 5));
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", 5, 5));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3, 5));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", 2, 5));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
