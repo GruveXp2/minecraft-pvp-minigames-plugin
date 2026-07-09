@@ -23,30 +23,18 @@ public class Gate {
     private final Vector3i size;
     private final Location location; // where the door is in the map
     private final int animationStepTicks;
-    private final Set<Gear> gears = new HashSet<>();
+    private final Set<Gear> gears;
 
     private boolean open;
 
-    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Set<Gear.GearConfig> gears) {
+    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Set<Gear> gears) {
         this.structureSrc = structureSrc;
         this.animationSteps = animationSteps;
         this.size = size;
         this.location = location;
         this.animationStepTicks = animationStepTicks;
         this.open = startsOpen;
-
-        gears.forEach(gearConfig -> {
-            Set<BlockDisplay> displays = new HashSet<>();
-            for (Entity nearbyEntity : location.getNearbyEntities(20, 10, 10)) {
-                if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-                if (!display.getScoreboardTags().contains(gearConfig.structureName() + "_" + gearConfig.id())) continue;
-
-                displays.add(display);
-                display.setRotation(display.getYaw(), 0);
-            }
-            Gear gear = displays.isEmpty() ? new Gear(gearConfig) : new Gear(displays, gearConfig.speed(), gearConfig.structureName());
-            this.gears.add(gear);
-        });
+        this.gears = gears;
     }
 
     public void toggle() {

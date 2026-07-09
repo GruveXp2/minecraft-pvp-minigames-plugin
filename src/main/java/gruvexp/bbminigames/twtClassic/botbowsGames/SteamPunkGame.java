@@ -159,50 +159,50 @@ public class SteamPunkGame extends BotBowsGame {
         // copper
         gates.add(new Gate(gateFramesSrc, 3, gateSize, new Location(world, -347, 22, -397), 2, true,
                 Set.of(
-                        new Gear.GearConfig(1, new Location(world, -348, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
-                        new Gear.GearConfig(2, new Location(world, -344, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
-                        new Gear.GearConfig(3, new Location(world, -348, 24, -389), StructureRotation.NONE, "copper_wheel", -12)
+                        new Gear(1, new Location(world, -348, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear(2, new Location(world, -344, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear(3, new Location(world, -348, 24, -389), StructureRotation.NONE, "copper_wheel", -12)
                 )
         ));
 
         // exposed
         gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false,
                 Set.of(
-                        new Gear.GearConfig(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
-                        new Gear.GearConfig(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
-                        new Gear.GearConfig(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8)
+                        new Gear(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
+                        new Gear(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
+                        new Gear(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8)
                 )
         ));
 
         // weathered
         gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false,
                 Set.of(
-                        new Gear.GearConfig(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
-                        new Gear.GearConfig(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
-                        new Gear.GearConfig(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f)
+                        new Gear(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
+                        new Gear(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
+                        new Gear(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f)
                 )
         ));
 
         // oxidized
         gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
                 Set.of(
-                        new Gear.GearConfig(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
-                        new Gear.GearConfig(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
-                        new Gear.GearConfig(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_weathered", -2.5f)
+                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
+                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
+                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_weathered", -2.5f)
                 )
         ));
 
-        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8)));
-        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", 5)));
-        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3)));
-        bigWheels.add(new Gear(new Gear.GearConfig(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", 2)));
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8));
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", 5));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", 2));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
         steamPipes.add(steamPipe);
         Set<Chunk> chunks = steamPipe.getTickedChunks();
         for (Chunk chunk : chunks) {
-            pipeChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(steamPipe);
+            pipeChunks.computeIfAbsent(chunk, _ -> new HashSet<>()).add(steamPipe);
         }
     }
 
@@ -210,7 +210,7 @@ public class SteamPunkGame extends BotBowsGame {
         impellers.add(impeller);
         Set<Chunk> chunks = impeller.getTickedChunks();
         for (Chunk chunk : chunks) {
-            impellerChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(impeller);
+            impellerChunks.computeIfAbsent(chunk, _ -> new HashSet<>()).add(impeller);
         }
     }
 
