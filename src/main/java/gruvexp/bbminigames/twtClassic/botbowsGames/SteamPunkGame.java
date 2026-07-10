@@ -266,6 +266,19 @@ public class SteamPunkGame extends BotBowsGame {
 
     @Override
     protected void postRound(BotBowsTeam winningTeam, int winScore) {
+        stopMotors();
+        super.postRound(winningTeam, winScore);
+    }
+
+    @Override
+    public void postGame(BotBowsTeam winningTeam) {
+        if (steamPipeMotor != null) stopMotors(); // stop motors unless they already got stopped in postRound()
+        bigWheels.forEach(Gear::stop);
+        rotors.forEach(Rotor::stop);
+        super.postGame(winningTeam);
+    }
+
+    private void stopMotors() {
         steamPipeMotor.cancel();
         steamPipeMotor = null;
         hatchMotors.values().forEach(BukkitRunnable::cancel);
@@ -274,9 +287,6 @@ public class SteamPunkGame extends BotBowsGame {
         impellerMotor = null;
         gateMotor.cancel();
         gateMotor = null;
-        bigWheels.forEach(Gear::stop);
-        rotors.forEach(Rotor::stop); // TODO: FIKS: ROTERANS GREIER STOPPER IKKE NÅR MAN TAR /BB STOP
-        super.postRound(winningTeam, winScore);
     }
 
     @Override
