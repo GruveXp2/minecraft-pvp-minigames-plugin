@@ -120,6 +120,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             }
             UiMode.VOTE, UiMode.SET -> {
                 inventory.setItem(0, BACK)
+                inventory.setItem(9, VOID)
                 if (isOldMapCategory) {
                     inventory.setItem(1, BotBowsMap.INSIDE_BOTBASE.getMenuItem())
                     inventory.setItem(2, BotBowsMap.OUTSIDE_BOTBASE.getMenuItem())
