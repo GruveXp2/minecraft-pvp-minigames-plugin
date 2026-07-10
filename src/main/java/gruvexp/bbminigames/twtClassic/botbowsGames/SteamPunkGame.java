@@ -170,27 +170,27 @@ public class SteamPunkGame extends BotBowsGame {
         // exposed
         gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false,
                 Set.of(
-                        new Gear(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
-                        new Gear(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16),
-                        new Gear(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8)
+                        new Gear(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16, 2),
+                        new Gear(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16, 2),
+                        new Gear(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8, 2)
                 )
         ));
 
         // weathered
         gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false,
                 Set.of(
-                        new Gear(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
-                        new Gear(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9),
-                        new Gear(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f)
+                        new Gear(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9, 3),
+                        new Gear(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9, 3),
+                        new Gear(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f, 3)
                 )
         ));
 
         // oxidized
         gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
                 Set.of(
-                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5),
-                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5),
-                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_oxidized", -2.5f)
+                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5, 4),
+                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5, 4),
+                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_oxidized", -2.5f, 4)
                 )
         ));
 
