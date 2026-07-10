@@ -23,7 +23,7 @@ public class Rotor {
 
     public Rotor(int id, Location location, String structureName, float speed, int teleportDuration) {
         displays = new HashSet<>();
-        rotationStep = speed * (BotBows.RANDOM.nextInt(2) == 1 ? 1 : -1) * (1 + BotBows.RANDOM.nextInt(4)) / 25f;
+        rotationStep = speed * (BotBows.RANDOM.nextInt(2) == 1 ? 1 : -1) * (1 + BotBows.RANDOM.nextInt(4) / 25f);
         tag = structureName;
 
         for (Entity nearbyEntity : location.getNearbyEntities(2, 2, 2)) {
