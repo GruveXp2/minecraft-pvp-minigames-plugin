@@ -188,9 +188,9 @@ public class SteamPunkGame extends BotBowsGame {
         // oxidized
         gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
                 Set.of(
-                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
-                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_weathered", 5),
-                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_weathered", -2.5f)
+                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5),
+                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5),
+                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_oxidized", -2.5f)
                 )
         ));
 
