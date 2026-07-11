@@ -104,7 +104,7 @@ public class MenuRow {
             setItem(targetSlot, item);
         }
         if (page == totalPages) {
-            ItemStack item = firstVisibleItem + size - 1 < itemList.size() ? itemList.get(firstVisibleItem + size - 1) : null;
+            ItemStack item = firstVisibleItem + size - 2 < itemList.size() ? itemList.get(firstVisibleItem + size - 2) : null; // size-2: size er 1 indexed, så -1, og første slot er opptatt (prev knapp), så -1 igjen
             setItem(size - 1, item);
         } else {
             setItem(size - 1, ROW_NEXT);
