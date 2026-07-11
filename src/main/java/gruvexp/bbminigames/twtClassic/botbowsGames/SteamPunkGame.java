@@ -245,6 +245,12 @@ public class SteamPunkGame extends BotBowsGame {
         }
     }
 
+     @Override
+     public void startGame() {
+         bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
+         rotors.forEach(Rotor::startRotating);
+     }
+
     @Override
     public void startRound() {
         super.startRound();
@@ -259,9 +265,6 @@ public class SteamPunkGame extends BotBowsGame {
         impellerMotor.runTaskTimer(plugin, 200, 1);
         gateMotor = new GateMotor(gates);
         gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
-
-        bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
-        rotors.forEach(Rotor::startRotating);
     }
 
     @Override
