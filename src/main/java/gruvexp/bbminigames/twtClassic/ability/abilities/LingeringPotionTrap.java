@@ -21,7 +21,8 @@ import java.util.Map;
 
 public class LingeringPotionTrap extends Ability {
 
-    public static final int DURATION = 30;
+    public static final int DURATION = 30; // how long the potion lingers on the ground
+    public static final int EFFECT_DURATION = 20; // how long you have the effect after stepping into it
     public static final int LINGERING_POTION_RADIUS = 3;
 
     private static final PotionEffectType[] EFFECTS = {
@@ -49,7 +50,8 @@ public class LingeringPotionTrap extends Ability {
         ItemStack potion = thrownPotion.getItem();
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
         meta.clearCustomEffects();
-        meta.addCustomEffect(new PotionEffect(randomEffect, DURATION * 20, 2), true);
+        meta.addCustomEffect(new PotionEffect(randomEffect, EFFECT_DURATION * 20 * 4, 2), true); // must *=4 the effect to counteract mojangs *=0.25 (bc its an area effect cloud)
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.WEAVING, EFFECT_DURATION * 20 * 4, 0), true);
         meta.setColor(potionColor);
         potion.setItemMeta(meta);
         thrownPotion.setItem(potion);
