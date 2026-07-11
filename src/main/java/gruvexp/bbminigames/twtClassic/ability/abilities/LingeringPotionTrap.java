@@ -69,11 +69,9 @@ public class LingeringPotionTrap extends Ability {
                     return;
                 }
 
-                for (Entity entity : loc.getWorld().getNearbyEntities(loc, LINGERING_POTION_RADIUS, 1, LINGERING_POTION_RADIUS, e -> e instanceof Player)) {
-                    Player p = (Player) entity;
-                    Lobby lobby = BotBows.getLobby(p);
-                    if (lobby == null) return;
-                    BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+                for (Entity entity : loc.getWorld().getNearbyEntities(loc, LINGERING_POTION_RADIUS, 1, LINGERING_POTION_RADIUS)) {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(entity.getUniqueId());
+                    if (bp == null) continue;
                     if (bp.getTeam() == throwerBp.getTeam()) continue; // dont affect team of thrower
 
                     bp.growSize(20);
