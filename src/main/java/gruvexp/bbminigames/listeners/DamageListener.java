@@ -5,15 +5,11 @@ import gruvexp.bbminigames.api.damage.DamageType;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
 import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -79,19 +75,17 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onDamaged(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player p)) return;
+        Entity entity = e.getEntity();
+        if (entity instanceof Rabbit) e.setCancelled(true); // I have a rabbit pet so this is obvious
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(entity.getUniqueId());
+        if (bp == null) return;
         if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
-            Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) return;
-            p.teleport(p.getLocation().add(0, 1, 0));
+            entity.teleport(entity.getLocation().add(0, 1, 0));
             e.setCancelled(true);
         } else if (e.getCause() == EntityDamageEvent.DamageCause.CAMPFIRE ||
                 e.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             e.setCancelled(true);
         } else if (e.getCause() == EntityDamageEvent.DamageCause.LAVA) {
-            Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) return;
-            BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
             e.setCancelled(true);
             bp.damage(new DamageContext.Environment(DamageType.Environment.LAVA));
         }
