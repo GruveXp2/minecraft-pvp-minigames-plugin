@@ -2,12 +2,13 @@ package gruvexp.bbminigames.mechanics;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
+import gruvexp.bbminigames.twtClassic.BotBows;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.CopperBulb;
 import org.bukkit.entity.Player;
@@ -148,18 +149,14 @@ public class SteamPipe {
             boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? lastNode == -1 : lastNode == nodes.size();
             boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == 0 : lastNode == nodes.size() - 1;
             boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
+            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
             if (isEntering) {
                 if (nextNodeLoc.clone().distanceSquared(pLoc) > 12) {
                     playerEdge.put(p, -2); // the player exited and will be removed
                 }
-                AttributeInstance scaleAttribute = p.getAttribute(Attribute.SCALE);
-                double scale = scaleAttribute.getBaseValue();
-                scale -= 0.05;
-                if (scale < 0.4) scale = 0.4;
-                scaleAttribute.setBaseValue(scale);
+                bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, 3L, 10);
             } else if (onFirstNode) {
-                AttributeInstance scaleAttribute = p.getAttribute(Attribute.SCALE);
-                scaleAttribute.setBaseValue(0.4);
+                bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, null, 10); // will be small "forever" until exiting
             }
 
             Vector a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize();
@@ -194,7 +191,8 @@ public class SteamPipe {
 
     void exitPlayer(Player p) {
         playerEdge.put(p, -2); // the player exited and will be removed
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> p.getAttribute(Attribute.SCALE).setBaseValue(1.0), 2L);
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, 3L, 10);
     }
 
     void updateAnimation() {

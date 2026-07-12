@@ -11,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
 import net.kyori.adventure.text.Component;
@@ -24,10 +25,8 @@ import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BotBowsPlayer {
@@ -42,6 +41,7 @@ public class BotBowsPlayer {
     private boolean isDamaged = false; // cooldown når playeren er hitta
     public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
     private SneakManager sneakManager;
+    private final PlayerEffectManager effectManager;
 
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
@@ -53,6 +53,7 @@ public class BotBowsPlayer {
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHealth();
+        effectManager = new PlayerEffectManager(avatar);
     }
 
     public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
@@ -61,6 +62,7 @@ public class BotBowsPlayer {
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHealth();
+        effectManager = new PlayerEffectManager(avatar);
         setReady(true, 4); // bots are always ready for match
     }
 
@@ -77,6 +79,10 @@ public class BotBowsPlayer {
 
     public String getPlainName() {
         return PlainTextComponentSerializer.plainText().serialize(getName());
+    }
+
+    public PlayerEffectManager getEffectManager() {
+        return effectManager;
     }
 
     public void onTeamJoin(BotBowsTeam team) {
@@ -97,11 +103,13 @@ public class BotBowsPlayer {
     public void leaveGame() {
         team.leave(this);
         avatar.destroy();
+        effectManager.clear();
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
     }
 
     public void destroy() {
         avatar.destroy();
+        effectManager.clear();
         if (sneakManager != null) sneakManager.destroy();
         abilities.values().forEach(Ability::destroy);
     }
@@ -361,48 +369,31 @@ public class BotBowsPlayer {
             PotionEffectType.LEVITATION,
             PotionEffectType.BLINDNESS
         };
+        effectManager.applyGlow(
+                PlayerEffectManager.GlowSource.DEBUFF,
+                (long) (KarmaPotion.KARMA_DURATION * 20),
+                NamedTextColor.GOLD,
+                10
+        );
 
         int effectID = BotBows.RANDOM.nextInt(effects.length + 1);
         if (effectID == effects.length) {
-            growSize(10);
+            effectManager.applyScale(
+                    PlayerEffectManager.ScaleSource.GROW_KARMA,
+                    1.5,
+                    PlayerEffectManager.ScalePriority.NORMAL,
+                    (long) (KarmaPotion.KARMA_DURATION * 20)
+            );
             return;
         }
         PotionEffectType randomEffect = effects[effectID];
 
-        avatar.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
-        avatar.setGlowing(true);
-        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
-            int counter = 40;
-            @Override
-            public void accept(BukkitTask task) {
-                if (counter == 0) {
-                    task.cancel();
-                    avatar.setColor((NamedTextColor) getTeamColor());
-                    avatar.setGlowing(false);
-                    return;
-                }
-                if (counter % 2 == 0) avatar.setColor(NamedTextColor.GOLD);
-                else avatar.setColor((NamedTextColor) getTeamColor());
-                counter--;
-            }
-        }, 0, 5);
+        avatar.addPotionEffect(new PotionEffect(randomEffect, KarmaPotion.KARMA_DURATION * 20, 1));
 
         lobby.messagePlayers(Component.empty()
                 .append(getName())
                 .append(Component.text(" got karma! ", NamedTextColor.RED))
                 .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
-    }
-
-    boolean isBig = false;
-
-    public void growSize(int duration) {
-        if (isBig) return;
-        isBig = true;
-        avatar.growSize(1.5, 20);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            avatar.growSize(1, 40);
-            isBig = false;
-        }, duration * 20L);
     }
 
     public boolean isSneakingExhausted() {

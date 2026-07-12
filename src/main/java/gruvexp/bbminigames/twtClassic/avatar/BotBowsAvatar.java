@@ -28,11 +28,11 @@ public interface BotBowsAvatar {
     void setReady(boolean ready, int itemIndex);
     int getNextFreeSlot();
     void damage();
+    double getScale();
+    void setScale(double size);
     void setGlowing(boolean flag);
     void addPotionEffect(PotionEffect effect);
     void setColor(NamedTextColor color);
-    void growSize(double scale, int duration, int delay);
-    default void growSize(double scale, int duration) {growSize(scale, duration, 0);}
     UUID getUUID();
     boolean isSneaking();
     void updateSneakStamina(float progress);

@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.avatar;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -23,7 +24,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 import java.util.Set;
@@ -125,13 +125,22 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void damage() {
         mannequin.damage(0.001);
-        mannequin.setGlowing(true);
+        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
         mannequin.setInvulnerable(true);
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            mannequin.setGlowing(false);
             mannequin.setInvulnerable(false);
         }, BotBows.HIT_DISABLED_ITEM_TICKS);
+    }
+
+    @Override
+    public double getScale() {
+        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    }
+
+    @Override
+    public void setScale(double size) {
+        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
     }
 
     @Override
@@ -147,22 +156,6 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void setColor(NamedTextColor color) {
         teamManager.setColor(mannequin, color);
-    }
-
-    @Override
-    public void growSize(double scale, int duration, int delay) {
-        new BukkitRunnable() {
-            int i = 1;
-            final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
-            @Override
-            public void run() {
-                if (i == duration) {
-                    this.cancel();
-                }
-                getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), delay, 1L);
     }
 
     @Override

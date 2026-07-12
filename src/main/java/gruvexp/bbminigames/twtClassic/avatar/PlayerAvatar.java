@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -21,7 +22,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.*;
@@ -136,7 +136,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void damage() {
         player.damage(0.001);
-        player.setGlowing(true);
+        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
         player.setInvulnerable(true);
 
         PlayerInventory inv = player.getInventory();
@@ -148,13 +148,22 @@ public class PlayerAvatar implements BotBowsAvatar{
         }
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            player.setGlowing(false);
             player.setInvulnerable(false);
             for (int i = 0; i < 9; i++) { // flytter items tilbake
                 ItemStack item = inv.getItem(i + 27);
                 inv.setItem(i, item);
             }
         }, BotBows.HIT_DISABLED_ITEM_TICKS);
+    }
+
+    @Override
+    public double getScale() {
+        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    }
+
+    @Override
+    public void setScale(double size) {
+        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
     }
 
     @Override
@@ -169,23 +178,8 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     @Override
     public void setColor(NamedTextColor color) {
+        if (teamManager == null) return;
         teamManager.setColor(player, color);
-    }
-
-    @Override
-    public void growSize(double scale, int duration, int delay) {
-        new BukkitRunnable() {
-            int i = 1;
-            final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
-            @Override
-            public void run() {
-                if (i == duration) {
-                    this.cancel();
-                }
-                getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), delay, 1L);
     }
 
     @Override

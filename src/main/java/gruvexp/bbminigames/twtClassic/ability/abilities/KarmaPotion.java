@@ -1,18 +1,17 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Set;
 
 public class KarmaPotion extends PotionAbility {
 
-    public static final int DURATION = 20;
+    public static final int DURATION = 20; // seconds
+    public static final int KARMA_DURATION = 10; // seconds
 
     public KarmaPotion(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.KARMA_POTION);

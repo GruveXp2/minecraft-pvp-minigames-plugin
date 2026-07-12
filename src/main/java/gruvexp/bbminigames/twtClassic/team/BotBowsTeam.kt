@@ -5,11 +5,9 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.DyeColor
 import org.bukkit.Location
 import org.bukkit.Material
-import java.util.function.Consumer
 import kotlin.math.min
 
 enum class BotBowsTeam(
@@ -317,24 +315,6 @@ enum class BotBowsTeam(
             }
             return true
         }
-
-    fun glow(seconds: Int) {
-        players.forEach(Consumer { bp: BotBowsPlayer? -> bp!!.avatar.setGlowing(true) })
-        Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
-            Runnable { players.forEach(Consumer { bp: BotBowsPlayer? -> bp!!.avatar.setGlowing(false) }) },
-            20L * seconds
-        )
-    }
-
-    fun setGlowColor(color: NamedTextColor?, ticks: Int) {
-        players.forEach(Consumer { bp: BotBowsPlayer? -> bp!!.avatar.setColor(color) })
-        Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
-            Runnable { players.forEach(Consumer { bp: BotBowsPlayer? -> bp!!.avatar.setColor(this.color as NamedTextColor?) }) },
-            ticks.toLong()
-        )
-    }
 
     val glassPane: Material
         get() = Material.getMaterial(dyeColor.name + "_STAINED_GLASS_PANE") ?: Material.GLASS_PANE

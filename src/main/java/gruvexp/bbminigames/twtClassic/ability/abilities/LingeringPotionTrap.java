@@ -3,13 +3,12 @@ package gruvexp.bbminigames.twtClassic.ability.abilities;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
 import gruvexp.bbminigames.twtClassic.ability.Ability;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -74,7 +73,12 @@ public class LingeringPotionTrap extends Ability {
                     if (bp == null) continue;
                     if (bp.getTeam() == throwerBp.getTeam()) continue; // dont affect team of thrower
 
-                    bp.growSize(20);
+                    bp.getEffectManager().applyScale(
+                            PlayerEffectManager.ScaleSource.GROW_TRAP,
+                            1.5,
+                            PlayerEffectManager.ScalePriority.NORMAL,
+                            (long) (EFFECT_DURATION * 20)
+                    );
                 }
             }
         }.runTaskTimer(Main.getPlugin(), 0L, 2L);

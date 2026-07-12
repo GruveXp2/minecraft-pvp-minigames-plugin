@@ -73,6 +73,25 @@ public class TestCommand implements CommandExecutor {
                     lobby.addBot();
                     lobby.startGame(p);
                 }
+                case "qk" -> {
+                    Lobby lobby = BotBows.getLobby(0);
+                    lobby.joinGame(Bukkit.getPlayer("GruveXp"));
+                    UUID uuid = lobby.addBot();
+                    BotBowsPlayer botBp = lobby.getBotBowsPlayer(uuid);
+
+                    Settings settings = lobby.settings;
+                    AbilitySettings abilitySettings = settings.getAbilitySettings();
+                    abilitySettings.setMaxAbilities(2);
+                    abilitySettings.ban(AbilityType.ENDER_PEARL);
+                    settings.getMapSettings().setCurrentMap(BotBowsMap.ROYAL_CASTLE);
+                    BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
+                    gxbp.equipAbility(AbilityType.BABY_POTION);
+                    gxbp.equipAbility(AbilityType.KARMA_POTION);
+                    gxbp.equipAbility(AbilityType.RADAR);
+                    botBp.equipAbility(AbilityType.LASER_TRAP);
+                    if (args.length > 1) return true;
+                    lobby.startGame(p);
+                }
                 case "h" -> {
                     Location loc = new Location(Main.WORLD, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                     StructureRotation rotation = StructureRotation.valueOf(args[4]);
