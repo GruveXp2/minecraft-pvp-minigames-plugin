@@ -128,9 +128,7 @@ public class NpcAvatar implements BotBowsAvatar{
         bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
         mannequin.setInvulnerable(true);
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            mannequin.setInvulnerable(false);
-        }, BotBows.HIT_DISABLED_ITEM_TICKS);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> mannequin.setInvulnerable(false), BotBows.HIT_DISABLED_ITEM_TICKS);
     }
 
     @Override
