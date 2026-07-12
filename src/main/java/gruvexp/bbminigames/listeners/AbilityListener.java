@@ -12,6 +12,8 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -171,6 +173,22 @@ public class AbilityListener implements Listener {
 
         LingeringPotionTrap ability = (LingeringPotionTrap) throwerBp.getAbility(AbilityType.LINGERING_POTION);
         ability.addSizeIncreaseAreaEffect(potion.getLocation());
+    }
+
+    @EventHandler
+    public void onPotionEffectReceive(EntityPotionEffectEvent e) {
+        PotionEffectType effect = e.getModifiedType();
+        if (effect != PotionEffectType.WEAVING) return;
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(e.getEntity().getUniqueId());
+        if (bp == null) return;
+        if (e.getNewEffect() == null) return;
+
+        bp.getEffectManager().applyGlow(
+                PlayerEffectManager.GlowSource.DEBUFF,
+                (long) e.getNewEffect().getDuration(),
+                NamedTextColor.GOLD,
+                10
+        );
     }
 
     @EventHandler
