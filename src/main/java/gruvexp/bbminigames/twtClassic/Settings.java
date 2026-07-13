@@ -8,6 +8,7 @@ import gruvexp.bbminigames.model.preset.WinConditionPreset;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
+import gruvexp.bbminigames.twtClassic.map.MapVotingSession;
 import gruvexp.bbminigames.twtClassic.team.*;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
@@ -248,30 +249,50 @@ public class Settings {
     public void finishVoting() {
         if (lobby.isGameActive()) return;
 
-        VoteResult leading = mapSettings.getMapVotingSession().getLeadingMaps();
-        Set<BotBowsMap> leadingMaps = leading.getMaps();
-        int mapCount = leadingMaps.size();
-        if (mapCount == 1) {
-            BotBowsMap winningMap = leadingMaps.iterator().next();
-            lobby.messagePlayers(Component.empty()
-                    .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
-                    .append(Component.text(" won the vote with "))
-                    .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
-                    .append(Component.text(" votes")));
-            if (winningMap == BotBowsMap.RANDOM) {
-                pickRandomMap();
-            }
-        } else if (mapCount > 1) {
-            String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
-            lobby.messagePlayers(Component.text("Vote is tied between ")
-                    .append(Component.text(mapsString, NamedTextColor.YELLOW))
-                    .append(Component.text(", both have "))
-                    .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
-                    .append(Component.text(" votes! One of them will be picked randomly")));
-            pickRandomMap(leadingMaps);
-        } else {
+        MapVotingSession votingSession = mapSettings.getMapVotingSession();
+
+        if (votingSession.getTotalVotes() == 0) {
             lobby.messagePlayers(Component.text("Nobody voted for a map! A random map will be picked"));
             pickRandomMap();
+            return;
+        }
+
+        if (mapSettings.isWeightedVoting()) {
+            BotBowsMap winningMap = votingSession.getWinningMapWeighted();
+
+            int winningMapPercent = (votingSession.getVotes(winningMap) * 100) / votingSession.getTotalVotes();
+            lobby.messagePlayers(Component.empty()
+                    .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
+                    .append(Component.text(" was picked randomly by weighted vote! (had " + winningMapPercent + "% of the votes)")));
+
+            if (winningMap == BotBowsMap.RANDOM) {
+                pickRandomMap();
+            } else {
+                mapSettings.setCurrentMap(winningMap);
+            }
+        } else {
+            VoteResult leading = votingSession.getLeadingMaps();
+            Set<BotBowsMap> leadingMaps = leading.getMaps();
+            int mapCount = leadingMaps.size();
+            if (mapCount == 1) {
+                BotBowsMap winningMap = leadingMaps.iterator().next();
+                lobby.messagePlayers(Component.empty()
+                        .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
+                        .append(Component.text(" won the vote with "))
+                        .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
+                        .append(Component.text(" votes")));
+                if (winningMap == BotBowsMap.RANDOM) {
+                    pickRandomMap();
+                }
+            } else {
+                String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
+                lobby.messagePlayers(Component.text("Vote is tied between ")
+                        .append(Component.text(mapsString, NamedTextColor.YELLOW))
+                        .append(Component.text(", both have "))
+                        .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
+                        .append(Component.text(" votes! One of them will be picked randomly")));
+                pickRandomMap(leadingMaps);
+            }
         }
     }
 
@@ -281,7 +302,7 @@ public class Settings {
     }
 
     private void pickRandomMap(Set<BotBowsMap> maps) {
-        BotBowsMap pickedMap = maps.stream().skip(new Random().nextInt(maps.size())).findFirst().orElse(BotBowsMap.RANDOM);
+        BotBowsMap pickedMap = mapSettings.getMapVotingSession().pickRandom(maps);
         lobby.messagePlayers(Component.empty()
                 .append(Component.text(pickedMap.prettyName(), NamedTextColor.AQUA))
                 .append(Component.text(" was picked!")));

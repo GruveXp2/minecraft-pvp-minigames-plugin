@@ -74,6 +74,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             MenuAction.VOTE -> uiMode = UiMode.VOTE
             MenuAction.SET -> if (settings.checkMod(bp)) uiMode = UiMode.SET
             MenuAction.TOGGLE_VOTE -> if (settings.checkMod(bp))  mapSettings.isVoteMode = !mapSettings.isVoteMode
+            MenuAction.TOGGLE_WEIGHTED_VOTING -> if (settings.checkMod(bp))  mapSettings.isWeightedVoting = !mapSettings.isWeightedVoting
             MenuAction.CYCLE_MAP_CATEGORY -> isOldMapCategory = !isOldMapCategory
             MenuAction.BACK -> uiMode = UiMode.MAIN
         }
@@ -104,9 +105,16 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
                 if (settings.mapSettings.isVoteMode) {
                     inventory.setItem(9, VOTE_MODE_ENABLED)
                     inventory.setItem(0, VOTE)
+
+                    if (settings.mapSettings.isWeightedVoting) {
+                        inventory.setItem(17, WEIGHTED_VOTING_ENABLED)
+                    } else {
+                        inventory.setItem(17, WEIGHTED_VOTING_DISABLED)
+                    }
                     displayVotes()
                 } else {
                     inventory.setItem(9, VOTE_MODE_DISABLED)
+                    inventory.setItem(17, DISABLED_SLOT)
                     if (settings.checkMod(bp)) {
                         inventory.setItem(0, SET_MAP)
                     } else {
@@ -121,6 +129,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             UiMode.VOTE, UiMode.SET -> {
                 inventory.setItem(0, BACK)
                 inventory.setItem(9, VOID)
+                inventory.setItem(17, VOID)
                 if (isOldMapCategory) {
                     inventory.setItem(1, BotBowsMap.INSIDE_BOTBASE.getMenuItem())
                     inventory.setItem(2, BotBowsMap.OUTSIDE_BOTBASE.getMenuItem())
@@ -169,6 +178,10 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         updateMenu()
     }
 
+    override fun onWeightedVotingToggle() {
+        updateMenu()
+    }
+
     override fun onVote() {
         if (uiMode == UiMode.MAIN && settings.mapSettings.isVoteMode)
             displayVotes()
@@ -210,6 +223,22 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             STATUS_DISABLED,
             Component.text("The map with most votes will be used in the match")
         )
+
+        val WEIGHTED_VOTING_ENABLED: ItemStack = makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Weighted voting"),
+            MenuAction.TOGGLE_WEIGHTED_VOTING.name,
+            STATUS_ENABLED,
+            Component.text("Picks a map randomly based on what has been voted on"),
+            Component.text("Maps with more votes have a higher chance to be picked")
+        )
+
+        val WEIGHTED_VOTING_DISABLED: ItemStack = makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Weighted voting"),
+            MenuAction.TOGGLE_WEIGHTED_VOTING.name,
+            STATUS_DISABLED,
+            Component.text("Picks a map randomly based on what has been voted on"),
+            Component.text("Maps with more votes have a higher chance to be picked")
+        )
     }
 
     private enum class UiMode(menuTitle: TextComponent) {
@@ -217,7 +246,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         VOTE(Component.text("Vote for map")),
         SET(Component.text("Set map"));
 
-        val menuTitle: TextComponent
+        val menuTitle: TextComponent // TODO: gjør at tittelen endres automatisk
 
         init {
             this.menuTitle = menuTitle
@@ -228,6 +257,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         VOTE,
         SET,
         TOGGLE_VOTE,
+        TOGGLE_WEIGHTED_VOTING,
         CYCLE_MAP_CATEGORY,
         BACK
     }

@@ -48,4 +48,12 @@ class MapVotingSession(private val onVoteChange: () -> Unit) {
 
         return VoteResult(leadingMaps, maxVotes)
     }
+
+    fun getWinningMapWeighted(): BotBowsMap {
+        return votes.values.randomOrNull() ?: classicMapList.random()
+    }
+
+    fun pickRandom(maps: Set<BotBowsMap>): BotBowsMap {
+        return maps.random()
+    }
 }

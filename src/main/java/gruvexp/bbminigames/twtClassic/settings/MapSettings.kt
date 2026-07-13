@@ -12,6 +12,11 @@ class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit, private val onVot
             field = value
             notifyVoteToggle()
         }
+    var isWeightedVoting: Boolean = true
+        set(value) {
+            field = value
+            notifyWeightedVotingToggle()
+        }
     var currentMap: BotBowsMap = BotBowsMap.RANDOM
         set(value) {
             field = value
@@ -37,6 +42,10 @@ class MapSettings(private val onMapSet: (BotBowsMap?) -> Unit, private val onVot
     private fun notifyVoteToggle() {
         listeners.values.forEach { it.onVoteToggle() }
         onVoteUpdate(false)
+    }
+
+    private fun notifyWeightedVotingToggle() {
+        listeners.values.forEach { it.onWeightedVotingToggle() }
     }
 
     private fun notifyMapSet() {
