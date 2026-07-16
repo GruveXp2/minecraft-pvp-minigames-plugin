@@ -168,8 +168,8 @@ public class TestCommand implements CommandExecutor {
                         p.sendMessage(Component.text("Go in a lobby and try again"));
                         return true;
                     }
-                    lobby.settings.useExperimentalFeatures = !lobby.settings.useExperimentalFeatures;
-                    p.sendMessage("Exprimental features is now " + (lobby.settings.useExperimentalFeatures ? "enabled" : "disabled"));
+                    lobby.settings.usingExperimentalFeatures = !lobby.settings.usingExperimentalFeatures;
+                    p.sendMessage("Exprimental features is now " + (lobby.settings.usingExperimentalFeatures ? "enabled" : "disabled"));
                 }
                 case "w1" -> {
                     Block below = p.getLocation().getBlock().getRelative(BlockFace.DOWN);

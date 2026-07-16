@@ -2,7 +2,7 @@ package gruvexp.bbminigames.twtClassic.settings
 
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 
-class HealthSettings(private val getPlayerSettings: () -> Set<PlayerSettings>) {
+class HealthSettings(private val getPlayerSettings: () -> Iterable<PlayerSettings>) {
     var maxHealth = 3
         set(value) {
             field = value

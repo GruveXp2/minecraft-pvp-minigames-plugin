@@ -7,7 +7,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.team.TeamSide
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 
-class AbilitySettings(private val getPlayerSettings: () -> Set<PlayerSettings>) {
+class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettings>) {
     var maxAbilities = 0
         set(value) {
             val toggle: Boolean = field == 0 || value == 0

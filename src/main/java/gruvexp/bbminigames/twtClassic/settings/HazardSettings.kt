@@ -6,13 +6,15 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardChance
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import java.util.EnumMap
 
-class HazardSettings(val listener: HazardUpdateListener) {
+class HazardSettings {
     private val hazards = EnumMap<HazardType, Hazard>(HazardType::class.java)
+
+    var listener: HazardUpdateListener? = null
 
     fun setChance(type: HazardType, chance: HazardChance) {
         hazards[type]?.let {
             it.chance = chance
-            listener.onHazardUpdate(type)
+            listener?.onHazardUpdate(type)
         }
     }
 
@@ -34,10 +36,7 @@ class HazardSettings(val listener: HazardUpdateListener) {
 
     fun createActiveHazards(): Set<Hazard> {
         return hazards.map { (type, config) ->
-            type.createHazard().apply {
-                this.chance = config.chance
-                // Her kan du kopiere over andre ting senere, f.eks. intensitet
-            }
+            type.createHazard().apply { this.chance = config.chance }
         }.toSet()
     }
 
@@ -46,6 +45,6 @@ class HazardSettings(val listener: HazardUpdateListener) {
         map.allowedHazards.forEach { type ->
             hazards.computeIfAbsent(type) { type.createHazard() }
         }
-        listener.onSchemaUpdate()
+        listener?.onSchemaUpdate()
     }
 }

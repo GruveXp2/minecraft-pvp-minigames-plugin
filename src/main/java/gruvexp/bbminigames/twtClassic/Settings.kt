@@ -1,419 +1,388 @@
-package gruvexp.bbminigames.twtClassic;
+package gruvexp.bbminigames.twtClassic
 
-import gruvexp.bbminigames.menu.menus.*;
-import gruvexp.bbminigames.model.preset.AbilityPreset;
-import gruvexp.bbminigames.model.preset.BattlePreset;
-import gruvexp.bbminigames.model.preset.HealthPreset;
-import gruvexp.bbminigames.model.preset.WinConditionPreset;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
-import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
-import gruvexp.bbminigames.twtClassic.map.MapVotingSession;
-import gruvexp.bbminigames.twtClassic.team.*;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
-import gruvexp.bbminigames.twtClassic.map.VoteResult;
-import gruvexp.bbminigames.twtClassic.settings.*;
-import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Mannequin;
-import org.bukkit.entity.Player;
+import gruvexp.bbminigames.menu.menus.*
+import gruvexp.bbminigames.model.preset.AbilityPreset
+import gruvexp.bbminigames.model.preset.BattlePreset
+import gruvexp.bbminigames.model.preset.HealthPreset
+import gruvexp.bbminigames.model.preset.WinConditionPreset
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar
+import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
+import gruvexp.bbminigames.twtClassic.settings.*
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
+import java.util.UUID
 
-import java.util.*;
-import java.util.stream.Collectors;
+class Settings(@JvmField val lobby: Lobby) {
+    @JvmField
+    var usingExperimentalFeatures: Boolean = false
 
-public class Settings {
+    @JvmField
+    var team1: BotBowsTeam = BotBowsTeam.BLAUD
+    @JvmField
+    var team2: BotBowsTeam = BotBowsTeam.SAUCE
+    private val players: MutableSet<BotBowsPlayer> = mutableSetOf() // liste med alle players som er i gamet
 
-    public final Lobby lobby;
-    public boolean useExperimentalFeatures = false;
+    val healthSettings: HealthSettings = HealthSettings { this.playerSettings }
+    val winConditionSettings: WinConditionSettings = WinConditionSettings()
+    val hazardSettings: HazardSettings = HazardSettings()
+    val abilitySettings: AbilitySettings = AbilitySettings { this.playerSettings }
+    val mapSettings: MapSettings = MapSettings(
+        { map: BotBowsMap -> onMapChange(map) }, // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
+        { triggeredByNewVote: Boolean -> updateLeadingMap(triggeredByNewVote) }
+    )
 
-    public BotBowsTeam team1 = BotBowsTeam.BLAUD;
-    public BotBowsTeam team2 = BotBowsTeam.SAUCE;
-    private final Set<BotBowsPlayer> players = new HashSet<>(); // liste med alle players som er i gamet
-    // health
-    private HealthSettings healthSettings;
-    // win condition
-    private WinConditionSettings winConditionSettings;
-    // hazards
-    private HazardSettings hazardSettings;
-    // abilities
-    private AbilitySettings abilitySettings;
-    public int rain = 0; // temporary workaround
-    private MapSettings mapSettings ;
+    @JvmField
+    var rain: Int = 0 // temporary workaround
+
     // menus
-    public final Map<BotBowsPlayer, MapMenu> mapMenus = new HashMap<>();
-    public HealthMenu healthMenu;
-    public TeamsMenu teamsMenu;
-    public WinConditionMenu winConditionMenu;
-    public HazardMenu hazardMenu;
-    public final Map<BotBowsPlayer, AbilityMenu> abilityMenus = new HashMap<>();
+    @JvmField
+    val mapMenus: MutableMap<BotBowsPlayer, MapMenu> = hashMapOf()
 
-    private BotBowsPlayer modPlayer;
+    lateinit var healthMenu: HealthMenu
+    lateinit var teamsMenu: TeamsMenu
+    lateinit var winConditionMenu: WinConditionMenu
+    lateinit var hazardMenu: HazardMenu
+    @JvmField
+    val abilityMenus: MutableMap<BotBowsPlayer, AbilityMenu> = hashMapOf()
 
-    public Settings(Lobby lobby) {
-        this.lobby = lobby;
-    }
+    private var modPlayer: BotBowsPlayer? = null
 
-    public void initMenus() {
-        mapSettings = new MapSettings(map -> {
-            onMapChange(map); // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
-            return kotlin.Unit.INSTANCE; // void cant be returned in kotlin
-        }, triggeredByNewVote -> {
-            updateLeadingMap(triggeredByNewVote);
-            return kotlin.Unit.INSTANCE;
-        });
-
-        players.forEach(bp -> {
-            mapMenus.put(bp, new MapMenu(this, bp));
-            mapSettings.addListener(bp, mapMenus.get(bp));
-        });
-
-        healthSettings = new HealthSettings(this::getPlayerSettings);
-        healthMenu = new HealthMenu(this);
-        healthSettings.setListener(healthMenu);
-
-        teamsMenu = new TeamsMenu(this);
-        teamsMenu.registerTeams();
-
-        winConditionSettings = new WinConditionSettings();
-        winConditionMenu = new WinConditionMenu(this);
-        winConditionSettings.setListener(winConditionMenu);
-
-        hazardMenu = new HazardMenu(this);
-        hazardSettings = new HazardSettings(hazardMenu);
-
-        abilitySettings = new AbilitySettings(this::getPlayerSettings);
-        players.forEach(bp -> {
-            abilityMenus.put(bp, new AbilityMenu(this, bp));
-            abilitySettings.addListener(bp, abilityMenus.get(bp));
-        });
-
-        mapSettings.setCurrentMap(BotBowsMap.RANDOM);
-    }
-
-    public HealthSettings getHealthSettings() {
-        return healthSettings;
-    }
-
-    public HazardSettings getHazardSettings() {
-        return hazardSettings;
-    }
-
-    public WinConditionSettings getWinConditionSettings() {
-        return winConditionSettings;
-    }
-
-    public AbilitySettings getAbilitySettings() {
-        return abilitySettings;
-    }
-
-    public MapSettings getMapSettings() {
-        return mapSettings;
-    }
-
-    public Set<PlayerSettings> getPlayerSettings() {
-        return players.stream().map(bp -> bp.settings).collect(Collectors.toSet());
-    }
-
-    public BattlePreset saveBattlePreset(String presetName, Material presetIcon) {
-        HealthPreset healthPreset = new HealthPreset(
-                healthSettings.isIndividualMaxHealth() ? null : healthSettings.getMaxHealth(),
-                healthSettings.isIndividualMaxHealth() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxHealth())) : null,
-                healthSettings.isCustomDamage() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAttackDamage())) : null
-        );
-        WinConditionPreset winConditionPreset = new WinConditionPreset(
-                winConditionSettings.getWinScoreThreshold(),
-                winConditionSettings.getRoundDuration(),
-                winConditionSettings.isDynamicScoring()
-        );
-
-        Set<AbilityType> bannedAbilities = abilitySettings.getBanned();
-        AbilityPreset abilityPreset = new AbilityPreset(
-                abilitySettings.isIndividualMax() ? null : abilitySettings.getMaxAbilities(),
-                abilitySettings.isIndividualMax() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getMaxAbilities())) : null,
-                abilitySettings.isIndividualCooldown() ? null : abilitySettings.getCooldownMultiplier(),
-                abilitySettings.isIndividualCooldown() ? players.stream().collect(Collectors.toMap(bp -> bp.avatar.getUUID(), bp -> bp.settings.getAbilityCooldownMultiplier())) : null,
-                !bannedAbilities.isEmpty() ? bannedAbilities : null
-        );
-        return new BattlePreset(
-                presetName,
-                presetIcon,
-                mapSettings.getCurrentMap(),
-                team1.getPlayers().stream().map(bp -> bp.avatar.getUUID()).collect(Collectors.toSet()),
-                team2.getPlayers().stream().map(bp -> bp.avatar.getUUID()).collect(Collectors.toSet()),
-                healthPreset,
-                winConditionPreset,
-                hazardSettings.getChances(),
-                abilityPreset
-        );
-    }
-
-    public void applyBattlePreset(BattlePreset preset) {
-        mapSettings.setCurrentMap(preset.map());
-
-        preset.team1().stream()
-                .map(BotBows::getBotBowsPlayer)
-                .filter(Objects::nonNull)
-                .filter(players::contains)
-                .forEach(team1::join);
-        preset.team2().stream()
-                .map(BotBows::getBotBowsPlayer)
-                .filter(Objects::nonNull)
-                .filter(players::contains)
-                .forEach(team2::join);
-
-        HealthPreset healthPreset = preset.health();
-        Integer maxHp = healthPreset.maxHp();
-        if (maxHp != null) {
-            healthSettings.setMaxHealth(maxHp);
+    fun initMenus() {
+        players.forEach { bp: BotBowsPlayer ->
+            mapMenus[bp] = MapMenu(this, bp)
+            mapSettings.addListener(bp, mapMenus[bp]!!)
         }
-        var individualMaxHp = healthPreset.individualMaxHp();
-        boolean isIndividualMaxHp = individualMaxHp != null;
-        healthSettings.setIndividualMaxHealth(isIndividualMaxHp);
+
+        healthMenu = HealthMenu(this)
+        healthSettings.listener = healthMenu
+
+        teamsMenu = TeamsMenu(this).apply { registerTeams() }
+
+        winConditionMenu = WinConditionMenu(this)
+        winConditionSettings.listener = winConditionMenu
+
+        hazardMenu = HazardMenu(this)
+        hazardSettings.listener = hazardMenu
+
+        players.forEach { bp ->
+            abilityMenus[bp] = AbilityMenu(this, bp)
+            abilitySettings.addListener(bp, abilityMenus[bp]!!)
+        }
+
+        mapSettings.currentMap = BotBowsMap.RANDOM
+    }
+
+    val playerSettings: Iterable<PlayerSettings>
+        get() = players.map {it.settings}
+
+    fun saveBattlePreset(presetName: String, presetIcon: Material): BattlePreset {
+        val healthPreset = HealthPreset(
+            if (healthSettings.isIndividualMaxHealth) null else healthSettings.maxHealth,
+            if (healthSettings.isIndividualMaxHealth) {
+                players.associate { bp -> bp.avatar.uuid to bp.settings.maxHealth }
+            } else null,
+            if (healthSettings.isCustomDamage) {
+                players.associate { bp -> bp.avatar.uuid to bp.settings.attackDamage }
+            } else null
+        )
+        val winConditionPreset = WinConditionPreset(
+            winConditionSettings.winScoreThreshold,
+            winConditionSettings.roundDuration,
+            winConditionSettings.isDynamicScoring
+        )
+
+        val bannedAbilities: Set<AbilityType> = abilitySettings.getBanned()
+        val abilityPreset = AbilityPreset(
+            if (abilitySettings.isIndividualMax) null else abilitySettings.maxAbilities,
+            if (abilitySettings.isIndividualMax) {
+                players.associate { bp -> bp.avatar.uuid to bp.settings.maxAbilities}
+            } else null,
+            if (abilitySettings.isIndividualCooldown) null else abilitySettings.cooldownMultiplier,
+            if (abilitySettings.isIndividualCooldown) {
+                players.associate { bp -> bp.avatar.uuid to bp.settings.abilityCooldownMultiplier }
+            } else null,
+            bannedAbilities.ifEmpty { null }
+        )
+        return BattlePreset(
+            presetName,
+            presetIcon,
+            mapSettings.currentMap,
+            team1.players.map { bp -> bp.avatar.uuid }.toSet(),
+            team2.players.map { bp -> bp.avatar.uuid }.toSet(),
+            healthPreset,
+            winConditionPreset,
+            hazardSettings.getChances(),
+            abilityPreset
+        )
+    }
+
+    fun applyBattlePreset(preset: BattlePreset) {
+        mapSettings.currentMap = preset.map
+
+        preset.team1
+            .map { id -> BotBows.getBotBowsPlayer(id) }
+            .filter { players.contains(it) }
+            .forEach { team1.join(it) }
+        preset.team2
+            .map { id -> BotBows.getBotBowsPlayer(id) }
+            .filter { players.contains(it) }
+            .forEach { team2.join(it) }
+
+        preset.health.maxHp?.let { healthSettings.maxHealth = it }
+
+        val individualMaxHp: Map<UUID, Int>? = preset.health.individualMaxHp
+        val isIndividualMaxHp = individualMaxHp != null
+        healthSettings.isIndividualMaxHealth = isIndividualMaxHp
         if (isIndividualMaxHp) {
-            individualMaxHp.forEach((key, value) -> {
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
-                if (bp != null) {
-                    bp.settings.setMaxHealth(value);
-                }
-            });
+            individualMaxHp.forEach { (id: UUID, maxHealth: Int) ->
+                BotBows.getBotBowsPlayer(id)?.let { it.settings.maxHealth = maxHealth }
+            }
         }
-        var individualDamage = healthPreset.customDamage();
-        boolean isIndividualDamage = individualDamage != null;
-        healthSettings.setCustomDamage(isIndividualDamage);
+        val individualDamage: Map<UUID, Int>? = preset.health.customDamage
+        val isIndividualDamage = individualDamage != null
+        healthSettings.isCustomDamage = isIndividualDamage
         if (isIndividualDamage) {
-            individualDamage.forEach((key, value) -> {
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(key);
-                if (bp != null) {
-                    bp.settings.setAttackDamage(value);
-                }
-            });
+            individualDamage.forEach { (id: UUID, attackDamage: Int) ->
+                BotBows.getBotBowsPlayer(id)?.let { it.settings.attackDamage = attackDamage }
+            }
         }
 
-        WinConditionPreset winConditionPreset = preset.winCondition();
-        winConditionSettings.setWinScoreThreshold(winConditionPreset.winScoreThreshold());
-        winConditionSettings.setRoundDuration(winConditionPreset.roundDuration());
-        winConditionSettings.setDynamicScoring(winConditionPreset.dynamicPoints());
+        val winConditionPreset = preset.winCondition
+        winConditionSettings.winScoreThreshold = winConditionPreset.winScoreThreshold
+        winConditionSettings.roundDuration = winConditionPreset.roundDuration
+        winConditionSettings.isDynamicScoring = winConditionPreset.dynamicPoints
 
-        Set<HazardType> allowedHazards = getMapSettings().getCurrentMap().getAllowedHazards();
-        allowedHazards.forEach(type -> hazardSettings.setChance(type, preset.hazards().get(type)));
+        val allowedHazards: Set<HazardType> = mapSettings.currentMap.allowedHazards
+        allowedHazards.forEach {type: HazardType ->
+            hazardSettings.setChance(type, preset.hazards[type]!!)
+        }
 
-        AbilityPreset abilityPreset = preset.abilities();
-        abilitySettings.applyPreset(abilityPreset);
+        val abilityPreset = preset.abilities
+        abilitySettings.applyPreset(abilityPreset)
     }
 
-    private void onMapChange(BotBowsMap map) {
-        setNewTeams(false);
-        hazardSettings.syncWithMap(map);
+    private fun onMapChange(map: BotBowsMap) {
+        setNewTeams(false)
+        hazardSettings.syncWithMap(map)
     }
 
-    private void setNewTeams(boolean flipped) {
-        List<BotBowsPlayer> team1Players = new ArrayList<>(team1.getPlayers());
-        List<BotBowsPlayer> team2Players = new ArrayList<>(team2.getPlayers());
-        team1.clearPlayers();
-        team2.clearPlayers();
+    private fun setNewTeams(flipped: Boolean) {
+        val team1Players = team1.players.toMutableList()
+        val team2Players = team2.players.toMutableList()
+        team1.clearPlayers()
+        team2.clearPlayers()
 
-        BotBowsMap map = mapSettings.getCurrentMap();
-        team1 = flipped ? map.getTeam2() : map.getTeam1();
-        team2 = flipped ? map.getTeam1() : map.getTeam2();
-        team1.putPlayers(team1Players);
-        team2.putPlayers(team2Players);
+        val map = mapSettings.currentMap
+        team1 = if (flipped) map.team2 else map.team1
+        team2 = if (flipped) map.team1 else map.team2
+        team1.putPlayers(team1Players)
+        team2.putPlayers(team2Players)
 
-        teamsMenu.registerTeams();
-        teamsMenu.recalculateTeam(); // update the player heads so they have the correct color
-        healthMenu.updateColors(); // update so the name colors match the new team color
+        teamsMenu.registerTeams()
+        teamsMenu.recalculateTeam() // update the player heads so they have the correct color
+        healthMenu.updateColors() // update so the name colors match the new team color
     }
 
-    private void updateLeadingMap(boolean triggeredByNewVote) {
-        VoteResult leading = mapSettings.getMapVotingSession().getLeadingMaps();
-        Set<BotBowsMap> leadingMaps = leading.getMaps();
-        int mapCount = leadingMaps.size();
-        if (mapCount == 0) return;
+    private fun updateLeadingMap(triggeredByNewVote: Boolean) {
+        val leading = mapSettings.mapVotingSession.getLeadingMaps()
+        val mapCount = leading.maps.size
+        if (mapCount == 0) return
 
-        if (!leadingMaps.contains(mapSettings.getCurrentMap())) {
-            String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
-            lobby.messagePlayers(Component.text((triggeredByNewVote ? "New" : "Current") + " leading map" + (mapCount == 1 ? "" : "s") + " with ")
-                    .append(Component.text(leading.getVoteCount() + " votes", NamedTextColor.GREEN))
-                    .append(Component.text(": ")).append(Component.text(mapsString, NamedTextColor.GOLD)));
-            if (mapCount == 1) mapSettings.setCurrentMap(leadingMaps.iterator().next());
+        if (!leading.maps.contains(mapSettings.currentMap)) {
+            val mapsString = leading.maps.joinToString(", ") { it.prettyName() }
+            lobby.messagePlayers(
+                Component.text((if (triggeredByNewVote) "New" else "Current") + " leading map" + (if (mapCount == 1) "" else "s") + " with ")
+                    .append(Component.text(leading.voteCount.toString() + " votes", NamedTextColor.GREEN))
+                    .append(Component.text(": ")).append(Component.text(mapsString, NamedTextColor.GOLD))
+            )
+            if (mapCount == 1) mapSettings.currentMap = leading.maps.first()
         }
     }
 
-    public void finishMapSelection() {
-        if (mapSettings.isVoteMode()) finishVoting();
+    fun finishMapSelection() {
+        if (mapSettings.isVoteMode) finishVoting()
     }
 
-    public void finishVoting() {
-        if (lobby.isGameActive()) return;
+    fun finishVoting() {
+        if (lobby.isGameActive) return
 
-        MapVotingSession votingSession = mapSettings.getMapVotingSession();
+        val votingSession = mapSettings.mapVotingSession
 
         if (votingSession.getTotalVotes() == 0) {
-            lobby.messagePlayers(Component.text("Nobody voted for a map! A random map will be picked"));
-            pickRandomMap();
-            return;
+            lobby.messagePlayers(Component.text("Nobody voted for a map! A random map will be picked"))
+            pickRandomMap()
+            return
         }
 
-        if (mapSettings.isWeightedVoting()) {
-            BotBowsMap winningMap = votingSession.getWinningMapWeighted();
+        if (mapSettings.isWeightedVoting) {
+            val winningMap = votingSession.getWinningMapWeighted()
 
-            int winningMapPercent = (votingSession.getVotes(winningMap) * 100) / votingSession.getTotalVotes();
-            lobby.messagePlayers(Component.empty()
+            val winningMapPercent = (votingSession.getVotes(winningMap) * 100) / votingSession.getTotalVotes()
+            lobby.messagePlayers(
+                Component.empty()
                     .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
-                    .append(Component.text(" was picked randomly by weighted vote! (had " + winningMapPercent + "% of the votes)")));
+                    .append(Component.text(" was picked randomly by weighted vote! (had $winningMapPercent% of the votes)"))
+            )
 
             if (winningMap == BotBowsMap.RANDOM) {
-                pickRandomMap();
+                pickRandomMap()
             } else {
-                mapSettings.setCurrentMap(winningMap);
+                mapSettings.currentMap = winningMap
             }
         } else {
-            VoteResult leading = votingSession.getLeadingMaps();
-            Set<BotBowsMap> leadingMaps = leading.getMaps();
-            int mapCount = leadingMaps.size();
+            val leading = votingSession.getLeadingMaps()
+            val mapCount = leading.maps.size
             if (mapCount == 1) {
-                BotBowsMap winningMap = leadingMaps.iterator().next();
-                lobby.messagePlayers(Component.empty()
+                val winningMap = leading.maps.first()
+                lobby.messagePlayers(
+                    Component.empty()
                         .append(Component.text(winningMap.prettyName(), NamedTextColor.AQUA))
                         .append(Component.text(" won the vote with "))
-                        .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
-                        .append(Component.text(" votes")));
+                        .append(Component.text(leading.voteCount, NamedTextColor.GREEN))
+                        .append(Component.text(" votes"))
+                )
                 if (winningMap == BotBowsMap.RANDOM) {
-                    pickRandomMap();
+                    pickRandomMap()
                 }
             } else {
-                String mapsString = leadingMaps.stream().map(BotBowsMap::prettyName).collect(Collectors.joining(", "));
-                lobby.messagePlayers(Component.text("Vote is tied between ")
+                val mapsString = leading.maps.joinToString(", ") { it.prettyName() }
+                lobby.messagePlayers(
+                    Component.text("Vote is tied between ")
                         .append(Component.text(mapsString, NamedTextColor.YELLOW))
                         .append(Component.text(", both have "))
-                        .append(Component.text(leading.getVoteCount(), NamedTextColor.GREEN))
-                        .append(Component.text(" votes! One of them will be picked randomly")));
-                pickRandomMap(leadingMaps);
+                        .append(Component.text(leading.voteCount, NamedTextColor.GREEN))
+                        .append(Component.text(" votes! One of them will be picked randomly"))
+                )
+                pickRandomMap(leading.maps)
             }
         }
     }
 
-    private void pickRandomMap() {
-        Set<BotBowsMap> classicMaps = mapSettings.getMapVotingSession().getClassicMapList();
-        pickRandomMap(classicMaps);
-    }
-
-    private void pickRandomMap(Set<BotBowsMap> maps) {
-        BotBowsMap pickedMap = mapSettings.getMapVotingSession().pickRandom(maps);
-        lobby.messagePlayers(Component.empty()
+    private fun pickRandomMap(maps: Set<BotBowsMap> = mapSettings.mapVotingSession.classicMapList) {
+        val pickedMap = mapSettings.mapVotingSession.pickRandom(maps)
+        lobby.messagePlayers(
+            Component.empty()
                 .append(Component.text(pickedMap.prettyName(), NamedTextColor.AQUA))
-                .append(Component.text(" was picked!")));
-        mapSettings.setCurrentMap(pickedMap);
+                .append(Component.text(" was picked!"))
+        )
+        mapSettings.currentMap = pickedMap
     }
 
-    public void switchTeamSides() {
-        setNewTeams(true);
+    fun switchTeamSides() {
+        setNewTeams(true)
     }
 
-    public void joinGame(Player p) {
-        BotBowsPlayer bp = new BotBowsPlayer(p, this);
-        joinGame(bp);
+    fun joinGame(p: Player) {
+        val bp = BotBowsPlayer(p, this)
+        joinGame(bp)
 
-        if (getPlayers().size() == 1 || modPlayer == null || modPlayer.avatar instanceof NpcAvatar) {
-            modPlayer = bp;
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")" +
-                    " and will be the settings moderator")));
-            mapMenus.get(bp).open(p);
+        if (getPlayers().size == 1 || modPlayer == null || modPlayer!!.avatar is NpcAvatar) {
+            modPlayer = bp
+            Bukkit.getOnlinePlayers()
+                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size}) and will be the settings moderator")) }
+            mapMenus[bp]!!.open(p)
         } else {
-            Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(p.getName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
+            Bukkit.getOnlinePlayers()
+                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size})")) }
         }
     }
 
-    public void joinGame(Mannequin mannequin) {
-        BotBowsPlayer bp = new BotBowsPlayer(mannequin, this);
-        joinGame(bp);
-        Bukkit.getOnlinePlayers().forEach(q -> q.sendMessage(Component.text(bp.getPlainName() + " has joined BotBows Lobby #" + (lobby.ID + 1) + " (" + players.size() + ")")));
+    fun joinGame(mannequin: Mannequin?) {
+        val bp = BotBowsPlayer(mannequin, this)
+        joinGame(bp)
+        Bukkit.getOnlinePlayers()
+            .forEach { it.sendMessage(Component.text("${bp.plainName} has joined BotBows Lobby #${lobby.ID + 1} (${players.size})")) }
     }
 
-    private void joinGame(BotBowsPlayer bp) {
-        lobby.registerBotBowsPlayer(bp);
-        players.add(bp);
+    private fun joinGame(bp: BotBowsPlayer) {
+        lobby.registerBotBowsPlayer(bp)
+        players.add(bp)
         if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
-            team1.join(bp);
+            team1.join(bp)
         } else {
-            team2.join(bp);
+            team2.join(bp)
         }
-        teamsMenu.recalculateTeam();
+        teamsMenu.recalculateTeam()
 
-        healthMenu.addPlayer(bp);
+        healthMenu.addPlayer(bp)
 
-        MapMenu mapMenu = new MapMenu(this, bp);
-        mapMenus.put(bp, mapMenu);
-        mapSettings.addListener(bp, mapMenu);
+        val mapMenu = MapMenu(this, bp)
+        mapMenus[bp] = mapMenu
+        mapSettings.addListener(bp, mapMenu)
 
-        abilityMenus.values().forEach(menu -> menu.addPlayer(bp));
-        AbilityMenu abilityMenu = new AbilityMenu(this, bp);
-        abilityMenus.put(bp, abilityMenu);
-        abilitySettings.addListener(bp, abilityMenu);
-        players.forEach(abilityMenu::addPlayer);
-        players.forEach(lobbyPlayer -> lobbyPlayer.settings.addListener(bp, healthMenu, abilityMenu));
-        bp.settings.setMaxHealth(healthSettings.getMaxHealth());
+        abilityMenus.values.forEach { it.addPlayer(bp) }
+        val abilityMenu = AbilityMenu(this, bp)
+        abilityMenus[bp] = abilityMenu
+        abilitySettings.addListener(bp, abilityMenu)
+        players.forEach { abilityMenu.addPlayer(it) }
+        players.forEach { it.settings.addListener(bp, healthMenu, abilityMenu) }
+        bp.settings.maxHealth = healthSettings.maxHealth
     }
 
-    public void leaveGame(BotBowsPlayer bp) {
+    fun leaveGame(bp: BotBowsPlayer) {
         if (!players.contains(bp)) {
-            bp.avatar.message(Component.text("You can't leave when you're not in a game", NamedTextColor.RED));
-            return;
+            bp.avatar.message(Component.text("You cant leave when youre not in a game", NamedTextColor.RED))
+            return
         }
-        bp.leaveGame();
-        players.remove(bp);
-        mapSettings.removeListener(bp);
-        mapSettings.getMapVotingSession().removeVote(bp);
-        teamsMenu.recalculateTeam();
-        healthMenu.removePlayer(bp);
-        abilityMenus.values().forEach(menu -> menu.removePlayer(bp));
-        abilityMenus.remove(bp);
-        mapMenus.remove(bp);
-        abilitySettings.removeListener(bp);
-        players.forEach(lobbyPlayer -> lobbyPlayer.settings.removeListener(bp));
-        if (isPlayerMod(bp) && !players.isEmpty()) {
-            for (BotBowsPlayer nextBp : players) {
-                if (nextBp.avatar instanceof PlayerAvatar) {
-                    setModPlayer(nextBp);
-                    break;
+        bp.leaveGame()
+        players.remove(bp)
+        mapSettings.removeListener(bp)
+        mapSettings.mapVotingSession.removeVote(bp)
+        teamsMenu.recalculateTeam()
+        healthMenu.removePlayer(bp)
+        abilityMenus.values.forEach { it.removePlayer(bp) }
+        abilityMenus.remove(bp)
+        mapMenus.remove(bp)
+        abilitySettings.removeListener(bp)
+        players.forEach { it.settings.removeListener(bp) }
+        if (isPlayerMod(bp) && players.isNotEmpty()) {
+            for (nextBp in players) {
+                if (nextBp.avatar is PlayerAvatar) {
+                    setModPlayer(nextBp)
+                    break
                 }
             }
         }
 
-        bp.avatar.message(Component.text("You left BotBows Lobby #" + (lobby.ID + 1), NamedTextColor.YELLOW));
-        lobby.messagePlayers(Component.text(bp.getPlainName() + " has left the lobby (" + players.size() + ")", NamedTextColor.YELLOW));
-        bp.destroy();
+        bp.avatar.message(Component.text("You left BotBows Lobby #${lobby.ID + 1}", NamedTextColor.YELLOW))
+        lobby.messagePlayers(Component.text("${bp.plainName} has left the lobby (${players.size})", NamedTextColor.YELLOW))
+        bp.destroy()
     }
 
-    public Set<BotBowsPlayer> getPlayers() {
-        return Collections.unmodifiableSet(players);
+    fun getPlayers(): Set<BotBowsPlayer> {
+        return players.toSet()
     }
 
-    public boolean isPlayerJoined(UUID playerId) {
-        return Optional.ofNullable(lobby.getBotBowsPlayer(playerId))
-                .map(players::contains)
-                .orElse(false);
+    fun isPlayerJoined(playerId: UUID): Boolean {
+        return players.contains(lobby.getBotBowsPlayer(playerId))
     }
 
-    public void setModPlayer(BotBowsPlayer bp) {
-        String first = modPlayer == null ? "" : "new ";
-        if (modPlayer != null) abilityMenus.get(modPlayer).setToggleAbilityMode(false);
+    fun setModPlayer(bp: BotBowsPlayer) {
+        val first = if (modPlayer == null) "" else " new"
+        if (modPlayer != null) abilityMenus[modPlayer]!!.isToggleAbilityMode = false
 
-        modPlayer = bp;
-        lobby.messagePlayers(bp.getName().color(NamedTextColor.GREEN).append(Component.text(" is the " + first + "game mod", NamedTextColor.WHITE)));
+        modPlayer = bp
+        lobby.messagePlayers(
+            bp.name.color(NamedTextColor.GREEN).append(Component.text(" is the$first game mod", NamedTextColor.WHITE))
+        )
     }
 
-    public boolean checkMod(BotBowsPlayer bp) {
-        boolean isPlayerMod = isPlayerMod(bp);
-        if (!isPlayerMod) bp.avatar.message(Component.text("Only mods can do this action", NamedTextColor.RED));
-        return isPlayerMod;
+    fun checkMod(bp: BotBowsPlayer): Boolean {
+        val isPlayerMod = isPlayerMod(bp)
+        if (!isPlayerMod) bp.avatar.message(Component.text("Only mods can do this action", NamedTextColor.RED))
+        return isPlayerMod
     }
 
-    public boolean isPlayerMod(BotBowsPlayer bp) {
-        return bp == modPlayer;
+    fun isPlayerMod(bp: BotBowsPlayer): Boolean {
+        return bp === modPlayer
     }
-
 }

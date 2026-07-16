@@ -100,7 +100,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), HealthUpdateListe
     public override fun nextPage(p: Player) = settings.winConditionMenu.open(p)
 
     fun updateColors() {
-        for (bp in settings.players) {
+        for (bp in settings.getPlayers()) {
             healthRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
             damageRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
         }
