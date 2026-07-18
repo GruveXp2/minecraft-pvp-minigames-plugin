@@ -31,7 +31,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         }
 
     init {
-        setPageButtons(1, false, true)
+        setPageButtons(1, true, true)
         updateMenu()
     }
 
@@ -79,6 +79,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             MenuAction.BACK -> uiMode = UiMode.MAIN
         }
     }
+    override fun prevPage(p: Player) = settings.presetsMenu.open(p)
 
     override fun nextPage(p: Player) = settings.teamsMenu.open(p)
 

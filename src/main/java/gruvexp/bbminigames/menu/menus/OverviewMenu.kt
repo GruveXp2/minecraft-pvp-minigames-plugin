@@ -38,7 +38,7 @@ class OverviewMenu(settings: Settings): SettingsMenu(settings) {
 
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
-            MenuAction.PRESETS -> clicker.sendMessage(Component.text("Not added yet, will be added soon:tm:", NamedTextColor.YELLOW))
+            MenuAction.PRESETS -> settings.presetsMenu.open(clicker)
             MenuAction.MAP_SELECTION -> settings.mapMenus[bp]?.open(clicker)
             MenuAction.TEAM_SELECTION -> settings.teamsMenu.open(clicker)
             MenuAction.HEALTH -> settings.healthMenu.open(clicker)

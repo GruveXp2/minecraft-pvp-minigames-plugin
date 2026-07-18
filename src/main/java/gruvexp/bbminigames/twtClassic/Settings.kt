@@ -45,6 +45,7 @@ class Settings(@JvmField val lobby: Lobby) {
 
     // menus
     lateinit var overviewMenu: OverviewMenu
+    lateinit var presetsMenu: PresetsMenu
     @JvmField
     val mapMenus: MutableMap<BotBowsPlayer, MapMenu> = hashMapOf()
     lateinit var healthMenu: HealthMenu
@@ -58,6 +59,8 @@ class Settings(@JvmField val lobby: Lobby) {
 
     fun initMenus() {
         overviewMenu = OverviewMenu(this)
+
+        presetsMenu = PresetsMenu(this)
 
         players.forEach { bp: BotBowsPlayer ->
             mapMenus[bp] = MapMenu(this, bp)
@@ -170,6 +173,11 @@ class Settings(@JvmField val lobby: Lobby) {
 
         val abilityPreset = preset.abilities
         abilitySettings.applyPreset(abilityPreset)
+
+        lobby.messagePlayers(
+            Component.text("Applied preset ")
+                .append(Component.text(preset.name, NamedTextColor.AQUA))
+        )
     }
 
     private fun onMapChange(map: BotBowsMap) {

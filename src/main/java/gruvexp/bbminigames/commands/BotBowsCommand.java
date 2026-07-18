@@ -59,6 +59,7 @@ public class BotBowsCommand implements CommandExecutor {
                 BattlePreset preset = lobby.settings.saveBattlePreset(name, icon);
                 boolean success = Main.getPlugin().getPresetService().addPreset(preset);
                 if (success) {
+                    lobby.settings.presetsMenu.displayPresets();
                     p.sendMessage(Component.text("Successfully added preset \"" + name + "\" with icon " + args[2]));
                 } else {
                     p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED));
@@ -75,8 +76,6 @@ public class BotBowsCommand implements CommandExecutor {
                 if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets");
 
                 lobby.settings.applyBattlePreset(preset);
-                p.sendMessage(Component.text("Successfully applied preset ")
-                        .append(Component.text(presetName, NamedTextColor.AQUA)));
             }
             case "transfer_mod" -> {
                 if (!bp.lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can transfer their mod role (bruh)");
