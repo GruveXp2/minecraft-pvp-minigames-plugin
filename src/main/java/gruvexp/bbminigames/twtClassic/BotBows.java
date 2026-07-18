@@ -191,8 +191,7 @@ public class BotBows {
             p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
             return;
         }
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        lobby.settings.mapMenus.get(bp).open(p);
+        lobby.settings.overviewMenu.open(p);
     }
 
     public static void handleMovement(PlayerMoveEvent e) {

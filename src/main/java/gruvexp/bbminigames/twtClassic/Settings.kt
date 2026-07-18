@@ -44,9 +44,9 @@ class Settings(@JvmField val lobby: Lobby) {
     var rain: Int = 0 // temporary workaround
 
     // menus
+    lateinit var overviewMenu: OverviewMenu
     @JvmField
     val mapMenus: MutableMap<BotBowsPlayer, MapMenu> = hashMapOf()
-
     lateinit var healthMenu: HealthMenu
     lateinit var teamsMenu: TeamsMenu
     lateinit var winConditionMenu: WinConditionMenu
@@ -57,6 +57,8 @@ class Settings(@JvmField val lobby: Lobby) {
     private var modPlayer: BotBowsPlayer? = null
 
     fun initMenus() {
+        overviewMenu = OverviewMenu(this)
+
         players.forEach { bp: BotBowsPlayer ->
             mapMenus[bp] = MapMenu(this, bp)
             mapSettings.addListener(bp, mapMenus[bp]!!)
@@ -289,7 +291,7 @@ class Settings(@JvmField val lobby: Lobby) {
             modPlayer = bp
             Bukkit.getOnlinePlayers()
                 .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size}) and will be the settings moderator")) }
-            mapMenus[bp]!!.open(p)
+            overviewMenu.open(p)
         } else {
             Bukkit.getOnlinePlayers()
                 .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size})")) }
