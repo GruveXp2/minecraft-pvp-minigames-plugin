@@ -38,7 +38,6 @@ public interface BotBowsAvatar {
     void updateSneakStamina(float progress);
     ItemStack getHeadItem();
     void setItem(int index, ItemStack item);
-    void setInvis(boolean invis);
     default boolean isOnGround() {return getEntity().isOnGround();}
     default void setInvulnerable(boolean invulnerable) {getEntity().setInvulnerable(invulnerable);}
     default Location getLocation() {return getEntity().getLocation();}

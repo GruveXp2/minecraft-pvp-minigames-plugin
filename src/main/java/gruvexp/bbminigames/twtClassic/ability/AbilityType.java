@@ -59,8 +59,6 @@ public enum AbilityType {
             30, "BANNER", AbilityCategory.UTILITY),
     ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
             15, "CONCRETE", AbilityCategory.UTILITY),
-    INVIS_POTION(makeInvisPotion(),
-            25, "CANDLE", AbilityCategory.POTION),
     BABY_POTION(makeBabyPotion(),
             25, "CANDLE", AbilityCategory.POTION),
     CHARGE_POTION(makeChargePotion(),
@@ -180,20 +178,6 @@ public enum AbilityType {
         return Component.text("Potion effect: ", NamedTextColor.DARK_AQUA)
                 .append(Component.text(potionEffect, NamedTextColor.AQUA))
                 .decoration(TextDecoration.ITALIC, false);
-    }
-
-    private static ItemStack makeInvisPotion() {
-        ItemStack potion = new ItemStack(Material.POTION);
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
-
-        PotionEffect effect = new PotionEffect(PotionEffectType.INVISIBILITY, 5 * 20, 4);
-        meta.addCustomEffect(effect, true);
-        meta.customName(Component.text("Invisibility potion").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(getDurationInfo(5)));
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-
-        potion.setItemMeta(meta);
-        return potion;
     }
 
     private static ItemStack makeBabyPotion() {

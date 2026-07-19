@@ -209,7 +209,6 @@ public class BotBowsPlayer {
         }
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
-            case INVIS_POTION -> abilities.put(type, new InvisPotion(this, slot));
             case RADAR -> abilities.put(type, new Radar(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
             case THUNDER_BOW -> abilities.put(type, new ThunderBow(this, slot));
@@ -402,11 +401,6 @@ public class BotBowsPlayer {
 
     public void reloadBotBow() {
         avatar.setItem(0, BotBows.BOTBOW);
-    }
-
-    public void setInvis(int ticks) {
-        avatar.setInvis(true);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> avatar.setInvis(false), ticks);
     }
 
     public Set<BotBowsPlayer> getNearbyPlayers(double radius) {

@@ -220,15 +220,6 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void setInvis(boolean invis) { // will temporarily move armor content out of inventory and
-        if (invis) {
-            player.getInventory().setArmorContents(new ItemStack[4]);
-        } else {
-            updateArmor();
-        }
-    }
-
-    @Override
     public void showTitle(Title title) {
         player.showTitle(title);
     }
