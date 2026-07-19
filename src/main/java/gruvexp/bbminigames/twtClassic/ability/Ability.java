@@ -110,11 +110,11 @@ public class Ability {
 
     }
 
-    public void reset() {
+    public void reset() { // removing things gracefully (eg igniting creeper, remove effects etc)
 
     }
 
-    public void destroy() {
+    public void destroy() { // removing everything by force (removing all entities without any effect)
         resetCooldown();
     }
 

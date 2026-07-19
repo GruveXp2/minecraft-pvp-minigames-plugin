@@ -159,6 +159,8 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
         if (hitBlock != null) {
             Location hitLoc = e.getHitBlock().getLocation();
             ThunderBow.handleArrowHitBlock(hitLoc);
+            activeArrows.get(arrow).cancel();
+            activeArrows.remove(arrow);
             return;
         }
         BotBowsPlayer defender = BotBows.getBotBowsPlayer(e.getHitEntity().getUniqueId());
