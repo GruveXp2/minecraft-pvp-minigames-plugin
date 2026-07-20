@@ -1,13 +1,16 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.menu.PlayerListMenu
+import gruvexp.bbminigames.menu.PlayerMenuRow
 import gruvexp.bbminigames.menu.SettingsMenu
 import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -15,18 +18,22 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-class TeamsMenu(settings: Settings) : SettingsMenu(settings) {
+class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
     lateinit var team1: BotBowsTeam
     lateinit var team2: BotBowsTeam
 
+    private val team1Row: PlayerMenuRow
+    private val team2Row: PlayerMenuRow
+    private val rows: Map<TeamSide, PlayerMenuRow>
+
     init {
-        for (i in 2..6) {
-            inventory.setItem(i, null)
-            inventory.setItem(i + 9, null)
-        }
         setPageButtons(2, true, true)
         inventory.setItem(22, SWITCH_SIDE)
         registerTeams()
+
+        team1Row = PlayerMenuRow(inventory, MenuAction.FLIP_PLAYER_TEAM.name, 2, 5).apply { show() }
+        team2Row = PlayerMenuRow(inventory, MenuAction.FLIP_PLAYER_TEAM.name, 11, 5).apply { show() }
+        rows = mapOf(TeamSide.TEAM_1 to team1Row, TeamSide.TEAM_2 to team2Row)
     }
 
     override fun getMenuName(): Component = Component.text("Teams (2/6)")
@@ -49,10 +56,8 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings) {
                     clickedItem.itemMeta.persistentDataContainer
                         .get(key, PersistentDataType.STRING)
                 )
-                val headBp = settings.lobby.getBotBowsPlayer(playerId)
-                headBp.team.oppositeTeam!!.join(headBp)
-                recalculateTeam()
-                settings.healthMenu.updateColors() // updates colors of player head displaynames in other menus
+                val clickedBp = settings.lobby.getBotBowsPlayer(playerId)
+                settings.switchTeam(clickedBp)
             }
             MenuAction.FLIP_TEAMS -> settings.switchTeamSides()
         }
@@ -85,21 +90,17 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings) {
         inventory.setItem(17, team2Pane)
     }
 
-    fun recalculateTeam() { // TODO: use menurows instead
-        inventory.remove(Material.PLAYER_HEAD) // Fjerner player heads sånn at det kan kalkuleres pånytt
+    override fun addPlayer(bp: BotBowsPlayer) {
+        rows.getValue(bp.team.teamSide).addItem(bp.avatar.getHeadItem())
+    }
 
-        for (i in 0..<team1.size()) { // team 1
-            val playerHead = team1.getPlayer(i).avatar.getHeadItem().apply { editMeta {
-                it.persistentDataContainer.set(ACTION_KEY, PersistentDataType.STRING, MenuAction.FLIP_PLAYER_TEAM.name)
-            } }
-            inventory.setItem(2 + i, playerHead)
-        }
-        for (i in 0..<team2.size()) { // team 2
-            val playerHead = team1.getPlayer(i).avatar.getHeadItem().apply { editMeta {
-                it.persistentDataContainer.set(ACTION_KEY, PersistentDataType.STRING, MenuAction.FLIP_PLAYER_TEAM.name)
-            } }
-            inventory.setItem(11 + i, playerHead)
-        }
+    override fun removePlayer(bp: BotBowsPlayer) {
+        rows.getValue(bp.team.teamSide).removeItem(bp)
+    }
+
+    override fun updatePlayer(bp: BotBowsPlayer) {
+        rows.getValue(bp.team.oppositeTeam.teamSide).removeItem(bp)
+        rows.getValue(bp.team.teamSide).addItem(bp.avatar.getHeadItem())
     }
 
     companion object {

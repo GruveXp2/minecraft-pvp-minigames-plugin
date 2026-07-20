@@ -3,6 +3,7 @@ package gruvexp.bbminigames.menu.menus
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.AbilityMenuRow
 import gruvexp.bbminigames.menu.MenuSlider
+import gruvexp.bbminigames.menu.PlayerListMenu
 import gruvexp.bbminigames.menu.PlayerMenuRow
 import gruvexp.bbminigames.menu.SettingsMenu
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
@@ -25,7 +26,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import kotlin.math.max
 
-class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsMenu(settings), AbilityUpdateListener,
+class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsMenu(settings), PlayerListMenu, AbilityUpdateListener,
     PlayerAbilityUpdateListener {
     private val maxAbilitiesSlider = MenuSlider(
         inventory,
@@ -391,14 +392,12 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         return if (slot > abilityRow.size) null else slot
     }
 
-    fun addPlayer(bp: BotBowsPlayer) {
-        //max abilities
-        val abilitiesHead = bp.avatar.getHeadItem()
-        abilitiesHead.amount = max(bp.settings.maxAbilities, 1)
-        maxAbilitiesRow.addItem(abilitiesHead)
-        // cooldown multiplier
-        val cooldownHead = bp.avatar.getHeadItem()
-        cooldownHead.editMeta {
+    override fun addPlayer(bp: BotBowsPlayer) {
+        val maxAbilitiesHead = bp.avatar.getHeadItem().apply { amount = max(bp.settings.maxAbilities, 1) }
+        maxAbilitiesRow.addItem(maxAbilitiesHead)
+
+        val cooldownMultiplierHead = bp.avatar.getHeadItem()
+        cooldownMultiplierHead.editMeta {
             it.lore(
                 listOf(
                     Component.text("Cooldown multiplier: ").append(
@@ -410,16 +409,17 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                 )
             )
         }
-        cooldownMultiplierRow.addItem(cooldownHead)
+        cooldownMultiplierRow.addItem(cooldownMultiplierHead)
     }
 
-    fun removePlayer(bp: BotBowsPlayer) {
-        removePlayerFromRow(bp, maxAbilitiesRow)
-        removePlayerFromRow(bp, cooldownMultiplierRow)
+    override fun removePlayer(bp: BotBowsPlayer) {
+        maxAbilitiesRow.removeItem(bp)
+        cooldownMultiplierRow.removeItem(bp)
     }
 
-    private fun removePlayerFromRow(bp: BotBowsPlayer, row: PlayerMenuRow) {
-        row.removeItem(row.getItem(bp))
+    override fun updatePlayer(bp: BotBowsPlayer) {
+        maxAbilitiesRow.editItem(bp) { it.displayName(bp.name) }
+        cooldownMultiplierRow.editItem(bp) { it.displayName(bp.name) }
     }
 
     override fun onUniqueAbilityOccupancyChange(type: AbilityType, bp: BotBowsPlayer, equipped: Boolean) {

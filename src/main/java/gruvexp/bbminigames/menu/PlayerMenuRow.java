@@ -6,14 +6,13 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-public class PlayerMenuRow extends MenuRow{
+import java.util.function.Consumer;
 
-    public PlayerMenuRow(Inventory inventory, int startSlot, int size) {
-        super(inventory, startSlot, size);
-    }
+public class PlayerMenuRow extends MenuRow{
 
     public PlayerMenuRow(Inventory inventory, String menuActionId, int startSlot, int size) {
         super(inventory, menuActionId, startSlot, size);
@@ -35,5 +34,16 @@ public class PlayerMenuRow extends MenuRow{
             }
         }
         return null;
+    }
+
+    public void editItem(BotBowsPlayer bp, Consumer<ItemMeta> action) {
+        ItemStack item = getItem(bp);
+        if (item == null) return;
+        item.editMeta(action);
+        if (isVisible) displayRow();
+    }
+
+    public void removeItem(BotBowsPlayer bp) {
+        removeItem(getItem(bp));
     }
 }

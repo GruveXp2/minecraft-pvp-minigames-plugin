@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic
 
+import gruvexp.bbminigames.menu.PlayerListMenu
 import gruvexp.bbminigames.menu.menus.*
 import gruvexp.bbminigames.model.preset.AbilityPreset
 import gruvexp.bbminigames.model.preset.BattlePreset
@@ -54,6 +55,9 @@ class Settings(@JvmField val lobby: Lobby) {
     lateinit var hazardMenu: HazardMenu
     @JvmField
     val abilityMenus: MutableMap<BotBowsPlayer, AbilityMenu> = hashMapOf()
+
+    private val playerListMenus: Sequence<PlayerListMenu>
+        get() = sequenceOf(teamsMenu, healthMenu) + abilityMenus.values
 
     private var modPlayer: BotBowsPlayer? = null
 
@@ -185,6 +189,11 @@ class Settings(@JvmField val lobby: Lobby) {
         hazardSettings.syncWithMap(map)
     }
 
+    fun switchTeam(bp: BotBowsPlayer) {
+        bp.team.oppositeTeam.join(bp)
+        playerListMenus.forEach { it.updatePlayer(bp) }
+    }
+
     private fun setNewTeams(flipped: Boolean) {
         val team1Players = team1.players.toMutableList()
         val team2Players = team2.players.toMutableList()
@@ -198,8 +207,7 @@ class Settings(@JvmField val lobby: Lobby) {
         team2.putPlayers(team2Players)
 
         teamsMenu.registerTeams()
-        teamsMenu.recalculateTeam() // update the player heads so they have the correct color
-        healthMenu.updateColors() // update so the name colors match the new team color
+        players.forEach { bp -> playerListMenus.forEach { it.updatePlayer(bp) } }
     }
 
     private fun updateLeadingMap(triggeredByNewVote: Boolean) {
@@ -321,15 +329,12 @@ class Settings(@JvmField val lobby: Lobby) {
         } else {
             team2.join(bp)
         }
-        teamsMenu.recalculateTeam()
-
-        healthMenu.addPlayer(bp)
+        playerListMenus.forEach { it.addPlayer(bp) }
 
         val mapMenu = MapMenu(this, bp)
         mapMenus[bp] = mapMenu
         mapSettings.addListener(bp, mapMenu)
 
-        abilityMenus.values.forEach { it.addPlayer(bp) }
         val abilityMenu = AbilityMenu(this, bp)
         abilityMenus[bp] = abilityMenu
         abilitySettings.addListener(bp, abilityMenu)
@@ -347,9 +352,8 @@ class Settings(@JvmField val lobby: Lobby) {
         players.remove(bp)
         mapSettings.removeListener(bp)
         mapSettings.mapVotingSession.removeVote(bp)
-        teamsMenu.recalculateTeam()
-        healthMenu.removePlayer(bp)
-        abilityMenus.values.forEach { it.removePlayer(bp) }
+
+        playerListMenus.forEach { it.removePlayer(bp) }
         abilityMenus.remove(bp)
         mapMenus.remove(bp)
         abilitySettings.removeListener(bp)

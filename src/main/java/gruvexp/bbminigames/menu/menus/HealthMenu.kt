@@ -2,6 +2,7 @@ package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.MenuSlider
+import gruvexp.bbminigames.menu.PlayerListMenu
 import gruvexp.bbminigames.menu.PlayerMenuRow
 import gruvexp.bbminigames.menu.SettingsMenu
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
@@ -19,7 +20,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-class HealthMenu(settings: Settings) : SettingsMenu(settings), HealthUpdateListener, PlayerHealthUpdateListener {
+class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, HealthUpdateListener, PlayerHealthUpdateListener {
     private val healthSlider: MenuSlider
     private val healthRow: PlayerMenuRow
     private val damageRow: PlayerMenuRow
@@ -99,13 +100,6 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), HealthUpdateListe
     public override fun prevPage(p: Player) = settings.teamsMenu.open(p)
     public override fun nextPage(p: Player) = settings.winConditionMenu.open(p)
 
-    fun updateColors() {
-        for (bp in settings.getPlayers()) {
-            healthRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
-            damageRow.getItem(bp).editMeta { it.displayName(bp.avatar.headItem.displayName()) }
-        }
-    }
-
     override fun onIndividualMaxHealthToggle() {
         if (settings.healthSettings.isIndividualMaxHealth) {
             inventory.setItem(0, CUSTOM_HEALTH_ENABLED)
@@ -156,20 +150,22 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), HealthUpdateListe
         damageRow.displayRow()
     }
 
-    fun addPlayer(bp: BotBowsPlayer) {
-        //max health
-        val healthHead = bp.avatar.getHeadItem()
-        healthHead.amount = bp.settings.maxHealth
-        healthRow.addItem(healthHead)
-        //max health
-        val damageHead = bp.avatar.getHeadItem()
-        damageHead.amount = bp.settings.attackDamage
+    override fun addPlayer(bp: BotBowsPlayer) {
+        val maxHealthHead = bp.avatar.getHeadItem().apply { amount = bp.settings.maxHealth }
+        healthRow.addItem(maxHealthHead)
+
+        val damageHead = bp.avatar.getHeadItem().apply { amount = bp.settings.attackDamage }
         damageRow.addItem(damageHead)
     }
 
-    fun removePlayer(bp: BotBowsPlayer) {
-        healthRow.removeItem(healthRow.getItem(bp))
-        damageRow.removeItem(damageRow.getItem(bp))
+    override fun removePlayer(bp: BotBowsPlayer) {
+        healthRow.removeItem(bp)
+        damageRow.removeItem(bp)
+    }
+
+    override fun updatePlayer(bp: BotBowsPlayer) {
+        healthRow.editItem(bp) { it.displayName(bp.name) }
+        damageRow.editItem(bp) { it.displayName(bp.name) }
     }
 
     companion object {
