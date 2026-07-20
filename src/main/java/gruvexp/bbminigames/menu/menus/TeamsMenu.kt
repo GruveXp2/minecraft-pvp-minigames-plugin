@@ -1,117 +1,119 @@
-package gruvexp.bbminigames.menu.menus;
+package gruvexp.bbminigames.menu.menus
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.menu.SettingsMenu;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.menu.SettingsMenu
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import java.util.*
 
-import java.util.Objects;
-import java.util.UUID;
+class TeamsMenu(settings: Settings) : SettingsMenu(settings) {
+    lateinit var team1: BotBowsTeam
+    lateinit var team2: BotBowsTeam
 
-public class TeamsMenu extends SettingsMenu {
-
-    public static final ItemStack SWITCH_SIDE = makeItem("switch", Component.text("Switch sides", NamedTextColor.LIGHT_PURPLE), Component.text("switches the teams to be their other"), Component.text("so the teams spawn on the opposite side"));
-
-    BotBowsTeam team1;
-    BotBowsTeam team2;
-
-    public TeamsMenu(Settings settings) {
-        super(settings);
-        for (int i = 2; i < 7; i++) {
-            inventory.setItem(i, null);
-            inventory.setItem(i + 9, null);
+    init {
+        for (i in 2..6) {
+            inventory.setItem(i, null)
+            inventory.setItem(i + 9, null)
         }
-        setPageButtons(2, true, true);
-        inventory.setItem(22, SWITCH_SIDE);
+        setPageButtons(2, true, true)
+        inventory.setItem(22, SWITCH_SIDE)
+        registerTeams()
     }
 
-    @Override
-    public Component getMenuName() {
-        return Component.text("Teams (2/6)");
-    }
+    override fun getMenuName(): Component = Component.text("Teams (2/6)")
 
-    @Override
-    public int getSlots() {
-        return 27;
-    }
+    override fun getSlots(): Int = 27
 
-    @Override
-    public void handleMenu(InventoryClickEvent e) {
-        // if you click on a player then they change teams
-        Player clicker = (Player) e.getWhoClicked();
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(clicker);
-        if (e.getClickedInventory() != inventory) return;
-        ItemStack clickedItem = e.getCurrentItem();
-        if (clickedItem == null) return;
-        if (handlePageClick(e)) return;
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return;
+    override fun handleMenu(e: InventoryClickEvent) {
+        if (e.clickedInventory !== inventory) return
+        val clickedItem = e.getCurrentItem() ?: return
+        if (handlePageClick(e)) return
 
-        switch (clickedItem.getType()) {
-            case PLAYER_HEAD -> {
-                NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
-                UUID playerId = UUID.fromString(Objects.requireNonNull(clickedItem.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING)));
-                BotBowsPlayer headBp = settings.lobby.getBotBowsPlayer(playerId);
-                headBp.getTeam().getOppositeTeam().join(headBp);
-                recalculateTeam();
-                settings.healthMenu.updateColors(); // pga teammembers endres må health settings oppdateres pga det er basert på farger
+        val clicker = e.whoClicked as Player
+        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
+
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
+        when (action) {
+            MenuAction.FLIP_PLAYER_TEAM -> {
+                val key = NamespacedKey(Main.getPlugin(), "uuid")
+                val playerId = UUID.fromString(
+                    clickedItem.itemMeta.persistentDataContainer
+                        .get(key, PersistentDataType.STRING)
+                )
+                val headBp = settings.lobby.getBotBowsPlayer(playerId)
+                headBp.team.oppositeTeam!!.join(headBp)
+                recalculateTeam()
+                settings.healthMenu.updateColors() // updates colors of player head displaynames in other menus
             }
-            case FIREWORK_STAR -> {
-                if (e.getSlot() == 22) {
-                    settings.switchTeamSides();
-                }
-            }
+            MenuAction.FLIP_TEAMS -> settings.switchTeamSides()
         }
     }
 
-    @Override
-    public void prevPage(Player p) {
-        settings.mapMenus.get(BotBows.getBotBowsPlayer(p)).open(p);
+    public override fun prevPage(p: Player) {
+        settings.mapMenus[BotBows.getBotBowsPlayer(p)]!!.open(p)
     }
 
-    @Override
-    public void nextPage(Player p) {
-        settings.healthMenu.open(p);
+    public override fun nextPage(p: Player) {
+        settings.healthMenu.open(p)
     }
 
-    public void registerTeams() {
-        team1 = settings.team1;
-        team2 = settings.team2;
-        setColoredGlassPanes();
+    fun registerTeams() {
+        team1 = settings.team1
+        team2 = settings.team2
+        drawTeamGlassPanes()
     }
 
-    private void setColoredGlassPanes() { // update the glass pane items that show the team colors and name
-        ItemStack team1Pane = makeItem(team1.getGlassPane(), Component.text("Team " + team1.getDisplayName(), team1.getColor()));
-        ItemStack team2Pane = makeItem(team2.getGlassPane(), Component.text("Team " + team2.getDisplayName(), team2.getColor()));
-        inventory.setItem(0, team1Pane);
-        inventory.setItem(1, team1Pane);
-        inventory.setItem(7, team1Pane);
-        inventory.setItem(8, team1Pane);
-        inventory.setItem(9, team2Pane);
-        inventory.setItem(10, team2Pane);
-        inventory.setItem(16, team2Pane);
-        inventory.setItem(17, team2Pane);
+    private fun drawTeamGlassPanes() { // update the glass pane items that show the team colors and name
+        val team1Pane = makeItem(team1.glassPane, Component.text("Team ${team1.displayName}", team1.color))
+        val team2Pane = makeItem(team2.glassPane, Component.text("Team ${team2.displayName}", team2.color))
+        inventory.setItem(0, team1Pane)
+        inventory.setItem(1, team1Pane)
+        inventory.setItem(7, team1Pane)
+        inventory.setItem(8, team1Pane)
+        inventory.setItem(9, team2Pane)
+        inventory.setItem(10, team2Pane)
+        inventory.setItem(16, team2Pane)
+        inventory.setItem(17, team2Pane)
     }
 
-    public void recalculateTeam() {
-        inventory.remove(Material.PLAYER_HEAD); // Fjerner player heads sånn at det kan kalkuleres pånytt
+    fun recalculateTeam() { // TODO: use menurows instead
+        inventory.remove(Material.PLAYER_HEAD) // Fjerner player heads sånn at det kan kalkuleres pånytt
 
-        for (int i = 0; i < team1.size(); i++) { // team 1
-            ItemStack playerHead = team1.getPlayer(i).avatar.getHeadItem();
-            inventory.setItem(2 + i, playerHead);
+        for (i in 0..<team1.size()) { // team 1
+            val playerHead = team1.getPlayer(i).avatar.getHeadItem().apply { editMeta {
+                it.persistentDataContainer.set(ACTION_KEY, PersistentDataType.STRING, MenuAction.FLIP_PLAYER_TEAM.name)
+            } }
+            inventory.setItem(2 + i, playerHead)
         }
-        for (int i = 0; i < team2.size(); i++) { // team 2
-            ItemStack playerHead = team2.getPlayer(i).avatar.getHeadItem();
-            inventory.setItem(11 + i, playerHead);
+        for (i in 0..<team2.size()) { // team 2
+            val playerHead = team1.getPlayer(i).avatar.getHeadItem().apply { editMeta {
+                it.persistentDataContainer.set(ACTION_KEY, PersistentDataType.STRING, MenuAction.FLIP_PLAYER_TEAM.name)
+            } }
+            inventory.setItem(11 + i, playerHead)
         }
+    }
+
+    companion object {
+        val SWITCH_SIDE: ItemStack = makeItem(
+            "switch",
+            Component.text("Switch sides", NamedTextColor.LIGHT_PURPLE),
+            MenuAction.FLIP_TEAMS.name,
+            Component.text("switches the teams to be their other"),
+            Component.text("so the teams spawn on the opposite side")
+        )
+    }
+
+    private enum class MenuAction {
+        FLIP_PLAYER_TEAM,
+        FLIP_TEAMS
     }
 }

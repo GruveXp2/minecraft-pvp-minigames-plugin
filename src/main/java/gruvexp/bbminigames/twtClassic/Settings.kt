@@ -70,7 +70,7 @@ class Settings(@JvmField val lobby: Lobby) {
         healthMenu = HealthMenu(this)
         healthSettings.listener = healthMenu
 
-        teamsMenu = TeamsMenu(this).apply { registerTeams() }
+        teamsMenu = TeamsMenu(this)
 
         winConditionMenu = WinConditionMenu(this)
         winConditionSettings.listener = winConditionMenu
