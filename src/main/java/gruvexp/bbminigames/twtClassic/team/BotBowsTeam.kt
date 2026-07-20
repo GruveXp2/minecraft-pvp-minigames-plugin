@@ -14,7 +14,7 @@ enum class BotBowsTeam(
     val displayName: String,
     val color: NamedTextColor,
     val dyeColor: DyeColor,
-    val teamSide: TeamSide?,
+    val teamSide: TeamSide,
     val spawnPos: Array<Location>,
     val tribunePos: Location
 ) {
@@ -225,11 +225,7 @@ enum class BotBowsTeam(
         spawnPos: Location, tribunePos: Location
     ) : this(displayName, color, dyeColor, teamSide, Array(5) { spawnPos }, tribunePos)
 
-    var oppositeTeam: BotBowsTeam? = null
-        set(oppositeTeam) {
-            if (field != null) return
-            field = oppositeTeam
-        }
+    lateinit var oppositeTeam: BotBowsTeam
     val players: MutableList<BotBowsPlayer> = ArrayList(4)
 
     fun clearPlayers() {
