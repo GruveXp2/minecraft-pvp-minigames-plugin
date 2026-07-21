@@ -1,13 +1,14 @@
 package gruvexp.bbminigames.twtClassic.effect
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
-class PlayerEffectManager(private val avatar: BotBowsAvatar) {
+class PlayerEffectManager(private val bp: BotBowsPlayer) {
 
     companion object {
         private const val DEFAULT_ANIMATION_TICKS = 10 // how long to transition from one size to another
@@ -26,6 +27,9 @@ class PlayerEffectManager(private val avatar: BotBowsAvatar) {
     // represents an effect that is currently on the player
     private data class ScaleContribution(val targetScale: Double, val priority: ScalePriority)
     private data class GlowContribution(val color: NamedTextColor?, val blinkPeriodTicks: Int)
+
+    private val avatar: BotBowsAvatar
+        get() = bp.avatar
 
     private val scaleContributions = HashMap<ScaleSource, ScaleContribution>()
     private val scaleExpiry = HashMap<ScaleSource, BukkitTask>() // tickers for the current effects, that will remove the effects when reaching zero.

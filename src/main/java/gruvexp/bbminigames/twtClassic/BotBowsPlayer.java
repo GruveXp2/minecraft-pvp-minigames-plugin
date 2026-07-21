@@ -54,7 +54,7 @@ public class BotBowsPlayer {
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHealth();
-        effectManager = new PlayerEffectManager(avatar);
+        effectManager = new PlayerEffectManager(this);
     }
 
     public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
@@ -63,7 +63,7 @@ public class BotBowsPlayer {
         settings = new PlayerSettings(this, lobbySettings);
         lobby = lobbySettings.lobby;
         hp = settings.getMaxHealth();
-        effectManager = new PlayerEffectManager(avatar);
+        effectManager = new PlayerEffectManager(this);
         setReady(true, 4); // bots are always ready for match
     }
 
