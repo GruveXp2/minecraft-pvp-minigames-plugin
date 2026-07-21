@@ -262,7 +262,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "w" -> {
                     Player gruveXp = Bukkit.getPlayer("GruveXp");
-                    Player judith = Bukkit.getPlayer("Spionagent54");
+                    Player judith = Bukkit.getPlayer("SamTheRabbit5");
                     if (judith == null) {
                         p.sendMessage(Component.text("Error! Judiths bruker ække inne på serveren! Join med skolepcen"));
                         return true;
@@ -301,7 +301,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "q" -> {
                     Player gruveXp = Bukkit.getPlayer("GruveXp");
-                    Player judith = Bukkit.getPlayer("Spionagent54");
+                    Player judith = Bukkit.getPlayer("SamTheRabbit5");
 
                     Lobby lobby  = BotBows.getLobby(0);
                     lobby.settings.getHazardSettings().setChance(HazardType.STORM, HazardChance.DISABLED);

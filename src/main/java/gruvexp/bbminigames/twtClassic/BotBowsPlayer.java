@@ -14,6 +14,7 @@ import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
 import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -106,6 +107,28 @@ public class BotBowsPlayer {
         avatar.destroy();
         effectManager.clear();
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
+    }
+
+    public UUID turnIntoBot() {
+        if (avatar instanceof NpcAvatar) throw new IllegalStateException("This botbowsplayer is already a bot!");
+
+        Mannequin bot = Main.WORLD.spawn(avatar.getEntity().getLocation(), Mannequin.class);
+        bot.customName(getName());
+        bot.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID())));
+        avatar = new NpcAvatar(bot, avatar);
+        avatar.setHP(hp);
+        avatar.readyBattle(lobby.botBowsGame.boardManager.getTeamManager()); // this line is kinda ugly, maybe make the teammanager be somewhere else idk
+        return bot.getUniqueId();
+    }
+
+    public void turnIntoPlayer(Player p) {
+        if (avatar instanceof PlayerAvatar) throw new IllegalStateException("This botbowsplayer is already a player!");
+
+        p.teleport(avatar.getLocation());
+        avatar.destroy();
+        avatar = new PlayerAvatar(p, avatar);
+        avatar.setMaxHP(settings.getMaxHealth());
+        avatar.setHP(hp);
     }
 
     public void destroy() {

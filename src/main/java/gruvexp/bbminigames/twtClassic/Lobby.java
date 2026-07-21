@@ -95,6 +95,27 @@ public class Lobby {
         BotBows.unRegisterPlayerLobby(playerId);
     }
 
+    public void disconnect(Player p) {
+        UUID playerId = p.getUniqueId();
+        if (!activeGame) {
+            leaveGame(playerId);
+            return;
+        }
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        messagePlayers(bp.getName().append(Component.text(" disconnected from the server and will be replaced by a bot", NamedTextColor.YELLOW)));
+        UUID id =  bp.turnIntoBot();
+        BotBows.registerPlayerLobby(id, this);
+        registerBotBowsPlayerAvatar(bp);
+    }
+
+    public void reconnect(Player p) {
+        if (!activeGame) return;
+
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        messagePlayers(bp.getName().append(Component.text(" reconnected to the game", NamedTextColor.GREEN)));
+        bp.turnIntoPlayer(p);
+    }
+
     public void leaveGame(Player p) {
         UUID playerId = p.getUniqueId();
         if (!settings.isPlayerJoined(playerId)) {
@@ -118,7 +139,7 @@ public class Lobby {
         return players.get(playerId);
     }
 
-    public void registerBotBowsPlayer(BotBowsPlayer bp) {
+    public void registerBotBowsPlayerAvatar(BotBowsPlayer bp) {
         if (players.containsKey(bp.avatar.getUUID())) return;
         players.put(bp.avatar.getUUID(), bp);
     }

@@ -25,6 +25,11 @@ public class JoinLeaveListener implements Listener {
         if (!p.getName().equals("ColinStorm") && !p.getName().equals("GruveXp")) {
             p.setOp(false);
         }
+        Lobby lastLobby = BotBows.getLobby(p);
+        if (lastLobby != null) {
+            lastLobby.reconnect(p);
+            return;
+        }
         if (p.getInventory().getItemInMainHand().getType() != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
             Main.WORLD.dropItem(p.getLocation(), p.getInventory().getItemInMainHand());
         }
@@ -48,7 +53,7 @@ public class JoinLeaveListener implements Listener {
         Player p = e.getPlayer();
         Lobby lobby = BotBows.getLobby(p);
         if (lobby != null) {
-            lobby.leaveGame(p);
+            lobby.disconnect(p);
         }
         if (Bukkit.getOnlinePlayers().size() == 1) ShutdownManager.scheduleShutdown();
     }

@@ -42,6 +42,13 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.setGameMode(GameMode.ADVENTURE);
     }
 
+    public PlayerAvatar(Player player, BotBowsAvatar previousAvatar) {
+        this.player = player;
+        this.bp = previousAvatar.getBotBowsPlayer();
+        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
+        this.teamManager = previousAvatar.getTeamManager();
+    }
+
     @Override
     public void message(Component component) {
         player.sendMessage(component);
@@ -50,6 +57,11 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public LivingEntity getEntity() {
         return player;
+    }
+
+    @Override
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     @Override

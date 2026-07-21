@@ -16,6 +16,7 @@ import java.util.UUID;
 public interface BotBowsAvatar {
     void message(Component component);
     LivingEntity getEntity();
+    TeamManager getTeamManager();
     BotBowsPlayer getBotBowsPlayer();
     void eliminate();
     void revive();

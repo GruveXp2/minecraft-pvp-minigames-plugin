@@ -41,6 +41,11 @@ public class NpcAvatar implements BotBowsAvatar{
         this.bp = bp;
     }
 
+    public NpcAvatar(Mannequin mannequin, BotBowsAvatar previousAvatar) {
+        this.mannequin = mannequin;
+        this.bp = previousAvatar.getBotBowsPlayer();
+        this.teamManager = previousAvatar.getTeamManager();
+    }
 
     @Override
     public void message(Component component) {
@@ -50,6 +55,11 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public LivingEntity getEntity() {
         return mannequin;
+    }
+
+    @Override
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     @Override

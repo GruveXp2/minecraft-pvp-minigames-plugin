@@ -322,7 +322,7 @@ class Settings(@JvmField val lobby: Lobby) {
     }
 
     private fun joinGame(bp: BotBowsPlayer) {
-        lobby.registerBotBowsPlayer(bp)
+        lobby.registerBotBowsPlayerAvatar(bp)
         players.add(bp)
         if (team1.size() <= team2.size()) { // players fordeles jevnt i lagene
             team1.join(bp)
