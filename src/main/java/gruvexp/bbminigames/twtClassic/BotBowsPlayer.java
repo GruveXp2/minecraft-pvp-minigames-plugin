@@ -90,6 +90,7 @@ public class BotBowsPlayer {
             this.team.leave(this);
         }
         this.team = team;
+        avatar.equipFullArmor();
     }
 
     public void updateTeam(BotBowsTeam team) {

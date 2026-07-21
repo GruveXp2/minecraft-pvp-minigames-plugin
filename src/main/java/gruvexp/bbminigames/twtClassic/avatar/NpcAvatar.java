@@ -98,6 +98,15 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
+    public void equipFullArmor() {
+        mannequin.getEquipment().setArmorContents(new ItemStack[] {
+                getArmorPiece(Material.LEATHER_BOOTS),
+                getArmorPiece(Material.LEATHER_LEGGINGS),
+                getArmorPiece(Material.LEATHER_CHESTPLATE),
+                getArmorPiece(Material.LEATHER_HELMET)});
+    }
+
+    @Override
     public void destroy() {
         mannequin.remove();
     }
@@ -225,11 +234,7 @@ public class NpcAvatar implements BotBowsAvatar{
     private void updateArmor() { // updates the armor pieces of the player
         int maxHP = bp.settings.getMaxHealth();
         if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            mannequin.getEquipment().setArmorContents(new ItemStack[] {
-                    getArmorPiece(Material.LEATHER_BOOTS),
-                    getArmorPiece(Material.LEATHER_LEGGINGS),
-                    getArmorPiece(Material.LEATHER_CHESTPLATE),
-                    getArmorPiece(Material.LEATHER_HELMET)});
+            equipFullArmor();
             return;
         }
         Set<Integer> slots;
