@@ -165,8 +165,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             .sortedByDescending { map -> mapVotingSession.getVotes(map) }
             .take(7)
             .forEachIndexed { i, map ->
-                val mapItem = map.getMenuItem()
-                mapItem.amount = mapVotingSession.getVotes(map)
+                val mapItem = map.getMenuItem().apply { amount = mapVotingSession.getVotes(map) }
                 inventory.setItem(2 + i, mapItem)
             }
     }
