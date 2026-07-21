@@ -1,5 +1,7 @@
 package gruvexp.bbminigames.api.ability;
 
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
+import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 public interface AbilityTrigger {
@@ -14,6 +16,10 @@ public interface AbilityTrigger {
     }
     interface OnProjectileHit {
         void onHit(ProjectileHitEvent e);
+    }
+    interface OnLingeringPotionUse {
+        void onSplash(LingeringPotionSplashEvent e);
+        void onCloudApply(AreaEffectCloudApplyEvent e);
     }
     interface OnBlockPlace {
         void onPlace(AbilityContext.BlockPlace ctx);

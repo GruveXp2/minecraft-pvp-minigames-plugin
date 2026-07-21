@@ -12,8 +12,6 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
 import gruvexp.bbminigames.twtClassic.ability.abilities.*;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -24,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
 public class AbilityListener implements Listener {
 
@@ -158,7 +155,7 @@ public class AbilityListener implements Listener {
     }
 
     @EventHandler
-    public void onPotionSplash(LingeringPotionSplashEvent e) {
+    public void onLingeringPotionSplash(LingeringPotionSplashEvent e) {
         ThrownPotion potion = e.getEntity();
         if (!(potion.getShooter() instanceof Player thrower)) return;
 
@@ -166,29 +163,18 @@ public class AbilityListener implements Listener {
         if (lobby == null) return;
         BotBowsPlayer throwerBp = lobby.getBotBowsPlayer(thrower);
 
-        boolean hasUnluck = potion.getEffects().stream()
-                .anyMatch(effect -> effect.getType() == PotionEffectType.UNLUCK);
-
-        if (!hasUnluck) return;
-
         LingeringPotionTrap ability = (LingeringPotionTrap) throwerBp.getAbility(AbilityType.LINGERING_POTION);
-        ability.addSizeIncreaseAreaEffect(potion.getLocation());
+        ability.onSplash(e);
     }
 
     @EventHandler
-    public void onPotionEffectReceive(EntityPotionEffectEvent e) {
-        PotionEffectType effect = e.getModifiedType();
-        if (effect != PotionEffectType.WEAVING) return;
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(e.getEntity().getUniqueId());
-        if (bp == null) return;
-        if (e.getNewEffect() == null) return;
+    public void onCloudApply(AreaEffectCloudApplyEvent e) {
+        AreaEffectCloud cloud = e.getEntity();
 
-        bp.getEffectManager().applyGlow(
-                PlayerEffectManager.GlowSource.DEBUFF,
-                (long) e.getNewEffect().getDuration(),
-                NamedTextColor.GOLD,
-                10
-        );
+        BotBowsPlayer cloudOwningBp = LingeringPotionTrap.getCloudOwner(cloud);
+        if (cloudOwningBp != null) {
+            ((LingeringPotionTrap) cloudOwningBp.getAbility(AbilityType.LINGERING_POTION)).onCloudApply(e);
+        }
     }
 
     @EventHandler
