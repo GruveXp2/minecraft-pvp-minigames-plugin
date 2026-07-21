@@ -64,7 +64,7 @@ public class BoardManager {
         int hp = bp.getHP();
         int maxHp = bp.settings.getMaxHealth();
         int playerLineIndex; // which line of the scoreboard the player stats will be shown
-        if (team1().hasPlayer(bp)) { //
+        if (team1().hasPlayer(bp)) {
             playerLineIndex = team1().getPlayerID(bp) + team2().size() + 1;
         } else {
             playerLineIndex = team2().getPlayerID(bp);
@@ -146,38 +146,33 @@ public class BoardManager {
 
     private void setScore(String text, int score) {
         Score l1 = objective.getScore(text);
-        l1.setScore(score); //nederst
+        l1.setScore(score);
     }
 
     private static TextColor darkenColor(TextColor color) {
         if (color instanceof NamedTextColor) {
-            String colorName = color.toString();
-            if (colorName.equals("LIGHT_PURPLE")) {
+            if (color == NamedTextColor.LIGHT_PURPLE) {
                 return NamedTextColor.DARK_PURPLE;
-            } else if (colorName.startsWith("LIGHT_")) {
-                return NamedTextColor.NAMES.value(colorName.replace("LIGHT_", "").toLowerCase());
-            } else {
-                return NamedTextColor.NAMES.value(("DARK_" + colorName).toLowerCase());
             }
-        } else {
-            // rethrn a textcolor which is the input mutiplyed saturation with 1.5, and value with 2/3
-            // Extract RGB values
+            String colorName = color.toString();
+            if (colorName.startsWith("light_")) {
+                return NamedTextColor.NAMES.value(colorName.replace("light_", "").toLowerCase());
+            } else {
+                return NamedTextColor.NAMES.value(("dark_" + colorName).toLowerCase());
+            }
+        } else { // return a TextColor where input.apply { saturation *= 1.5, value *= 2/3 }
             int rgb = color.value();
             int red = (rgb >> 16) & 0xFF;
             int green = (rgb >> 8) & 0xFF;
             int blue = rgb & 0xFF;
 
-            // Convert to HSV
             float[] hsv = Color.RGBtoHSB(red, green, blue, null);
 
-            // Adjust saturation and value
-            hsv[1] = Math.min(1.0f, hsv[1] * 1.5f); // Saturation
-            hsv[2] = hsv[2] * 2.0f / 3.0f;          // Value
+            hsv[1] = Math.min(1.0f, hsv[1] * 1.5f); // saturation
+            hsv[2] = hsv[2] * 2.0f / 3.0f;          // value
 
-            // Convert back to RGB
             int darkenedRgb = Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]);
 
-            // Create new TextColor
             return TextColor.color(darkenedRgb);
         }
     }
