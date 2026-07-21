@@ -100,7 +100,7 @@ public class BotBowsPlayer {
         this.team = null;
     }
 
-    public void leaveGame() {
+    public void onGameLeave() {
         team.leave(this);
         avatar.destroy();
         effectManager.clear();

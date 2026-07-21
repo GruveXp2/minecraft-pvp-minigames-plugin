@@ -348,8 +348,6 @@ class Settings(@JvmField val lobby: Lobby) {
             bp.avatar.message(Component.text("You cant leave when youre not in a game", NamedTextColor.RED))
             return
         }
-        bp.leaveGame()
-        players.remove(bp)
         mapSettings.removeListener(bp)
         mapSettings.mapVotingSession.removeVote(bp)
 
@@ -357,6 +355,9 @@ class Settings(@JvmField val lobby: Lobby) {
         abilityMenus.remove(bp)
         mapMenus.remove(bp)
         abilitySettings.removeListener(bp)
+
+        bp.onGameLeave()
+        players.remove(bp)
         players.forEach { it.settings.removeListener(bp) }
         if (isPlayerMod(bp) && players.isNotEmpty()) {
             for (nextBp in players) {
