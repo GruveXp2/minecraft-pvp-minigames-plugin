@@ -36,16 +36,16 @@ public class JoinLeaveListener implements Listener {
         p.getInventory().setItem(0, BotBows.MENU_ITEM);
         p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD));
         p.sendMessage(Component.text("To join a game, run ")
-                .append(Component.text("/menu ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/menu")))
+                .append(Component.text("/menu ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,  ClickEvent.Payload.string("/menu"))))
                 .append(Component.text("or right click the compass\n"))
                 .append(Component.text("To leave a game, run "))
-                .append(Component.text("/botbows leave\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows leave")))
+                .append(Component.text("/botbows leave\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,  ClickEvent.Payload.string("/botbows leave"))))
                 .append(Component.text("To access settings for a game, run "))
-                .append(Component.text("/settings\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/settings")))
+                .append(Component.text("/settings\n", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,  ClickEvent.Payload.string("/settings"))))
                 .append(Component.text("To start/stop a game, run "))
-                .append(Component.text("/botbows start ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows start")))
+                .append(Component.text("/botbows start ", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,  ClickEvent.Payload.string("/botbows start"))))
                 .append(Component.text("or "))
-                .append(Component.text("/botbows stop", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/botbows stop"))));
+                .append(Component.text("/botbows stop", NamedTextColor.AQUA).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/botbows stop")))));
     }
 
     @EventHandler
