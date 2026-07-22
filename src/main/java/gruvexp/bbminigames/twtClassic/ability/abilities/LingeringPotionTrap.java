@@ -110,9 +110,11 @@ public class LingeringPotionTrap extends Ability implements AbilityTrigger.OnLin
 
     @Override
     public void onSplash(LingeringPotionSplashEvent e) {
-        ThrownPotion potion = e.getEntity();
-        cloudOwners.put(e.getAreaEffectCloud(), bp);
+        AreaEffectCloud cloud = e.getAreaEffectCloud();
+        cloud.setReapplicationDelay(EFFECT_DURATION * 10);
+        cloudOwners.put(cloud, bp);
 
+        ThrownPotion potion = e.getEntity();
         boolean hasUnluck = potion.getEffects().stream()
                 .anyMatch(effect -> effect.getType() == PotionEffectType.UNLUCK);
         if (hasUnluck) {
@@ -135,7 +137,6 @@ public class LingeringPotionTrap extends Ability implements AbilityTrigger.OnLin
                 it.remove();
                 continue;
             }
-            if (!entity.hasPotionEffect(effectType)) continue; // wont get more of the effect if you just stand in the cloud (and hinders spamming of the message)
             onEffectReceive(affectedBp, effectType, glowDuration);
         }
     }
