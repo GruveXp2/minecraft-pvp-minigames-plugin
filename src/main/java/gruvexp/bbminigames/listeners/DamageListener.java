@@ -76,9 +76,10 @@ public class DamageListener implements Listener {
     @EventHandler
     public void onDamaged(EntityDamageEvent e) {
         Entity entity = e.getEntity();
-        if (entity instanceof Rabbit) e.setCancelled(true); // I have a rabbit pet so this is obvious
+        if (entity instanceof Rabbit) e.setCancelled(true); // I have a rabbit pet so this line of code is obvious
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(entity.getUniqueId());
         if (bp == null) return;
+        if (e.getCause() == EntityDamageEvent.DamageCause.FALL) e.setCancelled(true);
         if (e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
             entity.teleport(entity.getLocation().add(0, 1, 0));
             e.setCancelled(true);
