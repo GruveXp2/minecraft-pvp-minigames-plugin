@@ -95,11 +95,7 @@ public class AbilityListener implements Listener {
         }
     }
 
-    public static void onSlap(EntityDamageByEntityEvent e, Player attacker, Player defender, ItemStack weapon) {
-        Lobby lobby = BotBows.getLobby(attacker);
-        if (lobby == null) return;
-        BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
-        BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
+    public static void onSlap(EntityDamageByEntityEvent e, BotBowsPlayer attackerBp, BotBowsPlayer defenderBp, ItemStack weapon) {
         if (defenderBp == null) return;
         if (attackerBp.getTeam() == defenderBp.getTeam()) {
             e.setCancelled(true);

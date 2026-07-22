@@ -26,8 +26,8 @@ public class DamageListener implements Listener {
             return;
         }
         if ((e.getDamager() instanceof Arrow arrow)) {
-            if (!(arrow.getShooter() instanceof Player attacker)) {return;}
-            BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
+            if (!(arrow.getShooter() instanceof LivingEntity attacker)) {return;}
+            BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker.getUniqueId());
             if (e.getEntity() instanceof LivingEntity defender) {
                 BotBowsPlayer defenderBp = BotBows.getBotBowsPlayer(defender.getUniqueId());
                 if (attackerBp == null || defenderBp == null) return;
@@ -61,7 +61,7 @@ public class DamageListener implements Listener {
                     e.setDamage(0.01); // gjør ikke damage men lager fortsatt damage lyd
                     return;
                 } else {
-                    if (BotBows.isPlayerJoined(attacker)) AbilityListener.onSlap(e, attacker, defender, weapon);
+                    if (BotBows.isPlayerJoined(attacker)) AbilityListener.onSlap(e, BotBows.getBotBowsPlayer(attacker), BotBows.getBotBowsPlayer(defender), weapon);
                 }
             }
             if (!BotBows.isPlayerJoined(defender)) {
