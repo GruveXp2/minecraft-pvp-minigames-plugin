@@ -27,7 +27,7 @@ class RoundTimer(val botBowsGame: BotBowsGame, minutes: Int) : BukkitRunnable() 
             )
 
             0 -> {
-                botBowsGame.endGameTimeout()
+                botBowsGame.endRoundTimeout()
                 cancel() // stopper loopen
             }
 

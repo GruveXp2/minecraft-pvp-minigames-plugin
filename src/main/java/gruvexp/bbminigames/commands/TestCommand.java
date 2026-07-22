@@ -9,6 +9,7 @@ import gruvexp.bbminigames.model.preset.BattlePreset;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
+import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
@@ -67,6 +68,24 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "end_round" -> {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                    if (bp == null) {
+                        p.sendMessage(Component.text("ur not in a game", NamedTextColor.RED));
+                        return true;
+                    }
+                    Lobby lobby = bp.lobby;
+                    if (!lobby.isGameActive()) {
+                        p.sendMessage(Component.text("game hasnt started yet", NamedTextColor.RED));
+                        return true;
+                    }
+                    BotBowsGame game = lobby.botBowsGame;
+                    if (!game.activeRound) {
+                        p.sendMessage(Component.text("there isnt any active round to end", NamedTextColor.RED));
+                        return true;
+                    }
+                    game.endRoundTimeout();
+                }
                 case "tb" -> {
                     Lobby lobby = BotBows.getLobby(0);
                     lobby.joinGame(Bukkit.getPlayer("GruveXp"));

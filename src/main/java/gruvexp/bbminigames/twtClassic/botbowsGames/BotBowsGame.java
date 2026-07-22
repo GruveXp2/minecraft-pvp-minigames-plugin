@@ -110,11 +110,11 @@ public class BotBowsGame {
         BotBowsTeam losingTeam = dedPlayer.getTeam();
 
         if (losingTeam.isEliminated()) {
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGameEliminated(losingTeam), 2L);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endRoundEliminated(losingTeam), 2L);
         }
     }
 
-    private void endGameEliminated(BotBowsTeam losingTeam) {
+    private void endRoundEliminated(BotBowsTeam losingTeam) {
         BotBowsTeam winningTeam = losingTeam.getOppositeTeam();
         if (winningTeam.isEliminated()) { // begge daua på likt
             lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
@@ -128,7 +128,7 @@ public class BotBowsGame {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> postRound(winningTeam, winScore), 2L); // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
 
-    public void endGameTimeout() {
+    public void endRoundTimeout() {
         int team1Percentage = team1.getHealthPercentage();
         int team2Percentage = team2.getHealthPercentage();
         BotBowsTeam winningTeam = null;
