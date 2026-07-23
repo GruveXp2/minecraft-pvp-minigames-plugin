@@ -68,20 +68,21 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "ts" -> BotBows.getLobby(0).botBowsGame.boardManager.test();
                 case "end_round" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {
-                        p.sendMessage(Component.text("ur not in a game", NamedTextColor.RED));
+                        p.sendMessage(Component.text("You arent even in a game!", NamedTextColor.RED));
                         return true;
                     }
                     Lobby lobby = bp.lobby;
                     if (!lobby.isGameActive()) {
-                        p.sendMessage(Component.text("game hasnt started yet", NamedTextColor.RED));
+                        p.sendMessage(Component.text("Game hasnt started yet!", NamedTextColor.RED));
                         return true;
                     }
                     BotBowsGame game = lobby.botBowsGame;
                     if (!game.activeRound) {
-                        p.sendMessage(Component.text("there isnt any active round to end", NamedTextColor.RED));
+                        p.sendMessage(Component.text("No ongoing round to end", NamedTextColor.RED));
                         return true;
                     }
                     game.endRoundTimeout();
