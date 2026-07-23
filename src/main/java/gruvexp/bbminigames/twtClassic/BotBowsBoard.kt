@@ -101,22 +101,20 @@ class BotBowsBoard(val lobby: Lobby) {
     private fun updateTeamScore(team: BotBowsTeam, teamScoreId: String, score: Int) {
         val winThreshold = lobby.settings.winConditionSettings.winScoreThreshold
 
-        var component = Component.text("${team.displayName}: ")
-        if (winThreshold == 0) {
-            component = component
-                .append(Component.text(team1().points, NamedTextColor.WHITE))
-        } else if (winThreshold >= 35) {
-            component = component
-                .append(Component.text("${team1().points} / ", NamedTextColor.WHITE))
-                .append(Component.text(winThreshold, NamedTextColor.GRAY))
-        } else { // få plass til mest mulig streker
-            val pointsSystem: String = getPointsSymbol(winThreshold)
-            val teamPoints = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
+        val component = Component.text("${team.displayName}: ").append(
+            if (winThreshold == 0) {
+                Component.text(team1().points, NamedTextColor.WHITE)
+            } else if (winThreshold >= 35) {
+                Component.text("${team1().points} / ", NamedTextColor.WHITE)
+                    .append(Component.text(winThreshold, NamedTextColor.GRAY))
+            } else { // use lines with optimized width
+                val pointsSystem: String = getPointsSymbol(winThreshold)
+                val teamPoints = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
 
-            component = component
-                .append(Component.text(pointsSystem.repeat(teamPoints), NamedTextColor.GREEN))
-                .append(Component.text(pointsSystem.repeat(winThreshold - teamPoints), NamedTextColor.GRAY))
-        }
+                Component.text(pointsSystem.repeat(teamPoints), NamedTextColor.GREEN)
+                    .append(Component.text(pointsSystem.repeat(winThreshold - teamPoints), NamedTextColor.GRAY))
+            }
+        )
         setScore(teamScoreId, component, score)
     }
 
