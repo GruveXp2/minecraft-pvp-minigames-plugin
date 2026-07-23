@@ -159,6 +159,10 @@ public class BotBowsPlayer {
         abilities.values().forEach(ability -> ability.setCooldownMultiplier(settings.getAbilityCooldownMultiplier()));
     }
 
+    public void clearEffects() {
+        effectManager.clear();
+    }
+
     public void readyAbilities() {
         abilities.values().forEach(Ability::obtain);
     }

@@ -143,5 +143,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         glowExpiry.clear()
         avatar.setGlowing(false)
         avatar.setColor(teamColor())
+
+        avatar.entity.clearActivePotionEffects()
     }
 }

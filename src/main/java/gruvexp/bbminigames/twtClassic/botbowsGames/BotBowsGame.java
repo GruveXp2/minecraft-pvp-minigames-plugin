@@ -172,6 +172,7 @@ public class BotBowsGame {
         if (!activeRound) return;
         activeRound = false;
         players.forEach(BotBowsPlayer::resetAbilities);
+        players.forEach(BotBowsPlayer::clearEffects);
         lobby.messagePlayers( // team1: %d points, team2: %d points
                 team1.toComponent()
                         .append(Component.text(": ", NamedTextColor.WHITE))
