@@ -247,6 +247,7 @@ public class SteamPunkGame extends BotBowsGame {
 
      @Override
      public void startGame() {
+         super.startGame();
          bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
          rotors.forEach(Rotor::startRotating);
      }
