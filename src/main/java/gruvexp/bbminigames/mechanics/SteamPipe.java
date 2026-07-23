@@ -28,7 +28,7 @@ public class SteamPipe {
     private final HashMap<Player, Integer> playerEdge = new HashMap<>();
 
     private int tick = 0;
-    private final List<Block> firstBulbs; // dette funker ikke engang pga man må faktisk ta setblockstate for at noesomhelst skal skje!
+    private final List<Block> firstBulbs;
     private final List<Block> secondBulbs;
 
     public SteamPipe(boolean isDualWay, List<Location> nodes, Axis entryAxis, Axis exitAxis) {
@@ -128,9 +128,9 @@ public class SteamPipe {
         if (pipeStatus == PipeStatus.INACTIVE) return;
         tick++;
 
-        playerEdge.forEach((p, lastNode) -> {
-            int nextNode = pipeStatus == PipeStatus.ACTIVE ? lastNode + 1 : lastNode - 1;
-            Location currentNodeLoc = (lastNode < 0 || lastNode == nodes.size()) ? p.getLocation() : nodes.get(lastNode);
+        playerEdge.forEach((p, currentNode) -> {
+            int nextNode = pipeStatus == PipeStatus.ACTIVE ? currentNode + 1 : currentNode - 1;
+            Location currentNodeLoc = (currentNode < 0 || currentNode == nodes.size()) ? p.getLocation() : nodes.get(currentNode);
             Location nextNodeLoc = nodes.get(nextNode);
             Location pLoc = p.getLocation();
 
@@ -146,8 +146,8 @@ public class SteamPipe {
                 }
             }
 
-            boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? lastNode == -1 : lastNode == nodes.size();
-            boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == 0 : lastNode == nodes.size() - 1;
+            boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? currentNode == -1 : currentNode == nodes.size();
+            boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? currentNode == 0 : currentNode == nodes.size() - 1;
             boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
             BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
             if (isEntering) {
@@ -193,6 +193,7 @@ public class SteamPipe {
         playerEdge.put(p, -2); // the player exited and will be removed
         BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
         bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, 3L, 10);
+        BotBows.debugMessage("3. will be big in 3 ticks");
     }
 
     void updateAnimation() {
