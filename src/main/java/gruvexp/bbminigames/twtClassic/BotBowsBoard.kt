@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
@@ -36,19 +35,21 @@ class BotBowsBoard(val lobby: Lobby) {
                 .append(Component.text("Classic").color(NamedTextColor.AQUA))
         objective = board.registerNewObjective("botbows", Criteria.DUMMY, objectiveTitle)
 
-        setScore(
-            "team2_title",
-            Component.text("TEAM " + team2().displayName.uppercase(Locale.getDefault()), darkenColor(team2().color)),
-            team2().size()
-        )
+        setScore("top_space", Component.text(""), lobby.totalPlayers + 5)
+        setScore("team1_score", Component.text("loading..."), 4 + lobby.totalPlayers)
+        setScore("team2_score", Component.text("loading..."), 3 + lobby.totalPlayers)
+        setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.totalPlayers + 2)
         setScore(
             "team1_title",
             Component.text("TEAM " + team1().displayName.uppercase(Locale.getDefault()), darkenColor(team1().color)),
             lobby.totalPlayers + 1
         )
+        setScore(
+            "team2_title",
+            Component.text("TEAM " + team2().displayName.uppercase(Locale.getDefault()), darkenColor(team2().color)),
+            team2().size()
+        )
 
-        setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.getTotalPlayers() + 2)
-        setScore("top_space", Component.text(""), lobby.getTotalPlayers() + 5)
 
         for (p in Bukkit.getOnlinePlayers()) {
             p.scoreboard = board
@@ -68,8 +69,6 @@ class BotBowsBoard(val lobby: Lobby) {
     }
 
     fun updatePlayerScore(bp: BotBowsPlayer) {
-        removePlayerScore(bp)
-
         val hp = bp.hp
         val maxHp = bp.settings.maxHealth
         val playerLineIndex: Int = if (team1().hasPlayer(bp)) {
@@ -77,13 +76,12 @@ class BotBowsBoard(val lobby: Lobby) {
         } else {
             team2().getPlayerID(bp)
         } // which line of the scoreboard the player stats will be shown
-        val healthBar = if (maxHp > 5) {
-            ChatColor.RED.toString() + "▏".repeat(hp) + ChatColor.GRAY + "▏".repeat(maxHp - hp) + toChatColor(bp.getTeamColor() as NamedTextColor?) + " " + bp.getPlainName()
-        } else {
-            ChatColor.RED.toString() + "❤".repeat(hp) + ChatColor.GRAY + "❤".repeat(maxHp - hp) + toChatColor(bp.getTeamColor() as NamedTextColor?) + " " + bp.getPlainName()
-        }
+        val healthIcon = if (maxHp > 5) "▏" else "❤"
+        val healthBar = Component.text(" ${healthIcon.repeat(hp)}", NamedTextColor.RED)
+            .append(Component.text(healthIcon.repeat(maxHp - hp), NamedTextColor.GRAY))
+            .append(bp.name)
 
-        setScore(healthBar, playerLineIndex)
+        setScore(bp.plainName, healthBar, playerLineIndex)
     }
 
     fun removePlayerScore(bp: BotBowsPlayer) {
@@ -96,57 +94,45 @@ class BotBowsBoard(val lobby: Lobby) {
     }
 
     fun updateTeamScores() {
-        val sb = objective.scoreboard!!
         val winThreshold = lobby.settings.winConditionSettings.winScoreThreshold
 
-        for (entries in sb.entries) {
-            if (entries.contains(team1().displayName + ": ")) {
-                sb.resetScores(entries)
-            }
-            if (entries.contains(team2().displayName + ": ")) {
-                sb.resetScores(entries)
-            }
-        }
         val totalPlayers = lobby.totalPlayers
+        val team1Component = Component.text("${team1().displayName}: ")
+        val team2Component = Component.text("${team2().displayName}: ")
         if (winThreshold == 0) {
             setScore(
-                toChatColor(team1().color).toString() + team1().displayName + ": " + ChatColor.RESET + team1().points,
+                "team1_score", team1Component
+                    .append(Component.text(team1().points, NamedTextColor.WHITE)),
                 4 + totalPlayers
-            ) // legger inn scoren til hvert team
+            )
             setScore(
-                toChatColor(team2().color).toString() + team2().displayName + ": " + ChatColor.RESET + team2().points,
+                "team2_score", team2Component
+                    .append(Component.text(team2().points, NamedTextColor.WHITE)),
                 3 + totalPlayers
             )
         } else if (winThreshold >= 35) {
-            setScore(
-                toChatColor(team1().color).toString() + team1().displayName + ": " + ChatColor.RESET + team1().points + " / " + ChatColor.GRAY + winThreshold,
-                4 + totalPlayers
-            ) // legger inn scoren til hvert team
-            setScore(
-                toChatColor(team2().color).toString() + team2().displayName + ": " + ChatColor.RESET + team2().points + " / " + ChatColor.GRAY + winThreshold,
-                3 + totalPlayers
-            )
+            setScore("team1_score", team1Component
+                .append(Component.text("${team1().points} / ", NamedTextColor.WHITE))
+                .append(Component.text(winThreshold, NamedTextColor.GRAY)),
+                4 + totalPlayers)
+            setScore("team2_score", team2Component
+                .append(Component.text("${team2().points} / ", NamedTextColor.WHITE))
+                .append(Component.text(winThreshold, NamedTextColor.GRAY)),
+                3 + totalPlayers)
         } else { // få plass til mest mulig streker
-            val healthSymbol: String = getHealthSymbol(winThreshold)
+            val pointsSystem: String = getPointsSymbol(winThreshold)
             val team1Points = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
             val team2Points = min(lobby.settings.winConditionSettings.winScoreThreshold, team2().points)
 
-            setScore(
-                toChatColor(team1().color).toString() + team1().displayName + ": " + ChatColor.GREEN + healthSymbol.repeat(
-                    team1Points
-                ) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team1Points), 4 + totalPlayers
-            ) // legger inn scoren til hvert team
-            setScore(
-                toChatColor(team2().color).toString() + team2().displayName + ": " + ChatColor.GREEN + healthSymbol.repeat(
-                    team2Points
-                ) + ChatColor.GRAY + healthSymbol.repeat(winThreshold - team2Points), 3 + totalPlayers
-            )
+            setScore("team1_score", team1Component
+                .append(Component.text(pointsSystem.repeat(team1Points), NamedTextColor.GREEN))
+                .append(Component.text(pointsSystem.repeat(winThreshold - team1Points), NamedTextColor.GRAY)),
+                4 + totalPlayers)
+            setScore("team2_score", team2Component
+                .append(Component.text(pointsSystem.repeat(team2Points), NamedTextColor.GREEN))
+                .append(Component.text(pointsSystem.repeat(winThreshold - team2Points), NamedTextColor.GRAY)),
+                3 + totalPlayers)
         }
-    }
-
-    private fun setScore(text: String, score: Int) {
-        val l1 = objective.getScore(text)
-        l1.score = score
     }
 
     private fun setScore(id: String, component: Component?, score: Int) {
@@ -155,33 +141,27 @@ class BotBowsBoard(val lobby: Lobby) {
         scoreLine.score = score
     }
 
-    fun test() {
-        val test = objective.getScore("test")
-        test.score = 10
-        test.customName(Component.text("custom colors letsgooo", TextColor.color(124, 15, 76)))
-    }
-
     companion object {
-        private fun getHealthSymbol(winThreshold: Int): String {
-            var c = ""
-            if (winThreshold < 8) {
-                c = "█"
+        private fun getPointsSymbol(winThreshold: Int): String {
+            return if (winThreshold < 8) {
+                "█"
             } else if (winThreshold < 9) {
-                c = "▉"
+                "▉"
             } else if (winThreshold < 10) {
-                c = "▊"
+                "▊"
             } else if (winThreshold < 12) {
-                c = "▋"
+                "▋"
             } else if (winThreshold < 15) {
-                c = "▌"
+                "▌"
             } else if (winThreshold < 17) {
-                c = "▍"
+                "▍"
             } else if (winThreshold < 23) {
-                c = "▎"
+                "▎"
             } else if (winThreshold < 34) {
-                c = "▏"
+                "▏"
+            } else {
+                ""
             }
-            return c
         }
 
         private fun darkenColor(color: TextColor): TextColor {
@@ -190,12 +170,10 @@ class BotBowsBoard(val lobby: Lobby) {
                     return NamedTextColor.DARK_PURPLE
                 }
                 val colorName = color.toString()
-                val darkened: NamedTextColor?
-                if (colorName.startsWith("light_")) {
-                    darkened =
-                        NamedTextColor.NAMES.value(colorName.replace("light_", "").lowercase(Locale.getDefault()))
+                val darkened = if (colorName.startsWith("light_")) {
+                    NamedTextColor.NAMES.value(colorName.replace("light_", "").lowercase(Locale.getDefault()))
                 } else {
-                    darkened = NamedTextColor.NAMES.value(("dark_$colorName").lowercase(Locale.getDefault()))
+                    NamedTextColor.NAMES.value(("dark_$colorName").lowercase(Locale.getDefault()))
                 }
                 if (darkened != null) return darkened
             }
@@ -212,26 +190,6 @@ class BotBowsBoard(val lobby: Lobby) {
             val darkenedRgb = Color.HSBtoRGB(hsv[0], hsv[1], hsv[2])
 
             return TextColor.color(darkenedRgb)
-        }
-
-        private fun toChatColor(textColor: TextColor?): ChatColor {
-            if (textColor === NamedTextColor.RED) return ChatColor.RED
-            if (textColor === NamedTextColor.BLUE) return ChatColor.BLUE
-            if (textColor === NamedTextColor.GREEN) return ChatColor.GREEN
-            if (textColor === NamedTextColor.YELLOW) return ChatColor.YELLOW
-            if (textColor === NamedTextColor.WHITE) return ChatColor.WHITE
-            if (textColor === NamedTextColor.BLACK) return ChatColor.BLACK
-            if (textColor === NamedTextColor.GRAY) return ChatColor.GRAY
-            if (textColor === NamedTextColor.DARK_GRAY) return ChatColor.DARK_GRAY
-            if (textColor === NamedTextColor.DARK_RED) return ChatColor.DARK_RED
-            if (textColor === NamedTextColor.DARK_BLUE) return ChatColor.DARK_BLUE
-            if (textColor === NamedTextColor.DARK_GREEN) return ChatColor.DARK_GREEN
-            if (textColor === NamedTextColor.DARK_AQUA) return ChatColor.DARK_AQUA
-            if (textColor === NamedTextColor.DARK_PURPLE) return ChatColor.DARK_PURPLE
-            if (textColor === NamedTextColor.GOLD) return ChatColor.GOLD
-            if (textColor === NamedTextColor.AQUA) return ChatColor.AQUA
-            if (textColor === NamedTextColor.LIGHT_PURPLE) return ChatColor.LIGHT_PURPLE
-            return ChatColor.WHITE
         }
     }
 }

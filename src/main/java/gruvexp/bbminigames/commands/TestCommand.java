@@ -68,7 +68,6 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
-                case "ts" -> BotBows.getLobby(0).botBowsGame.botBowsBoard.test();
                 case "end_round" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {
