@@ -33,11 +33,11 @@ public class BoardManager {
                 .append(Component.text("Classic").color(NamedTextColor.AQUA));
         objective = board.registerNewObjective("botbows", Criteria.DUMMY, objectiveTitle);
         // setter inn scores
-        setScore(toChatColor((NamedTextColor) darkenColor(team2().getColor())) + "TEAM " + team2().getDisplayName().toUpperCase(), team2().size());
+        setScore("team2_title",  Component.text("TEAM " + team2().getDisplayName().toUpperCase(), darkenColor(team2().getColor())), team2().size());
+        setScore("team1_title",  Component.text("TEAM " + team1().getDisplayName().toUpperCase(), darkenColor(team1().getColor())), lobby.getTotalPlayers() + 1);
 
-        setScore(toChatColor((NamedTextColor) darkenColor(team1().getColor())) + "TEAM " + team1().getDisplayName().toUpperCase(), lobby.getTotalPlayers() + 1);
-        setScore(ChatColor.GRAY + "----------", lobby.getTotalPlayers() + 2);
-        setScore("", lobby.getTotalPlayers() + 5);
+        setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.getTotalPlayers() + 2);
+        setScore("top_space", Component.text(""), lobby.getTotalPlayers() + 5);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.setScoreboard(board);
@@ -149,35 +149,48 @@ public class BoardManager {
         l1.setScore(score);
     }
 
+    private void setScore(String id, Component component, int score) {
+        Score scoreLine = objective.getScore(id);
+        scoreLine.customName(component);
+        scoreLine.setScore(score);
+    }
+
+    public void test() {
+        Score test = objective.getScore("test");
+        test.setScore(10);
+        test.customName(Component.text("custom colors letsgooo", TextColor.color(124, 15, 76)));
+    }
+
     private static TextColor darkenColor(TextColor color) {
         if (color instanceof NamedTextColor) {
             if (color == NamedTextColor.LIGHT_PURPLE) {
                 return NamedTextColor.DARK_PURPLE;
             }
             String colorName = color.toString();
+            NamedTextColor darkened;
             if (colorName.startsWith("light_")) {
-                return NamedTextColor.NAMES.value(colorName.replace("light_", "").toLowerCase());
+                darkened = NamedTextColor.NAMES.value(colorName.replace("light_", "").toLowerCase());
             } else {
-                return NamedTextColor.NAMES.value(("dark_" + colorName).toLowerCase());
+                darkened = NamedTextColor.NAMES.value(("dark_" + colorName).toLowerCase());
             }
-        } else { // return a TextColor where input.apply { saturation *= 1.5, value *= 2/3 }
-            int rgb = color.value();
-            int red = (rgb >> 16) & 0xFF;
-            int green = (rgb >> 8) & 0xFF;
-            int blue = rgb & 0xFF;
-
-            float[] hsv = Color.RGBtoHSB(red, green, blue, null);
-
-            hsv[1] = Math.min(1.0f, hsv[1] * 1.5f); // saturation
-            hsv[2] = hsv[2] * 2.0f / 3.0f;          // value
-
-            int darkenedRgb = Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]);
-
-            return TextColor.color(darkenedRgb);
+            if (darkened != null) return darkened;
         }
+        int rgb = color.value();
+        int red = (rgb >> 16) & 0xFF;
+        int green = (rgb >> 8) & 0xFF;
+        int blue = rgb & 0xFF;
+
+        float[] hsv = Color.RGBtoHSB(red, green, blue, null);
+
+        hsv[1] = Math.min(1.0f, hsv[1] * 1.5f); // saturation
+        hsv[2] = hsv[2] * 0.75f;          // value
+
+        int darkenedRgb = Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]);
+
+        return TextColor.color(darkenedRgb);
     }
 
-    private static ChatColor toChatColor(NamedTextColor textColor) {
+    private static ChatColor toChatColor(TextColor textColor) {
         if (textColor == NamedTextColor.RED) return ChatColor.RED;
         if (textColor == NamedTextColor.BLUE) return ChatColor.BLUE;
         if (textColor == NamedTextColor.GREEN) return ChatColor.GREEN;
