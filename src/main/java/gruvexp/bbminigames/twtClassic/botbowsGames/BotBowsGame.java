@@ -31,7 +31,7 @@ public class BotBowsGame {
     protected final BotBowsTeam team1;
     protected final BotBowsTeam team2;
     protected final Set<BotBowsPlayer> players;
-    public final BoardManager boardManager;
+    public final BotBowsBoard botBowsBoard;
     protected final Collection<Hazard> hazards;
 
     public boolean canMove = true;
@@ -47,28 +47,28 @@ public class BotBowsGame {
         this.team2 = settings.team2;
         this.players = settings.getPlayers();
         this.hazards = settings.getHazardSettings().createActiveHazards();
-        this.boardManager = new BoardManager(lobby);
+        this.botBowsBoard = new BotBowsBoard(lobby);
     }
 
     public void leaveGame(BotBowsPlayer bp) {
         BotBowsTeam team = bp.getTeam();
         settings.leaveGame(bp);
-        boardManager.removePlayerScore(bp);
+        botBowsBoard.removePlayerScore(bp);
         if (team.isEmpty()) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGame(), 10L);
     }
 
     public void startGame() {
-        boardManager.createBoard();
+        botBowsBoard.createBoard();
         startRound();
         hazards.forEach(hazard -> hazard.init(players));
 
         // legger til player liv osv
         for (BotBowsPlayer bp : players) {
-            bp.initBattle(boardManager.getTeamManager());
-            boardManager.updatePlayerScore(bp);
+            bp.initBattle(botBowsBoard.getTeamManager());
+            botBowsBoard.updatePlayerScore(bp);
         }
-        boardManager.initPlayers(); // makes the player join the Team's to get the correct color outline
-        boardManager.updateTeamScores();
+        botBowsBoard.initPlayers(); // makes the player join the Team's to get the correct color outline
+        botBowsBoard.updateTeamScores();
         players.forEach(BotBowsPlayer::start);
         new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
     }
@@ -199,7 +199,7 @@ public class BotBowsGame {
         }
 
         lobby.titlePlayers(Component.text(winningTeam.getDisplayName() + " +" + winScore, winningTeam.getColor()), 2);
-        boardManager.updateTeamScores();
+        botBowsBoard.updateTeamScores();
 
         WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
         if (winningTeam.getPoints() >= winConditionSettings.getWinScoreThreshold() && winConditionSettings.getWinScoreThreshold() > 0) {

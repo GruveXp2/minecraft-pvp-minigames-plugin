@@ -117,7 +117,7 @@ public class BotBowsPlayer {
         bot.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID())));
         avatar = new NpcAvatar(bot, avatar);
         avatar.setHP(hp);
-        avatar.readyBattle(lobby.botBowsGame.boardManager.getTeamManager()); // this line is kinda ugly, maybe make the teammanager be somewhere else idk
+        avatar.readyBattle(lobby.botBowsGame.botBowsBoard.getTeamManager()); // this line is kinda ugly, maybe make the teammanager be somewhere else idk
         return bot.getUniqueId();
     }
 
@@ -184,7 +184,7 @@ public class BotBowsPlayer {
     private void setHP(int hp) { // heile hjerter
         this.hp = hp;
         avatar.setHP(hp);
-        lobby.botBowsGame.boardManager.updatePlayerScore(this);
+        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
     }
 
     public boolean isAlive() {
@@ -337,7 +337,7 @@ public class BotBowsPlayer {
 
     private void die(Component deathMessage) {
         setHP(0);
-        lobby.botBowsGame.boardManager.updatePlayerScore(this);
+        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
         avatar.eliminate();
         abilities.values().forEach(a -> a.setTickRate(20));
