@@ -94,43 +94,30 @@ class BotBowsBoard(val lobby: Lobby) {
     }
 
     fun updateTeamScores() {
+        updateTeamScore(team1(), "team1_score", 4 + lobby.totalPlayers)
+        updateTeamScore(team2(), "team2_score", 3 + lobby.totalPlayers)
+    }
+
+    private fun updateTeamScore(team: BotBowsTeam, teamScoreId: String, score: Int) {
         val winThreshold = lobby.settings.winConditionSettings.winScoreThreshold
 
-        val totalPlayers = lobby.totalPlayers
-        var team1Component = Component.text("${team1().displayName}: ")
-        var team2Component = Component.text("${team2().displayName}: ")
+        var component = Component.text("${team.displayName}: ")
         if (winThreshold == 0) {
-            team1Component = team1Component
-                    .append(Component.text(team1().points, NamedTextColor.WHITE))
-            team2Component = team2Component
-                    .append(Component.text(team2().points, NamedTextColor.WHITE))
+            component = component
+                .append(Component.text(team1().points, NamedTextColor.WHITE))
         } else if (winThreshold >= 35) {
-            team1Component = team1Component
+            component = component
                 .append(Component.text("${team1().points} / ", NamedTextColor.WHITE))
-                .append(Component.text(winThreshold, NamedTextColor.GRAY))
-            team2Component = team2Component
-                .append(Component.text("${team2().points} / ", NamedTextColor.WHITE))
                 .append(Component.text(winThreshold, NamedTextColor.GRAY))
         } else { // få plass til mest mulig streker
             val pointsSystem: String = getPointsSymbol(winThreshold)
-            val team1Points = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
-            val team2Points = min(lobby.settings.winConditionSettings.winScoreThreshold, team2().points)
+            val teamPoints = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
 
-            team1Component = team1Component
-                .append(Component.text(pointsSystem.repeat(team1Points), NamedTextColor.GREEN))
-                .append(Component.text(pointsSystem.repeat(winThreshold - team1Points), NamedTextColor.GRAY))
-            team2Component = team2Component
-                .append(Component.text(pointsSystem.repeat(team2Points), NamedTextColor.GREEN))
-                .append(Component.text(pointsSystem.repeat(winThreshold - team2Points), NamedTextColor.GRAY))
+            component = component
+                .append(Component.text(pointsSystem.repeat(teamPoints), NamedTextColor.GREEN))
+                .append(Component.text(pointsSystem.repeat(winThreshold - teamPoints), NamedTextColor.GRAY))
         }
-        setScore(
-            "team1_score", team1Component,
-            4 + totalPlayers
-        )
-        setScore(
-            "team2_score", team2Component,
-            3 + totalPlayers
-        )
+        setScore(teamScoreId, component, score)
     }
 
     private fun setScore(id: String, component: Component?, score: Int) {
