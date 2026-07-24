@@ -5,7 +5,6 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,6 @@ public class AbilityMenuRow extends MenuRow {
         List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
         for (HumanEntity viewer : viewers) {
             Player p = (Player) viewer;
-            menu.handleMenuClose(p);
             menu.open(p);
         }
     }

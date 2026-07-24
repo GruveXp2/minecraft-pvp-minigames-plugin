@@ -1,11 +1,7 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.menu.AbilityMenuRow
-import gruvexp.bbminigames.menu.MenuSlider
-import gruvexp.bbminigames.menu.PlayerListMenu
-import gruvexp.bbminigames.menu.PlayerMenuRow
-import gruvexp.bbminigames.menu.SettingsMenu
+import gruvexp.bbminigames.menu.*
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
@@ -19,7 +15,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -227,19 +222,6 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     public override fun prevPage(p: Player) = settings.hazardMenu.open(p)
-
-    fun handleMenuClose(e: InventoryCloseEvent) {
-        handleMenuClose(e.player as Player)
-    }
-
-    fun handleMenuClose(p: Player) {
-        val inv: Inventory = p.inventory
-        for (i in 9..17) { // fjerner menu overlay greier
-            if (inv.getItem(i)?.type == Material.FIREWORK_STAR) {
-                inv.setItem(i, null)
-            }
-        }
-    }
 
     fun updateUIState() {
         if (settings.abilitySettings.maxAbilities > 0) {
