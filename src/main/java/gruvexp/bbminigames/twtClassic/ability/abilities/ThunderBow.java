@@ -143,7 +143,7 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
 
     @Override
     public void onLaunch(AbilityContext.Launch ctx) {
-        Arrow arrow = (Arrow) ctx.projectile();
+        Arrow arrow = (Arrow) ctx.projectile;
         arrow.setColor(Color.AQUA);
         BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
                 .runTaskTimer(Main.getPlugin(), 1L, 1L);

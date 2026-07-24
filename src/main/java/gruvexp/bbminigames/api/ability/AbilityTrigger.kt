@@ -1,27 +1,33 @@
-package gruvexp.bbminigames.api.ability;
+package gruvexp.bbminigames.api.ability
 
-import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
-import org.bukkit.event.entity.LingeringPotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import gruvexp.bbminigames.api.ability.AbilityContext.*
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent
+import org.bukkit.event.entity.LingeringPotionSplashEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 
-public interface AbilityTrigger {
+interface AbilityTrigger {
     interface OnEntityPlace {
-        void trigger(AbilityContext.EntityPlace ctx);
+        fun trigger(ctx: EntityPlace)
     }
+
     interface OnMelee {
-        void trigger(AbilityContext.Melee ctx);
+        fun trigger(ctx: Melee)
     }
+
     interface OnLaunch {
-        void onLaunch(AbilityContext.Launch ctx);
+        fun onLaunch(ctx: Launch)
     }
+
     interface OnProjectileHit {
-        void onHit(ProjectileHitEvent e);
+        fun onHit(e: ProjectileHitEvent)
     }
+
     interface OnLingeringPotionUse {
-        void onSplash(LingeringPotionSplashEvent e);
-        void onCloudApply(AreaEffectCloudApplyEvent e);
+        fun onSplash(e: LingeringPotionSplashEvent)
+        fun onCloudApply(e: AreaEffectCloudApplyEvent)
     }
+
     interface OnBlockPlace {
-        void onPlace(AbilityContext.BlockPlace ctx);
+        fun onPlace(ctx: BlockPlace)
     }
 }

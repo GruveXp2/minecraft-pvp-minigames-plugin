@@ -34,7 +34,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
     public void onPlace(AbilityContext.BlockPlace ctx) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             removeLaser();
-            emitter = new LaserEmitter(ctx.block(), ctx.face());
+            emitter = new LaserEmitter(ctx.block, ctx.face);
             emitter.runTaskTimer(Main.getPlugin(), 0, 1);
             use();
         }, 1);

@@ -77,7 +77,7 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
     public void trigger(AbilityContext.EntityPlace ctx) {
         use();
 
-        Location loc = ctx.loc();
+        Location loc = ctx.loc;
         // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
         Set<Creeper> creepers = creeperOwners.entrySet().stream().filter(entry -> entry.getValue() == bp)
                 .map(Map.Entry::getKey).collect(Collectors.toSet());

@@ -1,7 +1,5 @@
-package gruvexp.bbminigames.twtClassic.ability;
+package gruvexp.bbminigames.twtClassic.ability
 
-public enum AbilityCategory {
-
+enum class AbilityCategory {
     DAMAGING, POTION, UTILITY, TRAP
-
 }

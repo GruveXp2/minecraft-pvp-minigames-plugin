@@ -49,7 +49,7 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
 
     @Override
     public void onLaunch(AbilityContext.Launch ctx) {
-        if (ctx.projectile() instanceof Arrow arrow) {
+        if (ctx.projectile instanceof Arrow arrow) {
             use();
             arrow.setColor(Color.RED);
             BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
