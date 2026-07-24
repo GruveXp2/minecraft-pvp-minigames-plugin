@@ -114,22 +114,21 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     @JvmField
     val baseCooldown: Int
     @JvmField
-    val category: AbilityCategory?
+    val category: AbilityCategory
 
     init {
         appendCooldownInfo(item, category, baseCooldown)
-        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name)
-        }
+        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name) }
 
         this.abilityItem = item
         this.baseCooldown = baseCooldown
         this.category = category
-        val red = Material.getMaterial("RED_$cooldownItemType")!!
-        val orange = Material.getMaterial("ORANGE_$cooldownItemType")!!
-        val yellow = Material.getMaterial("YELLOW_$cooldownItemType")!!
-        val green = Material.getMaterial("LIME_$cooldownItemType")!!
-        this.cooldownItems =
-            arrayOf(ItemStack(red), ItemStack(orange), ItemStack(yellow), ItemStack(green))
+        this.cooldownItems = arrayOf(
+            ItemStack(Material.getMaterial("RED_$cooldownItemType")!!),
+            ItemStack(Material.getMaterial("ORANGE_$cooldownItemType")!!),
+            ItemStack(Material.getMaterial("YELLOW_$cooldownItemType")!!),
+            ItemStack(Material.getMaterial("LIME_$cooldownItemType")!!)
+        )
     }
 
     constructor(item: ItemStack, cooldownItemType: String, category: AbilityCategory) : this(
@@ -140,15 +139,12 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     )
 
     fun getAbilityItem(bp: BotBowsPlayer): ItemStack {
-        val abilityItem = this.abilityItem
-        val meta = abilityItem.itemMeta
-
-        val cooldownComponent = getCooldownComponent(bp)
-        val lore = meta.lore() ?: mutableListOf()
-        lore[lore.size - 1] = cooldownComponent
-        meta.lore(lore)
-
-        abilityItem.setItemMeta(meta)
+        val abilityItem = this.abilityItem.clone()
+        abilityItem.editMeta {
+            val lore = it.lore() ?: mutableListOf()
+            lore[lore.lastIndex] = getCooldownComponent(bp)
+            it.lore(lore)
+        }
         return abilityItem
     }
 
@@ -159,20 +155,16 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         }
         val percentage = ((bp.settings.abilityCooldownMultiplier - 1) * 100).toInt()
         var cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
-            .append(
-                Component.text(
-                    "${this.baseCooldown * bp.settings.abilityCooldownMultiplier.toInt()}s",
-                    NamedTextColor.YELLOW
-                )
-            )
+            .append(Component.text(
+                "${this.baseCooldown * bp.settings.abilityCooldownMultiplier.toInt()}s",
+                NamedTextColor.YELLOW
+            ))
         if (percentage != 0) {
             cooldownComponent = cooldownComponent
-                .append(
-                    Component.text(
-                        " (${if (percentage > 0) "+" else ""}$percentage%",
-                        if (percentage < 0) NamedTextColor.GREEN else NamedTextColor.RED
-                    )
-                )
+                .append(Component.text(
+                    " (${if (percentage > 0) "+" else ""}$percentage%",
+                    if (percentage < 0) NamedTextColor.GREEN else NamedTextColor.RED
+                ))
         }
         return cooldownComponent.decoration(TextDecoration.ITALIC, false)
     }
@@ -193,15 +185,13 @@ private fun makeBabyPotion(): ItemStack {
     potion.editMeta(PotionMeta::class.java) {
         it.addCustomEffect(PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, 4), true)
         it.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false))
-        it.lore(
-            listOf(
-                Component.text("Makes you small and fast"),
-                Component.empty(),
-                getPotionEffectInfo("2x Speed"),
-                getPotionEffectInfo("-30% Size"),
-                getDurationInfo(BabyPotion.DURATION)
-            )
-        )
+        it.lore(listOf(
+            Component.text("Makes you small and fast"),
+            Component.empty(),
+            getPotionEffectInfo("2x Speed"),
+            getPotionEffectInfo("-30% Size"),
+            getDurationInfo(BabyPotion.DURATION)
+        ))
         it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
     }
     return potion
@@ -209,69 +199,58 @@ private fun makeBabyPotion(): ItemStack {
 
 private fun makeChargePotion(): ItemStack {
     val potion = ItemStack(Material.POTION)
-    val meta = potion.itemMeta as PotionMeta
-
-    meta.addCustomEffect(PotionEffect(PotionEffectType.LUCK, ChargePotion.DURATION * 20, 4), true)
-    meta.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false))
-    meta.lore(
-        listOf(
+    potion.editMeta(PotionMeta::class.java) {
+        it.addCustomEffect(PotionEffect(PotionEffectType.LUCK, ChargePotion.DURATION * 20, 4), true)
+        it.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
             Component.text("Makes your cooldowns go faster"),
             Component.empty(),
             getPotionEffectInfo("2x cooldown speed"),
             getDurationInfo(ChargePotion.DURATION)
-        )
-    )
-    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
-
-    potion.setItemMeta(meta)
+        ))
+        it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+    }
     return potion
 }
 
 private fun makeKarmaPotion(): ItemStack {
     val potion = ItemStack(Material.POTION)
-    val meta = potion.itemMeta as PotionMeta
-
-    meta.addCustomEffect(PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true)
-    meta.customName(Component.text("Karma Potion").decoration(TextDecoration.ITALIC, false))
-    meta.lore(
-        listOf(
+    potion.editMeta(PotionMeta::class.java) {
+        it.addCustomEffect(PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true)
+        it.customName(Component.text("Karma Potion").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
             Component.text("Attacker gets glowing and"),
             Component.text("slowness, levitation, nausea, or blindness"),
             Component.empty(),
             getPotionEffectInfo("karma"),
             getDurationInfo(KarmaPotion.DURATION)
-        )
-    )
-    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
-
-    potion.setItemMeta(meta)
+        ))
+        it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+    }
     return potion
 }
 
 private fun makeLingeringPotion(): ItemStack {
     val potion = ItemStack(Material.LINGERING_POTION)
-    val meta = potion.itemMeta as PotionMeta
-    meta.customName(Component.text("Lingering potion").decoration(TextDecoration.ITALIC, false))
-    meta.lore(
-        listOf(
+    potion.editMeta(PotionMeta::class.java) {
+        it.customName(Component.text("Lingering potion").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
             Component.text("Contains one of the following at random:"),
             Component.text("Growing", NamedTextColor.LIGHT_PURPLE),
             Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
             Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
             Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
             getDurationInfo(LingeringPotionTrap.DURATION)
-        )
-    )
-    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
-    meta.color = Color.fromRGB(100, 62, 46)
-
-    potion.setItemMeta(meta)
+        ))
+        it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+        it.color = Color.fromRGB(100, 62, 46)
+    }
     return potion
 }
 
 private fun makeSplashBow(): ItemStack {
     val splashBow = ItemStack(Material.BOW)
-    splashBow.editMeta {
+    splashBow.editMeta(Damageable::class.java) {
         it.displayName(Component.text("Splash Bow").decoration(TextDecoration.ITALIC, false))
         it.lore(listOf(
             Component.text("A bow that shoots arrows exploding on impact"),
@@ -280,66 +259,59 @@ private fun makeSplashBow(): ItemStack {
         ))
         it.addEnchant(Enchantment.PUNCH, 10, true)
         it.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-        (it as Damageable).damage = 384.toShort().toInt()
+        it.damage = 384
     }
     return splashBow
 }
 
 private fun makeLongHandsItem(): ItemStack {
-    val item = Menu.makeItem(
+    val coolRod = Menu.makeItem(
         Material.FISHING_ROD, Component.text("Cool Rod"),
         Component.text("Punch someone far away, only 1 punch granted"),
         Component.empty(),
         getDamageInfo("punch", 50, 'm')
     )
-    val meta = item.itemMeta
+    coolRod.editMeta {
+        val key = NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID())
 
-    // Create a unique NamespacedKey for this item
-    val key = NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID())
-
-    val extraRangeModifier = AttributeModifier(
-        key,
-        50.0,
-        AttributeModifier.Operation.ADD_NUMBER
-    )
-    meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier)
-    item.setItemMeta(meta)
-    return item
+        val extraRangeModifier = AttributeModifier(
+            key,
+            50.0,
+            AttributeModifier.Operation.ADD_NUMBER
+        )
+        it.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier)
+    }
+    return coolRod
 }
 
 private fun makeRiptideTrident(): ItemStack {
-    val item = ItemStack(Material.TRIDENT)
-    val meta = item.itemMeta
-    meta.displayName(Component.text("Trident").decoration(TextDecoration.ITALIC, false))
-    meta.lore(
-        listOf(
+    val trident = ItemStack(Material.TRIDENT)
+    trident.editMeta {
+        it.displayName(Component.text("Trident").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
             Component.text("Makes you fly thru the air"),
             Component.text("and damage opponents in a 2m radius"),
             Component.empty(),
             getDamageInfo("aura", 2, 'r')
-        )
-    )
-    meta.setAttributeModifiers(null)
-    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-
-    item.setItemMeta(meta)
-    return item
+        ))
+        it.attributeModifiers = null
+        it.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+    }
+    return trident
 }
 
 private fun makeLaser(): ItemStack {
     val laserHead = Util.playerHead("dispenser")
-    val meta = laserHead.itemMeta
-    meta.displayName(Component.text("Laser").decoration(TextDecoration.ITALIC, false))
-    meta.lore(
-        listOf(
+    laserHead.editMeta {
+        it.displayName(Component.text("Laser").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
             Component.text("Emits a laser that damages enemies"),
             Component.text("unlimited range"),
             Component.empty(),
             getDamageInfo("laser", 1, 'r')
-        )
-    )
-    laserHead.setItemMeta(meta)
-    laserHead.setData<ItemAdventurePredicate?>(
+        ))
+    }
+    laserHead.setData<ItemAdventurePredicate>(
         DataComponentTypes.CAN_PLACE_ON,
         ItemAdventurePredicate.itemAdventurePredicate().addPredicate(BlockPredicate.predicate().build())
     )
@@ -348,7 +320,7 @@ private fun makeLaser(): ItemStack {
 
 private fun getDurationInfo(seconds: Int): TextComponent {
     return Component.text("Duration: ", NamedTextColor.DARK_GREEN)
-        .append(Component.text(seconds.toString() + "s", NamedTextColor.GREEN))
+        .append(Component.text("${seconds}s", NamedTextColor.GREEN))
         .decoration(TextDecoration.ITALIC, false)
 }
 
@@ -356,7 +328,7 @@ private fun getDamageInfo(damageType: String, value: Int, unit: Char): TextCompo
     return Component.text("Damage: ", NamedTextColor.DARK_RED)
         .append(
             Component.text(damageType, NamedTextColor.RED).appendSpace()
-                .append(Component.text(value.toString() + "" + unit))
+                .append(Component.text("$value$unit"))
         )
         .decoration(TextDecoration.ITALIC, false)
 }
@@ -367,16 +339,16 @@ private fun getPotionEffectInfo(potionEffect: String): TextComponent {
         .decoration(TextDecoration.ITALIC, false)
 }
 
-private fun appendCooldownInfo(item: ItemStack, category: AbilityCategory?, baseCooldown: Int) {
-    val meta = item.itemMeta
+private fun appendCooldownInfo(item: ItemStack, category: AbilityCategory, baseCooldown: Int) {
     val cooldownComponent: Component = if (category == AbilityCategory.DAMAGING)
         Component.text("Cooldown: ", NamedTextColor.GOLD)
             .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
     else
         Component.text("Cooldown: ", NamedTextColor.GOLD)
-            .append(Component.text(baseCooldown.toString() + "s", NamedTextColor.YELLOW))
-    val lore = if (meta.hasLore()) meta.lore() else ArrayList()
-    lore!!.add(cooldownComponent.decoration(TextDecoration.ITALIC, false))
-    meta.lore(lore)
-    item.setItemMeta(meta)
+            .append(Component.text("${baseCooldown}s", NamedTextColor.YELLOW))
+    item.editMeta {
+        val lore = it.lore() ?: mutableListOf()
+        lore.add(cooldownComponent.decoration(TextDecoration.ITALIC, false))
+        it.lore(lore)
+    }
 }
