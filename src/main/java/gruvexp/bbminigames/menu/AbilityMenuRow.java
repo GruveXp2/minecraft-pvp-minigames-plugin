@@ -20,8 +20,8 @@ public class AbilityMenuRow extends MenuRow {
     }
 
     public void initItems() {
-        for (AbilityType type : AbilityType.values()) {
-            addItem(type.getAbilityItem().clone());
+        for (AbilityType type : AbilityType.getEntries()) {
+            addItem(type.abilityItem.clone());
         }
     }
 

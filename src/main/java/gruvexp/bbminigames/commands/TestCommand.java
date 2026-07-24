@@ -372,7 +372,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "give_ability_items" -> {
                     for (AbilityType type : AbilityType.values()) {
-                        ((Player) sender).getInventory().addItem(type.getAbilityItem());
+                        ((Player) sender).getInventory().addItem(type.abilityItem);
                     }
                 }
                 case "test_arc" -> {

@@ -1,327 +1,382 @@
-package gruvexp.bbminigames.twtClassic.ability;
+package gruvexp.bbminigames.twtClassic.ability
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.Util;
-import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.abilities.*;
-import io.papermc.paper.block.BlockPredicate;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.Util
+import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.abilities.*
+import io.papermc.paper.block.BlockPredicate
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemAdventurePredicate
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Color
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import java.util.*
 
-import java.util.*;
-
-public enum AbilityType {
-
-    SPLASH_BOW(makeSplashBow(),
-            "CONCRETE_POWDER", AbilityCategory.DAMAGING),
-    THUNDER_BOW(Menu.makeItem(Material.BLUE_ICE, Component.text("Thunder Bow"),
+enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: String, category: AbilityCategory) {
+    SPLASH_BOW(
+        makeSplashBow(),
+        "CONCRETE_POWDER", AbilityCategory.DAMAGING
+    ),
+    THUNDER_BOW(
+        Menu.makeItem(
+            Material.BLUE_ICE, Component.text("Thunder Bow"),
             Component.text("Converts your crossbow into a thunder crossbow"),
             Component.text("When hitting an opponent, damage chains to nearby enemies"),
             Component.empty(),
             getDamageInfo("chain", 6, 'r'),
-            getDurationInfo(ThunderBow.DURATION)),
-            "TERRACOTTA", AbilityCategory.DAMAGING),
-    BUBBLE_JET(makeRiptideTrident(),
-            "CANDLE", AbilityCategory.DAMAGING),
-    LONG_ARMS(makeLongHandsItem(),
-            "WOOL", AbilityCategory.DAMAGING),
-    SALMON_SLAP(Menu.makeItem(Material.SALMON_BUCKET, Component.text("Salmon Slap"),
+            getDurationInfo(ThunderBow.DURATION)
+        ),
+        "TERRACOTTA", AbilityCategory.DAMAGING
+    ),
+    BUBBLE_JET(
+        makeRiptideTrident(),
+        "CANDLE", AbilityCategory.DAMAGING
+    ),
+    LONG_ARMS(
+        makeLongHandsItem(),
+        "WOOL", AbilityCategory.DAMAGING
+    ),
+    SALMON_SLAP(
+        Menu.makeItem(
+            Material.SALMON_BUCKET, Component.text("Salmon Slap"),
             Component.text("Give your opponents a salmon slap"),
             Component.empty(),
             getDamageInfo("punch", 3, 'm'),
-            getDurationInfo(SalmonSlap.DURATION)),
-            "WOOL", AbilityCategory.DAMAGING),
-    RADAR(Menu.makeItem(Material.BELL, Component.text("Radar"),
+            getDurationInfo(SalmonSlap.DURATION)
+        ),
+        "WOOL", AbilityCategory.DAMAGING
+    ),
+    RADAR(
+        Menu.makeItem(
+            Material.BELL, Component.text("Radar"),
             Component.text("Reveals the position of opponents by making them glow"),
             Component.empty(),
-            getDurationInfo(Radar.DURATION)),
-            30, "BANNER", AbilityCategory.UTILITY),
-    ENDER_PEARL(Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
-            15, "CONCRETE", AbilityCategory.UTILITY),
-    BABY_POTION(makeBabyPotion(),
-            25, "CANDLE", AbilityCategory.POTION),
-    CHARGE_POTION(makeChargePotion(),
-            25, "CANDLE", AbilityCategory.POTION),
-    KARMA_POTION(makeKarmaPotion(),
-            30, "CANDLE", AbilityCategory.POTION),
-    CREEPER_TRAP(Menu.makeItem(Material.CREEPER_HEAD, Component.text("Creeper"),
+            getDurationInfo(Radar.DURATION)
+        ),
+        30, "BANNER", AbilityCategory.UTILITY
+    ),
+    ENDER_PEARL(
+        Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
+        15, "CONCRETE", AbilityCategory.UTILITY
+    ),
+    BABY_POTION(
+        makeBabyPotion(),
+        25, "CANDLE", AbilityCategory.POTION
+    ),
+    CHARGE_POTION(
+        makeChargePotion(),
+        25, "CANDLE", AbilityCategory.POTION
+    ),
+    KARMA_POTION(
+        makeKarmaPotion(),
+        30, "CANDLE", AbilityCategory.POTION
+    ),
+    CREEPER_TRAP(
+        Menu.makeItem(
+            Material.CREEPER_HEAD, Component.text("Creeper"),
             Component.text("Deploy a creeper mine"),
             Component.text("to surprise your friends!"),
             Component.empty(),
-            Component.text("Trigger radius: ", NamedTextColor.YELLOW).append(Component.text(CreeperTrap.BLAST_RADIUS, NamedTextColor.YELLOW))),
-            5, "CONCRETE_POWDER", AbilityCategory.TRAP),
-    LASER_TRAP(makeLaser(),
-            5, "CONCRETE_POWDER", AbilityCategory.TRAP),
-    LINGERING_POTION(makeLingeringPotion(),
-            LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP);
+            Component.text("Trigger radius: ", NamedTextColor.YELLOW)
+                .append(Component.text(CreeperTrap.BLAST_RADIUS, NamedTextColor.YELLOW))
+        ),
+        5, "CONCRETE_POWDER", AbilityCategory.TRAP
+    ),
+    LASER_TRAP(
+        makeLaser(),
+        5, "CONCRETE_POWDER", AbilityCategory.TRAP
+    ),
+    LINGERING_POTION(
+        makeLingeringPotion(),
+        LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP
+    );
 
-    public static final NamespacedKey KEY = new NamespacedKey("botbows", "ability_item");
-    private final NamespacedKey OWN_KEY = new NamespacedKey("botbows", "ability_item");
 
-    private final ItemStack abilityItem;
-    private final ItemStack[] cooldownItems;
-    private final int baseCooldown;
-    public final AbilityCategory category;
+    @JvmField
+    val abilityItem: ItemStack
+    @JvmField
+    val cooldownItems: Array<ItemStack>
+    @JvmField
+    val baseCooldown: Int
+    @JvmField
+    val category: AbilityCategory?
 
-    AbilityType(ItemStack item, int baseCooldown, String cooldownItemType, AbilityCategory category) {
-        appendCooldownInfo(item, category, baseCooldown);
-        item.editMeta(meta ->
-                meta.getPersistentDataContainer().set(OWN_KEY, PersistentDataType.STRING, this.name()));
-
-        this.abilityItem = item;
-        this.baseCooldown = baseCooldown;
-        this.category = category;
-        Material red = Material.getMaterial("RED_" + cooldownItemType);
-        Material orange = Material.getMaterial("ORANGE_" + cooldownItemType);
-        Material yellow = Material.getMaterial("YELLOW_" + cooldownItemType);
-        Material green = Material.getMaterial("LIME_" + cooldownItemType);
-        this.cooldownItems = new ItemStack[]{new ItemStack(red), new ItemStack(orange), new ItemStack(yellow), new ItemStack(green)};
-    }
-
-    private static void appendCooldownInfo(ItemStack item, AbilityCategory category, int baseCooldown) {
-        ItemMeta meta = item.getItemMeta();
-        Component cooldownComponent = category == AbilityCategory.DAMAGING ? Component.text("Cooldown: ", NamedTextColor.GOLD)
-                .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
-                : Component.text("Cooldown: ", NamedTextColor.GOLD)
-                .append(Component.text(baseCooldown + "s", NamedTextColor.YELLOW));
-        List<Component> lore = meta.hasLore() ? meta.lore() : new ArrayList<>();
-        lore.add(cooldownComponent.decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
-        item.setItemMeta(meta);
-    }
-
-    AbilityType(ItemStack item, String cooldownItemType, AbilityCategory category) {
-        this(item, -1, cooldownItemType, category);
-    }
-
-    public ItemStack getAbilityItem() {
-        return abilityItem;
-    }
-
-    public ItemStack[] getCooldownItems() {
-        return cooldownItems;
-    }
-
-    public int getBaseCooldown() {
-        return baseCooldown;
-    }
-
-    public ItemStack getAbilityItem(BotBowsPlayer bp) {
-        ItemStack abilityItem = getAbilityItem();
-        ItemMeta meta = abilityItem.getItemMeta();
-
-        Component cooldownComponent = getCooldownComponent(bp);
-        List<Component> lore = Objects.requireNonNullElse(meta.lore(), new ArrayList<>());
-        lore.set(lore.size() - 1, cooldownComponent);
-        meta.lore(lore);
-
-        abilityItem.setItemMeta(meta);
-        return abilityItem;
-    }
-
-    public @NotNull Component getCooldownComponent(BotBowsPlayer bp) {
-        if (category == AbilityCategory.DAMAGING) {
-            return Component.text("Cooldown: ", NamedTextColor.GOLD).append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW));
+    init {
+        appendCooldownInfo(item, category, baseCooldown)
+        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name)
         }
-        int percentage = (int) ((bp.settings.getAbilityCooldownMultiplier() - 1) * 100);
-        Component cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
-                .append(Component.text((int) (getBaseCooldown() * bp.settings.getAbilityCooldownMultiplier()) + "s", NamedTextColor.YELLOW));
+
+        this.abilityItem = item
+        this.baseCooldown = baseCooldown
+        this.category = category
+        val red = Material.getMaterial("RED_$cooldownItemType")!!
+        val orange = Material.getMaterial("ORANGE_$cooldownItemType")!!
+        val yellow = Material.getMaterial("YELLOW_$cooldownItemType")!!
+        val green = Material.getMaterial("LIME_$cooldownItemType")!!
+        this.cooldownItems =
+            arrayOf(ItemStack(red), ItemStack(orange), ItemStack(yellow), ItemStack(green))
+    }
+
+    constructor(item: ItemStack, cooldownItemType: String, category: AbilityCategory) : this(
+        item,
+        -1,
+        cooldownItemType,
+        category
+    )
+
+    fun getAbilityItem(bp: BotBowsPlayer): ItemStack {
+        val abilityItem = this.abilityItem
+        val meta = abilityItem.itemMeta
+
+        val cooldownComponent = getCooldownComponent(bp)
+        val lore = meta.lore() ?: mutableListOf()
+        lore[lore.size - 1] = cooldownComponent
+        meta.lore(lore)
+
+        abilityItem.setItemMeta(meta)
+        return abilityItem
+    }
+
+    fun getCooldownComponent(bp: BotBowsPlayer): Component {
+        if (category == AbilityCategory.DAMAGING) {
+            return Component.text("Cooldown: ", NamedTextColor.GOLD)
+                .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
+        }
+        val percentage = ((bp.settings.abilityCooldownMultiplier - 1) * 100).toInt()
+        var cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
+            .append(
+                Component.text(
+                    "${this.baseCooldown * bp.settings.abilityCooldownMultiplier.toInt()}s",
+                    NamedTextColor.YELLOW
+                )
+            )
         if (percentage != 0) {
             cooldownComponent = cooldownComponent
-                    .append(Component.text(" (" + (percentage > 0 ? "+" : "") + percentage + "%)", percentage < 0 ? NamedTextColor.GREEN : NamedTextColor.RED));
+                .append(
+                    Component.text(
+                        " (${if (percentage > 0) "+" else ""}$percentage%",
+                        if (percentage < 0) NamedTextColor.GREEN else NamedTextColor.RED
+                    )
+                )
         }
-        return cooldownComponent.decoration(TextDecoration.ITALIC, false);
+        return cooldownComponent.decoration(TextDecoration.ITALIC, false)
     }
 
-    public static @Nullable AbilityType fromItem(ItemStack item) {
-        if (item == null) return null;
-        String mapStr = item.getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
-        if (mapStr == null) return null;
-        return valueOf(mapStr);
+    companion object {
+        val KEY: NamespacedKey = NamespacedKey("botbows", "ability_item")
+
+        @JvmStatic
+        fun fromItem(item: ItemStack): AbilityType? {
+            val mapStr = item.persistentDataContainer.get(KEY, PersistentDataType.STRING) ?: return null
+            return valueOf(mapStr)
+        }
     }
+}
 
-    private static @NotNull TextComponent getDurationInfo(int seconds) {
-        return Component.text("Duration: ", NamedTextColor.DARK_GREEN)
-                .append(Component.text(seconds + "s", NamedTextColor.GREEN))
-                .decoration(TextDecoration.ITALIC, false);
-    }
-
-    private static @NotNull TextComponent getDamageInfo(String damageType, int value, char unit) {
-        return Component.text("Damage: ", NamedTextColor.DARK_RED)
-                .append(Component.text(damageType, NamedTextColor.RED).appendSpace()
-                        .append(Component.text(value + "" + unit)))
-                .decoration(TextDecoration.ITALIC, false);
-    }
-
-    private static @NotNull TextComponent getPotionEffectInfo(String potionEffect) {
-        return Component.text("Potion effect: ", NamedTextColor.DARK_AQUA)
-                .append(Component.text(potionEffect, NamedTextColor.AQUA))
-                .decoration(TextDecoration.ITALIC, false);
-    }
-
-    private static ItemStack makeBabyPotion() {
-        ItemStack potion = new ItemStack(Material.POTION);
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
-
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, 4), true);
-        meta.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
+private fun makeBabyPotion(): ItemStack {
+    val potion = ItemStack(Material.POTION)
+    potion.editMeta(PotionMeta::class.java) {
+        it.addCustomEffect(PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, 4), true)
+        it.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false))
+        it.lore(
+            listOf(
                 Component.text("Makes you small and fast"),
                 Component.empty(),
                 getPotionEffectInfo("2x Speed"),
                 getPotionEffectInfo("-30% Size"),
                 getDurationInfo(BabyPotion.DURATION)
-        ));
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-
-        potion.setItemMeta(meta);
-        return potion;
+            )
+        )
+        it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
     }
+    return potion
+}
 
-    private static ItemStack makeChargePotion() {
-        ItemStack potion = new ItemStack(Material.POTION);
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+private fun makeChargePotion(): ItemStack {
+    val potion = ItemStack(Material.POTION)
+    val meta = potion.itemMeta as PotionMeta
 
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, ChargePotion.DURATION * 20, 4), true);
-        meta.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("Makes your cooldowns go faster"),
-                Component.empty(),
-                getPotionEffectInfo("2x cooldown speed"),
-                getDurationInfo(ChargePotion.DURATION)
-        ));
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+    meta.addCustomEffect(PotionEffect(PotionEffectType.LUCK, ChargePotion.DURATION * 20, 4), true)
+    meta.customName(Component.text("Charge Potion").decoration(TextDecoration.ITALIC, false))
+    meta.lore(
+        listOf(
+            Component.text("Makes your cooldowns go faster"),
+            Component.empty(),
+            getPotionEffectInfo("2x cooldown speed"),
+            getDurationInfo(ChargePotion.DURATION)
+        )
+    )
+    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
-        potion.setItemMeta(meta);
-        return potion;
+    potion.setItemMeta(meta)
+    return potion
+}
+
+private fun makeKarmaPotion(): ItemStack {
+    val potion = ItemStack(Material.POTION)
+    val meta = potion.itemMeta as PotionMeta
+
+    meta.addCustomEffect(PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true)
+    meta.customName(Component.text("Karma Potion").decoration(TextDecoration.ITALIC, false))
+    meta.lore(
+        listOf(
+            Component.text("Attacker gets glowing and"),
+            Component.text("slowness, levitation, nausea, or blindness"),
+            Component.empty(),
+            getPotionEffectInfo("karma"),
+            getDurationInfo(KarmaPotion.DURATION)
+        )
+    )
+    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+
+    potion.setItemMeta(meta)
+    return potion
+}
+
+private fun makeLingeringPotion(): ItemStack {
+    val potion = ItemStack(Material.LINGERING_POTION)
+    val meta = potion.itemMeta as PotionMeta
+    meta.customName(Component.text("Lingering potion").decoration(TextDecoration.ITALIC, false))
+    meta.lore(
+        listOf(
+            Component.text("Contains one of the following at random:"),
+            Component.text("Growing", NamedTextColor.LIGHT_PURPLE),
+            Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
+            Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
+            Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
+            getDurationInfo(LingeringPotionTrap.DURATION)
+        )
+    )
+    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+    meta.color = Color.fromRGB(100, 62, 46)
+
+    potion.setItemMeta(meta)
+    return potion
+}
+
+private fun makeSplashBow(): ItemStack {
+    val splashBow = ItemStack(Material.BOW)
+    splashBow.editMeta {
+        it.displayName(Component.text("Splash Bow").decoration(TextDecoration.ITALIC, false))
+        it.lore(listOf(
+            Component.text("A bow that shoots arrows exploding on impact"),
+            Component.empty(),
+            getDamageInfo("splash", 6, 'r')
+        ))
+        it.addEnchant(Enchantment.PUNCH, 10, true)
+        it.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        (it as Damageable).damage = 384.toShort().toInt()
     }
+    return splashBow
+}
 
-    private static ItemStack makeKarmaPotion() {
-        ItemStack potion = new ItemStack(Material.POTION);
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+private fun makeLongHandsItem(): ItemStack {
+    val item = Menu.makeItem(
+        Material.FISHING_ROD, Component.text("Cool Rod"),
+        Component.text("Punch someone far away, only 1 punch granted"),
+        Component.empty(),
+        getDamageInfo("punch", 50, 'm')
+    )
+    val meta = item.itemMeta
 
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, KarmaPotion.DURATION * 20, 4), true);
-        meta.customName(Component.text("Karma Potion").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("Attacker gets glowing and"),
-                Component.text("slowness, levitation, nausea, or blindness"),
-                Component.empty(),
-                getPotionEffectInfo("karma"),
-                getDurationInfo(KarmaPotion.DURATION)
-        ));
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+    // Create a unique NamespacedKey for this item
+    val key = NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID())
 
-        potion.setItemMeta(meta);
-        return potion;
-    }
+    val extraRangeModifier = AttributeModifier(
+        key,
+        50.0,
+        AttributeModifier.Operation.ADD_NUMBER
+    )
+    meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier)
+    item.setItemMeta(meta)
+    return item
+}
 
-    private static ItemStack makeLingeringPotion() {
-        ItemStack potion = new ItemStack(Material.LINGERING_POTION);
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.customName(Component.text("Lingering potion").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("Contains one of the following at random:"),
-                Component.text("Growing", NamedTextColor.LIGHT_PURPLE),
-                Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
-                Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
-                Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
-                getDurationInfo(LingeringPotionTrap.DURATION)
-        ));
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-        meta.setColor(Color.fromRGB(100, 62, 46));
+private fun makeRiptideTrident(): ItemStack {
+    val item = ItemStack(Material.TRIDENT)
+    val meta = item.itemMeta
+    meta.displayName(Component.text("Trident").decoration(TextDecoration.ITALIC, false))
+    meta.lore(
+        listOf(
+            Component.text("Makes you fly thru the air"),
+            Component.text("and damage opponents in a 2m radius"),
+            Component.empty(),
+            getDamageInfo("aura", 2, 'r')
+        )
+    )
+    meta.setAttributeModifiers(null)
+    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
 
-        potion.setItemMeta(meta);
-        return potion;
-    }
+    item.setItemMeta(meta)
+    return item
+}
 
-    private static ItemStack makeSplashBow() {
-        ItemStack splashBow = new ItemStack(Material.BOW);
-        ItemMeta meta = splashBow.getItemMeta();
-        meta.displayName(Component.text("Splash Bow").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("A bow that shoots arrows exploding on impact"),
-                Component.empty(),
-                getDamageInfo("splash", 6, 'r')
-        ));
-        meta.addEnchant(Enchantment.POWER, 10, true);
-        meta.addEnchant(Enchantment.PUNCH, 10, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        Damageable damageable = (Damageable) meta;
-        damageable.setDamage((short) 384);
-        splashBow.setItemMeta(damageable);
-        return splashBow;
-    }
+private fun makeLaser(): ItemStack {
+    val laserHead = Util.playerHead("dispenser")
+    val meta = laserHead.itemMeta
+    meta.displayName(Component.text("Laser").decoration(TextDecoration.ITALIC, false))
+    meta.lore(
+        listOf(
+            Component.text("Emits a laser that damages enemies"),
+            Component.text("unlimited range"),
+            Component.empty(),
+            getDamageInfo("laser", 1, 'r')
+        )
+    )
+    laserHead.setItemMeta(meta)
+    laserHead.setData<ItemAdventurePredicate?>(
+        DataComponentTypes.CAN_PLACE_ON,
+        ItemAdventurePredicate.itemAdventurePredicate().addPredicate(BlockPredicate.predicate().build())
+    )
+    return laserHead
+}
 
-    private static ItemStack makeLongHandsItem() {
-        ItemStack item = Menu.makeItem(Material.FISHING_ROD, Component.text("Cool Rod"),
-                Component.text("Punch someone far away, only 1 punch granted"),
-                Component.empty(),
-                getDamageInfo("punch", 50, 'm'));
-        ItemMeta meta = item.getItemMeta();
+private fun getDurationInfo(seconds: Int): TextComponent {
+    return Component.text("Duration: ", NamedTextColor.DARK_GREEN)
+        .append(Component.text(seconds.toString() + "s", NamedTextColor.GREEN))
+        .decoration(TextDecoration.ITALIC, false)
+}
 
-        // Create a unique NamespacedKey for this item
-        NamespacedKey key = new NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID());
+private fun getDamageInfo(damageType: String, value: Int, unit: Char): TextComponent {
+    return Component.text("Damage: ", NamedTextColor.DARK_RED)
+        .append(
+            Component.text(damageType, NamedTextColor.RED).appendSpace()
+                .append(Component.text(value.toString() + "" + unit))
+        )
+        .decoration(TextDecoration.ITALIC, false)
+}
 
-        AttributeModifier extraRangeModifier = new AttributeModifier(
-                key,
-                50,
-                AttributeModifier.Operation.ADD_NUMBER
-        );
-        meta.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier);
-        item.setItemMeta(meta);
-        return item;
-    }
+private fun getPotionEffectInfo(potionEffect: String): TextComponent {
+    return Component.text("Potion effect: ", NamedTextColor.DARK_AQUA)
+        .append(Component.text(potionEffect, NamedTextColor.AQUA))
+        .decoration(TextDecoration.ITALIC, false)
+}
 
-    private static ItemStack makeRiptideTrident() {
-        ItemStack item = new ItemStack(Material.TRIDENT);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Trident").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("Makes you fly thru the air"),
-                Component.text("and damage opponents in a 2m radius"),
-                Component.empty(),
-                getDamageInfo("aura", 2, 'r')
-        ));
-        meta.setAttributeModifiers(null);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    private static ItemStack makeLaser() {
-        ItemStack laserHead = Util.playerHead("dispenser");
-        ItemMeta meta = laserHead.getItemMeta();
-        meta.displayName(Component.text("Laser").decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-                Component.text("Emits a laser that damages enemies"),
-                Component.text("unlimited range"),
-                Component.empty(),
-                getDamageInfo("laser", 1, 'r')
-        ));
-        laserHead.setItemMeta(meta);
-        laserHead.setData(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().addPredicate(BlockPredicate.predicate().build()));
-        return laserHead;
-    }
+private fun appendCooldownInfo(item: ItemStack, category: AbilityCategory?, baseCooldown: Int) {
+    val meta = item.itemMeta
+    val cooldownComponent: Component = if (category == AbilityCategory.DAMAGING)
+        Component.text("Cooldown: ", NamedTextColor.GOLD)
+            .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
+    else
+        Component.text("Cooldown: ", NamedTextColor.GOLD)
+            .append(Component.text(baseCooldown.toString() + "s", NamedTextColor.YELLOW))
+    val lore = if (meta.hasLore()) meta.lore() else ArrayList()
+    lore!!.add(cooldownComponent.decoration(TextDecoration.ITALIC, false))
+    meta.lore(lore)
+    item.setItemMeta(meta)
 }

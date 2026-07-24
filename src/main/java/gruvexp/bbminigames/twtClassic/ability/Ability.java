@@ -24,7 +24,7 @@ public class Ability {
         this.hotBarSlot = hotBarSlot;
         this.type = type;
         if (type.category != AbilityCategory.DAMAGING) {
-            this.baseCooldown = type.getBaseCooldown();
+            this.baseCooldown = type.baseCooldown;
         }
     }
 
@@ -54,12 +54,12 @@ public class Ability {
 
     public void obtain() {
         resetCooldown();
-        bp.avatar.setItem(hotBarSlot, type.getAbilityItem());
+        bp.avatar.setItem(hotBarSlot, type.abilityItem);
     }
 
     public void lose() {
         if (type.category == AbilityCategory.DAMAGING) {
-            bp.avatar.setItem(hotBarSlot, type.getCooldownItems()[0].clone());
+            bp.avatar.setItem(hotBarSlot, type.cooldownItems[0].clone());
         } else {
             cooldownTimer = new CooldownTimer(bp, effectiveCooldown);
             cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
@@ -96,13 +96,13 @@ public class Ability {
 
     private ItemStack getCooldownItem(int cooldown) {
         if (cooldown > 10) {
-            return type.getCooldownItems()[0].clone();
+            return type.cooldownItems[0].clone();
         } else if (cooldown > 5) {
-            return type.getCooldownItems()[1].clone();
+            return type.cooldownItems[1].clone();
         } else if (cooldown > 2) {
-            return type.getCooldownItems()[2].clone();
+            return type.cooldownItems[2].clone();
         } else {
-            return type.getCooldownItems()[3].clone();
+            return type.cooldownItems[3].clone();
         }
     }
 
@@ -136,9 +136,9 @@ public class Ability {
             }
 
             switch (currentCooldown) {
-                case 10 -> cooldownItem = type.getCooldownItems()[1].clone();
-                case 5 -> cooldownItem = type.getCooldownItems()[2].clone();
-                case 2 -> cooldownItem = type.getCooldownItems()[3].clone();
+                case 10 -> cooldownItem = type.cooldownItems[1].clone();
+                case 5 -> cooldownItem = type.cooldownItems[2].clone();
+                case 2 -> cooldownItem = type.cooldownItems[3].clone();
             }
             cooldownItem.setAmount(currentCooldown);
             bp.avatar.setItem(hotBarSlot, cooldownItem);
