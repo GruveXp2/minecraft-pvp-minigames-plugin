@@ -1,11 +1,9 @@
 package gruvexp.bbminigames.listeners;
 
 import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.menu.menus.AbilityMenu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryHolder;
 
 public class MenuListener implements Listener {
@@ -23,14 +21,6 @@ public class MenuListener implements Listener {
             // Since we know our inventoryholder is a menu, get the Menu Object representing the menu we clicked on
             // Call the handleMenu object which takes the event and processes it
             menu.handleMenu(e);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e) {
-        InventoryHolder holder = e.getInventory().getHolder();
-        if (holder instanceof AbilityMenu menu) {
-            menu.handleMenuClose(e);
         }
     }
 }

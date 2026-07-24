@@ -22,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
 public class AbilityListener implements Listener {
 
@@ -89,18 +88,14 @@ public class AbilityListener implements Listener {
 
                         Location particleLoc = new Location(loc.getWorld(), x, y, z);
                         p.getWorld().spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
-                                new Particle.DustOptions(bp.getTeam().dyeColor.getColor(), 2.5f));
+                                new Particle.DustOptions(bp.getTeam().getDyeColor().getColor(), 2.5f));
                     }
                 }
             }
         }
     }
 
-    public static void onSlap(EntityDamageByEntityEvent e, Player attacker, Player defender, ItemStack weapon) {
-        Lobby lobby = BotBows.getLobby(attacker);
-        if (lobby == null) return;
-        BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
-        BotBowsPlayer defenderBp = lobby.getBotBowsPlayer(defender);
+    public static void onSlap(EntityDamageByEntityEvent e, BotBowsPlayer attackerBp, BotBowsPlayer defenderBp, ItemStack weapon) {
         if (defenderBp == null) return;
         if (attackerBp.getTeam() == defenderBp.getTeam()) {
             e.setCancelled(true);
@@ -151,12 +146,12 @@ public class AbilityListener implements Listener {
             return;
         }
         switch (type) {
-            case INVIS_POTION, BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
+            case BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
         }
     }
 
     @EventHandler
-    public void onPotionSplash(LingeringPotionSplashEvent e) {
+    public void onLingeringPotionSplash(LingeringPotionSplashEvent e) {
         ThrownPotion potion = e.getEntity();
         if (!(potion.getShooter() instanceof Player thrower)) return;
 
@@ -164,13 +159,18 @@ public class AbilityListener implements Listener {
         if (lobby == null) return;
         BotBowsPlayer throwerBp = lobby.getBotBowsPlayer(thrower);
 
-        boolean hasUnluck = potion.getEffects().stream()
-                .anyMatch(effect -> effect.getType() == PotionEffectType.UNLUCK);
-
-        if (!hasUnluck) return;
-
         LingeringPotionTrap ability = (LingeringPotionTrap) throwerBp.getAbility(AbilityType.LINGERING_POTION);
-        ability.addSizeIncreaseAreaEffect(potion.getLocation());
+        ability.onSplash(e);
+    }
+
+    @EventHandler
+    public void onCloudApply(AreaEffectCloudApplyEvent e) {
+        AreaEffectCloud cloud = e.getEntity();
+
+        BotBowsPlayer cloudOwningBp = LingeringPotionTrap.getCloudOwner(cloud);
+        if (cloudOwningBp != null) {
+            ((LingeringPotionTrap) cloudOwningBp.getAbility(AbilityType.LINGERING_POTION)).onCloudApply(e);
+        }
     }
 
     @EventHandler

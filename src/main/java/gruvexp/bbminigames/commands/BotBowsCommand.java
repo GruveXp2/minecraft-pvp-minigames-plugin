@@ -8,6 +8,7 @@ import gruvexp.bbminigames.twtClassic.Lobby;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,6 +59,7 @@ public class BotBowsCommand implements CommandExecutor {
                 BattlePreset preset = lobby.settings.saveBattlePreset(name, icon);
                 boolean success = Main.getPlugin().getPresetService().addPreset(preset);
                 if (success) {
+                    lobby.settings.presetsMenu.displayPresets();
                     p.sendMessage(Component.text("Successfully added preset \"" + name + "\" with icon " + args[2]));
                 } else {
                     p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED));
@@ -65,15 +67,26 @@ public class BotBowsCommand implements CommandExecutor {
             }
             case "load_preset" -> {
                 if (args.length == 1) {
-                    return Component.text("You must spe/cify the preset to load!", NamedTextColor.RED);
+                    return Component.text("You must specify the preset to load!", NamedTextColor.RED);
                 }
                 String presetName = args[1];
                 BattlePreset preset = Main.getPlugin().getPresetService().getPreset(presetName);
                 if (preset == null) return Component.text("Error! No preset with name \"" + presetName + "\" exists");
 
+                if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets");
+
                 lobby.settings.applyBattlePreset(preset);
-                p.sendMessage(Component.text("Successfully applied preset ")
-                        .append(Component.text(presetName, NamedTextColor.AQUA)));
+            }
+            case "transfer_mod" -> {
+                if (!bp.lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can transfer their mod role (bruh)");
+                String otherPlayerName = args[1];
+                Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+                if (otherPlayer == null) return Component.text("That player doesnt exist!", NamedTextColor.RED);
+
+                BotBowsPlayer otherBp = lobby.getBotBowsPlayer(otherPlayer);
+                if (otherBp == null) return Component.text("That player isnt in this lobby!", NamedTextColor.RED);
+
+                lobby.settings.setModPlayer(otherBp);
             }
             case "finish_vote" -> bp.lobby.settings.finishVoting();
             default -> {

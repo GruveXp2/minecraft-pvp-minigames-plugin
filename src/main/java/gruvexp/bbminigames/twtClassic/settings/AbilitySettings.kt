@@ -4,31 +4,36 @@ import gruvexp.bbminigames.model.preset.AbilityPreset
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
-import gruvexp.bbminigames.twtClassic.botbowsTeams.TeamSide
+import gruvexp.bbminigames.twtClassic.team.TeamSide
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 
-class AbilitySettings {
+class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettings>) {
     var maxAbilities = 0
         set(value) {
             val toggle: Boolean = field == 0 || value == 0
             field = value
             if (toggle) notifyAbilitiesToggle() else notifyMaxAbilities()
+            if (!isIndividualMax) getPlayerSettings().forEach { it.maxAbilities = value }
         }
 
     var isIndividualMax = false
         set(value) {
             field = value
+            if (!value) getPlayerSettings().forEach { it.maxAbilities = maxAbilities }
             notifyIndividualMaxToggle()
         }
 
     var cooldownMultiplier = 1.0f
         set(value) {
             field = value
+            if (!isIndividualCooldown) getPlayerSettings().forEach { it.abilityCooldownMultiplier = value }
             notifyCooldown()
         }
 
     var isIndividualCooldown = false
         set(value) {
             field = value
+            if (!value) getPlayerSettings().forEach { it.abilityCooldownMultiplier = cooldownMultiplier }
             notifyIndividualCooldownToggle()
         }
 
@@ -45,7 +50,7 @@ class AbilitySettings {
         TeamSide.TEAM_1 to mutableMapOf(),
         TeamSide.TEAM_2 to mutableMapOf())
 
-    private val bannedAbilities = mutableSetOf<AbilityType>()
+    private val bannedAbilities = mutableSetOf(AbilityType.BUBBLE_JET)
     private val listeners = mutableMapOf<BotBowsPlayer, AbilityUpdateListener>()
 
     fun addListener(bp: BotBowsPlayer, listener: AbilityUpdateListener) {
@@ -82,12 +87,12 @@ class AbilitySettings {
         preset.maxAbilities?.let { maxAbilities = it }
 
         preset.individualMaxAbilities?.forEach { (uuid, max) ->
-            BotBows.getBotBowsPlayer(uuid)?.maxAbilities = max
+            BotBows.getBotBowsPlayer(uuid).settings?.maxAbilities = max
         }
         preset.cooldownMultiplier?.let { cooldownMultiplier = it }
 
         preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
-            BotBows.getBotBowsPlayer(uuid)?.abilityCooldownMultiplier = cooldown
+            BotBows.getBotBowsPlayer(uuid).settings?.abilityCooldownMultiplier = cooldown
         }
         preset.bannedAbilities?.let { it ->
             val changed = bannedAbilities xor it

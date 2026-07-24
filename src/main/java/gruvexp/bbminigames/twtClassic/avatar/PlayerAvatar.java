@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.twtClassic.avatar;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -22,7 +22,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.*;
@@ -43,6 +42,13 @@ public class PlayerAvatar implements BotBowsAvatar{
         player.setGameMode(GameMode.ADVENTURE);
     }
 
+    public PlayerAvatar(Player player, BotBowsAvatar previousAvatar) {
+        this.player = player;
+        this.bp = previousAvatar.getBotBowsPlayer();
+        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
+        this.teamManager = previousAvatar.getTeamManager();
+    }
+
     @Override
     public void message(Component component) {
         player.sendMessage(component);
@@ -51,6 +57,11 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public LivingEntity getEntity() {
         return player;
+    }
+
+    @Override
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     @Override
@@ -92,7 +103,16 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void remove() {
+    public void equipFullArmor() {
+        player.getInventory().setArmorContents(new ItemStack[] {
+                getArmorPiece(Material.LEATHER_BOOTS),
+                getArmorPiece(Material.LEATHER_LEGGINGS),
+                getArmorPiece(Material.LEATHER_CHESTPLATE),
+                getArmorPiece(Material.LEATHER_HELMET)});
+    }
+
+    @Override
+    public void destroy() {
         eliminate();
         reset();
         player.getInventory().setItem(0, BotBows.MENU_ITEM);
@@ -137,7 +157,7 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void damage() {
         player.damage(0.001);
-        player.setGlowing(true);
+        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
         player.setInvulnerable(true);
 
         PlayerInventory inv = player.getInventory();
@@ -149,13 +169,22 @@ public class PlayerAvatar implements BotBowsAvatar{
         }
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            player.setGlowing(false);
             player.setInvulnerable(false);
             for (int i = 0; i < 9; i++) { // flytter items tilbake
                 ItemStack item = inv.getItem(i + 27);
                 inv.setItem(i, item);
             }
         }, BotBows.HIT_DISABLED_ITEM_TICKS);
+    }
+
+    @Override
+    public double getScale() {
+        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    }
+
+    @Override
+    public void setScale(double size) {
+        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
     }
 
     @Override
@@ -170,23 +199,8 @@ public class PlayerAvatar implements BotBowsAvatar{
 
     @Override
     public void setColor(NamedTextColor color) {
+        if (teamManager == null) return;
         teamManager.setColor(player, color);
-    }
-
-    @Override
-    public void growSize(double scale, int duration, int delay) {
-        new BukkitRunnable() {
-            int i = 1;
-            final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
-            @Override
-            public void run() {
-                if (i == duration) {
-                    this.cancel();
-                }
-                getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), delay, 1L);
     }
 
     @Override
@@ -203,12 +217,10 @@ public class PlayerAvatar implements BotBowsAvatar{
     public void updateSneakStamina(float progress) {
         boolean isExhausted = bp.isSneakingExhausted();
         sneakBar.progress(progress);
-        BotBows.debugMessage("Progress: " + progress, TestCommand.test3);
         if (progress > 0) player.showBossBar(sneakBar); else player.hideBossBar(sneakBar);
-        BotBows.debugMessage("Show it: " + (progress > 0), TestCommand.test3);
         sneakBar.color(isExhausted ? BossBar.Color.RED : BossBar.Color.YELLOW);
         sneakBar.name(Component.text ("Sneaking", isExhausted ? NamedTextColor.RED : NamedTextColor.YELLOW));
-        if (progress >= 1) player.setSneaking(false);
+        if (progress >= 1 && isExhausted) player.setSneaking(false);
     }
 
     @Override
@@ -226,15 +238,6 @@ public class PlayerAvatar implements BotBowsAvatar{
     @Override
     public void setItem(int index, ItemStack item) {
         player.getInventory().setItem(index, item);
-    }
-
-    @Override
-    public void setInvis(boolean invis) { // will temporarily move armor content out of inventory and
-        if (invis) {
-            player.getInventory().setArmorContents(new ItemStack[4]);
-        } else {
-            updateArmor();
-        }
     }
 
     @Override
@@ -271,13 +274,9 @@ public class PlayerAvatar implements BotBowsAvatar{
     }
 
     private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.getMaxHP();
+        int maxHP = bp.settings.getMaxHealth();
         if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            player.getInventory().setArmorContents(new ItemStack[] {
-                    getArmorPiece(Material.LEATHER_BOOTS),
-                    getArmorPiece(Material.LEATHER_LEGGINGS),
-                    getArmorPiece(Material.LEATHER_CHESTPLATE),
-                    getArmorPiece(Material.LEATHER_HELMET)});
+            equipFullArmor();
             return;
         }
         Set<Integer> slots;
@@ -303,7 +302,7 @@ public class PlayerAvatar implements BotBowsAvatar{
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
-        meta.setColor(bp.getTeam().dyeColor.getColor());
+        meta.setColor(bp.getTeam().getDyeColor().getColor());
         armor.setItemMeta(meta);
         return armor;
     }

@@ -10,17 +10,19 @@ import java.util.function.Supplier;
 
 public enum HazardType {
 
-    STORM("Storm", Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, StormHazard::new),
-    EARTHQUAKE("Earthquake", Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, EarthquakeHazard::new),
-    GHOST("Ghost", Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, GhostHazard::new);
+    STORM("Storm", HazardChance.TEN, Material.CYAN_STAINED_GLASS_PANE, NamedTextColor.AQUA, StormHazard::new),
+    EARTHQUAKE("Earthquake", HazardChance.FIVE, Material.BROWN_STAINED_GLASS_PANE, NamedTextColor.GOLD, EarthquakeHazard::new),
+    GHOST("Ghost", HazardChance.DISABLED, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE, GhostHazard::new);
 
     public final String name;
+    public final HazardChance defaultChance;
     public final Material menuFillItem;
     public final NamedTextColor textColor;
     private final Supplier<Hazard> supplier;
 
-    HazardType(String name, Material menuFillItem, NamedTextColor textColor, Supplier<Hazard> supplier) {
+    HazardType(String name, HazardChance defaultChance, Material menuFillItem, NamedTextColor textColor, Supplier<Hazard> supplier) {
         this.name = name;
+        this.defaultChance = defaultChance;
         this.menuFillItem = menuFillItem;
         this.textColor = textColor;
         this.supplier = supplier;

@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     api("org.jetbrains:annotations:24.1.0")
-    compileOnly("io.papermc.paper:paper-api:1.21.+")
+    compileOnly("io.papermc.paper:paper-api:26.1.+")
     // database
     implementation("org.xerial:sqlite-jdbc:3.45.1.0")
     // ORM for database
@@ -29,7 +29,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.50.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.50.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.50.0")
-
 }
 
 val buildNumberFile = file("build-number.txt")

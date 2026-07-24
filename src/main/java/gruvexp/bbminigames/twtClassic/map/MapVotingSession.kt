@@ -1,24 +1,28 @@
 package gruvexp.bbminigames.twtClassic.map
 
-import gruvexp.bbminigames.twtClassic.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
-data class VoteResult(val map: BotBowsMap, val voteCount: Int)
+data class VoteResult(val maps: Set<BotBowsMap>, val voteCount: Int)
 
-class MapVotingSession(private val onVoteRegistered: () -> Unit) {
+class MapVotingSession(private val onVoteChange: () -> Unit) {
     val votes : MutableMap<BotBowsPlayer, BotBowsMap> = mutableMapOf()
-    val classicMapList : Set<BotBowsMap> = BotBowsMap.entries.filter { it.mapType == MapType.CLASSIC }.toSet()
+    val classicMapList : Set<BotBowsMap> = BotBowsMap.entries.filter { it.mapType == MapType.CLASSIC && it != BotBowsMap.RANDOM }.toSet()
 
     fun vote(bp: BotBowsPlayer, map: BotBowsMap) {
         votes[bp] = map
         bp.avatar.message(Component.text("Voted for: ")
-            .append(Component.text(map.name.lowercase(), NamedTextColor.AQUA))
+            .append(Component.text(map.prettyName(), NamedTextColor.AQUA))
             .append(Component.text(", now "))
             .append(Component.text(getVotes(map), NamedTextColor.GREEN))
             .append(Component.text(" votes")))
-        onVoteRegistered()
+        onVoteChange()
+    }
+
+    fun removeVote(bp: BotBowsPlayer) {
+        votes.remove(bp)
+        onVoteChange()
     }
 
     fun getVotes(map: BotBowsMap): Int {
@@ -33,13 +37,23 @@ class MapVotingSession(private val onVoteRegistered: () -> Unit) {
         return votes.values.toSet()
     }
 
-    fun getLeadingMap(): VoteResult {
+    fun getLeadingMaps(): VoteResult {
         val voteCounts = votes.values // <bb-map, #votes>
             .groupingBy { it }
             .eachCount()
 
-        return voteCounts.maxByOrNull { it.value }?.let {
-            VoteResult(it.key, it.value)
-        } ?: VoteResult(classicMapList.random(), 0)
+        val maxVotes = voteCounts.values.maxOrNull() ?: 0
+
+        val leadingMaps = voteCounts.filterValues { it == maxVotes }.keys
+
+        return VoteResult(leadingMaps, maxVotes)
+    }
+
+    fun getWinningMapWeighted(): BotBowsMap {
+        return votes.values.randomOrNull() ?: classicMapList.random()
+    }
+
+    fun pickRandom(maps: Set<BotBowsMap>): BotBowsMap {
+        return maps.random()
     }
 }

@@ -19,6 +19,10 @@ import java.util.Collection;
 
 public class StormHazard extends Hazard {
 
+    public StormHazard() {
+        super(HazardType.STORM);
+    }
+
     @Override
     public void init(Collection<BotBowsPlayer> players) { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
@@ -26,11 +30,6 @@ public class StormHazard extends Hazard {
             BossBar bar = BossBar.bossBar(Component.text("Lightning timer", NamedTextColor.AQUA), 0, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_6);
             bp.avatar.initHazardBar(HazardType.STORM, bar);
         }
-    }
-
-    @Override
-    public HazardChance getDefaultChance() {
-        return HazardChance.TEN;
     }
 
     @Override

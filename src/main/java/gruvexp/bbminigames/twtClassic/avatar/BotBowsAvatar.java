@@ -16,29 +16,30 @@ import java.util.UUID;
 public interface BotBowsAvatar {
     void message(Component component);
     LivingEntity getEntity();
+    TeamManager getTeamManager();
     BotBowsPlayer getBotBowsPlayer();
     void eliminate();
     void revive();
     void setHP(int hp);
     void setMaxHP(int maxHP);
     ArmorSet getArmor();
-    void remove(); // removes the player from the game
+    void equipFullArmor();
+    void destroy(); // removes the player from the game
     void reset(); // its like removing and recreating this avatar, but reusing the object
     void readyBattle(TeamManager teamManager);
     void setReady(boolean ready, int itemIndex);
     int getNextFreeSlot();
     void damage();
+    double getScale();
+    void setScale(double size);
     void setGlowing(boolean flag);
     void addPotionEffect(PotionEffect effect);
     void setColor(NamedTextColor color);
-    void growSize(double scale, int duration, int delay);
-    default void growSize(double scale, int duration) {growSize(scale, duration, 0);}
     UUID getUUID();
     boolean isSneaking();
     void updateSneakStamina(float progress);
     ItemStack getHeadItem();
     void setItem(int index, ItemStack item);
-    void setInvis(boolean invis);
     default boolean isOnGround() {return getEntity().isOnGround();}
     default void setInvulnerable(boolean invulnerable) {getEntity().setInvulnerable(invulnerable);}
     default Location getLocation() {return getEntity().getLocation();}

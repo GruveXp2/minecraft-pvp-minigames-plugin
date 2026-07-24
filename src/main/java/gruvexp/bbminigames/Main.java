@@ -5,6 +5,9 @@ import gruvexp.bbminigames.database.StatsDatabase;
 import gruvexp.bbminigames.listeners.*;
 import gruvexp.bbminigames.service.BattlePresetService;
 import gruvexp.bbminigames.service.StatsService;
+import gruvexp.bbminigames.sumo.FloorListener;
+import gruvexp.bbminigames.sumo.SumoCommand;
+import gruvexp.bbminigames.sumo.SumoTabCompleter;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -51,13 +54,16 @@ public final class Main extends JavaPlugin {
                 new ShiftListener(),
                 new SwitchSpectator(),
                 new AbilityListener(),
-                new ItemListener()
+                new ItemListener(),
+                new FloorListener()
         );
 
         getCommand("menu").setExecutor(new MenuCommand());
         getCommand("settings").setExecutor(new SettingsCommand());
         getCommand("botbows").setExecutor(new BotBowsCommand());
         getCommand("botbows").setTabCompleter(new BotBowsTabCompleter());
+        getCommand("sumo").setExecutor(new SumoCommand());
+        getCommand("sumo").setTabCompleter(new SumoTabCompleter());
         getCommand("test").setExecutor(new TestCommand());
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
@@ -65,10 +71,10 @@ public final class Main extends JavaPlugin {
 
         File dbFolder = new File(this.getDataFolder(), "db");
         statsService = new StatsService(this, new StatsDatabase(dbFolder));
-        BotBows.init();
-        BotBowsPlayer.armorInit();
         presetService = new BattlePresetService();
         presetService.loadPresetsFromFile();
+        BotBows.init();
+        BotBowsPlayer.armorInit();
         new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
     }
 

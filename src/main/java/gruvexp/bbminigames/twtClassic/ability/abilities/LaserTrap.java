@@ -33,8 +33,8 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
     @Override
     public void onPlace(AbilityContext.BlockPlace ctx) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            if (emitter != null) emitter.remove();
-            emitter = new LaserEmitter(ctx.block(), ctx.face());
+            removeLaser();
+            emitter = new LaserEmitter(ctx.block, ctx.face);
             emitter.runTaskTimer(Main.getPlugin(), 0, 1);
             use();
         }, 1);
@@ -42,11 +42,20 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
 
     @Override
     public void unequip() {
-        reset();
+        removeLaser();
     }
 
     @Override
     public void reset() {
+        removeLaser();
+    }
+
+    @Override
+    public void destroy() {
+        removeLaser();
+    }
+
+    private void removeLaser() {
         if (emitter != null) {
             emitter.remove();
         }
@@ -100,7 +109,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
             offset.setX(Math.abs(offset.getX())).setY(Math.abs(offset.getY())).setZ(Math.abs(offset.getZ())); // Its just abs() for every x y z
 
             this.length = length;
-            this.color = bp.getTeam().dyeColor.getColor();
+            this.color = bp.getTeam().getDyeColor().getColor();
             this.opponents = bp.getTeam().getOppositeTeam().getPlayers();
             this.world = center.getWorld();
         }

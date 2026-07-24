@@ -8,12 +8,15 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Light;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,12 +25,13 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.structure.Structure;
+import org.bukkit.util.BlockVector;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class BotBows {
 
@@ -119,6 +123,64 @@ public class BotBows {
         if (showMessage) debugMessage(message);
     }
 
+    public static void placeSymmetricalStructure(Structure structure, Location location, Location centerLocation, StructureRotation rotation, int teleportDuration, String tag, Set<BlockDisplay> displays) {
+        Location bottomLocation = location.clone().add(0, -50, 0);
+        structure.place(bottomLocation, false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
+        BlockVector start = bottomLocation.toVector().toBlockVector();
+        BlockVector size = structure.getSize();
+        World world = location.getWorld();
+
+        Location bottomCenter = centerLocation.clone().add(0, -50, 0);
+        for (int relX = 0; relX < size.getBlockX(); relX++) {
+            for (int relY = 0; relY < size.getBlockY(); relY++) {
+                for (int relZ = 0; relZ < size.getBlockZ(); relZ++) {
+                    int x = start.getBlockX() + relX;
+                    int y = start.getBlockY() + relY;
+                    int z = start.getBlockZ() + relZ;
+                    Block block = world.getBlockAt(x, y, z);
+                    if (block.getType() != Material.AIR) {
+                        // turn the block into a block display
+                        BlockDisplay display = (BlockDisplay) world.spawnEntity(new Location(world, x, y, z), EntityType.BLOCK_DISPLAY);
+                        BlockData blockData = block.getBlockData();
+                        display.setBlock(blockData);
+                        display.addScoreboardTag(tag);
+                        displays.add(display);
+                        block.setType(Material.AIR);
+
+                        // tp the block to the center, but make it display where it was
+                        Vector3f Δpos = display.getLocation().subtract(bottomCenter).toVector().toVector3f();
+                        display.teleport(centerLocation);
+                        Transformation transformation = display.getTransformation();
+                        transformation.getTranslation().set(Δpos);
+                        display.setTransformation(transformation);
+                        display.setTeleportDuration(teleportDuration);
+                    }
+                }
+            }
+        }
+
+        int yaw = switch (rotation) {
+            case NONE -> 0;
+            case CLOCKWISE_90 -> 90;
+            case CLOCKWISE_180 -> 180;
+            case COUNTERCLOCKWISE_90 -> -90;
+        };
+        displays.forEach(display -> {
+            Location loc = display.getLocation();
+            loc.setYaw(yaw);
+            display.teleport(loc);
+        });
+    }
+
+    public static Structure loadStructure(String name) {
+        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", name));
+        if (structure == null) {
+            debugMessage("ERROR! Structure \"botbows:" + name + "\" failed to load");
+            return null;
+        }
+        return structure;
+    }
+
     public static void accessSettings(Player p) {
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) {
@@ -129,8 +191,7 @@ public class BotBows {
             p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
             return;
         }
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        lobby.settings.mapMenus.get(bp).open(p);
+        lobby.settings.overviewMenu.open(p);
     }
 
     public static void handleMovement(PlayerMoveEvent e) {

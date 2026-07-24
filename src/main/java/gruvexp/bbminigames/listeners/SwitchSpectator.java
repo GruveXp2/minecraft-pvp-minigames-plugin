@@ -3,7 +3,7 @@ package gruvexp.bbminigames.listeners;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.LivingEntity;
@@ -28,7 +28,7 @@ public class SwitchSpectator implements Listener {
                 .toList();
 
         if (alivePlayers.isEmpty()) {
-            p.sendMessage(Component.text("Cant spectate, " + team.name + " has no alive players", NamedTextColor.GRAY));
+            p.sendMessage(Component.text("Cant spectate, " + team.getDisplayName() + " has no alive players", NamedTextColor.GRAY));
             return;
         }
 

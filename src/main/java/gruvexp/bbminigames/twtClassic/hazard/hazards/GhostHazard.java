@@ -8,7 +8,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
+import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -32,13 +32,12 @@ public class GhostHazard extends Hazard {
     private static final ItemStack GHOST_SWORD = getGhostSword();
     private static final ItemStack GHOST_SWORD_NETHERITE = getGhostSwordNetherite();
 
-    @Override
-    public void init(Collection<BotBowsPlayer> players) {}
+    public GhostHazard() {
+        super(HazardType.GHOST);
+    }
 
     @Override
-    public HazardChance getDefaultChance() {
-        return HazardChance.DISABLED;
-    }
+    public void init(Collection<BotBowsPlayer> players) {}
 
     @Override
     protected void trigger(Collection<BotBowsPlayer> players) {
@@ -52,8 +51,8 @@ public class GhostHazard extends Hazard {
 
                 float randomPitch = 0.8f + (float) Math.random() * 0.4f;
                 // 2DO: get the spawnpoint in a cleaner way
-                Main.WORLD.playSound(bp.lobby.settings.team1.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
-                Main.WORLD.playSound(bp.lobby.settings.team2.spawnPos[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(bp.lobby.settings.team1.getSpawnPos()[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
+                Main.WORLD.playSound(bp.lobby.settings.team2.getSpawnPos()[0], "minecraft:botbows.ghost_rise", 1.0f, randomPitch);
             }, 60L); // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
         BotBows.setTimeSmooth(6000, 18000, 5);

@@ -15,7 +15,7 @@ public class ChargePotion extends PotionAbility {
     public ChargePotion(BotBowsPlayer bp, int hotBarSlot) {
         super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
         this.type = AbilityType.CHARGE_POTION;
-        this.baseCooldown = type.getBaseCooldown();
+        this.baseCooldown = type.baseCooldown;
     }
 
     @Override
@@ -27,14 +27,14 @@ public class ChargePotion extends PotionAbility {
     @Override
     protected void applyPotionEffect(Set<BotBowsPlayer> players) {
         bp.setAbilityCooldownTickRate(10);
-        players.forEach(p -> {
-                    p.setAbilityCooldownTickRate(13);
-                    p.obtainWeaponAbilities();
+        players.forEach(bp -> {
+                    bp.setAbilityCooldownTickRate(13);
+                    bp.obtainWeaponAbilities();
                 });
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> {
             bp.setAbilityCooldownTickRate(20);
-            players.forEach(p -> p.setAbilityCooldownTickRate(20));
+            players.forEach(bp -> bp.setAbilityCooldownTickRate(20));
         }, 20L * DURATION);
     }
 

@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.avatar;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -23,7 +24,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 import java.util.Set;
@@ -41,6 +41,11 @@ public class NpcAvatar implements BotBowsAvatar{
         this.bp = bp;
     }
 
+    public NpcAvatar(Mannequin mannequin, BotBowsAvatar previousAvatar) {
+        this.mannequin = mannequin;
+        this.bp = previousAvatar.getBotBowsPlayer();
+        this.teamManager = previousAvatar.getTeamManager();
+    }
 
     @Override
     public void message(Component component) {
@@ -53,13 +58,18 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    @Override
     public BotBowsPlayer getBotBowsPlayer() {
         return bp;
     }
 
     @Override
     public void eliminate() {
-        Mannequin newMannequin = (Mannequin) Main.WORLD.spawnEntity(bp.getTeam().tribunePos, EntityType.MANNEQUIN);
+        Mannequin newMannequin = (Mannequin) Main.WORLD.spawnEntity(bp.getTeam().getTribunePos(), EntityType.MANNEQUIN);
         newMannequin.setProfile(mannequin.getProfile());
         newMannequin.customName(mannequin.customName());
         newMannequin.setCustomNameVisible(true);
@@ -98,7 +108,16 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     @Override
-    public void remove() {
+    public void equipFullArmor() {
+        mannequin.getEquipment().setArmorContents(new ItemStack[] {
+                getArmorPiece(Material.LEATHER_BOOTS),
+                getArmorPiece(Material.LEATHER_LEGGINGS),
+                getArmorPiece(Material.LEATHER_CHESTPLATE),
+                getArmorPiece(Material.LEATHER_HELMET)});
+    }
+
+    @Override
+    public void destroy() {
         mannequin.remove();
     }
 
@@ -125,13 +144,20 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void damage() {
         mannequin.damage(0.001);
-        mannequin.setGlowing(true);
+        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
         mannequin.setInvulnerable(true);
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            mannequin.setGlowing(false);
-            mannequin.setInvulnerable(false);
-        }, BotBows.HIT_DISABLED_ITEM_TICKS);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> mannequin.setInvulnerable(false), BotBows.HIT_DISABLED_ITEM_TICKS);
+    }
+
+    @Override
+    public double getScale() {
+        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    }
+
+    @Override
+    public void setScale(double size) {
+        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
     }
 
     @Override
@@ -147,22 +173,6 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void setColor(NamedTextColor color) {
         teamManager.setColor(mannequin, color);
-    }
-
-    @Override
-    public void growSize(double scale, int duration, int delay) {
-        new BukkitRunnable() {
-            int i = 1;
-            final double scale0 = getRequiredAttribute(Attribute.SCALE).getBaseValue();
-            @Override
-            public void run() {
-                if (i == duration) {
-                    this.cancel();
-                }
-                getRequiredAttribute(Attribute.SCALE).setBaseValue(scale0 + (scale - scale0)/duration * i);
-                i++;
-            }
-        }.runTaskTimer(Main.getPlugin(), delay, 1L);
     }
 
     @Override
@@ -198,7 +208,6 @@ public class NpcAvatar implements BotBowsAvatar{
 
     }
 
-    @Override
     public void setInvis(boolean invis) {
         if (invis) {
             mannequin.getEquipment().setArmorContents(new ItemStack[4]);
@@ -233,13 +242,9 @@ public class NpcAvatar implements BotBowsAvatar{
     }
 
     private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.getMaxHP();
+        int maxHP = bp.settings.getMaxHealth();
         if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            mannequin.getEquipment().setArmorContents(new ItemStack[] {
-                    getArmorPiece(Material.LEATHER_BOOTS),
-                    getArmorPiece(Material.LEATHER_LEGGINGS),
-                    getArmorPiece(Material.LEATHER_CHESTPLATE),
-                    getArmorPiece(Material.LEATHER_HELMET)});
+            equipFullArmor();
             return;
         }
         Set<Integer> slots;
@@ -265,7 +270,7 @@ public class NpcAvatar implements BotBowsAvatar{
         ItemStack armor = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
         assert meta != null;
-        meta.setColor(bp.getTeam().dyeColor.getColor());
+        meta.setColor(bp.getTeam().getDyeColor().getColor());
         armor.setItemMeta(meta);
         return armor;
     }

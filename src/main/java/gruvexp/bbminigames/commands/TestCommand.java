@@ -3,14 +3,17 @@ package gruvexp.bbminigames.commands;
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
 import gruvexp.bbminigames.extras.StickSlap;
+import gruvexp.bbminigames.mechanics.Hatch;
 import gruvexp.bbminigames.mechanics.RotatingStructure;
 import gruvexp.bbminigames.model.preset.BattlePreset;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
 import gruvexp.bbminigames.twtClassic.hazard.HazardType;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
 import io.papermc.paper.block.BlockPredicate;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -22,6 +25,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,6 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.structure.Structure;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -47,6 +52,7 @@ public class TestCommand implements CommandExecutor {
     public static boolean testAbilities = false;
     public static RotatingStructure rotatingStructure;
     public static Inventory testInv = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"));
+    private static Hatch hatch;
 
     public static Directional orientable;
 
@@ -62,11 +68,78 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "end_round" -> {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                    if (bp == null) {
+                        p.sendMessage(Component.text("You arent even in a game!", NamedTextColor.RED));
+                        return true;
+                    }
+                    Lobby lobby = bp.lobby;
+                    if (!lobby.isGameActive()) {
+                        p.sendMessage(Component.text("Game hasnt started yet!", NamedTextColor.RED));
+                        return true;
+                    }
+                    BotBowsGame game = lobby.botBowsGame;
+                    if (!game.activeRound) {
+                        p.sendMessage(Component.text("No ongoing round to end", NamedTextColor.RED));
+                        return true;
+                    }
+                    game.endRoundTimeout();
+                }
                 case "tb" -> {
                     Lobby lobby = BotBows.getLobby(0);
                     lobby.joinGame(Bukkit.getPlayer("GruveXp"));
                     lobby.addBot();
                     lobby.startGame(p);
+                }
+                case "qk" -> {
+                    Lobby lobby = BotBows.getLobby(0);
+                    lobby.joinGame(Bukkit.getPlayer("GruveXp"));
+                    UUID uuid = lobby.addBot();
+                    BotBowsPlayer botBp = lobby.getBotBowsPlayer(uuid);
+
+                    Settings settings = lobby.settings;
+                    AbilitySettings abilitySettings = settings.getAbilitySettings();
+                    abilitySettings.setMaxAbilities(2);
+                    abilitySettings.ban(AbilityType.ENDER_PEARL);
+                    settings.getMapSettings().setCurrentMap(BotBowsMap.ROYAL_CASTLE);
+                    BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
+                    gxbp.equipAbility(AbilityType.BABY_POTION);
+                    gxbp.equipAbility(AbilityType.KARMA_POTION);
+                    gxbp.equipAbility(AbilityType.RADAR);
+                    botBp.equipAbility(AbilityType.LASER_TRAP);
+                    if (args.length > 1) return true;
+                    lobby.startGame(p);
+                }
+                case "h" -> {
+                    Location loc = new Location(Main.WORLD, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                    StructureRotation rotation = StructureRotation.valueOf(args[4]);
+                    hatch = new Hatch(7, loc, rotation, "copper_hatch_weathered");
+                }
+                case "ha" -> {
+                    hatch.toggle();
+                }
+                case "gg" -> {
+                    Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", "copper_wheel"));
+                    if (structure == null) {
+                        BotBows.debugMessage("ERROR! Structure \"botbows:copper_wheel\" failed to load"); // TODO: apparently pga man måtte legge strukturfilan inn i datapk folder systemer
+                        return true;
+                    }
+                    BotBows.debugMessage("it wørk.");
+                    return true;
+                }
+                case "vote" -> {
+                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+                    String playerName = args[1].replace("_" ," ");
+                    BotBowsPlayer votingBp = bp.lobby.getPlayers().stream().filter(lbp -> lbp.avatar.getEntity().getName().equals(playerName)).findFirst().orElse(null);
+                    if (votingBp == null) {
+                        p.sendMessage(Component.text("That botbowsplayer doesnt exist.", NamedTextColor.RED));
+                        return true;
+                    }
+                    String mapName = args[2].toUpperCase();
+                    BotBowsMap map = BotBowsMap.valueOf(mapName);
+                    bp.lobby.settings.getMapSettings().getMapVotingSession().vote(votingBp, map);
+                    BotBows.debugMessage(playerName + " voted for " + mapName);
                 }
                 case "get_karma" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
@@ -92,7 +165,7 @@ public class TestCommand implements CommandExecutor {
                     abilitySettings.setMaxAbilities(3);
                     abilitySettings.setCooldownMultiplier(1.25f);
                     settings.getMapSettings().setCurrentMap(BotBowsMap.ICY_RAVINE);
-                    settings.setWinScoreThreshold(67);
+                    settings.getWinConditionSettings().setWinScoreThreshold(67);
                     BotBowsPlayer gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"));
                     gxbp.equipAbility(AbilityType.THUNDER_BOW);
                     gxbp.equipAbility(AbilityType.SPLASH_BOW);
@@ -114,8 +187,8 @@ public class TestCommand implements CommandExecutor {
                         p.sendMessage(Component.text("Go in a lobby and try again"));
                         return true;
                     }
-                    lobby.settings.useExperimentalFeatures = !lobby.settings.useExperimentalFeatures;
-                    p.sendMessage("Exprimental features is now " + (lobby.settings.useExperimentalFeatures ? "enabled" : "disabled"));
+                    lobby.settings.usingExperimentalFeatures = !lobby.settings.usingExperimentalFeatures;
+                    p.sendMessage("Exprimental features is now " + (lobby.settings.usingExperimentalFeatures ? "enabled" : "disabled"));
                 }
                 case "w1" -> {
                     Block below = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
@@ -208,7 +281,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "w" -> {
                     Player gruveXp = Bukkit.getPlayer("GruveXp");
-                    Player judith = Bukkit.getPlayer("Spionagent54");
+                    Player judith = Bukkit.getPlayer("SamTheRabbit5");
                     if (judith == null) {
                         p.sendMessage(Component.text("Error! Judiths bruker ække inne på serveren! Join med skolepcen"));
                         return true;
@@ -247,7 +320,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "q" -> {
                     Player gruveXp = Bukkit.getPlayer("GruveXp");
-                    Player judith = Bukkit.getPlayer("Spionagent54");
+                    Player judith = Bukkit.getPlayer("SamTheRabbit5");
 
                     Lobby lobby  = BotBows.getLobby(0);
                     lobby.settings.getHazardSettings().setChance(HazardType.STORM, HazardChance.DISABLED);
@@ -255,6 +328,9 @@ public class TestCommand implements CommandExecutor {
                     lobby.joinGame(judith);
                     BotBowsPlayer judithBp = lobby.getBotBowsPlayer(judith);
                     judithBp.setReady(true, 4);
+                    BotBowsPlayer gruveBp = lobby.getBotBowsPlayer(gruveXp);
+                    gruveBp.equipAbility(AbilityType.CREEPER_TRAP);
+                    gruveBp.equipAbility(AbilityType.LASER_TRAP);
                 }
                 case "a" -> {
                     rotation = !rotation;
@@ -269,15 +345,15 @@ public class TestCommand implements CommandExecutor {
                     String playerName = args[1];
                     if (playerName == null) playerName = "GruveXp";
                     BotBowsTeam team = BotBows.getLobby(Bukkit.getPlayer(playerName)).getBotBowsPlayer(Bukkit.getPlayer(playerName)).getTeam();
-                    BotBows.debugMessage("The team of " + playerName + " is " + team.name);
+                    BotBows.debugMessage("The team of " + playerName + " is " + team.getDisplayName());
                 }
                 case "toggle_debugging" -> {
                     debugging = !debugging;
                     BotBows.debugMessage("Debugging set to: " + debugging);
                 }
                 case "t" -> {
-                    BotBows.debugMessage("Team1: " + BotBows.getLobby(0).settings.team1.name);
-                    BotBows.debugMessage("Team2: " + BotBows.getLobby(0).settings.team2.name);
+                    BotBows.debugMessage("Team1: " + BotBows.getLobby(0).settings.team1.getDisplayName());
+                    BotBows.debugMessage("Team2: " + BotBows.getLobby(0).settings.team2.getDisplayName());
                 }
                 case "t1" -> {
                     test1 = !test1;
@@ -297,7 +373,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "give_ability_items" -> {
                     for (AbilityType type : AbilityType.values()) {
-                        ((Player) sender).getInventory().addItem(type.getAbilityItem());
+                        ((Player) sender).getInventory().addItem(type.abilityItem);
                     }
                 }
                 case "test_arc" -> {

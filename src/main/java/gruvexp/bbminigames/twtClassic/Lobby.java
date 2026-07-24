@@ -6,6 +6,7 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
 import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -41,6 +42,8 @@ public class Lobby {
     public static ItemStack LOADING = Menu.makeItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
             Component.text("Please wait for your action to be processed"));
 
+    private static int botId = 0;
+
     public Lobby(int ID) {
         this.ID = ID;
         BotBows.lobbyMenu.updateLobbyItem(this);
@@ -71,7 +74,7 @@ public class Lobby {
 
     public UUID addBot() {
         Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
-        mannequin.customName(Component.text("BotBowBot"));
+        mannequin.customName(Component.text("BotBowBot " + botId++));
         mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
         settings.joinGame(mannequin);
         BotBows.lobbyMenu.updateLobbyItem(this);
@@ -90,6 +93,27 @@ public class Lobby {
         players.remove(playerId);
         BotBows.lobbyMenu.updateLobbyItem(this);
         BotBows.unRegisterPlayerLobby(playerId);
+    }
+
+    public void disconnect(Player p) {
+        UUID playerId = p.getUniqueId();
+        if (!activeGame) {
+            leaveGame(playerId);
+            return;
+        }
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        messagePlayers(bp.getName().append(Component.text(" disconnected from the server and will be replaced by a bot", NamedTextColor.YELLOW)));
+        UUID id =  bp.turnIntoBot();
+        BotBows.registerPlayerLobby(id, this);
+        registerBotBowsPlayerAvatar(bp);
+    }
+
+    public void reconnect(Player p) {
+        if (!activeGame) return;
+
+        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+        messagePlayers(bp.getName().append(Component.text(" reconnected to the game", NamedTextColor.GREEN)));
+        bp.turnIntoPlayer(p);
     }
 
     public void leaveGame(Player p) {
@@ -115,9 +139,9 @@ public class Lobby {
         return players.get(playerId);
     }
 
-    public void registerBotBowsPlayer(BotBowsPlayer p) {
-        if (players.containsKey(p.avatar.getUUID())) return;
-        players.put(p.avatar.getUUID(), p);
+    public void registerBotBowsPlayerAvatar(BotBowsPlayer bp) {
+        if (players.containsKey(bp.avatar.getUUID())) return;
+        players.put(bp.avatar.getUUID(), bp);
     }
 
     public Collection<BotBowsPlayer> getPlayers() {
@@ -138,33 +162,43 @@ public class Lobby {
     }
 
     private void startGame() {
+        BotBowsMap randomMap = settings.getMapSettings().finalizeMapSelection();
+        if (randomMap != null) {
+            messagePlayers(Component.text("A random map was picked: ").append(Component.text(randomMap.prettyName(), NamedTextColor.GREEN)));
+        }
         botBowsGame = switch (settings.getMapSettings().getCurrentMap()) {
             case ICY_RAVINE -> new IcyRavineGame(settings);
             case STEAMPUNK -> new SteamPunkGame(settings);
             case SPACE_STATION -> new SpaceStationGame(settings);
-            case null, default -> new BotBowsGame(settings);
+            default -> new BotBowsGame(settings);
         };
         botBowsGame.startGame();
         activeGame = true;
     }
 
     public void reset() {
-        activeGame = false;
-        new HashSet<>(players.keySet()).forEach(this::leaveGame);
+        new HashSet<>(players.keySet()).forEach( playerId -> {
+            players.get(playerId).destroy();
+            players.remove(playerId);
+            BotBows.unRegisterPlayerLobby(playerId);
+        });
+
         botBowsGame = null;
         settings = new Settings(this);
         settings.initMenus();
+        activeGame = false;
+        BotBows.lobbyMenu.updateLobbyItem(this);
     }
 
     public void messagePlayers(Component message) {
-        for (BotBowsPlayer p : settings.getPlayers()) {
-            p.avatar.message(message);
+        for (BotBowsPlayer bp : settings.getPlayers()) {
+            bp.avatar.message(message);
         }
     }
 
     public void titlePlayers(Component component, int seconds) {
-        for (BotBowsPlayer p : players.values()) {
-            p.avatar.showTitle(Title.title(component, Component.text(""),
+        for (BotBowsPlayer bp : players.values()) {
+            bp.avatar.showTitle(Title.title(component, Component.text(""),
                     Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
         }
     }
@@ -181,16 +215,17 @@ public class Lobby {
         return activeGame;
     }
 
-    public void handlePlayerReady(BotBowsPlayer p) {
-        boolean ready = p.isReady();
-        long readyPlayers = players.values().stream().filter(BotBowsPlayer::isReady).count();
+    public void handlePlayerReady(BotBowsPlayer bp) {
+        boolean ready = bp.settings.isReady();
+        long readyPlayers = players.values().stream().filter(lobbyBp -> lobbyBp.settings.isReady()).count();
         int totalPlayers = Math.max(players.size(), 2);
 
-        messagePlayers(Component.text(p.getPlainName() +
+        messagePlayers(Component.text(bp.getPlainName() +
                 (ready ? " has readied up " : " is no longer ready ") +
                 "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
         if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {
             messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN));
+            settings.finishMapSelection();
             startGame();
         }
     }

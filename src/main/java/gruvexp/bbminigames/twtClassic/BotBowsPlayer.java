@@ -11,8 +11,10 @@ import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.settings.AbilitySettings;
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -24,10 +26,8 @@ import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BotBowsPlayer {
@@ -36,53 +36,41 @@ public class BotBowsPlayer {
     private final Component name;
 
     public final Lobby lobby;
+    public final PlayerSettings settings;
     private BotBowsTeam team;
     private int hp;
-    private int maxHP;
-    private int attackDamage;
     private boolean isDamaged = false; // cooldown når playeren er hitta
-    private boolean ready = false; // om playeren er klar for å spille
     public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
     private SneakManager sneakManager;
+    private final PlayerEffectManager effectManager;
 
-    private int maxAbilities;
-    private float abilityCooldownMultiplier;
-    private boolean toggleAbilityMode = false;
     private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
     private int thrownAbilityAmount;
     private boolean hasKarmaEffect = false;
 
-    private static int botId = 0;
-
-    public BotBowsPlayer(Player player, Settings settings) {
+    public BotBowsPlayer(Player player, Settings lobbySettings) {
         avatar = new PlayerAvatar(player, this);
         name = player.name();
-        lobby = settings.lobby;
-        maxHP = settings.getMaxHP();
-        hp = maxHP;
-        attackDamage = 1;
-        AbilitySettings abilitySettings = settings.getAbilitySettings();
-        maxAbilities = abilitySettings.getMaxAbilities();
-        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
+        settings = new PlayerSettings(this, lobbySettings);
+        lobby = lobbySettings.lobby;
+        hp = settings.getMaxHealth();
+        effectManager = new PlayerEffectManager(this);
     }
 
-    public BotBowsPlayer(Mannequin mannequin, Settings settings) {
+    public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
         avatar = new NpcAvatar(mannequin, this);
-        name = mannequin.name().append(Component.text(" " + botId++));
-        lobby = settings.lobby;
-        maxHP = settings.getMaxHP();
-        hp = maxHP;
-        attackDamage = 1;
-        AbilitySettings abilitySettings = settings.getAbilitySettings();
-        maxAbilities = abilitySettings.getMaxAbilities();
-        abilityCooldownMultiplier = abilitySettings.getCooldownMultiplier();
+        name = mannequin.name();
+        settings = new PlayerSettings(this, lobbySettings);
+        lobby = lobbySettings.lobby;
+        hp = settings.getMaxHealth();
+        effectManager = new PlayerEffectManager(this);
         setReady(true, 4); // bots are always ready for match
     }
 
     public BotBowsTeam getTeam() {return team;}
 
     public TextColor getTeamColor() {
-        if (team != null) return team.color;
+        if (team != null) return team.getColor();
         return NamedTextColor.WHITE;
     }
 
@@ -94,25 +82,60 @@ public class BotBowsPlayer {
         return PlainTextComponentSerializer.plainText().serialize(getName());
     }
 
-    public void joinTeam(BotBowsTeam team) {
+    public PlayerEffectManager getEffectManager() {
+        return effectManager;
+    }
+
+    public void onTeamJoin(BotBowsTeam team) {
         if (this.team != null) {
             this.team.leave(this);
         }
         this.team = team;
+        avatar.equipFullArmor();
     }
 
     public void updateTeam(BotBowsTeam team) {
         this.team = team;
     }
 
-    public void leaveTeam() {
+    public void onTeamLeave() {
         this.team = null;
     }
 
-    public void leaveGame() {
+    public void onGameLeave() {
         team.leave(this);
-        avatar.remove();
+        avatar.destroy();
+        effectManager.clear();
         new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
+    }
+
+    public UUID turnIntoBot() {
+        if (avatar instanceof NpcAvatar) throw new IllegalStateException("This botbowsplayer is already a bot!");
+
+        Mannequin bot = Main.WORLD.spawn(avatar.getEntity().getLocation(), Mannequin.class);
+        bot.customName(getName());
+        bot.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID())));
+        avatar = new NpcAvatar(bot, avatar);
+        avatar.setHP(hp);
+        avatar.readyBattle(lobby.botBowsGame.botBowsBoard.getTeamManager()); // this line is kinda ugly, maybe make the teammanager be somewhere else idk
+        return bot.getUniqueId();
+    }
+
+    public void turnIntoPlayer(Player p) {
+        if (avatar instanceof PlayerAvatar) throw new IllegalStateException("This botbowsplayer is already a player!");
+
+        p.teleport(avatar.getLocation());
+        avatar.destroy();
+        avatar = new PlayerAvatar(p, avatar);
+        avatar.setMaxHP(settings.getMaxHealth());
+        avatar.setHP(hp);
+    }
+
+    public void destroy() {
+        avatar.destroy();
+        effectManager.clear();
+        if (sneakManager != null) sneakManager.destroy();
+        abilities.values().forEach(Ability::destroy);
     }
 
     public void start() {
@@ -120,7 +143,7 @@ public class BotBowsPlayer {
     }
 
     public void revive() { // resetter for å gjør klar til en ny runde
-        setHP(maxHP);
+        setHP(settings.getMaxHealth());
         avatar.revive();
         isDamaged = false;
     }
@@ -133,11 +156,18 @@ public class BotBowsPlayer {
 
     public void initBattle(TeamManager teamManager) {
         avatar.readyBattle(teamManager);
-        abilities.values().forEach(ability -> ability.setCooldownMultiplier(abilityCooldownMultiplier));
+        abilities.values().forEach(ability -> ability.setCooldownMultiplier(settings.getAbilityCooldownMultiplier()));
+    }
+
+    public void clearEffects() {
+        effectManager.clear();
     }
 
     public void readyAbilities() {
         abilities.values().forEach(Ability::obtain);
+    }
+
+    public void resetAbilities() {
         abilities.values().forEach(Ability::reset);
     }
 
@@ -149,31 +179,16 @@ public class BotBowsPlayer {
         return thrownAbilityAmount;
     }
 
-    public int getMaxHP() {return maxHP;}
-
-    public void setMaxHP(int maxHP) {
-        this.maxHP = maxHP;
-        avatar.setMaxHP(maxHP);
-    }
-
     public int getHP() {return hp;}
 
     private void setHP(int hp) { // heile hjerter
         this.hp = hp;
         avatar.setHP(hp);
-        lobby.botBowsGame.boardManager.updatePlayerScore(this);
+        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
     }
 
     public boolean isAlive() {
         return hp > 0;
-    }
-
-    public void setAttackDamage(int hearts) {
-        this.attackDamage = hearts;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
     }
 
     private AbilityMenu getAbilityMenu() {
@@ -188,9 +203,8 @@ public class BotBowsPlayer {
         return abilities.get(type);
     }
 
-    public void setMaxAbilities(int maxAbilities) {
-        this.maxAbilities = maxAbilities;
-        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateMaxAbilities(this));
+    public void onMaxAbilitiesChange() {
+        int maxAbilities = settings.getMaxAbilities();
         if (getTotalAbilities() <= maxAbilities) return;
         int excess = getTotalAbilities() - maxAbilities;
         for (int i = 0; i < excess; i++) {
@@ -200,41 +214,6 @@ public class BotBowsPlayer {
                 break;
             }
         }
-    }
-
-    public int getMaxAbilities() {
-        return maxAbilities;
-    }
-
-    public void setAbilityCooldownMultiplier(float cooldownMultiplier) {
-        this.abilityCooldownMultiplier = cooldownMultiplier;
-        lobby.settings.abilityMenus.values().forEach(menu -> menu.updateCooldownMultiplier(this));
-    }
-
-    public float getAbilityCooldownMultiplier() {
-        return abilityCooldownMultiplier;
-    }
-
-    public void disableAbilityToggle() {
-        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_DISABLED);
-        toggleAbilityMode = false;
-    }
-
-    public void enableAbilityToggle() {
-        getAbilityMenu().getInventory().setItem(27, AbilityMenu.MOD_TOGGLE_ENABLED);
-        toggleAbilityMode = true;
-    }
-
-    public void toggleAbilityToggle() {
-        if (toggleAbilityMode) {
-            disableAbilityToggle();
-        } else {
-            enableAbilityToggle();
-        }
-    }
-
-    public boolean isToggleAbilityMode() {
-        return toggleAbilityMode;
     }
 
     public void equipAbility(AbilityType type) {
@@ -258,7 +237,6 @@ public class BotBowsPlayer {
         }
         switch (type) {
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
-            case INVIS_POTION -> abilities.put(type, new InvisPotion(this, slot));
             case RADAR -> abilities.put(type, new Radar(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
             case THUNDER_BOW -> abilities.put(type, new ThunderBow(this, slot));
@@ -275,17 +253,15 @@ public class BotBowsPlayer {
         }
         if (abilityAlreadyEquipped) return;
 
-        int relativeAbilitySlot = getAbilityMenu().getRelativeAbilitySlot(type);
         if (slot > 0 && updateInventory) {
             avatar.setItem(slot, type.getAbilityItem(this));
         }
-        if (relativeAbilitySlot > 0) { // slot -1 means cursor
-            getAbilityMenu().getInventory().setItem(relativeAbilitySlot + 27, AbilityMenu.ABILITY_EQUIPPED);
-        }
+
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
 
         String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
         avatar.message(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+        getAbilityMenu().onAbilityStatusChange(type);
     }
 
     public void unequipAbility(AbilityType type) {
@@ -304,14 +280,6 @@ public class BotBowsPlayer {
             avatar.setItem(slot, null);
         }
 
-        int abilityEquipSlot = getAbilityMenu().getRelativeAbilitySlot(type);
-        if (abilityEquipSlot > 0) {
-            if (lobby.settings.getAbilitySettings().isBanned(type)) {
-                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.ABILITY_DISABLED);
-            } else {
-                getAbilityMenu().getInventory().setItem(abilityEquipSlot + 27, AbilityMenu.VOID);
-            }
-        }
         abilities.remove(type);
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--;
 
@@ -319,6 +287,7 @@ public class BotBowsPlayer {
         if (!hideMessage) {
             avatar.message(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
         }
+        getAbilityMenu().onAbilityStatusChange(type);
     }
 
     public boolean hasAbilityEquipped(AbilityType type) {
@@ -346,7 +315,7 @@ public class BotBowsPlayer {
         avatar.damage();
         Component damageMessage = ctx.formatMessage(this);
 
-        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().attackDamage;
+        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().settings.getAttackDamage();
 
         if (ctx instanceof DamageContext.Environment) {
             die(damageMessage);
@@ -362,7 +331,7 @@ public class BotBowsPlayer {
                 die(damageMessage);
                 return;
             }
-            setHP(hp - playerCtx.getAttacker().getAttackDamage());
+            setHP(hp - playerCtx.getAttacker().settings.getAttackDamage());
             lobby.messagePlayers(ctx.formatMessage(this));
             abilities.values().forEach(Ability::hit); // pauses the cooldowns etc
             isDamaged = true;
@@ -372,7 +341,7 @@ public class BotBowsPlayer {
 
     private void die(Component deathMessage) {
         setHP(0);
-        lobby.botBowsGame.boardManager.updatePlayerScore(this);
+        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
         avatar.eliminate();
         abilities.values().forEach(a -> a.setTickRate(20));
@@ -402,14 +371,10 @@ public class BotBowsPlayer {
         HEALTH_ARMOR.add(hp5);
     }
 
-    public boolean isReady() {
-        return ready;
-    }
-
     public void setReady(boolean ready, int itemIndex) {
-        if (this.ready == ready) return;
-        this.ready = ready;
-        avatar.setReady(ready, itemIndex);
+        if (settings.isReady() == ready) return; //TODO: skal inn i listneren og
+        settings.setReady(ready); // todo, flytt inn i playersettings det med itemindex. det må og med tror jeg
+        avatar.setReady(ready, itemIndex); // listener og ikke her. playersettings skal ha full ctrl
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> lobby.handlePlayerReady(this), 3L);
     }
@@ -435,48 +400,31 @@ public class BotBowsPlayer {
             PotionEffectType.LEVITATION,
             PotionEffectType.BLINDNESS
         };
+        effectManager.applyGlow(
+                PlayerEffectManager.GlowSource.DEBUFF,
+                (long) (KarmaPotion.KARMA_DURATION * 20),
+                NamedTextColor.GOLD,
+                10
+        );
 
         int effectID = BotBows.RANDOM.nextInt(effects.length + 1);
         if (effectID == effects.length) {
-            growSize(10);
+            effectManager.applyScale(
+                    PlayerEffectManager.ScaleSource.GROW_KARMA,
+                    1.5,
+                    PlayerEffectManager.ScalePriority.NORMAL,
+                    (long) (KarmaPotion.KARMA_DURATION * 20)
+            );
             return;
         }
         PotionEffectType randomEffect = effects[effectID];
 
-        avatar.addPotionEffect(new PotionEffect(randomEffect, 200, 1));
-        avatar.setGlowing(true);
-        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
-            int counter = 40;
-            @Override
-            public void accept(BukkitTask task) {
-                if (counter == 0) {
-                    task.cancel();
-                    avatar.setColor((NamedTextColor) getTeamColor());
-                    avatar.setGlowing(false);
-                    return;
-                }
-                if (counter % 2 == 0) avatar.setColor(NamedTextColor.GOLD);
-                else avatar.setColor((NamedTextColor) getTeamColor());
-                counter--;
-            }
-        }, 0, 5);
+        avatar.addPotionEffect(new PotionEffect(randomEffect, KarmaPotion.KARMA_DURATION * 20, 1));
 
         lobby.messagePlayers(Component.empty()
                 .append(getName())
                 .append(Component.text(" got karma! ", NamedTextColor.RED))
                 .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
-    }
-
-    boolean isBig = false;
-
-    public void growSize(int duration) {
-        if (isBig) return;
-        isBig = true;
-        avatar.growSize(1.5, 20);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            avatar.growSize(1, 40);
-            isBig = false;
-        }, duration * 20L);
     }
 
     public boolean isSneakingExhausted() {
@@ -485,11 +433,6 @@ public class BotBowsPlayer {
 
     public void reloadBotBow() {
         avatar.setItem(0, BotBows.BOTBOW);
-    }
-
-    public void setInvis(int ticks) {
-        avatar.setInvis(true);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> avatar.setInvis(false), ticks);
     }
 
     public Set<BotBowsPlayer> getNearbyPlayers(double radius) {

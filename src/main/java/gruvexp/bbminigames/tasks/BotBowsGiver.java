@@ -14,13 +14,13 @@ public class BotBowsGiver  extends BukkitRunnable {
 
     @Override
     public void run() {
-        for (BotBowsPlayer p : lobby.getPlayers()) {
+        for (BotBowsPlayer bp : lobby.getPlayers()) {
             if (!lobby.isGameActive()) {
                 cancel();
                 return;
             }
-            if (!p.isDamaged()) {
-                p.reloadBotBow();
+            if (!bp.isDamaged()) {
+                bp.reloadBotBow();
             }
         }
     }

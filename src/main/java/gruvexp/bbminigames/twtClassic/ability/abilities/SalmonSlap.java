@@ -29,6 +29,6 @@ public class SalmonSlap extends Ability implements AbilityTrigger.OnMelee {
 
     @Override
     public void trigger(AbilityContext.Melee ctx) {
-        ctx.defender().damage(new DamageContext.Player(DamageType.Player.SLAP, bp));
+        ctx.defender.damage(new DamageContext.Player(DamageType.Player.SLAP, bp));
     }
 }

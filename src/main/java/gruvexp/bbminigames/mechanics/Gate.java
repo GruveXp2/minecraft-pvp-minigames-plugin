@@ -5,13 +5,9 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.joml.Vector3i;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Gate {
@@ -24,29 +20,18 @@ public class Gate {
     private final Vector3i size;
     private final Location location; // where the door is in the map
     private final int animationStepTicks;
-    private final Set<Gear> gears = new HashSet<>();
+    private final Set<Gear> gears;
 
     private boolean open;
 
-    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Map<String, Float> gears) {
+    public Gate(Location structureSrc, int animationSteps, Vector3i size, Location location, int animationStepTicks, boolean startsOpen, Set<Gear> gears) {
         this.structureSrc = structureSrc;
         this.animationSteps = animationSteps;
         this.size = size;
         this.location = location;
         this.animationStepTicks = animationStepTicks;
         this.open = startsOpen;
-
-        gears.forEach((tag, speed) -> {
-            Set<BlockDisplay> displays = new HashSet<>();
-            for (Entity nearbyEntity : location.getNearbyEntities(20, 10, 10)) {
-                if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-                if (!display.getScoreboardTags().contains(tag)) continue;
-
-                displays.add(display);
-                display.setRotation(display.getYaw(), 0);
-            }
-            this.gears.add(new Gear(displays, speed, tag));
-        });
+        this.gears = gears;
     }
 
     public void toggle() {

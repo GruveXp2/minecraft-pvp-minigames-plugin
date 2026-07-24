@@ -11,8 +11,14 @@ import java.util.Map;
 
 public abstract class Hazard {
 
-    private HazardChance hazardChance = getDefaultChance();
+    public final HazardType type;
+    private HazardChance hazardChance;
     private boolean isActive = false;
+
+    protected Hazard(HazardType type) {
+        this.type = type;
+        this.hazardChance = type.defaultChance;
+    }
 
     public HazardChance getChance() {return hazardChance;}
 
@@ -33,16 +39,15 @@ public abstract class Hazard {
     }
 
     public abstract void init(Collection<BotBowsPlayer> players);
-    public abstract HazardChance getDefaultChance();
 
     protected abstract void trigger(Collection<BotBowsPlayer> players); // hazarden starter
     protected abstract HazardMessage getAnnounceMessage();
     private void announce(Collection<BotBowsPlayer> players) {
         HazardMessage msg = getAnnounceMessage();
-        players.forEach(p -> {
-            p.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
+        players.forEach(bp -> {
+            bp.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
                     .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
-            p.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
+            bp.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
         });
     }
     public abstract String getName();

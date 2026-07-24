@@ -20,11 +20,11 @@ class BattlePresetService {
 
         val json = file.readText()
 
-        val type = object : TypeToken<Map<String, BattlePreset>>() {}.type
-        val loadedPresets: Map<String, BattlePreset> = gson.fromJson(json, type)
+        val type = object : TypeToken<Set<BattlePreset>>() {}.type
+        val loadedPresets: Set<BattlePreset> = gson.fromJson(json, type)
 
         battlePresets.clear()
-        battlePresets.putAll(loadedPresets)
+        loadedPresets.forEach { preset -> battlePresets[preset.name.lowercase()] = preset } //TODO: add eget id felt istedenfor name.lowercase()
     }
 
     fun savePresetsToFile() {
@@ -36,7 +36,7 @@ class BattlePresetService {
         val file = folder.resolve("battlepresets.json")
 
         try {
-            val json = gson.toJson(battlePresets)
+            val json = gson.toJson(battlePresets.values)
             file.writeText(json)
 
             Main.getPlugin().logger.info("Saved ${battlePresets.size} presets to battlepresets.json")
@@ -47,7 +47,7 @@ class BattlePresetService {
     }
 
     fun addPreset(battlePreset: BattlePreset): Boolean {
-        val id = battlePreset.name.lowercase()
+        val id = battlePreset.name.lowercase() //TODO: add eget id felt istedenfor name.lowercase() (da vil navnet kunna ha mellomrom og store bokstaver, mens iden vil kun ha små bokstaver og bruke _)
 
         if (battlePresets.containsKey(id)) {
             return false
@@ -59,7 +59,11 @@ class BattlePresetService {
     }
 
     fun getPreset(presetName: String): BattlePreset? {
-        return battlePresets[presetName]
+        return battlePresets[presetName.lowercase()] //TODO: add eget id felt istedenfor name.lowercase()
+    }
+
+    fun getPresets(): Set<BattlePreset> {
+        return battlePresets.values.toSet()
     }
 
     fun getPresetNames(): MutableSet<String> {

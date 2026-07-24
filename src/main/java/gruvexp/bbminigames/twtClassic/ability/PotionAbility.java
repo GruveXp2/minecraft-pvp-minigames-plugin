@@ -1,11 +1,8 @@
 package gruvexp.bbminigames.twtClassic.ability;
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Player;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,14 +18,15 @@ public abstract class PotionAbility extends Ability {
     @Override
     public void use() {
         super.use();
-        Set<BotBowsPlayer> players = bp.getNearbyPlayers(RADIUS).stream()
-                .filter(p -> p.getTeam() == bp.getTeam())
+        Set<BotBowsPlayer> nearbyPlayers = bp.getNearbyPlayers(RADIUS).stream()
+                .filter(nearbyPlayer -> nearbyPlayer.getTeam() == this.bp.getTeam())
                 .collect(Collectors.toSet());
-        players.remove(bp);
-        applyPotionEffect(players);
+        nearbyPlayers.remove(bp);
+        applyPotionEffect(nearbyPlayers);
 
-        players.forEach(p -> p.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
+        nearbyPlayers.forEach(nearbyPlayer -> nearbyPlayer.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
                 .append(Component.text(getEffectDuration()))
+                .append(Component.text("s "))
                 .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
                 .append(Component.text(" effect from "))
                 .append(bp.getName())));

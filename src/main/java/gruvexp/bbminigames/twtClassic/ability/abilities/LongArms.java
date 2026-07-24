@@ -16,6 +16,6 @@ public class LongArms extends Ability implements AbilityTrigger.OnMelee {
     @Override
     public void trigger(AbilityContext.Melee ctx) {
         use();
-        ctx.defender().damage(new DamageContext.Player(DamageType.Player.COOL_ROD, bp));
+        ctx.defender.damage(new DamageContext.Player(DamageType.Player.COOL_ROD, bp));
     }
 }

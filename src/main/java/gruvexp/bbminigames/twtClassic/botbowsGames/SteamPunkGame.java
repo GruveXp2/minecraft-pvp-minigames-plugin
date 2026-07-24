@@ -1,22 +1,19 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.mechanics.Gate;
-import gruvexp.bbminigames.mechanics.Hatch;
-import gruvexp.bbminigames.mechanics.Spinner;
-import gruvexp.bbminigames.mechanics.SteamPipe;
+import gruvexp.bbminigames.mechanics.*;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.botbowsTeams.BotBowsTeam;
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
 import org.bukkit.Axis;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.joml.Vector3i;
 
 import java.util.*;
@@ -32,12 +29,16 @@ public class SteamPunkGame extends BotBowsGame {
     private final Set<Hatch> hatches = new HashSet<>();
     private final Map<Hatch, HatchMotor> hatchMotors = new HashMap<>();
 
-    private final Set<Spinner> spinners = new HashSet<>();
-    private final Map<Chunk, Set<Spinner>> spinnerChunks = new HashMap<>();
-    private SpinnerMotor spinnerMotor; // responsible for powering the pipes by giving them 20 ticks/s
+    private final Set<Impeller> impellers = new HashSet<>();
+    private final Map<Chunk, Set<Impeller>> impellerChunks = new HashMap<>();
+    private ImpellerMotor impellerMotor; // responsible for powering the pipes by giving them 20 ticks/s
 
     private final Set<Gate> gates = new HashSet<>();
     private GateMotor gateMotor;
+
+    private final Set<Gear> bigWheels = new HashSet<>();
+
+    private final Set<Rotor> rotors = new HashSet<>(); // spinning blades that hold up the upper parts of the arena
 
     public SteamPunkGame(Settings settings) {
         super(settings);
@@ -136,80 +137,120 @@ public class SteamPunkGame extends BotBowsGame {
         ), Axis.Z, Axis.X));
 
         // hatches
-        // copper
-        hatches.add(new Hatch("steampunk_hatch_copper",
-                new Vector(-356, 21, -396),
-                new Vector(4, 1, 3),
-                new Vector(-357, 22, -396),
-                new Vector(1, 4, 3)));
-        // weathered
-        hatches.add(new Hatch("steampunk_hatch_weathered",
-                new Vector(-362, 21, -396),
-                new Vector(4, 1, 3),
-                new Vector(-358, 22, -396),
-                new Vector(1, 4, 3)));
         // exposed
-        hatches.add(new Hatch("steampunk_hatch_exposed",
-                new Vector(-356, 21, -359),
-                new Vector(4, 1, 3),
-                new Vector(-357, 22, -359),
-                new Vector(1, 4, 3)));
-        // oxidized
-        hatches.add(new Hatch("steampunk_hatch_oxidized",
-                new Vector(-362, 21, -359),
-                new Vector(4, 1, 3),
-                new Vector(-358, 22, -359),
-                new Vector(1, 4, 3)));
+        hatches.add(new Hatch(1, new Location(world, -357, 21, -395), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_exposed")); // copper
+        hatches.add(new Hatch(2, new Location(world, -358, 21, -395), StructureRotation.CLOCKWISE_90, "copper_hatch_exposed")); // weathered
+        // weathered
+        hatches.add(new Hatch(1, new Location(world, -357, 21, -358), StructureRotation.COUNTERCLOCKWISE_90, "copper_hatch_weathered")); // exposed
+        hatches.add(new Hatch(2, new Location(world, -358, 21, -358), StructureRotation.CLOCKWISE_90, "copper_hatch_weathered")); // oxidized
 
-        // spinners
-        // oxidized
-        registerSpinner(new Spinner("steampunk_spinner_oxidized",
-                new Location(world, -370.5, 17, -380.5),
+        // impellers
+        registerImpeller(new Impeller(1, "copper_impeller_oxidized",
+                new Location(world, -371, 16, -381),
                 2));
-        // center
-        registerSpinner(new Spinner("steampunk_spinner_center",
-                new Location(world, -370.5, 17, -386.5),
+        registerImpeller(new Impeller(1, "copper_impeller_exposed", // center
+                new Location(world, -371, 16, -387),
                 -4));
-        // pipe
-        registerSpinner(new Spinner("steampunk_spinner_pipe",
-                new Location(world, -370.5, 17, -391.5),
+        registerImpeller(new Impeller(2, "copper_impeller_exposed", // next to pipe
+                new Location(world, -371, 16, -392),
                 4));
 
         // gates
         Vector3i gateSize = new Vector3i(3, 7, 7);
         Location gateFramesSrc = new Location(world, -400, 1, -327);
         // copper
-        gates.add(new Gate(gateFramesSrc                             , 3, gateSize, new Location(world, -347, 22, -397), 2, true,
-                Map.of("steampunk_gate_copper_cog1", 25f, "steampunk_gate_copper_cog2", 25f, "steampunk_gate_copper_cog3", -12f)));
+        gates.add(new Gate(gateFramesSrc, 3, gateSize, new Location(world, -347, 22, -397), 2, true,
+                Set.of(
+                        new Gear(1, new Location(world, -348, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear(2, new Location(world, -344, 26, -399), StructureRotation.NONE, "copper_wheel", 25),
+                        new Gear(3, new Location(world, -348, 24, -389), StructureRotation.NONE, "copper_wheel", -12)
+                )
+        ));
 
         // exposed
         gates.add(new Gate(gateFramesSrc.clone().add(12, 0, 0), 3, gateSize, new Location(world, -347, 22, -362), 3, false,
-                Map.of("steampunk_gate_exposed_cog1", 16f, "steampunk_gate_exposed_cog2", 16f, "steampunk_gate_exposed_cog3", -8f)));
+                Set.of(
+                        new Gear(1, new Location(world, -348, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16, 2),
+                        new Gear(2, new Location(world, -344, 26, -354), StructureRotation.NONE, "copper_wheel_exposed", 16, 2),
+                        new Gear(3, new Location(world, -348, 24, -364), StructureRotation.NONE, "copper_wheel_exposed", -8, 2)
+                )
+        ));
 
         // weathered
         gates.add(new Gate(gateFramesSrc.clone().add(24, 0, 0), 3, gateSize, new Location(world, -370, 22, -397), 4, false,
-                Map.of("steampunk_gate_weathered_cog1", 9f, "steampunk_gate_weathered_cog2", 9f, "steampunk_gate_weathered_cog3", -4.5f)));
+                Set.of(
+                        new Gear(1, new Location(world, -367, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9, 3),
+                        new Gear(2, new Location(world, -371, 26, -399), StructureRotation.NONE, "copper_wheel_weathered", 9, 3),
+                        new Gear(3, new Location(world, -367, 24, -389), StructureRotation.NONE, "copper_wheel_weathered", -4.5f, 3)
+                )
+        ));
 
         // oxidized
         gates.add(new Gate(gateFramesSrc.clone().add(36, 0, 0), 3, gateSize, new Location(world, -370, 22, -362), 6, true,
-                Map.of("steampunk_gate_oxidized_cog1", 5f, "steampunk_gate_oxidized_cog2", 5f, "steampunk_gate_oxidized_cog3", -2.5f)));
+                Set.of(
+                        new Gear(1, new Location(world, -367, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5, 4),
+                        new Gear(2, new Location(world, -371, 26, -354), StructureRotation.NONE, "copper_wheel_oxidized", 5, 4),
+                        new Gear(3, new Location(world, -367, 24, -364), StructureRotation.NONE, "copper_wheel_oxidized", -2.5f, 4)
+                )
+        ));
+
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -396), StructureRotation.NONE, "big_copper_wheel", 8, 5));
+        bigWheels.add(new Gear(1, new Location(world, -339, 21, -357), StructureRotation.NONE, "big_copper_wheel_exposed", -5, 5));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -396), StructureRotation.NONE, "big_copper_wheel_weathered", 3, 5));
+        bigWheels.add(new Gear(1, new Location(world, -376, 21, -357), StructureRotation.NONE, "big_copper_wheel_oxidized", -2, 5));
+
+        rotors.add(new Rotor(1, new Location(world, -332, 39, -391), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(2, new Location(world, -336, 39, -391), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(3, new Location(world, -344, 39, -395), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(4, new Location(world, -344, 39, -392), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(5, new Location(world, -343, 39, -381), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(6, new Location(world, -343, 39, -372), "copper_rotor", 50, 4));
+        rotors.add(new Rotor(1, new Location(world, -332, 39, -362), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(2, new Location(world, -336, 39, -362), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(3, new Location(world, -344, 39, -358), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(4, new Location(world, -344, 39, -361), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(5, new Location(world, -351, 39, -389), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(6, new Location(world, -358, 39, -391), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(7, new Location(world, -358, 39, -394), "copper_rotor_exposed", 37, 5));
+        rotors.add(new Rotor(1, new Location(world, -351, 39, -364), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(2, new Location(world, -357, 39, -359), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(3, new Location(world, -357, 39, -362), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(4, new Location(world, -364, 39, -389), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(5, new Location(world, -371, 39, -395), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(6, new Location(world, -371, 39, -392), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(7, new Location(world, -372, 39, -381), "copper_rotor_weathered", 25, 7));
+        rotors.add(new Rotor(7, new Location(world, -363, 39, -364), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -371, 39, -358), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -371, 39, -361), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -372, 39, -372), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -379, 39, -391), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -383, 39, -391), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -383, 39, -362), "copper_rotor_oxidized", 18, 9));
+        rotors.add(new Rotor(7, new Location(world, -379, 39, -362), "copper_rotor_oxidized", 18, 9));
     }
 
     private void registerSteamPipe(SteamPipe steamPipe) {
         steamPipes.add(steamPipe);
         Set<Chunk> chunks = steamPipe.getTickedChunks();
         for (Chunk chunk : chunks) {
-            pipeChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(steamPipe);
+            pipeChunks.computeIfAbsent(chunk, _ -> new HashSet<>()).add(steamPipe);
         }
     }
 
-    private void registerSpinner(Spinner spinner) {
-        spinners.add(spinner);
-        Set<Chunk> chunks = spinner.getTickedChunks();
+    private void registerImpeller(Impeller impeller) {
+        impellers.add(impeller);
+        Set<Chunk> chunks = impeller.getTickedChunks();
         for (Chunk chunk : chunks) {
-            spinnerChunks.computeIfAbsent(chunk, k -> new HashSet<>()).add(spinner);
+            impellerChunks.computeIfAbsent(chunk, _ -> new HashSet<>()).add(impeller);
         }
     }
+
+     @Override
+     public void startGame() {
+         super.startGame();
+         bigWheels.forEach(wheel -> wheel.rotate(360 * 1225)); // 1225 POINTs
+         rotors.forEach(Rotor::startRotating);
+     }
 
     @Override
     public void startRound() {
@@ -221,23 +262,35 @@ public class SteamPunkGame extends BotBowsGame {
             hatchMotors.put(hatch, new HatchMotor(hatch));
             scheduleHatch(hatch);
         });
-        spinnerMotor = new SpinnerMotor(spinners);
-        spinnerMotor.runTaskTimer(plugin, 200, 1);
+        impellerMotor = new ImpellerMotor(impellers);
+        impellerMotor.runTaskTimer(plugin, 200, 1);
         gateMotor = new GateMotor(gates);
         gateMotor.runTaskTimer(plugin, 200, DOOR_TOGGLE_DELAY);
     }
 
     @Override
     protected void postRound(BotBowsTeam winningTeam, int winScore) {
+        stopMotors();
+        super.postRound(winningTeam, winScore);
+    }
+
+    @Override
+    public void postGame(BotBowsTeam winningTeam) {
+        if (steamPipeMotor != null) stopMotors(); // stop motors unless they already got stopped in postRound()
+        bigWheels.forEach(Gear::stop);
+        rotors.forEach(Rotor::stop);
+        super.postGame(winningTeam);
+    }
+
+    private void stopMotors() {
         steamPipeMotor.cancel();
         steamPipeMotor = null;
         hatchMotors.values().forEach(BukkitRunnable::cancel);
         hatchMotors.clear();
-        spinnerMotor.cancel();
-        spinnerMotor = null;
+        impellerMotor.cancel();
+        impellerMotor = null;
         gateMotor.cancel();
         gateMotor = null;
-        super.postRound(winningTeam, winScore);
     }
 
     @Override
@@ -251,9 +304,9 @@ public class SteamPunkGame extends BotBowsGame {
             pipes.forEach(pipe -> pipe.checkProximity(p));
         }
 
-        Set<Spinner> spinners = spinnerChunks.get(chunk);
-        if (spinners != null) {
-            spinners.forEach(spinner -> spinner.checkProximity(p));
+        Set<Impeller> impellers = impellerChunks.get(chunk);
+        if (impellers != null) {
+            impellers.forEach(impeller -> impeller.checkProximity(p));
         }
     }
 
@@ -294,17 +347,17 @@ public class SteamPunkGame extends BotBowsGame {
         }
     }
 
-    private static class SpinnerMotor extends BukkitRunnable {
+    private static class ImpellerMotor extends BukkitRunnable {
 
-        public final Set<Spinner> spinners;
+        public final Set<Impeller> impellers;
 
-        public SpinnerMotor(Set<Spinner> spinners) {
-            this.spinners = spinners;
+        public ImpellerMotor(Set<Impeller> impellers) {
+            this.impellers = impellers;
         }
 
         @Override
         public void run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
-            spinners.forEach(Spinner::tick);
+            impellers.forEach(Impeller::tick);
         }
     }
 
