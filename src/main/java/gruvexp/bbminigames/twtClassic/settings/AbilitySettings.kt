@@ -50,7 +50,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         TeamSide.TEAM_1 to mutableMapOf(),
         TeamSide.TEAM_2 to mutableMapOf())
 
-    private val bannedAbilities = mutableSetOf<AbilityType>()
+    private val bannedAbilities = mutableSetOf(AbilityType.BUBBLE_JET)
     private val listeners = mutableMapOf<BotBowsPlayer, AbilityUpdateListener>()
 
     fun addListener(bp: BotBowsPlayer, listener: AbilityUpdateListener) {
