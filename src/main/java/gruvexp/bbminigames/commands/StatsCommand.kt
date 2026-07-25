@@ -56,7 +56,7 @@ class StatsCommand : CommandExecutor {
             }
 
             // Lag klikkbart kartnavn-komponent med runCommand
-            val mapNameString = result.m.name
+            val mapNameString = result.map
             val mapComponent = Component.text(mapNameString, NamedTextColor.GREEN)
                 .clickEvent(ClickEvent.runCommand("/botbows spectate $mapNameString"))
                 .hoverEvent(HoverEvent.showText(Component.text("Klikk for å gå inn på kartet og se deg rundt!", NamedTextColor.AQUA)))

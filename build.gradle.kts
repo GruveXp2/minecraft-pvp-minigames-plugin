@@ -42,7 +42,7 @@ val buildNumber: Int = if (buildNumberFile.exists()) {
 }
 
 group = "gruvexp"
-version = "1.4.6-$buildNumber"
+version = "5.0.0-$buildNumber"
 description = "The plugin used on the BotBows minigames server"
 
 java {
