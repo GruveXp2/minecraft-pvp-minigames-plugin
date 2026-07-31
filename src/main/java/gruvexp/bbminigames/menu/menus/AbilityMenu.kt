@@ -134,7 +134,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     private fun handleAbilityClick(e: InventoryClickEvent, p: Player, bp: BotBowsPlayer, clickedItem: ItemStack?) {
         val cursorItem = e.cursor
         val cursorAbility = AbilityType.fromItem(cursorItem)
-        val clickedAbility = AbilityType.fromItem(clickedItem)
+        val clickedAbility = clickedItem?.let { AbilityType.fromItem(clickedItem) }
 
         if (cursorAbility == null && clickedAbility == null) return
 
@@ -175,7 +175,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                             return
                         }
 
-                        val abilityItem = clickedItem!!.clone()
+                        val abilityItem = clickedItem.clone()
                         val cooldownComponent = clickedAbility.getCooldownComponent(bp)
 
                         abilityItem.editMeta {
@@ -364,7 +364,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         for (i in 0..<abilityRow.size) {
             val abilitySlot = abilityRow.startSlot + i
             val abilityItem = inventory.getItem(abilitySlot)
-            val abilityType = AbilityType.fromItem(abilityItem) ?: continue
+            val abilityType = abilityItem?.let { AbilityType.fromItem(abilityItem) } ?: continue
             onAbilityStatusChange(abilityType)
         }
     }
