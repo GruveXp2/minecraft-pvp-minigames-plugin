@@ -27,6 +27,8 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.*
 
+val KEY: NamespacedKey = NamespacedKey("botbows", "ability_item")
+
 enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: String, category: AbilityCategory) {
     SPLASH_BOW(
         makeSplashBow(),
@@ -170,8 +172,6 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     }
 
     companion object {
-        val KEY: NamespacedKey = NamespacedKey("botbows", "ability_item")
-
         @JvmStatic
         fun fromItem(item: ItemStack): AbilityType? {
             val mapStr = item.persistentDataContainer.get(KEY, PersistentDataType.STRING) ?: return null
