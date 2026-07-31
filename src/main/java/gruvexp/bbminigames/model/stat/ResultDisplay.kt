@@ -7,12 +7,14 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
+import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
+import org.joml.AxisAngle4f
 
 const val PX = 0.025f
 const val X = -PX/2f // Workaround to undo mojangs hardcoded bug that offsets text for no reason (textshadow that isnt there)
 
-class ResultDisplay(loc: Location, matchResult: MatchResult) {
+class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -57,15 +59,31 @@ class ResultDisplay(loc: Location, matchResult: MatchResult) {
         billboard = Display.Billboard.VERTICAL
     }
 
+    init {
+        var f = -0.375
+        matchResult.playerStats.forEach { (uuid, stats) ->
+            f -= 0.25
+            val bp: BotBowsPlayer = BotBows.getBotBowsPlayer(uuid)
+            createPlayerRow(bp, stats, f)
+        }
+    }
 
+    fun createPlayerRow(bp: BotBowsPlayer, stats: PlayerMatchStats, offset: Double) {
+        val playerNameDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), TextDisplay::class.java).apply {
+            text(bp.name)
+            alignment = TextDisplay.TextAlignment.RIGHT
+            transformation = transformation.apply { translation.set(X -2 - 10*PX, 0f, 0.01f); }
+            billboard = Display.Billboard.VERTICAL
+        }
 
-
-
-    val test1: TextDisplay = Main.WORLD.spawn(loc.clone().add(0.0, 0.5, 0.0), TextDisplay::class.java).apply {
-        text(Component.text("."))
-        alignment = TextDisplay.TextAlignment.CENTER
-        backgroundColor = Color.fromARGB(50, 100, 32, 50)
-        transformation = transformation.apply { scale.set(20f, 1f, 1f); translation.set(MJNG_UNBUG*20, 0f, 0f) }
-        billboard = Display.Billboard.VERTICAL
+        val playerHeadDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), ItemDisplay::class.java).apply {
+            setItemStack(bp.avatar.headItem)
+            transformation = transformation.apply {
+                translation.set(-1.4f, 8*PX, 0.01f)
+                scale.set(0.25f, 0.25f, 0.25f)
+                leftRotation.set(AxisAngle4f(Math.toRadians(180.0).toFloat(), 0f, 1f, 0f))
+            }
+            billboard = Display.Billboard.VERTICAL
+        }
     }
 }
