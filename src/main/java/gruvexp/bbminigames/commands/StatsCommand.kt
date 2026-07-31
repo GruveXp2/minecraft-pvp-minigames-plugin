@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.commands
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ class StatsCommand : CommandExecutor {
             }
 
             // Lag klikkbart kartnavn-komponent med runCommand
-            val mapNameString = result.map
+            val mapNameString = result.map.name
             val mapComponent = Component.text(mapNameString, NamedTextColor.GREEN)
                 .clickEvent(ClickEvent.runCommand("/botbows spectate $mapNameString"))
                 .hoverEvent(HoverEvent.showText(Component.text("Klikk for å gå inn på kartet og se deg rundt!", NamedTextColor.AQUA)))
@@ -72,11 +73,11 @@ class StatsCommand : CommandExecutor {
 
                 .append(Component.text("Høydepunkter fra kampen:\n", NamedTextColor.AQUA))
                 .append(Component.text("⚔️ Mest kills: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostKillsCount} (${formatTargetName(result.mostKillsPlayer)})\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostKillsCount} (${BotBows.getBotBowsPlayer(result.mostKillsPlayer).name})\n", NamedTextColor.WHITE))
                 .append(Component.text("💀 Mest deaths: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostDeathsCount} (${formatTargetName(result.mostDeathsPlayer)})\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostDeathsCount} (${BotBows.getBotBowsPlayer(result.mostDeathsPlayer).name})\n", NamedTextColor.WHITE))
                 .append(Component.text("💥 Mest skade: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostDamageCount} (${formatTargetName(result.mostDamagePlayer)})\n\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostDamageCount} (${BotBows.getBotBowsPlayer(result.mostDamagePlayer).name})\n\n", NamedTextColor.WHITE))
 
                 .append(Component.text("Dine mest brukte evner:\n", NamedTextColor.LIGHT_PURPLE))
                 .build()

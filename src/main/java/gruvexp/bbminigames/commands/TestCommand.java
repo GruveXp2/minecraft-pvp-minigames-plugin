@@ -2,10 +2,13 @@ package gruvexp.bbminigames.commands;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.Util;
+import gruvexp.bbminigames.ZTesting;
 import gruvexp.bbminigames.extras.StickSlap;
 import gruvexp.bbminigames.mechanics.Hatch;
 import gruvexp.bbminigames.mechanics.RotatingStructure;
 import gruvexp.bbminigames.model.preset.BattlePreset;
+import gruvexp.bbminigames.model.stat.MatchResult;
+import gruvexp.bbminigames.model.stat.ResultDisplay;
 import gruvexp.bbminigames.twtClassic.*;
 import gruvexp.bbminigames.twtClassic.ability.AbilityType;
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow;
@@ -68,6 +71,12 @@ public class TestCommand implements CommandExecutor {
 
         if (args.length >= 1) {
             switch (args[0]) {
+                case "td" -> {
+                    ZTesting test = new ZTesting();
+                    MatchResult result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA);
+                    ResultDisplay display = new ResultDisplay(p.getLocation().setRotation(0, 0), result);
+                    BotBows.debugMessage("spawned it in");
+                }
                 case "end_round" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {
