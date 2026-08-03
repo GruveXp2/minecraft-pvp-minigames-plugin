@@ -5,6 +5,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
@@ -106,11 +107,21 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
         displays.addAll(listOf(playerNameDisplay, playerStatsBgDisplay, playerHeadDisplay))
 
-        createPlayerStatDisplay(offset, -1f, Component.text(stats.kills), 2.5f)
-        createPlayerStatDisplay(offset, 0f, Component.text(stats.deaths), 2.5f)
+        createPlayerStatDisplay(offset, -1f, Component.text(stats.kills, TextColor.color(0x88FF88)), 2.5f)
+        createPlayerStatDisplay(offset, 0f, Component.text(stats.deaths, TextColor.color(0xFF8888)), 2.5f)
 
         val ratio = if (stats.deaths > 0) stats.kills.toFloat() / stats.deaths else stats.kills.toFloat()
-        val text = Component.text("%.1f".format(java.util.Locale.US, ratio))
+        val color: Int = when {
+            ratio > 5.0 -> 0x40FF40
+            ratio > 2.0 -> 0x80FF80
+            ratio > 1.3 -> 0xC0FFC0
+            ratio > 1.0 -> 0xE0FFD0
+            ratio > 0.8 -> 0xFFE0D0
+            ratio > 0.5 -> 0xFFC0C0
+            ratio > 0.2 -> 0xFF8080
+            else -> 0xFF4040
+        }
+        val text = Component.text("%.1f".format(java.util.Locale.US, ratio), TextColor.color(color))
         createPlayerStatDisplay(offset, 1f, text, 4f)
     }
 
