@@ -36,7 +36,7 @@ class StatsService(
                 matchResult.playerStats.forEach { (bp, stats) ->
                     MatchPlayersTable.insert {
                         it[this.matchId] = matchId
-                        it[playerUuid] = uuid.toString()
+                        it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName
                         it[kills] = stats.kills
                         it[deaths] = stats.deaths
                         it[hits] = stats.hits
@@ -45,7 +45,7 @@ class StatsService(
                     stats.abilityUses.forEach { (type, amount) ->
                         MatchPlayerAbilityUsesTable.insert {
                             it[this.matchId] = matchId
-                            it[playerUuid] = uuid.toString()
+                            it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName
                             it[abilityType] = type.name
                             it[uses] = amount
                         }
