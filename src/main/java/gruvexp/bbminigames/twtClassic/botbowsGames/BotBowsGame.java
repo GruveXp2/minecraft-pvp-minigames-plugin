@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
+import gruvexp.bbminigames.commands.TestCommand;
 import gruvexp.bbminigames.model.stat.MatchResult;
 import gruvexp.bbminigames.model.stat.ResultDisplay;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
@@ -12,6 +13,7 @@ import gruvexp.bbminigames.twtClassic.hazard.Hazard;
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
 import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
@@ -64,6 +66,12 @@ public class BotBowsGame {
     }
 
     public void startGame() {
+        if (TestCommand.debugging) {
+            lobby.messagePlayers(Component.text("WARNING: test mode is on, match data wont be saved!", NamedTextColor.YELLOW));
+            lobby.messagePlayers(Component.text("To turn off test mode, run ")
+                    .append(Component.text("/test toggle_debugging", NamedTextColor.AQUA)
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/test toggle_debugging")))));
+        }
         botBowsBoard.createBoard();
         startRound();
         hazards.forEach(hazard -> hazard.init(players));
@@ -245,12 +253,14 @@ public class BotBowsGame {
                     "TEAM " + winningTeam.getDisplayName().toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
                     "================", winningTeam.getColor()));
         }
-        postGameTitle(winningTeam);
+        showPostGameTitle(winningTeam);
         Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.globalLobbyLocation.clone();
         players.forEach(bp -> bp.teleport(statsLocation));
         statsLocation.add(statsLocation.getDirection().multiply(10));
         ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 30 * 20L);
+
+        if (!TestCommand.debugging) Main.getPlugin().getStatsService().saveMatchResult(matchResult);
 
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);
@@ -259,11 +269,9 @@ public class BotBowsGame {
         team1.reset();
         team2.reset();
         lobby.reset();
-
-        Main.getPlugin().getStatsService().saveMatchResult(matchResult);
     }
 
-    private void postGameTitle(BotBowsTeam winningTeam) {
+    private void showPostGameTitle(BotBowsTeam winningTeam) {
         if (winningTeam == null) {
             return;
         }
