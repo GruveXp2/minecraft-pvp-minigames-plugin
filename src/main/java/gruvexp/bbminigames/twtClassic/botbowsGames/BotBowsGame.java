@@ -283,7 +283,7 @@ public class BotBowsGame {
     }
 
     private void showPostGameStats(BotBowsTeam winningTeam) {
-        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.globalLobbyLocation.clone();
+        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.GLOBAL_LOBBY_LOCATION.clone();
         players.forEach(bp -> bp.teleport(statsLocation));
         int statsLocY = statsLocation.getBlockY();
         statsLocation.add(statsLocation.getDirection().multiply(10));

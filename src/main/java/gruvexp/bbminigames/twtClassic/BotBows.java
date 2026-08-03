@@ -48,7 +48,7 @@ public class BotBows {
     public static int HIT_DISABLED_ITEM_TICKS = 40;
     public static final Random RANDOM = new Random();
 
-    public static final Location globalLobbyLocation = new Location(Main.WORLD, -129, 39, -197);
+    public static final Location GLOBAL_LOBBY_LOCATION = new Location(Main.WORLD, -129, 39, -197);
 
     public static void init() { // a
         gameMenu = new GameMenu();
