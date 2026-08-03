@@ -57,7 +57,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
                 return
             }
             if (mapSettings.isVoteMode) {
-                mapSettings.mapVotingSession.vote(bp, map)
+                if (uiMode == UiMode.VOTE) mapSettings.mapVotingSession.vote(bp, map)
             } else {
                 mapSettings.currentMap = map
 
