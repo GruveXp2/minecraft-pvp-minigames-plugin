@@ -89,11 +89,7 @@ public class NpcAvatar implements BotBowsAvatar{
     @Override
     public void setHP(int hp) {
         visualHp = hp;
-        if (hp == 0) {
-            eliminate();
-        } else {
-            updateArmor();
-        }
+        if (hp != 0) updateArmor();
     }
 
     @Override

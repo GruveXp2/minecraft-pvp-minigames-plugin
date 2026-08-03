@@ -184,6 +184,7 @@ public class BotBowsPlayer {
     private void setHP(int hp) { // heile hjerter
         this.hp = hp;
         avatar.setHP(hp);
+        if (hp == 0) avatar.eliminate();
         lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
     }
 
@@ -343,7 +344,6 @@ public class BotBowsPlayer {
         setHP(0);
         lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
-        avatar.eliminate();
         abilities.values().forEach(a -> a.setTickRate(20));
         hasKarmaEffect = false;
         lobby.check4Elimination(this);
