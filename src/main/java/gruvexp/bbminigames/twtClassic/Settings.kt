@@ -314,7 +314,7 @@ class Settings(@JvmField val lobby: Lobby) {
         }
     }
 
-    fun joinGame(mannequin: Mannequin?) {
+    fun joinGame(mannequin: Mannequin) {
         val bp = BotBowsPlayer(mannequin, this)
         joinGame(bp)
         Bukkit.getOnlinePlayers()
