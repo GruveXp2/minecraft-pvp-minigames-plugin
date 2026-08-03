@@ -18,6 +18,8 @@ const val X = -PX/2f // Workaround to undo mojangs hardcoded bug that offsets te
 
 class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
+    val displays: MutableSet<Display> = mutableSetOf()
+
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         backgroundColor = Color.fromARGB(100, 32, 50, 100)
@@ -62,6 +64,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     }
 
     init {
+        displays.addAll(listOf(titleBgDisplay, titleDisplay, headerBgDisplay, killsHeaderDisplay, deathsHeaderDisplay, kdRatioHeaderDisplay))
+
         var f = -0.625
         val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
         val playerStats = matchResult.playerStats.map { (uuid, stats) -> BotBows.getBotBowsPlayer(uuid) to stats }
@@ -103,6 +107,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             billboard = Display.Billboard.VERTICAL
         }
 
+        displays.addAll(listOf(playerNameDisplay, playerStatsBgDisplay, playerHeadDisplay))
+
         createPlayerStatDisplay(offset, -1f, Component.text(stats.kills), 2.5f)
         createPlayerStatDisplay(offset, 0f, Component.text(stats.deaths), 2.5f)
 
@@ -127,5 +133,10 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             transformation = transformation.apply { translation.set(X+ xOffset, 0f, 0.02f) }
             billboard = Display.Billboard.VERTICAL
         }
+        displays.addAll(listOf(bgDisplay, statDisplay))
+    }
+
+    fun remove() {
+        displays.forEach { it.remove() }
     }
 }

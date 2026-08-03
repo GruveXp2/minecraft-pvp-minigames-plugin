@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic.botbowsGames;
 
 import gruvexp.bbminigames.Main;
 import gruvexp.bbminigames.model.stat.MatchResult;
+import gruvexp.bbminigames.model.stat.ResultDisplay;
 import gruvexp.bbminigames.tasks.BotBowsGiver;
 import gruvexp.bbminigames.tasks.RoundCountdown;
 import gruvexp.bbminigames.tasks.RoundTimer;
@@ -15,6 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -244,6 +246,11 @@ public class BotBowsGame {
                     "================", winningTeam.getColor()));
         }
         postGameTitle(winningTeam);
+        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.globalLobbyLocation.clone();
+        players.forEach(bp -> bp.teleport(statsLocation));
+        statsLocation.add(statsLocation.getDirection().multiply(10));
+        ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 30 * 20L);
 
         Main.WORLD.setThundering(false);
         Main.WORLD.setStorm(false);
