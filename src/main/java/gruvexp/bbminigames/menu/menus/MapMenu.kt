@@ -58,12 +58,15 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             }
             if (mapSettings.isVoteMode) {
                 if (uiMode == UiMode.VOTE) mapSettings.mapVotingSession.vote(bp, map)
-            } else {
+            } else if (uiMode == UiMode.SET){
                 mapSettings.currentMap = map
 
                 settings.lobby.messagePlayers(
                     Component.text("Map set to ").append(Component.text(map.prettyName(), NamedTextColor.GREEN))
                 )
+            } else {
+                uiMode = UiMode.SET
+                return
             }
             uiMode = UiMode.MAIN
             return
