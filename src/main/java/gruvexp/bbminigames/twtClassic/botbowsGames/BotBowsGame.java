@@ -254,11 +254,7 @@ public class BotBowsGame {
                     "================", winningTeam.getColor()));
         }
         showPostGameTitle(winningTeam);
-        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.globalLobbyLocation.clone();
-        players.forEach(bp -> bp.teleport(statsLocation));
-        statsLocation.add(statsLocation.getDirection().multiply(10));
-        ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 30 * 20L);
+        showPostGameStats(winningTeam);
 
         if (!TestCommand.debugging) Main.getPlugin().getStatsService().saveMatchResult(matchResult);
 
@@ -284,6 +280,16 @@ public class BotBowsGame {
             bp.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.getColor()), Component.text(""),
                     Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
         }
+    }
+
+    private void showPostGameStats(BotBowsTeam winningTeam) {
+        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.globalLobbyLocation.clone();
+        players.forEach(bp -> bp.teleport(statsLocation));
+        int statsLocY = statsLocation.getBlockY();
+        statsLocation.add(statsLocation.getDirection().multiply(10));
+        statsLocation.setY(statsLocY + 3);
+        ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 30 * 20L);
     }
 
     public void endGame(BotBowsPlayer ender) {
