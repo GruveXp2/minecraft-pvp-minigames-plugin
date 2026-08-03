@@ -11,10 +11,10 @@ data class MatchResult @JvmOverloads constructor(
     val startTime: LocalDateTime = LocalDateTime.now(),
     var rounds: Int = 0,
     var team1Won: Boolean? = null, // null = draw
-    val playerStats: MutableMap<UUID, PlayerMatchStats> = mutableMapOf()
+    val playerStats: MutableMap<BotBowsPlayer, PlayerMatchStats> = mutableMapOf()
 ) {
     private fun getPlayerStats(bp: BotBowsPlayer): PlayerMatchStats {
-        return playerStats.computeIfAbsent(bp.avatar.uuid) { PlayerMatchStats(bp.avatar.uuid) }
+        return playerStats.computeIfAbsent(bp) { PlayerMatchStats(bp) }
     }
 
     fun registerKill(attacker: BotBowsPlayer) {

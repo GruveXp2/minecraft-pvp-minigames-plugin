@@ -1,7 +1,6 @@
 package gruvexp.bbminigames.model.stat
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
@@ -68,11 +67,10 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
         var f = -0.625
         val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
-        val playerStats = matchResult.playerStats.map { (uuid, stats) -> BotBows.getBotBowsPlayer(uuid) to stats }
-        playerStats
+        matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide == winningTeam }
             .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= 0.25 }
-        playerStats
+        matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide != winningTeam }
             .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= 0.25 }
     }

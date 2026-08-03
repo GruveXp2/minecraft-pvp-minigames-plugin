@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.model.stat
 
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
-import java.util.UUID
 
 data class PlayerMatchStats(
-    val playerId: UUID,
+    val bp: BotBowsPlayer,
     var kills: Int = 0,
     var deaths: Int = 0,
     var hits: Int = 0,

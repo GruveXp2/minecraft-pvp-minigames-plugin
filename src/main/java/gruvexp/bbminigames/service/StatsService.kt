@@ -8,6 +8,7 @@ import gruvexp.bbminigames.model.stat.MatchResult
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SortOrder
@@ -32,7 +33,7 @@ class StatsService(
                     it[team1Won] = matchResult.team1Won
                 } get MatchesTable.id
 
-                matchResult.playerStats.forEach { (uuid, stats) ->
+                matchResult.playerStats.forEach { (bp, stats) ->
                     MatchPlayersTable.insert {
                         it[this.matchId] = matchId
                         it[playerUuid] = uuid.toString()
