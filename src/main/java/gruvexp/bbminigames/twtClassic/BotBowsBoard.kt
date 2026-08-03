@@ -109,7 +109,7 @@ class BotBowsBoard(val lobby: Lobby) {
                     .append(Component.text(winThreshold, NamedTextColor.GRAY))
             } else { // use lines with optimized width
                 val pointsSystem: String = getPointsSymbol(winThreshold)
-                val teamPoints = min(lobby.settings.winConditionSettings.winScoreThreshold, team1().points)
+                val teamPoints = min(lobby.settings.winConditionSettings.winScoreThreshold, team.points)
 
                 Component.text(pointsSystem.repeat(teamPoints), NamedTextColor.GREEN)
                     .append(Component.text(pointsSystem.repeat(winThreshold - teamPoints), NamedTextColor.GRAY))
