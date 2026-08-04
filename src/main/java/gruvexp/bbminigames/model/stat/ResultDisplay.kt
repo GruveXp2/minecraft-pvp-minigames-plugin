@@ -79,7 +79,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     fun createPlayerRow(bp: BotBowsPlayer, stats: PlayerMatchStats, offset: Double) {
         val playerNameDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), TextDisplay::class.java).apply {
             text(bp.name)
-            val offset = (calculateTextWidth(bp.plainName) - PX) / 2
+            val offset = calculateTextWidth(bp.plainName) / 2
             transformation = transformation.apply { translation.set(X -1.5f - 6*PX - offset, 0f, 0.01f); }
             billboard = Display.Billboard.VERTICAL
         }
@@ -149,7 +149,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     }
 
     fun calculateTextWidth(text: String, scale: Float = 1f): Float {
-        var width = 0
+        var width = 1
         for (char in text) {
             width += when (char) {
                 'i', '!', '|', '\'', '.', ',', ':', ';' -> 2
