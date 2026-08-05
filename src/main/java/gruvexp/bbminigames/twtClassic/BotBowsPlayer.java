@@ -236,7 +236,7 @@ public class BotBowsPlayer {
                 return;
             }
         }
-        switch (type) {
+        switch (type) { // TODO: make factory
             case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
             case RADAR -> abilities.put(type, new Radar(this, slot));
             case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
@@ -296,11 +296,11 @@ public class BotBowsPlayer {
     }
 
     public void obtainWeaponAbilities() {
-        abilities.values().stream().filter(a -> a.getType().category == AbilityCategory.DAMAGING).forEach(Ability::obtain);
+        abilities.values().stream().filter(a -> a.type.category == AbilityCategory.DAMAGING).forEach(Ability::obtain);
     }
 
     public void loseWeaponAbilities() {
-        abilities.values().stream().filter(a -> a.getType().category == AbilityCategory.DAMAGING).forEach(Ability::lose);
+        abilities.values().stream().filter(a -> a.type.category == AbilityCategory.DAMAGING).forEach(Ability::lose);
     }
 
     public int getTotalAbilities() {
@@ -344,7 +344,7 @@ public class BotBowsPlayer {
         setHP(0);
         lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
         lobby.messagePlayers(deathMessage);
-        abilities.values().forEach(a -> a.setTickRate(20));
+        abilities.values().forEach(a -> a.setCooldownTickRate(20));
         hasKarmaEffect = false;
         lobby.check4Elimination(this);
     }
@@ -381,8 +381,8 @@ public class BotBowsPlayer {
 
     public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
         for (Ability ability : abilities.values()) {
-            if (ability.getType() == AbilityType.CHARGE_POTION) continue; // charge potion wont affect itself
-            ability.setTickRate(abilityCooldownTickRate);
+            if (ability.type == AbilityType.CHARGE_POTION) continue; // charge potion wont affect itself
+            ability.setCooldownTickRate(abilityCooldownTickRate);
         }
     }
 

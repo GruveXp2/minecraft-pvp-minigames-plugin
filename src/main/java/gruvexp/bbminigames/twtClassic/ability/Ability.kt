@@ -1,154 +1,116 @@
-package gruvexp.bbminigames.twtClassic.ability;
+package gruvexp.bbminigames.twtClassic.ability
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
-public class Ability {
+open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: Int, @JvmField val type: AbilityType) {
+    @JvmField
+    protected var baseCooldown: Int = 0 // seconds
+    var cooldownMultiplier: Float = 1.0f
+        set(value) {
+            field = value
+            effectiveCooldown = (baseCooldown * value).toInt()
+        }
+    var effectiveCooldown: Int = 0
+        private set
 
-    protected final BotBowsPlayer bp;
-    protected AbilityType type;
+    private var cooldownTimer: CooldownTimer? = null
+    var cooldownTickRate = 20
+        set(value) {
+            field = value
+            cooldownTimer?.let {
+                it.cancel()
+                cooldownTimer = CooldownTimer(bp, it.currentCooldown).apply {
+                    runTaskTimer(Main.getPlugin(), 0L, value.toLong())
+                }
+            }
+        }
 
-    protected int baseCooldown; // seconds
-    protected float cooldownMultiplier = 1.0f;
-    private int effectiveCooldown;
-
-    private final int hotBarSlot;
-    private CooldownTimer cooldownTimer;
-    private int cooldownTickRate = 20;
-
-    public Ability(BotBowsPlayer bp, int hotBarSlot, AbilityType type) {
-        this.bp = bp;
-        this.hotBarSlot = hotBarSlot;
-        this.type = type;
+    init {
         if (type.category != AbilityCategory.DAMAGING) {
-            this.baseCooldown = type.baseCooldown;
+            this.baseCooldown = type.baseCooldown
         }
     }
 
-    public AbilityType getType() {
-        return type;
+    fun resetCooldown() {
+        cooldownTimer?.cancel()
+        cooldownTimer = null
     }
 
-    public int getHotBarSlot() {
-        return hotBarSlot;
+    fun obtain() {
+        resetCooldown()
+        bp.avatar.setItem(hotBarSlot, type.abilityItem)
     }
 
-    public void setCooldownMultiplier(float multiplier) {
-        this.cooldownMultiplier = multiplier;
-        effectiveCooldown = (int) (baseCooldown * cooldownMultiplier);
-    }
-
-    public int getEffectiveCooldown() {
-        return effectiveCooldown;
-    }
-
-    public void resetCooldown() {
-        if (cooldownTimer != null) {
-            cooldownTimer.cancel();
-            cooldownTimer = null;
-        }
-    }
-
-    public void obtain() {
-        resetCooldown();
-        bp.avatar.setItem(hotBarSlot, type.abilityItem);
-    }
-
-    public void lose() {
+    fun lose() {
         if (type.category == AbilityCategory.DAMAGING) {
-            bp.avatar.setItem(hotBarSlot, type.cooldownItems[0].clone());
+            bp.avatar.setItem(hotBarSlot, type.cooldownItems[0].clone())
         } else {
-            cooldownTimer = new CooldownTimer(bp, effectiveCooldown);
-            cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
+            cooldownTimer = CooldownTimer(bp, effectiveCooldown).apply {
+                runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate.toLong())
+            }
         }
     }
 
-    public void hit() {
-        if (cooldownTimer != null) {
-            cooldownTimer.hit();
-        }
+    fun hit() {
+        cooldownTimer?.hit()
     }
 
-    public void use() {
-        if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return; // null check used when testing ability outside of match
+    open fun use() {
+        if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return  // null check used when testing ability outside of match
 
-        bp.lobby.botBowsGame.matchResult.registerAbilityUse(bp, type);
+        bp.lobby.botBowsGame.matchResult.registerAbilityUse(bp, type)
 
         if (type.category == AbilityCategory.DAMAGING) {
-            bp.loseWeaponAbilities();
+            bp.loseWeaponAbilities()
         } else {
-            cooldownTimer = new CooldownTimer(bp, effectiveCooldown);
-            cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
+            cooldownTimer = CooldownTimer(bp, effectiveCooldown).apply {
+                runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate.toLong())
+            }
         }
     }
 
-    public void setTickRate(int tickRate) {
-        cooldownTickRate = tickRate;
-        if (cooldownTimer != null) {
-            cooldownTimer.cancel();
-            int cooldownLeft = cooldownTimer.currentCooldown;
-
-            cooldownTimer = new CooldownTimer(bp, cooldownLeft);
-            cooldownTimer.runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate);
-        }
+    private fun getCooldownItem(cooldown: Int) = when {
+        cooldown > 10 -> type.cooldownItems[0].clone()
+        cooldown > 5 ->  type.cooldownItems[1].clone()
+        cooldown > 2 ->  type.cooldownItems[2].clone()
+        else ->          type.cooldownItems[3].clone()
     }
 
-    private ItemStack getCooldownItem(int cooldown) {
-        if (cooldown > 10) {
-            return type.cooldownItems[0].clone();
-        } else if (cooldown > 5) {
-            return type.cooldownItems[1].clone();
-        } else if (cooldown > 2) {
-            return type.cooldownItems[2].clone();
-        } else {
-            return type.cooldownItems[3].clone();
-        }
+    open fun unequip() {
     }
 
-    public void unequip() {
-
+    open fun reset() { // removing things gracefully (eg igniting creeper, remove effects etc)
     }
 
-    public void reset() { // removing things gracefully (eg igniting creeper, remove effects etc)
-
+    open fun destroy() { // removing everything by force (removing all entities without any effect)
+        resetCooldown()
     }
 
-    public void destroy() { // removing everything by force (removing all entities without any effect)
-        resetCooldown();
-    }
+    private inner class CooldownTimer(private val bp: BotBowsPlayer, var currentCooldown: Int) : BukkitRunnable() {
+        var cooldownItem: ItemStack = getCooldownItem(currentCooldown)
 
-    private class CooldownTimer extends BukkitRunnable {
-        int currentCooldown;
-        ItemStack cooldownItem = getCooldownItem(currentCooldown);
-        private final BotBowsPlayer bp;
-
-        private CooldownTimer(BotBowsPlayer bp, int effectiveCooldown) {
-            this.bp = bp;
-            currentCooldown = effectiveCooldown;
-        }
-
-        @Override
-        public void run() {
+        override fun run() {
             if (currentCooldown <= 0) {
-                obtain();
-                return;
+                obtain()
+                return
             }
 
-            switch (currentCooldown) {
-                case 10 -> cooldownItem = type.cooldownItems[1].clone();
-                case 5 -> cooldownItem = type.cooldownItems[2].clone();
-                case 2 -> cooldownItem = type.cooldownItems[3].clone();
+            when (currentCooldown) {
+                10 -> cooldownItem = type.cooldownItems[1].clone()
+                5 ->  cooldownItem = type.cooldownItems[2].clone()
+                2 ->  cooldownItem = type.cooldownItems[3].clone()
             }
-            cooldownItem.setAmount(currentCooldown);
-            bp.avatar.setItem(hotBarSlot, cooldownItem);
-            currentCooldown--;
+            cooldownItem.amount = currentCooldown
+            bp.avatar.setItem(hotBarSlot, cooldownItem)
+            currentCooldown--
         }
 
-        public void hit() { // when someone hits you with a bow, the cooldown wont go down until the damage cooldown is complete (when barrier blocks get removed)
-            currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20;
+        fun hit() { // when someone hits you with a bow, the cooldown wont go down until your invulnerability period is over
+            currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20
         }
     }
 }

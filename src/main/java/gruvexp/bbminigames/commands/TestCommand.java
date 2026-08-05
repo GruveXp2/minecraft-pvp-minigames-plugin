@@ -217,7 +217,7 @@ public class TestCommand implements CommandExecutor {
                 }
                 case "print_eq" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-                    bp.getAbilities().forEach(a -> p.sendMessage("a: " + a.getType().toString()));
+                    bp.getAbilities().forEach(a -> p.sendMessage("a: " + a.type));
                 }
                 case "add_spinning" -> {
                     String tag = args[1];
