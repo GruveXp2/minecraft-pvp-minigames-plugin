@@ -58,4 +58,10 @@ class StatTab(val tabName: String, val loc: Location, val yPos: Float, val cols:
             transformation = transformation.apply { translation.set(X + offset, 0f, 0f) }
         }
     }
+
+    fun remove() {
+        headerBgDisplay.remove()
+        headerDisplay.remove()
+        cols.forEach { it.remove() }
+    }
 }

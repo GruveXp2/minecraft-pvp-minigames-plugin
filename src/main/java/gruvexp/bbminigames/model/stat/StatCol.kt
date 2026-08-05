@@ -63,5 +63,9 @@ class StatCol(val tabName: String, val loc: Location, layoutY: Double, val forma
         headerDisplay.apply { transformation = transformation.apply { translation.x = X + layoutX + offsetX } }
     }
 
-    //TODO: kalkulering av y posisjon, at man setter det.
+    fun remove() {
+        headerBgDisplay.remove()
+        headerDisplay.remove()
+        cells.values.forEach { it.re }
+    }
 }

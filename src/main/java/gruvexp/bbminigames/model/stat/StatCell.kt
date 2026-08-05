@@ -46,4 +46,9 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
             statDisplay.apply { transformation = transformation.apply { translation.y = value } }
             field = value
         }
+
+    fun remove() {
+        bgDisplay.remove()
+        statDisplay.remove()
+    }
 }

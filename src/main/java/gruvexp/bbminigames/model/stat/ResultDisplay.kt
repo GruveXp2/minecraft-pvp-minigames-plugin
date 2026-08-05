@@ -88,7 +88,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 //    }
 
     init {
-//        displays.addAll(listOf(titleBgDisplay, titleDisplay, headerBgDisplay, killsHeaderDisplay, deathsHeaderDisplay, kdRatioHeaderDisplay))
+        displays.addAll(listOf(titleBgDisplay, titleDisplay/*, headerBgDisplay, killsHeaderDisplay, deathsHeaderDisplay, kdRatioHeaderDisplay*/)) //yrdy
 
         var f = -3 * HEIGHT_PX.toDouble()
         val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
@@ -185,5 +185,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
     fun remove() {
         displays.forEach { it.remove() }
+        deathsTab.remove()
     }
 }
