@@ -8,42 +8,42 @@ import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
 
-class StatCell(component: TextComponent, loc: Location, width: Float, x: Double, y: Double) {
-    private val bgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, y, 0.0), TextDisplay::class.java).apply {
-        text(Component.text(" "))
-        transformation = transformation.apply {
-            scale.set(width, 1f, 1f)
-            translation.set(X*width+ x, 0.0, 0.01)
-        }
-        billboard = Display.Billboard.VERTICAL
-    }
+class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, layoutX: Float, layoutY: Double) {
 
-    private val statDisplay = Main.WORLD.spawn(loc.clone().add(0.0, y, 0.0), TextDisplay::class.java).apply {
-        text(component)
-        backgroundColor = Color.fromARGB(0)
-        transformation = transformation.apply { translation.set(X+ x, 0.0, 0.02) }
-        billboard = Display.Billboard.VERTICAL
-    }
-
-    var offsetX: Double = 0.0
+    var layoutX: Float = layoutX
         set(value) {
-            bgDisplay.apply {
-                transformation = transformation.apply { translation.set(X * width + value, offsetY, 0.0) }
-            }
-            statDisplay.apply {
-                transformation = transformation.apply { translation.set(X + value, offsetY, 0.0) }
-            }
+            bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + value + offsetX } }
+            statDisplay.apply { transformation = transformation.apply { translation.x = X + value + offsetX } }
             field = value
         }
 
-    var offsetY: Double = 0.0
+    private val bgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, layoutY, 0.0), TextDisplay::class.java).apply {
+        text(Component.text(" "))
+        transformation = transformation.apply {
+            scale.set(layoutWidth / textWidth(" "), 1f, 1f)
+            translation.set(X_*layoutWidth + layoutX, 0f, 0.01f)
+        }
+        billboard = Display.Billboard.VERTICAL
+    }
+
+    private val statDisplay = Main.WORLD.spawn(loc.clone().add(0.0, layoutY, 0.0), TextDisplay::class.java).apply {
+        text(component)
+        backgroundColor = Color.fromARGB(0)
+        transformation = transformation.apply { translation.set(X + layoutX, 0f, 0.02f) }
+        billboard = Display.Billboard.VERTICAL
+    }
+
+    var offsetX: Float = 0f
         set(value) {
-            bgDisplay.apply {
-                transformation = transformation.apply { translation.set(X * width + offsetX, value, 0.0) }
-            }
-            statDisplay.apply {
-                transformation = transformation.apply { translation.set(X + offsetX, value, 0.0) }
-            }
+            bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + layoutX + value } }
+            statDisplay.apply { transformation = transformation.apply { translation.x = X + layoutX + value } }
+            field = value
+        }
+
+    var offsetY: Float = 0f
+        set(value) {
+            bgDisplay.apply { transformation = transformation.apply { translation.y = value } }
+            statDisplay.apply { transformation = transformation.apply { translation.y = value } }
             field = value
         }
 }

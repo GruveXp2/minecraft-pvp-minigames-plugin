@@ -8,16 +8,17 @@ import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
 
-class StatTab(val tabName: String, val loc: Location, val cols: List<StatCol>) {
+class StatTab(val tabName: String, val loc: Location, val yPos: Float, val cols: List<StatCol>) {
     val isExpanded: Boolean = false
+
+    val layoutWidth = cols.sumOf { it.colWidth.toDouble() }.toFloat()
 
     private val headerBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         backgroundColor = Color.fromARGB(100, 32, 50, 100)
-        val width = cols.sumOf { it.width.toDouble() }.toFloat()
         transformation = transformation.apply {
-            scale.set(width, 1f, 1f);
-            translation.set(X*width, 0f, 0f)
+            scale.set(layoutWidth / textWidth(" "), 1f, 1f)
+            translation.set(X_*layoutWidth, yPos, 0f)
         }
         billboard = Display.Billboard.VERTICAL
     }
@@ -25,13 +26,21 @@ class StatTab(val tabName: String, val loc: Location, val cols: List<StatCol>) {
     private val headerDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(tabName))
         backgroundColor = Color.fromARGB(0)
-        transformation = transformation.apply { translation.set(X, 0f, 0.01f); }
+        transformation = transformation.apply { translation.set(X, yPos, 0.01f); }
         billboard = Display.Billboard.VERTICAL
     }
 
     private val displays: Set<TextDisplay> = setOf(headerBgDisplay, headerDisplay)
 
-    val width: Float = textWidth(tabName)
+    init {
+        val totalWidth = cols.sumOf { it.colWidth.toDouble() }
+        var x = - totalWidth / 2
+        cols.forEach {
+            x += it.colWidth/2
+            it.layoutX = x.toFloat()
+            x += it.colWidth/2
+        }
+    }
 
     fun setPlayerHeight(bp: BotBowsPlayer) {
 

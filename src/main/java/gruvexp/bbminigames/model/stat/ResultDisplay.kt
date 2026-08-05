@@ -20,27 +20,27 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     val displays: MutableSet<Display> = mutableSetOf()
 
     val deathsTab = StatTab(
-        "Hits", loc, listOf(
+        "Hits", loc, -1 * HEIGHT_PX, listOf(
             StatCol(
                 "hits",
                 loc,
+                -2.0 * HEIGHT_PX,
                 { Component.text(it.hits, NamedTextColor.GREEN) },
-                matchResult.playerStats.values.toList(),
-                -1.0
+                matchResult.playerStats.values.toList()
             ),
             StatCol(
                 "dmg",
                 loc,
-                { Component.text(it.hits, NamedTextColor.GREEN) },
-                matchResult.playerStats.values.toList(),
-                0.0
+                -2.0 * HEIGHT_PX,
+                { Component.text(it.damage, NamedTextColor.RED) },
+                matchResult.playerStats.values.toList()
             ),
             StatCol(
                 "h/d",
                 loc,
-                { formatRatio(it.hits, it.deaths) },
-                matchResult.playerStats.values.toList(),
-                1.0
+                -2.0 * HEIGHT_PX,
+                { formatRatio(it.hits, it.damage) },
+                matchResult.playerStats.values.toList()
             )
         )
     )
@@ -90,14 +90,14 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     init {
 //        displays.addAll(listOf(titleBgDisplay, titleDisplay, headerBgDisplay, killsHeaderDisplay, deathsHeaderDisplay, kdRatioHeaderDisplay))
 
-        var f = -0.625
+        var f = -3 * HEIGHT_PX.toDouble()
         val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide == winningTeam }
-            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= 0.25 }
+            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= HEIGHT_PX }
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide != winningTeam }
-            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= 0.25 }
+            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= HEIGHT_PX }
     }
 
     fun formatRatio(positive: Int, negative: Int): TextComponent {
