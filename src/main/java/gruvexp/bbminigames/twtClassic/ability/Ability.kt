@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic.ability
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.abilities.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -111,6 +112,24 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
 
         fun hit() { // when someone hits you with a bow, the cooldown wont go down until your invulnerability period is over
             currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20
+        }
+    }
+
+    companion object {
+        fun create(type: AbilityType, bp: BotBowsPlayer, slot: Int): Ability = when (type) {
+            AbilityType.ENDER_PEARL -> Ability(bp, slot, AbilityType.ENDER_PEARL)
+            AbilityType.RADAR -> Radar(bp, slot)
+            AbilityType.SPLASH_BOW -> SplashBow(bp, slot)
+            AbilityType.THUNDER_BOW -> ThunderBow(bp, slot)
+            AbilityType.LONG_ARMS -> LongArms(bp, slot)
+            AbilityType.SALMON_SLAP -> SalmonSlap(bp, slot)
+            AbilityType.BUBBLE_JET -> BubbleJet(bp, slot)
+            AbilityType.CREEPER_TRAP -> CreeperTrap(bp, slot)
+            AbilityType.BABY_POTION -> BabyPotion(bp, slot)
+            AbilityType.LINGERING_POTION -> LingeringPotionTrap(bp, slot)
+            AbilityType.CHARGE_POTION -> ChargePotion(bp, slot)
+            AbilityType.KARMA_POTION -> KarmaPotion(bp, slot)
+            AbilityType.LASER_TRAP -> LaserTrap(bp, slot)
         }
     }
 }

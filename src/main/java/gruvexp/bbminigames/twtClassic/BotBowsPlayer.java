@@ -236,22 +236,7 @@ public class BotBowsPlayer {
                 return;
             }
         }
-        switch (type) { // TODO: make factory
-            case ENDER_PEARL -> abilities.put(type, new Ability(this, slot, AbilityType.ENDER_PEARL));
-            case RADAR -> abilities.put(type, new Radar(this, slot));
-            case SPLASH_BOW -> abilities.put(type, new SplashBow(this, slot));
-            case THUNDER_BOW -> abilities.put(type, new ThunderBow(this, slot));
-            case LONG_ARMS -> abilities.put(type, new LongArms(this, slot));
-            case SALMON_SLAP -> abilities.put(type, new SalmonSlap(this, slot));
-            case BUBBLE_JET -> abilities.put(type, new BubbleJet(this, slot));
-            case CREEPER_TRAP -> abilities.put(type, new CreeperTrap(this, slot));
-            case BABY_POTION -> abilities.put(type, new BabyPotion(this, slot));
-            case LINGERING_POTION -> abilities.put(type, new LingeringPotionTrap(this, slot));
-            case CHARGE_POTION -> abilities.put(type, new ChargePotion(this, slot));
-            case KARMA_POTION -> abilities.put(type, new KarmaPotion(this, slot));
-            case LASER_TRAP -> abilities.put(type, new LaserTrap(this, slot));
-            default -> throw new IllegalStateException("Error, contact Gruve: he forgot to connect this ability type to a java class");
-        }
+        abilities.put(type, Ability.Companion.create(type, this, slot));
         if (abilityAlreadyEquipped) return;
 
         if (slot > 0 && updateInventory) {
