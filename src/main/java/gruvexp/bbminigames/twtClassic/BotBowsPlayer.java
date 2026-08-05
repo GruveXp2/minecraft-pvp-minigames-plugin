@@ -306,8 +306,10 @@ public class BotBowsPlayer {
         if (ctx instanceof DamageContext.Environment) {
             die(damageMessage);
         } else if (ctx instanceof DamageContext.Player playerCtx) {
-            lobby.botBowsGame.matchResult.registerDamage(this);
-            lobby.botBowsGame.matchResult.registerHit(playerCtx.getAttacker());
+            if (this != playerCtx.getAttacker()) { // dont register hit/dmg if it was self inflicted
+                lobby.botBowsGame.matchResult.registerDamage(this);
+                lobby.botBowsGame.matchResult.registerHit(playerCtx.getAttacker());
+            }
             if (isFatal) {
                 lobby.botBowsGame.matchResult.registerDeath(this);
                 lobby.botBowsGame.matchResult.registerKill(playerCtx.getAttacker());
