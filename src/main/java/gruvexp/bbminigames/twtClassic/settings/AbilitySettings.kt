@@ -94,10 +94,10 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
             BotBows.getBotBowsPlayer(uuid).settings?.abilityCooldownMultiplier = cooldown
         }
-        preset.bannedAbilities?.let { it ->
-            val changed = bannedAbilities xor it
-            bannedAbilities.retainAll(it)
-            bannedAbilities.addAll(it)
+        preset.bannedAbilities?.let { banned ->
+            val changed = bannedAbilities xor banned
+            bannedAbilities.clear()
+            bannedAbilities.addAll(banned)
             changed.forEach { notifyStatus(it) }
         }
     }
