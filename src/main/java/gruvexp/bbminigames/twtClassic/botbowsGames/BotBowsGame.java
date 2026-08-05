@@ -289,7 +289,7 @@ public class BotBowsGame {
         statsLocation.add(statsLocation.getDirection().multiply(10));
         statsLocation.setY(statsLocY + 3);
         ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 30 * 20L);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 60 * 20L);
     }
 
     public void endGame(BotBowsPlayer ender) {

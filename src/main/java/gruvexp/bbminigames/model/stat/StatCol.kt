@@ -66,6 +66,6 @@ class StatCol(val tabName: String, val loc: Location, layoutY: Double, val forma
     fun remove() {
         headerBgDisplay.remove()
         headerDisplay.remove()
-        cells.values.forEach { it.re }
+        cells.values.forEach { it.remove() }
     }
 }
