@@ -74,7 +74,7 @@ public class TestCommand implements CommandExecutor {
                 case "td" -> {
                     ZTesting test = new ZTesting();
                     MatchResult result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA);
-                    ResultDisplay display = new ResultDisplay(p.getLocation().setRotation(0, 0), result);
+                    ResultDisplay display = new ResultDisplay(p.getLocation().add(p.getLocation().getDirection().multiply(3)).add(0, 3, 0).setRotation(0, 0), result);
                     BotBows.debugMessage("spawned it in");
                 }
                 case "end_round" -> {
