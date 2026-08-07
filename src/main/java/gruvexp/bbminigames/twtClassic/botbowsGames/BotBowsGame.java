@@ -44,6 +44,7 @@ public class BotBowsGame {
     public boolean activeRound = false; // if the game is currently ongoing, this includes the countdown in the start of rounds
     protected int round = 0; // hvilken runde man er på
     private BukkitTask roundTimer;
+    private BukkitTask startRoundTask;
 
     public MatchResult matchResult;
 
@@ -220,7 +221,7 @@ public class BotBowsGame {
             postGame(winningTeam);
         } else {
             canInteract = false;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
+            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
         }
     }
 
@@ -301,6 +302,7 @@ public class BotBowsGame {
         if (settings.getWinConditionSettings().getRoundDuration() > 0) {
             roundTimer.cancel();
         }
+        if (startRoundTask != null) startRoundTask.cancel();
         hazards.stream()
                 .filter(Hazard::isActive)
                 .forEach(Hazard::end);
