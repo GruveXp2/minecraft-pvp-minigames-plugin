@@ -31,7 +31,7 @@ class LobbyMenu : Menu() {
             MenuAction.JOIN_LOBBY -> {
                 val displayName: Component = clickedItem.itemMeta.displayName() ?: return
                 val text = PlainTextComponentSerializer.plainText().serialize(displayName)
-                val lobbyID = text[text.length - 1].toString().toInt() - 1 // warning: only works for up to 9 lobbies
+                val lobbyID = text.substringAfter('#').trim().toInt() - 1
                 BotBows.getLobby(lobbyID).joinGame(p)
             }
             MenuAction.FULL_LOBBY -> p.sendMessage(Component.text("Cant join lobby, lobby is full!", NamedTextColor.YELLOW))
@@ -40,7 +40,7 @@ class LobbyMenu : Menu() {
     }
 
     fun updateLobbyItem(lobby: Lobby) {
-        val displayName = Component.text("Lobby #" + lobby.id + 1)
+        val displayName = Component.text("Lobby #${lobby.id + 1}")
         val lobbyItem: ItemStack =
         if (lobby.isGameActive) {
             makeItem(
