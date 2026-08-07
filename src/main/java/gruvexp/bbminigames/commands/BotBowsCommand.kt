@@ -1,98 +1,86 @@
-package gruvexp.bbminigames.commands;
+package gruvexp.bbminigames.commands
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.model.preset.BattlePreset;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
+import java.util.*
 
-public class BotBowsCommand implements CommandExecutor {
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        Player p = (Player) sender;
+class BotBowsCommand : CommandExecutor {
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
+        val p = sender as Player
 
-        TextComponent message = runCommandAndMessage(p, args);
-        p.sendMessage(message);
-        return true;
+        val message = runCommandAndMessage(p, args)
+        p.sendMessage(message)
+        return true
     }
 
-    private TextComponent runCommandAndMessage(Player p, @NotNull String @NotNull [] args) {
-        if (args.length == 0) {
-            return Component.text("You must specify subcommand!", NamedTextColor.RED);
-        }
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-        if (bp == null) {
-            return Component.text("You must be in a BotBows lobby to perform this command!", NamedTextColor.RED);
-        }
-        Lobby lobby = bp.lobby;
-        switch (args[0]) {
-            case "start" -> lobby.startGame(p);
-            case "stop" -> {
-                if (lobby.isGameActive()) {
-                    lobby.botBowsGame.endGame(bp);
-                } else {
-                    return Component.text("The game hasn't even started!", NamedTextColor.RED);
-                }
-            }
-            case "leave" -> lobby.leaveGame(p);
-            case "save_preset" -> {
-                if (args.length == 1) {
-                    return Component.text("You must specify a name for the preset!", NamedTextColor.RED);
-                }
-                String name = args[1];
-                if (args.length == 2) {
-                    return Component.text("You must specify an item icon for the preset!", NamedTextColor.RED);
-                }
-                Material icon = Material.getMaterial(args[2].toUpperCase());
-                if (icon == null) return Component.text("Invalid item \"" + args[2] + "\"", NamedTextColor.RED);
+    private fun runCommandAndMessage(p: Player, args: Array<String>): TextComponent {
+        if (args.isEmpty()) return Component.text("You must specify subcommand!", NamedTextColor.RED)
 
-                BattlePreset preset = lobby.settings.saveBattlePreset(name, icon);
-                boolean success = Main.getPlugin().getPresetService().addPreset(preset);
+        val bp = BotBows.getBotBowsPlayer(p) ?: return Component.text("You must be in a BotBows lobby to perform this command!", NamedTextColor.RED)
+        val lobby = bp.lobby
+        when (args[0]) {
+            "start" -> lobby.startGame(p) // TODO: take in bp instead?
+
+            "stop" -> {
+                val game = lobby.botBowsGame ?: return Component.text("The game hasn't even started!", NamedTextColor.RED)
+                game.endGame(bp)
+            }
+            "leave" -> lobby.leaveGame(p)
+
+            "save_preset" -> {
+                if (args.size == 1) return Component.text("You must specify a name for the preset!", NamedTextColor.RED)
+
+                val name = args[1]
+                if (args.size == 2) return Component.text("You must specify an item icon for the preset!", NamedTextColor.RED)
+
+                val icon = Material.getMaterial(args[2].uppercase(Locale.getDefault()))
+                    ?: return Component.text("Invalid item \"${args[2]}\"", NamedTextColor.RED)
+
+                val preset = lobby.settings.saveBattlePreset(name, icon)
+                val success = Main.getPlugin().presetService.addPreset(preset)
                 if (success) {
-                    lobby.settings.presetsMenu.displayPresets();
-                    p.sendMessage(Component.text("Successfully added preset \"" + name + "\" with icon " + args[2]));
+                    lobby.settings.presetsMenu.displayPresets()
+                    p.sendMessage(Component.text("Successfully added preset \"$name\" with icon ${args[2]}"))
                 } else {
-                    p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED));
+                    p.sendMessage(Component.text("Failed to add preset: another preset with that name already exists!", NamedTextColor.RED))
                 }
             }
-            case "load_preset" -> {
-                if (args.length == 1) {
-                    return Component.text("You must specify the preset to load!", NamedTextColor.RED);
-                }
-                String presetName = args[1];
-                BattlePreset preset = Main.getPlugin().getPresetService().getPreset(presetName);
-                if (preset == null) return Component.text("Error! No preset with name \"" + presetName + "\" exists");
+            "load_preset" -> {
+                if (args.size == 1) return Component.text("You must specify the preset to load!", NamedTextColor.RED)
 
-                if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets");
+                val presetName = args[1]
+                val preset = Main.getPlugin().presetService.getPreset(presetName)
+                    ?: return Component.text("Error! No preset with name \"$presetName\" exists")
 
-                lobby.settings.applyBattlePreset(preset);
+                if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets")
+
+                lobby.settings.applyBattlePreset(preset)
             }
-            case "transfer_mod" -> {
-                if (!bp.lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can transfer their mod role (bruh)");
-                String otherPlayerName = args[1];
-                Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
-                if (otherPlayer == null) return Component.text("That player doesnt exist!", NamedTextColor.RED);
+            "transfer_mod" -> {
+                if (!bp.lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can transfer their mod role (bruh)")
 
-                BotBowsPlayer otherBp = lobby.getBotBowsPlayer(otherPlayer);
-                if (otherBp == null) return Component.text("That player isnt in this lobby!", NamedTextColor.RED);
+                val otherPlayerName = args[1]
+                val otherPlayer = Bukkit.getPlayer(otherPlayerName)
+                    ?: return Component.text("That player doesnt exist!", NamedTextColor.RED)
 
-                lobby.settings.setModPlayer(otherBp);
+                val otherBp = lobby.getBotBowsPlayer(otherPlayer)
+                    ?: return Component.text("That player isnt in this lobby!", NamedTextColor.RED)
+
+                lobby.settings.setModPlayer(otherBp)
             }
-            case "finish_vote" -> bp.lobby.settings.finishVoting();
-            default -> {
-                return Component.text("Invalid subcommand!", NamedTextColor.RED);
-            }
+            "finish_vote" -> bp.lobby.settings.finishVoting()
+
+            else -> return Component.text("Invalid subcommand!", NamedTextColor.RED)
         }
-        return Component.empty();
+        return Component.empty()
     }
 }
