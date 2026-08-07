@@ -53,7 +53,7 @@ public class JoinLeaveListener implements Listener {
         Player p = e.getPlayer();
         Lobby lobby = BotBows.getLobby(p);
         if (lobby != null) {
-            lobby.disconnect(p);
+            lobby.disconnect(lobby.getBotBowsPlayer(p));
         }
         if (Bukkit.getOnlinePlayers().size() == 1) ShutdownManager.scheduleShutdown();
     }

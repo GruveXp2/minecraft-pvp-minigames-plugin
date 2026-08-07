@@ -46,7 +46,8 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
         if (handlePageClick(e)) return
 
         val clicker = e.whoClicked as Player
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
+        val bp = settings.lobby.getBotBowsPlayer(clicker)!!
+        if (!settings.checkMod(bp)) return
 
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
@@ -56,7 +57,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
                     clickedItem.itemMeta.persistentDataContainer
                         .get(key, PersistentDataType.STRING)
                 )
-                val clickedBp = settings.lobby.getBotBowsPlayer(playerId)
+                val clickedBp = settings.lobby.getBotBowsPlayer(playerId)!!
                 settings.switchTeam(clickedBp)
             }
             MenuAction.FLIP_TEAMS -> settings.switchTeamSides()

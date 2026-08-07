@@ -52,7 +52,8 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
         val clickedItem = e.getCurrentItem() ?: return
         if (handlePageClick(e)) return
         val clicker = e.whoClicked as Player
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
+        val bp = settings.lobby.getBotBowsPlayer(clicker)!!
+        if (!settings.checkMod(bp)) return
 
 
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)

@@ -34,7 +34,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
         val clickedItem = e.currentItem ?: return
         if (handlePageClick(e)) return
         val clicker = e.whoClicked as Player
-        val bp = settings.lobby.getBotBowsPlayer(clicker)
+        val bp = settings.lobby.getBotBowsPlayer(clicker)!!
         if (!settings.checkMod(bp)) return
 
 

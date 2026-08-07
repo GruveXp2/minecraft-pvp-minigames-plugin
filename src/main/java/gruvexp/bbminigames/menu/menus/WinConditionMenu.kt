@@ -37,7 +37,8 @@ class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditio
         val clickedItem = e.getCurrentItem() ?: return
         if (handlePageClick(e)) return
         val clicker = e.whoClicked as Player
-        if (!settings.checkMod(settings.lobby.getBotBowsPlayer(clicker))) return
+        val bp = settings.lobby.getBotBowsPlayer(clicker)!!
+        if (!settings.checkMod(bp)) return
         val slot = e.slot
 
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)

@@ -40,7 +40,7 @@ class LobbyMenu : Menu() {
     }
 
     fun updateLobbyItem(lobby: Lobby) {
-        val displayName = Component.text("Lobby #" + lobby.ID + 1)
+        val displayName = Component.text("Lobby #" + lobby.id + 1)
         val lobbyItem: ItemStack =
         if (lobby.isGameActive) {
             makeItem(
@@ -74,7 +74,7 @@ class LobbyMenu : Menu() {
                 )
             }
         }
-        inventory.setItem(3 + lobby.ID, lobbyItem)
+        inventory.setItem(3 + lobby.id, lobbyItem)
     }
 
     companion object {

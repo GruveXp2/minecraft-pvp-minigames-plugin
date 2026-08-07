@@ -306,11 +306,11 @@ class Settings(@JvmField val lobby: Lobby) {
         if (getPlayers().size == 1 || modPlayer == null || modPlayer!!.avatar is NpcAvatar) {
             modPlayer = bp
             Bukkit.getOnlinePlayers()
-                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size}) and will be the settings moderator")) }
+                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.id + 1} (${players.size}) and will be the settings moderator")) }
             overviewMenu.open(p)
         } else {
             Bukkit.getOnlinePlayers()
-                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.ID + 1} (${players.size})")) }
+                .forEach { it.sendMessage(Component.text("${p.name} has joined BotBows Lobby #${lobby.id + 1} (${players.size})")) }
         }
     }
 
@@ -318,7 +318,7 @@ class Settings(@JvmField val lobby: Lobby) {
         val bp = BotBowsPlayer(mannequin, this)
         joinGame(bp)
         Bukkit.getOnlinePlayers()
-            .forEach { it.sendMessage(Component.text("${bp.plainName} has joined BotBows Lobby #${lobby.ID + 1} (${players.size})")) }
+            .forEach { it.sendMessage(Component.text("${bp.plainName} has joined BotBows Lobby #${lobby.id + 1} (${players.size})")) }
     }
 
     private fun joinGame(bp: BotBowsPlayer) {
@@ -368,7 +368,7 @@ class Settings(@JvmField val lobby: Lobby) {
             }
         }
 
-        bp.avatar.message(Component.text("You left BotBows Lobby #${lobby.ID + 1}", NamedTextColor.YELLOW))
+        bp.avatar.message(Component.text("You left BotBows Lobby #${lobby.id + 1}", NamedTextColor.YELLOW))
         lobby.messagePlayers(Component.text("${bp.plainName} has left the lobby (${players.size})", NamedTextColor.YELLOW))
         bp.destroy()
     }

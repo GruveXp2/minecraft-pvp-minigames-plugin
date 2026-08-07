@@ -70,7 +70,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         if (abilityRow.handleClick(e)) return
 
         val clicker = e.whoClicked as Player
-        val bp = settings.lobby.getBotBowsPlayer(clicker)
+        val bp = settings.lobby.getBotBowsPlayer(clicker) ?: return
 
         clickedItem ?: run {
             handleAbilityClick(e, clicker, bp, clickedItem)

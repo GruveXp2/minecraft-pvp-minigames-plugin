@@ -61,9 +61,10 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
     }
 
     open fun use() {
-        if (bp.lobby.botBowsGame != null && !bp.lobby.botBowsGame.canMove) return  // null check used when testing ability outside of match
+        val game = bp.lobby.botBowsGame ?: return
+        if (game.canMove) return  // null check used when testing ability outside of match
 
-        bp.lobby.botBowsGame.matchResult.registerAbilityUse(bp, type)
+        game.matchResult.registerAbilityUse(bp, type)
 
         if (type.category == AbilityCategory.DAMAGING) {
             bp.loseWeaponAbilities()

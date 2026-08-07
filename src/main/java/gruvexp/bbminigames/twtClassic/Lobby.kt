@@ -1,232 +1,235 @@
-package gruvexp.bbminigames.twtClassic;
+package gruvexp.bbminigames.twtClassic
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame;
-import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame;
-import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame;
-import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame;
-import gruvexp.bbminigames.twtClassic.map.BotBowsMap;
-import io.papermc.paper.datacomponent.item.ResolvableProfile;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Mannequin;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame
+import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame
+import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame
+import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
+import io.papermc.paper.datacomponent.item.ResolvableProfile
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import java.time.Duration
+import java.util.*
+import java.util.function.Consumer
+import kotlin.math.max
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+class Lobby(val id: Int) {
+    private val players = HashMap<UUID, BotBowsPlayer>()
+    @JvmField
+    var settings: Settings
+    @JvmField
+    var botBowsGame: BotBowsGame? = null
+    val isGameActive: Boolean  // hvis spillet har starta, så kan man ikke gjøre ting som /settings
+        get() = botBowsGame != null
 
-public class Lobby {
-
-    public final int ID;
-    private final HashMap<UUID, BotBowsPlayer> players = new HashMap<>(); // liste med alle players som er i gamet
-    public Settings settings;
-    public BotBowsGame botBowsGame;
-    private boolean activeGame = false; // hvis spillet har starta, så kan man ikke gjøre ting som /settings
-
-    public static ItemStack READY = Menu.makeItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Ready", NamedTextColor.GREEN),
-            Component.text("When everyone else is also ready, the match will start"),
-            Component.text("To unready, right click this item"));
-
-    public static ItemStack NOT_READY = Menu.makeItem(Material.RED_STAINED_GLASS_PANE, Component.text("Not Ready", NamedTextColor.RED),
-            Component.text("The match will not start until youre ready"),
-            Component.text("To ready up, right click this item"));
-
-    public static ItemStack LOADING = Menu.makeItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
-            Component.text("Please wait for your action to be processed"));
-
-    private static int botId = 0;
-
-    public Lobby(int ID) {
-        this.ID = ID;
-        BotBows.lobbyMenu.updateLobbyItem(this);
-        settings = new Settings(this);
-        settings.initMenus();
+    init {
+        BotBows.lobbyMenu.updateLobbyItem(this)
+        settings = Settings(this)
+        settings.initMenus()
     }
 
 
-    public void joinGame(Player p) {
-        if (activeGame) {
-            p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED));
-            return;
+    fun joinGame(p: Player) {
+        if (this.isGameActive) {
+            p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED))
+            return
         }
         if (BotBows.getLobby(p) != null) {
-            if (BotBows.getLobby(p) == this) {
-                p.sendMessage(Component.text("You already joined!", NamedTextColor.RED));
-                return;
+            if (BotBows.getLobby(p) === this) {
+                p.sendMessage(Component.text("You already joined!", NamedTextColor.RED))
+                return
             }
-            BotBows.getLobby(p).leaveGame(p); // leaver den forrige lobbien for å joine denne
+            BotBows.getLobby(p).leaveGame(p)
         }
-        p.getInventory().clear();
-        settings.joinGame(p);
-        BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.registerPlayerLobby(p.getUniqueId(), this);
-        p.getInventory().setItem(0, BotBows.SETTINGS_ITEM);
-        p.getInventory().setItem(4, NOT_READY);
+        p.inventory.clear()
+        settings.joinGame(p)
+        BotBows.lobbyMenu.updateLobbyItem(this)
+        BotBows.registerPlayerLobby(p.uniqueId, this)
+        p.inventory.setItem(0, BotBows.SETTINGS_ITEM)
+        p.inventory.setItem(4, NOT_READY)
     }
 
-    public UUID addBot() {
-        Mannequin mannequin = Main.WORLD.spawn(Main.WORLD.getSpawnLocation(), Mannequin.class);
-        mannequin.customName(Component.text("BotBowBot " + botId++));
-        mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))));
-        settings.joinGame(mannequin);
-        BotBows.lobbyMenu.updateLobbyItem(this);
-        UUID id = mannequin.getUniqueId();
-        BotBows.registerPlayerLobby(id, this);
-        return id;
+    fun addBot(): UUID {
+        val mannequin = Main.WORLD.spawn(Main.WORLD.spawnLocation, Mannequin::class.java)
+        mannequin.customName(Component.text("BotBowBot ${botId++}"))
+        mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))))
+        settings.joinGame(mannequin)
+        BotBows.lobbyMenu.updateLobbyItem(this)
+        val id = mannequin.uniqueId
+        BotBows.registerPlayerLobby(id, this)
+        return id
     }
 
-    public void leaveGame(UUID playerId) {
-        BotBowsPlayer bp = getBotBowsPlayer(playerId);
-        if (activeGame) {
-            botBowsGame.leaveGame(bp);
+    fun leaveGame(bp: BotBowsPlayer) {
+        if (isGameActive) {
+            botBowsGame!!.leaveGame(bp)
         } else {
-            settings.leaveGame(bp);
+            settings.leaveGame(bp)
         }
-        players.remove(playerId);
-        BotBows.lobbyMenu.updateLobbyItem(this);
-        BotBows.unRegisterPlayerLobby(playerId);
+        players.remove(bp.avatar.uuid)
+        BotBows.lobbyMenu.updateLobbyItem(this)
+        BotBows.unRegisterPlayerLobby(bp.avatar.uuid)
     }
 
-    public void disconnect(Player p) {
-        UUID playerId = p.getUniqueId();
-        if (!activeGame) {
-            leaveGame(playerId);
-            return;
+    fun disconnect(bp: BotBowsPlayer) {
+        if (!isGameActive) {
+            leaveGame(bp)
+            return
         }
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-        messagePlayers(bp.getName().append(Component.text(" disconnected from the server and will be replaced by a bot", NamedTextColor.YELLOW)));
-        UUID id =  bp.turnIntoBot();
-        BotBows.registerPlayerLobby(id, this);
-        registerBotBowsPlayerAvatar(bp);
+        messagePlayers(bp.name.append(Component.text(" disconnected from the server and will be replaced by a bot", NamedTextColor.YELLOW)))
+        val id = bp.turnIntoBot()
+        BotBows.registerPlayerLobby(id, this)
+        registerBotBowsPlayerAvatar(bp)
     }
 
-    public void reconnect(Player p) {
-        if (!activeGame) return;
+    fun reconnect(p: Player) {
+        if (!isGameActive) return
 
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-        messagePlayers(bp.getName().append(Component.text(" reconnected to the game", NamedTextColor.GREEN)));
-        bp.turnIntoPlayer(p);
+        val bp = BotBows.getBotBowsPlayer(p)
+        messagePlayers(bp.name.append(Component.text(" reconnected to the game", NamedTextColor.GREEN)))
+        bp.turnIntoPlayer(p)
     }
 
-    public void leaveGame(Player p) {
-        UUID playerId = p.getUniqueId();
-        if (!settings.isPlayerJoined(playerId)) {
-            p.sendMessage("Nothing happened, you werent in the game in the first place");
-            return;
+    fun leaveGame(p: Player) {
+        val playerId = p.uniqueId
+        val bp: BotBowsPlayer = getBotBowsPlayer(playerId) ?: run {
+            p.sendMessage("Nothing happened, you werent in the game in the first place")
+            return
         }
-        leaveGame(playerId);
+        leaveGame(bp)
     }
 
-    public void replacePlayerId(UUID oldId, UUID newId) {
-        BotBowsPlayer bp = players.get(oldId);
-        players.remove(oldId);
-        players.put(newId, bp);
+    fun replacePlayerId(oldId: UUID, newId: UUID) {
+        val bp: BotBowsPlayer = players[oldId]!!
+        players.remove(oldId)
+        players[newId] = bp
     }
 
-    public BotBowsPlayer getBotBowsPlayer(Player p) {
-        return getBotBowsPlayer(p.getUniqueId());
+    fun getBotBowsPlayer(p: Player): BotBowsPlayer? {
+        return getBotBowsPlayer(p.uniqueId)
     }
 
-    public BotBowsPlayer getBotBowsPlayer(UUID playerId) {
-        return players.get(playerId);
+    fun getBotBowsPlayer(playerId: UUID): BotBowsPlayer? {
+        return players[playerId]
     }
 
-    public void registerBotBowsPlayerAvatar(BotBowsPlayer bp) {
-        if (players.containsKey(bp.avatar.getUUID())) return;
-        players.put(bp.avatar.getUUID(), bp);
+    fun registerBotBowsPlayerAvatar(bp: BotBowsPlayer) {
+        if (players.containsKey(bp.avatar.getUUID())) return
+        players[bp.avatar.getUUID()] = bp
     }
 
-    public Collection<BotBowsPlayer> getPlayers() {
-        return players.values();
+    fun getPlayers(): MutableCollection<BotBowsPlayer> {
+        return players.values
     }
 
-    public void startGame(Player gameStarter) {
-        if (activeGame) {
-            gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED));
-            return;
-        } else if (settings.team1.isEmpty() || settings.team2.isEmpty()) {
-            gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED));
-            return;
+    fun startGame(gameStarter: Player) {
+        if (this.isGameActive) {
+            gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED))
+            return
+        } else if (settings.team1.isEmpty || settings.team2.isEmpty) {
+            gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED))
+            return
         }
-        messagePlayers(Component.text(gameStarter.getName() + ": ", NamedTextColor.GRAY)
-                .append(Component.text("The game has started!", NamedTextColor.GREEN)));
-        startGame();
+        messagePlayers(
+            Component.text("${gameStarter.name}: ", NamedTextColor.GRAY)
+                .append(Component.text("The game has started!", NamedTextColor.GREEN))
+        )
+        startGame()
     }
 
-    private void startGame() {
-        BotBowsMap randomMap = settings.getMapSettings().finalizeMapSelection();
+    private fun startGame() {
+        val randomMap = settings.mapSettings.finalizeMapSelection()
         if (randomMap != null) {
-            messagePlayers(Component.text("A random map was picked: ").append(Component.text(randomMap.prettyName(), NamedTextColor.GREEN)));
+            messagePlayers(
+                Component.text("A random map was picked: ")
+                    .append(Component.text(randomMap.prettyName(), NamedTextColor.GREEN))
+            )
         }
-        botBowsGame = switch (settings.getMapSettings().getCurrentMap()) {
-            case ICY_RAVINE -> new IcyRavineGame(settings);
-            case STEAMPUNK -> new SteamPunkGame(settings);
-            case SPACE_STATION -> new SpaceStationGame(settings);
-            default -> new BotBowsGame(settings);
-        };
-        botBowsGame.startGame();
-        activeGame = true;
+        botBowsGame = when (settings.mapSettings.currentMap) {
+            BotBowsMap.ICY_RAVINE -> IcyRavineGame(settings)
+            BotBowsMap.STEAMPUNK -> SteamPunkGame(settings)
+            BotBowsMap.SPACE_STATION -> SpaceStationGame(settings)
+            else -> BotBowsGame(settings)
+        }.apply { startGame() }
     }
 
-    public void reset() {
-        new HashSet<>(players.keySet()).forEach( playerId -> {
-            players.get(playerId).destroy();
-            players.remove(playerId);
-            BotBows.unRegisterPlayerLobby(playerId);
-        });
+    fun reset() {
+        HashSet(players.keys).forEach { id ->
+            players[id]!!.destroy()
+            players.remove(id)
+            BotBows.unRegisterPlayerLobby(id)
+        }
 
-        botBowsGame = null;
-        settings = new Settings(this);
-        settings.initMenus();
-        activeGame = false;
-        BotBows.lobbyMenu.updateLobbyItem(this);
+        botBowsGame = null
+        settings = Settings(this)
+        settings.initMenus()
+        BotBows.lobbyMenu.updateLobbyItem(this)
     }
 
-    public void messagePlayers(Component message) {
-        for (BotBowsPlayer bp : settings.getPlayers()) {
-            bp.avatar.message(message);
+    fun messagePlayers(message: Component) {
+        settings.getPlayers().forEach { it.avatar.message(message) }
+    }
+
+    fun titlePlayers(component: Component, seconds: Long) {
+        for (bp in players.values) {
+            bp.avatar.showTitle(Title.title(
+                component, Component.text(""),
+                Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))
+            ))
         }
     }
 
-    public void titlePlayers(Component component, int seconds) {
-        for (BotBowsPlayer bp : players.values()) {
-            bp.avatar.showTitle(Title.title(component, Component.text(""),
-                    Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
+    fun check4Elimination(dedPlayer: BotBowsPlayer) {
+        botBowsGame!!.check4Elimination(dedPlayer)
+    }
+
+    val totalPlayers: Int
+        get() = players.size
+
+    fun handlePlayerReady(bp: BotBowsPlayer) {
+        val ready = bp.settings.isReady
+        val readyPlayers = players.values.count { it.settings.isReady }
+        val totalPlayers = max(players.size, 2)
+
+        messagePlayers(
+            Component.text("${bp.plainName} ${if (ready) "has readied up " else "is no longer ready" } ($readyPlayers/$totalPlayers)", NamedTextColor.YELLOW)
+        )
+        if (readyPlayers == totalPlayers && !(settings.team1.isEmpty || settings.team2.isEmpty)) {
+            messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN))
+            settings.finishMapSelection()
+            startGame()
         }
     }
 
-    public void check4Elimination(BotBowsPlayer dedPlayer) {
-        botBowsGame.check4Elimination(dedPlayer);
-    }
+    companion object {
+        @JvmField
+        val READY: ItemStack = Menu.makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Ready", NamedTextColor.GREEN),
+            Component.text("When everyone else is also ready, the match will start"),
+            Component.text("To unready, right click this item")
+        )
 
-    public int getTotalPlayers() {
-        return players.size();
-    }
+        @JvmField
+        val NOT_READY: ItemStack = Menu.makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Not Ready", NamedTextColor.RED),
+            Component.text("The match will not start until youre ready"),
+            Component.text("To ready up, right click this item")
+        )
 
-    public boolean isGameActive() {
-        return activeGame;
-    }
+        @JvmField
+        val LOADING: ItemStack = Menu.makeItem(
+            Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
+            Component.text("Please wait for your action to be processed")
+        )
 
-    public void handlePlayerReady(BotBowsPlayer bp) {
-        boolean ready = bp.settings.isReady();
-        long readyPlayers = players.values().stream().filter(lobbyBp -> lobbyBp.settings.isReady()).count();
-        int totalPlayers = Math.max(players.size(), 2);
-
-        messagePlayers(Component.text(bp.getPlainName() +
-                (ready ? " has readied up " : " is no longer ready ") +
-                "(" + readyPlayers + "/" + totalPlayers + ")", NamedTextColor.YELLOW));
-        if (readyPlayers == totalPlayers && !(settings.team1.isEmpty() || settings.team2.isEmpty())) {
-            messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN));
-            settings.finishMapSelection();
-            startGame();
-        }
+        private var botId = 0
     }
 }
