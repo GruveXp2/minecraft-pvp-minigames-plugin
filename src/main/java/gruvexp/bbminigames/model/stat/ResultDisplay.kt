@@ -86,6 +86,9 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         billboard = Display.Billboard.VERTICAL
     }
 
+    val team1BgDisplay: TextDisplay
+    val team2BgDisplay: TextDisplay
+
     init {
         displays.addAll(listOf(titleBgDisplay, titleDisplay))
 
@@ -97,6 +100,31 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide != winningTeam }
             .forEach { (bp, stats) -> createPlayerRow(bp, f); f -= HEIGHT_PX }
+        val width = recalculateTabs()
+
+        val team1Color = if (matchResult.team1Won == true) matchResult.map.team1.color else matchResult.map.team2.color
+        val team1Num = if (matchResult.team1Won == true) matchResult.map.team1.size() else matchResult.map.team2.size()
+        val team2Color = if (matchResult.team1Won == false) matchResult.map.team1.color else matchResult.map.team2.color
+        val team2Num = if (matchResult.team1Won == false) matchResult.map.team1.size() else matchResult.map.team2.size()
+        team1BgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
+            text(Component.text(" "))
+            backgroundColor = Color.fromARGB(100, team1Color.red(), team1Color.green(), team1Color.blue())
+            transformation = transformation.apply {
+                translation.set(X_*width, -(2 + team1Num)*HEIGHT_PX, 0f)
+                scale.set(width / textWidth(" "), team1Num.toFloat(), 1f)
+            }
+            billboard = Display.Billboard.VERTICAL
+        }
+
+        team2BgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
+            text(Component.text(" "))
+            backgroundColor = Color.fromARGB(100, team2Color.red(), team2Color.green(), team2Color.blue())
+            transformation = transformation.apply {
+                translation.set(X_*width, -(2 + team1Num + team2Num)*HEIGHT_PX, 0f)
+                scale.set(width / textWidth(" "), team2Num.toFloat(), 1f)
+            }
+            billboard = Display.Billboard.VERTICAL
+        }
     }
 
     fun recalculateTabs(): Float {
@@ -158,18 +186,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             billboard = Display.Billboard.VERTICAL
         }
 
-        val playerStatsBgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), TextDisplay::class.java).apply {
-            text(Component.text(" "))
-            val teamColor = bp.teamColor
-            backgroundColor = Color.fromARGB(100, teamColor.red(), teamColor.green(), teamColor.blue())
-            transformation = transformation.apply {
-                translation.set(24*X, 0f, 0f)
-                scale.set(24f, 1f, 1f)
-            }
-            billboard = Display.Billboard.VERTICAL
-        }
-
-        displays.addAll(listOf(playerNameDisplay, playerStatsBgDisplay, playerHeadDisplay))
+        displays.addAll(listOf(playerNameDisplay, playerHeadDisplay))
     }
 
     fun remove() {
