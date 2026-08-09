@@ -18,27 +18,31 @@ import org.joml.AxisAngle4f
 class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
     val displays: MutableSet<Display> = mutableSetOf()
+    val tabs: MutableSet<StatTab> = mutableSetOf()
 
-    val deathsTab = StatTab(
-        "Hits", loc, -1 * HEIGHT_PX, listOf(
+    val hitsTab = StatTab("Hits", loc, -1 * HEIGHT_PX).also { tab ->
+        tab.addColumns(listOf(
             StatCol(
                 "hits",
                 loc,
-                -2.0 * HEIGHT_PX,
+                tab,
+                -1f * HEIGHT_PX,
                 { Component.text(it.hits, NamedTextColor.GREEN) },
                 matchResult.playerStats.values.toList()
             ),
             StatCol(
                 "dmg",
                 loc,
-                -2.0 * HEIGHT_PX,
+                tab,
+                -1f * HEIGHT_PX,
                 { Component.text(it.damage, NamedTextColor.RED) },
                 matchResult.playerStats.values.toList()
             ),
             StatCol(
                 "h/d",
                 loc,
-                -2.0 * HEIGHT_PX,
+                tab,
+                -1f * HEIGHT_PX,
                 { formatRatio(it.hits, it.damage) },
                 matchResult.playerStats.values.toList()
             )
@@ -63,7 +67,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         displays.addAll(listOf(titleBgDisplay, titleDisplay))
 
         var f = -3 * HEIGHT_PX.toDouble()
-        val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
+        val winningTeam = if (matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide == winningTeam }
             .forEach { (bp, stats) -> createPlayerRow(bp, f); f -= HEIGHT_PX }

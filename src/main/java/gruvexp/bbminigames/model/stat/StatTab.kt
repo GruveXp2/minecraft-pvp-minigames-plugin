@@ -8,17 +8,20 @@ import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
 
-class StatTab(val tabName: String, val loc: Location, val yPos: Float, val cols: List<StatCol>) {
+class StatTab(tabName: String, loc: Location, layoutY: Float): StatElement(null, 0f, layoutY) {
     val isExpanded: Boolean = false
 
-    val layoutWidth = cols.sumOf { it.colWidth.toDouble() }.toFloat()
+    val cols: MutableList<StatCol> = mutableListOf()
+
+    val layoutWidth
+        get() = cols.sumOf { it.colWidth.toDouble() }.toFloat()
 
     private val headerBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         backgroundColor = Color.fromARGB(100, 32, 50, 100)
         transformation = transformation.apply {
             scale.set(layoutWidth / textWidth(" "), 1f, 1f)
-            translation.set(X_*layoutWidth, yPos, 0f)
+            translation.set(X_*layoutWidth, layoutY, 0f)
         }
         billboard = Display.Billboard.VERTICAL
     }
@@ -26,18 +29,23 @@ class StatTab(val tabName: String, val loc: Location, val yPos: Float, val cols:
     private val headerDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(tabName))
         backgroundColor = Color.fromARGB(0)
-        transformation = transformation.apply { translation.set(X, yPos, 0.01f); }
+        transformation = transformation.apply { translation.set(X, layoutY, 0.01f); }
         billboard = Display.Billboard.VERTICAL
     }
 
     private val displays: Set<TextDisplay> = setOf(headerBgDisplay, headerDisplay)
 
-    init {
-        val totalWidth = cols.sumOf { it.colWidth.toDouble() }
-        var x = - totalWidth / 2
+    fun addColumns(cols: List<StatCol>) {
+        this.cols.addAll(cols)
+        children.addAll(cols)
+        recalculateColumns()
+    }
+
+    fun recalculateColumns() {
+        var x = - layoutWidth / 2
         cols.forEach {
             x += it.colWidth/2
-            it.layoutX = x.toFloat()
+            it.layoutX = x
             x += it.colWidth/2
         }
     }
@@ -57,6 +65,16 @@ class StatTab(val tabName: String, val loc: Location, val yPos: Float, val cols:
         headerDisplay.apply {
             transformation = transformation.apply { translation.set(X + offset, 0f, 0f) }
         }
+    }
+
+    override fun positionX() {
+        headerBgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + absoluteX } }
+        headerDisplay.apply { transformation = transformation.apply { translation.x = X + absoluteX } }
+    }
+
+    override fun positionY() {
+        headerBgDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
+        headerDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
     }
 
     fun remove() {

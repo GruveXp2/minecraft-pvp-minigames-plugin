@@ -8,43 +8,45 @@ import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
 
-class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, layoutX: Float, layoutY: Double) {
+class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, parent: StatElement, layoutX: Float, layoutY: Float):
+    StatElement(parent, layoutX, layoutY) {
 
-    var layoutX: Float = layoutX
-        set(value) {
-            bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + value + offsetX } }
-            statDisplay.apply { transformation = transformation.apply { translation.x = X + value + offsetX } }
-            field = value
-        }
+    override fun positionX() {
+        bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + absoluteX + offsetX } }
+        statDisplay.apply { transformation = transformation.apply { translation.x = X + absoluteX + offsetX } }
+    }
 
-    private val bgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, layoutY, 0.0), TextDisplay::class.java).apply {
+    override fun positionY() {
+        bgDisplay.apply { transformation = transformation.apply { translation.y = absoluteY + offsetY } }
+        statDisplay.apply { transformation = transformation.apply { translation.y = absoluteY + offsetY } }
+    }
+
+    private val bgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         transformation = transformation.apply {
             scale.set(layoutWidth / textWidth(" "), 1f, 1f)
-            translation.set(X_*layoutWidth + layoutX, 0f, 0.01f)
+            translation.set(X_*layoutWidth + absoluteX, absoluteY, 0.01f)
         }
         billboard = Display.Billboard.VERTICAL
     }
 
-    private val statDisplay = Main.WORLD.spawn(loc.clone().add(0.0, layoutY, 0.0), TextDisplay::class.java).apply {
+    private val statDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(component)
         backgroundColor = Color.fromARGB(0)
-        transformation = transformation.apply { translation.set(X + layoutX, 0f, 0.02f) }
+        transformation = transformation.apply { translation.set(X + absoluteX, absoluteY, 0.02f) }
         billboard = Display.Billboard.VERTICAL
     }
 
     var offsetX: Float = 0f
         set(value) {
-            bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + layoutX + value } }
-            statDisplay.apply { transformation = transformation.apply { translation.x = X + layoutX + value } }
             field = value
+            positionX()
         }
 
     var offsetY: Float = 0f
         set(value) {
-            bgDisplay.apply { transformation = transformation.apply { translation.y = value } }
-            statDisplay.apply { transformation = transformation.apply { translation.y = value } }
             field = value
+            positionY()
         }
 
     fun remove() {
