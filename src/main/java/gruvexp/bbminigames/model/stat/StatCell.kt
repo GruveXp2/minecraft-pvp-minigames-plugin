@@ -49,6 +49,16 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
             positionY()
         }
 
+    fun setInvisible(invisible: Boolean) {
+        if (invisible) {
+            bgDisplay.apply { backgroundColor = Color.fromARGB(0) }
+            statDisplay.apply { textOpacity = 0 }
+        } else {
+            bgDisplay.apply { backgroundColor = Color.fromARGB(0x40000000) }
+            statDisplay.apply { textOpacity = 0xff.toByte() }
+        }
+    }
+
     fun remove() {
         bgDisplay.remove()
         statDisplay.remove()

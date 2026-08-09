@@ -58,6 +58,7 @@ public class TestCommand implements CommandExecutor {
     private static Hatch hatch;
 
     public static Directional orientable;
+    public static ResultDisplay display;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
@@ -74,9 +75,10 @@ public class TestCommand implements CommandExecutor {
                 case "td" -> {
                     ZTesting test = new ZTesting();
                     MatchResult result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA);
-                    ResultDisplay display = new ResultDisplay(p.getLocation().add(p.getLocation().getDirection().multiply(3)).add(0, 3, 0).setRotation(0, 0), result);
+                    display = new ResultDisplay(p.getLocation().add(p.getLocation().getDirection().multiply(3)).add(0, 3, 0).setRotation(0, 0), result);
                     BotBows.debugMessage("spawned it in");
                 }
+                case "tde" -> display.getDeathsTab().setExpanded(!display.getDeathsTab().isExpanded());
                 case "end_round" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {

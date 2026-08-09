@@ -8,13 +8,20 @@ import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
 
-class StatTab(tabName: String, loc: Location, layoutY: Float): StatElement(null, 0f, layoutY) {
-    val isExpanded: Boolean = false
+class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle: () -> Unit): StatElement(null, 0f, layoutY) {
+    var isExpanded: Boolean = false
+        set(value) {
+            field = value
+            hiddenCols.forEach { it.setInvisible(!value) }
+            recalculateColumns()
+            onExpandToggle()
+        }
 
     val cols: MutableList<StatCol> = mutableListOf()
+    val hiddenCols: MutableList<StatCol> = mutableListOf()
 
     val layoutWidth
-        get() = cols.sumOf { it.colWidth.toDouble() }.toFloat()
+        get() = cols.filter { it !in hiddenCols || isExpanded }.sumOf { it.colWidth.toDouble() }.toFloat()
 
     private val headerBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -41,12 +48,22 @@ class StatTab(tabName: String, loc: Location, layoutY: Float): StatElement(null,
         recalculateColumns()
     }
 
+    fun addHiddenColumns(cols: List<StatCol>) {
+        hiddenCols.addAll(cols)
+        addColumns(cols)
+        if (!isExpanded) {
+            cols.forEach { it.setInvisible(true) }
+        }
+    }
+
     fun recalculateColumns() {
         var x = - layoutWidth / 2
         cols.forEach {
-            x += it.colWidth/2
-            it.layoutX = x
-            x += it.colWidth/2
+            if (!hiddenCols.contains(it) || isExpanded) {
+                x += it.colWidth/2
+                it.layoutX = x
+                x += it.colWidth/2
+            }
         }
     }
 

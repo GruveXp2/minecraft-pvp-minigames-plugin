@@ -11,6 +11,9 @@ import org.bukkit.entity.TextDisplay
 
 class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: Float, val format: (PlayerMatchStats) -> TextComponent, statList : List<PlayerMatchStats>):
     StatElement(parent, 0f, layoutY) {
+
+    val darkBlueBg = Color.fromARGB(100, 32, 50, 100)
+
     val colWidth: Float
         get() {
             return textWidth(tabName) + 5*2*PX // 5px margin
@@ -25,7 +28,7 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
 
     private val headerBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
-        backgroundColor = Color.fromARGB(100, 32, 50, 100)
+        backgroundColor = darkBlueBg
         transformation = transformation.apply {
             scale.x = colWidth / textWidth(" ")
             translation.set(X_*colWidth + absoluteX, absoluteY, 0f)
@@ -46,6 +49,17 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
 
     fun setPlayerHeight(bp: BotBowsPlayer) {
 
+    }
+
+    fun setInvisible(invisible: Boolean) {
+        if (invisible) {
+            headerBgDisplay.apply { backgroundColor = Color.fromARGB(0) }
+            headerDisplay.apply { textOpacity = 0 }
+        } else {
+            headerBgDisplay.apply { backgroundColor = darkBlueBg }
+            headerDisplay.apply { textOpacity = 0xff.toByte() }
+        }
+        cells.values.forEach { it.setInvisible(invisible) }
     }
 
     fun recalculateHeight() {

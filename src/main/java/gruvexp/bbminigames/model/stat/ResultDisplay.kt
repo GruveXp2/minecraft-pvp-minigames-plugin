@@ -20,7 +20,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     val displays: MutableSet<Display> = mutableSetOf()
     val tabs: MutableSet<StatTab> = mutableSetOf()
 
-    val hitsTab = StatTab("Hits", loc, -1 * HEIGHT_PX).also { tab ->
+    val hitsTab = StatTab("Hits", loc, -1 * HEIGHT_PX) { recalculateTabs() }.also { tab ->
         tab.addColumns(listOf(
             StatCol(
                 "hits",
@@ -50,22 +50,24 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.add(tab)
     }
 
-    val deathsTab = StatTab("Deaths", loc, -HEIGHT_PX).also { tab ->
+    val deathsTab = StatTab("Deaths", loc, -HEIGHT_PX) { recalculateTabs() }.also { tab ->
         tab.addColumns(listOf(
-            StatCol(
-                "deaths",
-                loc,
-                tab,
-                -HEIGHT_PX,
-                { Component.text(it.deaths, NamedTextColor.RED) },
-                matchResult.playerStats.values.toList()
-            ),
             StatCol(
                 "survival",
                 loc,
                 tab,
                 -HEIGHT_PX,
                 { formatPercentage(matchResult.rounds, matchResult.rounds - it.deaths) },
+                matchResult.playerStats.values.toList()
+            )
+        ))
+        tab.addHiddenColumns(listOf(
+            StatCol(
+                "deaths",
+                loc,
+                tab,
+                -HEIGHT_PX,
+                { Component.text(it.deaths, NamedTextColor.RED) },
                 matchResult.playerStats.values.toList()
             )
         ))
@@ -128,14 +130,22 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     }
 
     fun recalculateTabs(): Float {
-        val totalWidth = tabs.sumOf { it.layoutWidth.toDouble() }
+        val totalWidth = tabs.sumOf { it.layoutWidth.toDouble() }.toFloat()
         var x = - totalWidth / 2
         tabs.forEach {
             x += it.layoutWidth/2
-            it.layoutX = x.toFloat()
+            it.layoutX = x
             x += it.layoutWidth/2
         }
-        return totalWidth.toFloat()
+        listOfNotNull(team1BgDisplay, team2BgDisplay).forEach {
+            it.apply {
+                transformation = transformation.apply {
+                    translation.x = X_*totalWidth
+                    scale.x = totalWidth / textWidth(" ")
+                }
+            }
+        }
+        return totalWidth
     }
 
     fun formatRatio(positive: Int, negative: Int): TextComponent {
