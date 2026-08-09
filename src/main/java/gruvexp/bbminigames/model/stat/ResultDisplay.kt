@@ -46,8 +46,31 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 { formatRatio(it.hits, it.damage) },
                 matchResult.playerStats.values.toList()
             )
-        )
-    )
+        ))
+        tabs.add(tab)
+    }
+
+    val deathsTab = StatTab("Deaths", loc, -HEIGHT_PX).also { tab ->
+        tab.addColumns(listOf(
+            StatCol(
+                "deaths",
+                loc,
+                tab,
+                -HEIGHT_PX,
+                { Component.text(it.deaths, NamedTextColor.RED) },
+                matchResult.playerStats.values.toList()
+            ),
+            StatCol(
+                "survival",
+                loc,
+                tab,
+                -HEIGHT_PX,
+                { formatPercentage(matchResult.rounds, matchResult.rounds - it.deaths) },
+                matchResult.playerStats.values.toList()
+            )
+        ))
+        tabs.add(tab)
+    }
 
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -76,6 +99,17 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             .forEach { (bp, stats) -> createPlayerRow(bp, f); f -= HEIGHT_PX }
     }
 
+    fun recalculateTabs(): Float {
+        val totalWidth = tabs.sumOf { it.layoutWidth.toDouble() }
+        var x = - totalWidth / 2
+        tabs.forEach {
+            x += it.layoutWidth/2
+            it.layoutX = x.toFloat()
+            x += it.layoutWidth/2
+        }
+        return totalWidth.toFloat()
+    }
+
     fun formatRatio(positive: Int, negative: Int): TextComponent {
         val ratio = if (negative > 0) positive.toFloat() / negative else positive.toFloat()
         val color: Int = when {
@@ -91,18 +125,33 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         return Component.text("%.1f".format(java.util.Locale.US, ratio), TextColor.color(color))
     }
 
+    fun formatPercentage(total: Int, given: Int): TextComponent {
+        val percentage = (given * 100) / total
+        val color: Int = when {
+            percentage == 100 -> 0x40FF40
+            percentage > 90 -> 0x80FF80
+            percentage > 80 -> 0xC0FFC0
+            percentage > 64 -> 0xE0FFD0
+            percentage > 50 -> 0xFFE0D0
+            percentage > 32 -> 0xFFC0C0
+            percentage > 20 -> 0xFF8080
+            else -> 0xFF4040
+        }
+        return Component.text("$percentage%", TextColor.color(color))
+    }
+
     fun createPlayerRow(bp: BotBowsPlayer, offset: Double) {
         val playerNameDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), TextDisplay::class.java).apply {
             text(bp.name)
             val offset = textWidth(bp.plainName) / 2
-            transformation = transformation.apply { translation.set(X -1.5f - 6*PX - offset, 0f, 0.01f); }
+            transformation = transformation.apply { translation.set(X - 2.5f - 6 * PX - offset, 0f, 0.01f); }
             billboard = Display.Billboard.VERTICAL
         }
 
         val playerHeadDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), ItemDisplay::class.java).apply {
             setItemStack(bp.avatar.headItem)
             transformation = transformation.apply {
-                translation.set(-1.4f, 8*PX, 0.01f)
+                translation.set(-2.4f, 8 * PX, 0.01f)
                 scale.set(0.25f, 0.25f, 0.25f)
                 leftRotation.set(AxisAngle4f(Math.toRadians(180.0).toFloat(), 0f, 1f, 0f))
             }
@@ -125,6 +174,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
     fun remove() {
         displays.forEach { it.remove() }
+        hitsTab.remove()
         deathsTab.remove()
     }
 }
