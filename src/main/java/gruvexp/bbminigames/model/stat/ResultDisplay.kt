@@ -59,45 +59,17 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         billboard = Display.Billboard.VERTICAL
     }
 
-//    val headerBgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, -0.25, 0.0), TextDisplay::class.java).apply {
-//        text(Component.text(" "))
-//        backgroundColor = Color.fromARGB(50, 100, 32, 50)
-//        transformation = transformation.apply { scale.set(24f, 1f, 1f); translation.set(X*24, 0f, 0f) }
-//        billboard = Display.Billboard.VERTICAL
-//    }
-//
-//    val killsHeaderDisplay = Main.WORLD.spawn(loc.clone().add(0.0, -0.25, 0.0), TextDisplay::class.java).apply {
-//        text(Component.text("kills"))
-//        backgroundColor = Color.fromARGB(0)
-//        transformation = transformation.apply { translation.set(X -1f, 0f, 0.01f); }
-//        billboard = Display.Billboard.VERTICAL
-//    }
-//
-//    val deathsHeaderDisplay = Main.WORLD.spawn(loc.clone().add(0.0, -0.25, 0.0), TextDisplay::class.java).apply {
-//        text(Component.text("deaths"))
-//        backgroundColor = Color.fromARGB(0)
-//        transformation = transformation.apply { translation.set(X, 0f, 0.01f); }
-//        billboard = Display.Billboard.VERTICAL
-//    }
-//
-//    val kdRatioHeaderDisplay = Main.WORLD.spawn(loc.clone().add(0.0, -0.25, 0.0), TextDisplay::class.java).apply {
-//        text(Component.text("k/d"))
-//        backgroundColor = Color.fromARGB(0)
-//        transformation = transformation.apply { translation.set(X+ 1, 0f, 0.01f); }
-//        billboard = Display.Billboard.VERTICAL
-//    }
-
     init {
-        displays.addAll(listOf(titleBgDisplay, titleDisplay/*, headerBgDisplay, killsHeaderDisplay, deathsHeaderDisplay, kdRatioHeaderDisplay*/)) //yrdy
+        displays.addAll(listOf(titleBgDisplay, titleDisplay))
 
         var f = -3 * HEIGHT_PX.toDouble()
         val winningTeam = if( matchResult.team1Won == true) TeamSide.TEAM_1 else TeamSide.TEAM_2
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide == winningTeam }
-            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= HEIGHT_PX }
+            .forEach { (bp, stats) -> createPlayerRow(bp, f); f -= HEIGHT_PX }
         matchResult.playerStats
             .filter { (bp, _) -> bp.team.teamSide != winningTeam }
-            .forEach { (bp, stats) -> createPlayerRow(bp, stats, f); f -= HEIGHT_PX }
+            .forEach { (bp, stats) -> createPlayerRow(bp, f); f -= HEIGHT_PX }
     }
 
     fun formatRatio(positive: Int, negative: Int): TextComponent {
@@ -115,7 +87,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         return Component.text("%.1f".format(java.util.Locale.US, ratio), TextColor.color(color))
     }
 
-    fun createPlayerRow(bp: BotBowsPlayer, stats: PlayerMatchStats, offset: Double) {
+    fun createPlayerRow(bp: BotBowsPlayer, offset: Double) {
         val playerNameDisplay = Main.WORLD.spawn(loc.clone().add(0.0, offset, 0.0), TextDisplay::class.java).apply {
             text(bp.name)
             val offset = textWidth(bp.plainName) / 2
@@ -145,42 +117,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         }
 
         displays.addAll(listOf(playerNameDisplay, playerStatsBgDisplay, playerHeadDisplay))
-
-//        createPlayerStatDisplay(offset, -1f, Component.text(stats.kills, TextColor.color(0x88FF88)), 2.5f)
-//        createPlayerStatDisplay(offset, 0f, Component.text(stats.deaths, TextColor.color(0xFF8888)), 2.5f)
-//
-//        val ratio = if (stats.deaths > 0) stats.kills.toFloat() / stats.deaths else stats.kills.toFloat()
-//        val color: Int = when {
-//            ratio > 5.0 -> 0x40FF40
-//            ratio > 2.0 -> 0x80FF80
-//            ratio > 1.3 -> 0xC0FFC0
-//            ratio > 1.0 -> 0xE0FFD0
-//            ratio > 0.8 -> 0xFFE0D0
-//            ratio > 0.5 -> 0xFFC0C0
-//            ratio > 0.2 -> 0xFF8080
-//            else -> 0xFF4040
-//        }
-//        val text = Component.text("%.1f".format(java.util.Locale.US, ratio), TextColor.color(color))
-//        createPlayerStatDisplay(offset, 1f, text, 4f)
-    }
-
-    fun createPlayerStatDisplay(yOffset: Double, xOffset: Float, text: TextComponent, bgWidth: Float) {
-        val bgDisplay = Main.WORLD.spawn(loc.clone().add(0.0, yOffset, 0.0), TextDisplay::class.java).apply {
-            text(Component.text(" "))
-            transformation = transformation.apply {
-                scale.set(bgWidth, 1f, 1f)
-                translation.set(X*bgWidth+ xOffset, 0f, 0.01f)
-            }
-            billboard = Display.Billboard.VERTICAL
-        }
-
-        val statDisplay = Main.WORLD.spawn(loc.clone().add(0.0, yOffset, 0.0), TextDisplay::class.java).apply {
-            text(text)
-            backgroundColor = Color.fromARGB(0)
-            transformation = transformation.apply { translation.set(X+ xOffset, 0f, 0.02f) }
-            billboard = Display.Billboard.VERTICAL
-        }
-        displays.addAll(listOf(bgDisplay, statDisplay))
     }
 
     fun remove() {
