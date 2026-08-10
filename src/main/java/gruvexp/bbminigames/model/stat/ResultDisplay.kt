@@ -20,7 +20,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     val displays: MutableSet<Display> = mutableSetOf()
     val tabs: MutableSet<StatTab> = mutableSetOf()
 
-    val hitsTab = StatTab("Hits", loc, -1 * HEIGHT_PX) { recalculateTabs() }.also { tab ->
+    val hitsTab = ColTab("Hits", loc, -1 * HEIGHT_PX) { recalculateTabs() }.also { tab ->
         tab.addColumns(listOf(
             StatCol(
                 "hits",
@@ -50,7 +50,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.add(tab)
     }
 
-    val deathsTab = StatTab("Deaths", loc, -HEIGHT_PX) { recalculateTabs() }.also { tab ->
+    val deathsTab = ColTab("Deaths", loc, -HEIGHT_PX) { recalculateTabs() }.also { tab ->
         tab.addColumns(listOf(
             StatCol(
                 "survival",
