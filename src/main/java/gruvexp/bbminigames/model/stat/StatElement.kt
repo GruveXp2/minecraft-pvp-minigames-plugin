@@ -3,7 +3,7 @@ package gruvexp.bbminigames.model.stat
 import org.bukkit.entity.Display
 import org.bukkit.util.Transformation
 
-const val ANIMATION_TICKS = 5
+const val ANIMATION_TICKS = 3
 
 // animated = false skips the trigger entirely, so the display jumps straight to the new transformation.
 // Needed for invisible displays: restarting the clock also restarts every other field that changed since
