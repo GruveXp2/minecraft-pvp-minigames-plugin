@@ -11,16 +11,6 @@ import org.bukkit.entity.TextDisplay
 class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, parent: StatElement, layoutX: Float, layoutY: Float):
     StatElement(parent, layoutX, layoutY) {
 
-    override fun positionX() {
-        bgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + absoluteX + offsetX } }
-        statDisplay.apply { transformation = transformation.apply { translation.x = X + absoluteX + offsetX } }
-    }
-
-    override fun positionY() {
-        bgDisplay.apply { transformation = transformation.apply { translation.y = absoluteY + offsetY } }
-        statDisplay.apply { transformation = transformation.apply { translation.y = absoluteY + offsetY } }
-    }
-
     private val bgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         transformation = transformation.apply {
@@ -35,6 +25,21 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
         backgroundColor = Color.fromARGB(0)
         transformation = transformation.apply { translation.set(X + absoluteX, absoluteY, 0.02f) }
         billboard = Display.Billboard.VERTICAL
+    }
+
+    override fun initSelf() {
+        bgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        statDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+    }
+
+    override fun positionX() {
+        bgDisplay.animate { translation.x = X_*layoutWidth + absoluteX + offsetX }
+        statDisplay.animate { translation.x = X + absoluteX + offsetX }
+    }
+
+    override fun positionY() {
+        bgDisplay.animate { translation.y = absoluteY + offsetY }
+        statDisplay.animate { translation.y = absoluteY + offsetY }
     }
 
     var offsetX: Float = 0f

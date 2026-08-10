@@ -1,5 +1,15 @@
 package gruvexp.bbminigames.model.stat
 
+import org.bukkit.entity.Display
+import org.bukkit.util.Transformation
+
+const val ANIMATION_TICKS = 5
+
+fun Display.animate(delay: Int = 0, block: Transformation.() -> Unit) {
+    interpolationDelay = delay // this is a trigger camouflaged as a field, so have to set it to 0 every time to trigger the animation, even tho it was already 0
+    transformation = transformation.apply(block)
+}
+
 abstract class StatElement(val parent: StatElement?, layoutX: Float, layoutY: Float) {
 
     val children: MutableSet<StatElement> = mutableSetOf()
@@ -18,6 +28,15 @@ abstract class StatElement(val parent: StatElement?, layoutX: Float, layoutY: Fl
             field = value
             updateY()
         }
+
+    private var inited = false
+    fun init() {
+        if (inited) return
+        inited = true
+        initSelf()
+        children.forEach { it.init() }
+    }
+    protected abstract fun initSelf()
 
     fun updateX() { positionX(); children.forEach { it.updateX() } }
     fun updateY() { positionY(); children.forEach { it.updateY() } }

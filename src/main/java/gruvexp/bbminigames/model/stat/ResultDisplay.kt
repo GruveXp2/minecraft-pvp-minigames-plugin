@@ -127,6 +127,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             }
             billboard = Display.Billboard.VERTICAL
         }
+        tabs.forEach { it.init() }
+        listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
     }
 
     fun recalculateTabs(): Float {
@@ -138,11 +140,9 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             x += it.layoutWidth/2
         }
         listOfNotNull(team1BgDisplay, team2BgDisplay).forEach {
-            it.apply {
-                transformation = transformation.apply {
-                    translation.x = X_*totalWidth
-                    scale.x = totalWidth / textWidth(" ")
-                }
+            it.animate {
+                translation.x = X_*totalWidth
+                scale.x = totalWidth / textWidth(" ")
             }
         }
         return totalWidth

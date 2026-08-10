@@ -42,6 +42,21 @@ class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle
 
     private val displays: Set<TextDisplay> = setOf(headerBgDisplay, headerDisplay)
 
+    override fun initSelf() {
+        headerBgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        headerDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+    }
+
+    override fun positionX() {
+        headerBgDisplay.animate { translation.x = X_*layoutWidth + absoluteX }
+        headerDisplay.animate { translation.x = X + absoluteX }
+    }
+
+    override fun positionY() {
+        headerBgDisplay.animate { translation.y = absoluteY }
+        headerDisplay.animate { translation.y = absoluteY }
+    }
+
     fun addColumns(cols: List<StatCol>) {
         this.cols.addAll(cols)
         children.addAll(cols)
@@ -82,16 +97,6 @@ class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle
         headerDisplay.apply {
             transformation = transformation.apply { translation.set(X + offset, 0f, 0f) }
         }
-    }
-
-    override fun positionX() {
-        headerBgDisplay.apply { transformation = transformation.apply { translation.x = X_*layoutWidth + absoluteX } }
-        headerDisplay.apply { transformation = transformation.apply { translation.x = X + absoluteX } }
-    }
-
-    override fun positionY() {
-        headerBgDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
-        headerDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
     }
 
     fun remove() {

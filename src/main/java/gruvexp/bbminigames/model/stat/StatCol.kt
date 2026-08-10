@@ -51,6 +51,25 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
 
     }
 
+    fun recalculateHeight() {
+
+    }
+
+    override fun initSelf() {
+        headerBgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        headerDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+    }
+
+    override fun positionX() {
+        headerBgDisplay.animate { translation.x = X_*colWidth + absoluteX + offsetX }
+        headerDisplay.animate { translation.x = X + absoluteX + offsetX }
+    }
+
+    override fun positionY() {
+        headerBgDisplay.animate { translation.y = absoluteY }
+        headerDisplay.animate { translation.y = absoluteY }
+    }
+
     fun setInvisible(invisible: Boolean) {
         if (invisible) {
             headerBgDisplay.apply { backgroundColor = Color.fromARGB(0) }
@@ -60,20 +79,6 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
             headerDisplay.apply { textOpacity = 0xff.toByte() }
         }
         cells.values.forEach { it.setInvisible(invisible) }
-    }
-
-    fun recalculateHeight() {
-
-    }
-
-    override fun positionX() {
-        headerBgDisplay.apply { transformation = transformation.apply { translation.x = X_*colWidth + absoluteX + offsetX } }
-        headerDisplay.apply { transformation = transformation.apply { translation.x = X + absoluteX + offsetX } }
-    }
-
-    override fun positionY() {
-        headerBgDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
-        headerDisplay.apply { transformation = transformation.apply { translation.y = absoluteY } }
     }
 
     fun remove() {
