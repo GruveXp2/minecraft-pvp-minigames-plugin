@@ -1,14 +1,18 @@
 package gruvexp.bbminigames.model.stat
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.TextDisplay
+import org.bukkit.scheduler.BukkitTask
 
 class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle: () -> Unit): StatElement(null, 0f, layoutY) {
+    private var expandTask: BukkitTask? = null
     var isExpanded: Boolean = false
         set(value) {
             field = value

@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.model.stat
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -61,22 +62,27 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
     }
 
     override fun positionX() {
-        headerBgDisplay.animate { translation.x = X_*colWidth + absoluteX + offsetX }
-        headerDisplay.animate { translation.x = X + absoluteX + offsetX }
+        headerBgDisplay.animate(!isInvisible) { translation.x = X_*colWidth + absoluteX + offsetX }
+        headerDisplay.animate(!isInvisible) { translation.x = X + absoluteX + offsetX }
     }
 
     override fun positionY() {
-        headerBgDisplay.animate { translation.y = absoluteY }
-        headerDisplay.animate { translation.y = absoluteY }
+        headerBgDisplay.animate(!isInvisible) { translation.y = absoluteY }
+        headerDisplay.animate(!isInvisible) { translation.y = absoluteY }
     }
 
+    var isInvisible: Boolean = false
+        private set
+
     fun setInvisible(invisible: Boolean) {
+        BotBows.debugMessage("invis -> $invisible")
+        isInvisible = invisible
         if (invisible) {
-            headerBgDisplay.apply { backgroundColor = Color.fromARGB(0) }
-            headerDisplay.apply { textOpacity = 0 }
+            headerBgDisplay.apply { backgroundColor = Color.fromARGB(0); interpolationDelay = 0 }
+            headerDisplay.apply { textOpacity = 0; interpolationDelay = 0 }
         } else {
-            headerBgDisplay.apply { backgroundColor = darkBlueBg }
-            headerDisplay.apply { textOpacity = 0xff.toByte() }
+            headerBgDisplay.apply { backgroundColor = darkBlueBg; interpolationDelay = 0 }
+            headerDisplay.apply { textOpacity = 0xff.toByte(); interpolationDelay = 0 }
         }
         cells.values.forEach { it.setInvisible(invisible) }
     }

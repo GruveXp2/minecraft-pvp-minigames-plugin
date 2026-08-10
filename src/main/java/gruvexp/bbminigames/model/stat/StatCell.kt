@@ -33,13 +33,13 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
     }
 
     override fun positionX() {
-        bgDisplay.animate { translation.x = X_*layoutWidth + absoluteX + offsetX }
-        statDisplay.animate { translation.x = X + absoluteX + offsetX }
+        bgDisplay.animate(!isInvisible) { translation.x = X_*layoutWidth + absoluteX + offsetX }
+        statDisplay.animate(!isInvisible) { translation.x = X + absoluteX + offsetX }
     }
 
     override fun positionY() {
-        bgDisplay.animate { translation.y = absoluteY + offsetY }
-        statDisplay.animate { translation.y = absoluteY + offsetY }
+        bgDisplay.animate(!isInvisible) { translation.y = absoluteY + offsetY }
+        statDisplay.animate(!isInvisible) { translation.y = absoluteY + offsetY }
     }
 
     var offsetX: Float = 0f
@@ -54,13 +54,17 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
             positionY()
         }
 
+    var isInvisible: Boolean = false
+        private set
+
     fun setInvisible(invisible: Boolean) {
+        isInvisible = invisible
         if (invisible) {
-            bgDisplay.apply { backgroundColor = Color.fromARGB(0) }
-            statDisplay.apply { textOpacity = 0 }
+            bgDisplay.apply { backgroundColor = Color.fromARGB(0); interpolationDelay = 0 }
+            statDisplay.apply { textOpacity = 0; interpolationDelay = 0 }
         } else {
-            bgDisplay.apply { backgroundColor = Color.fromARGB(0x40000000) }
-            statDisplay.apply { textOpacity = 0xff.toByte() }
+            bgDisplay.apply { backgroundColor = Color.fromARGB(0x40000000); interpolationDelay = 0 }
+            statDisplay.apply { textOpacity = 0xff.toByte(); interpolationDelay = 0 }
         }
     }
 
