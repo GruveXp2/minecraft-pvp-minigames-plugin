@@ -16,9 +16,7 @@ class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle
     var isExpanded: Boolean = false
         set(value) {
             field = value
-            hiddenCols.forEach { it.setInvisible(!value) }
-            recalculateColumns()
-            onExpandToggle()
+            if (value) expand(true) else collapse(false)
         }
 
     val cols: MutableList<StatCol> = mutableListOf()
@@ -59,6 +57,31 @@ class StatTab(tabName: String, loc: Location, layoutY: Float, val onExpandToggle
     override fun positionY() {
         headerBgDisplay.animate { translation.y = absoluteY }
         headerDisplay.animate { translation.y = absoluteY }
+    }
+
+    private fun expand(setValue: Boolean) {
+        recalculateColumns()
+        onExpandToggle()
+
+        expandTask?.cancel()
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (isExpanded == setValue) {
+                hiddenCols.forEach { it.setInvisible(!setValue) }
+            }
+        }, ANIMATION_TICKS.toLong() + 1)
+    }
+
+    private fun collapse(setValue: Boolean) {
+        hiddenCols.forEach { it.setInvisible(!setValue) }
+
+        expandTask?.cancel()
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (isExpanded == setValue) {
+                BotBows.debugMessage("moving")
+                recalculateColumns()
+                onExpandToggle()
+            }
+        }, ANIMATION_TICKS.toLong() + 1)
     }
 
     fun addColumns(cols: List<StatCol>) {
