@@ -15,7 +15,7 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
         text(Component.text(" "))
         transformation = transformation.apply {
             scale.set(layoutWidth / textWidth(" "), 0.9f, 1f)
-            translation.set(X_*layoutWidth + absoluteX, absoluteY + PX, 0.01f)
+            translation.set(X_*layoutWidth + absoluteX, absoluteY + PX, -0.01f)
         }
         billboard = Display.Billboard.VERTICAL
     }
@@ -23,7 +23,7 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
     private val statDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(component)
         backgroundColor = Color.fromARGB(0)
-        transformation = transformation.apply { translation.set(X + absoluteX, absoluteY, 0.02f) }
+        transformation = transformation.apply { translation.set(X + absoluteX, absoluteY, 0.01f) }
         billboard = Display.Billboard.VERTICAL
     }
 
