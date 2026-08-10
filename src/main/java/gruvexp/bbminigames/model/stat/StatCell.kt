@@ -14,8 +14,8 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
     private val bgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         transformation = transformation.apply {
-            scale.set(layoutWidth / textWidth(" "), 1f, 1f)
-            translation.set(X_*layoutWidth + absoluteX, absoluteY, 0.01f)
+            scale.set(layoutWidth / textWidth(" "), 0.9f, 1f)
+            translation.set(X_*layoutWidth + absoluteX, absoluteY + PX, 0.01f)
         }
         billboard = Display.Billboard.VERTICAL
     }
@@ -38,7 +38,7 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
     }
 
     override fun positionY() {
-        bgDisplay.animate(!isInvisible) { translation.y = absoluteY + offsetY }
+        bgDisplay.animate(!isInvisible) { translation.y = absoluteY + offsetY + PX }
         statDisplay.animate(!isInvisible) { translation.y = absoluteY + offsetY }
     }
 
