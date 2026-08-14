@@ -1,14 +1,18 @@
 package gruvexp.bbminigames.model.stat
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
 
 class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: List<PlayerMatchStats>, onExpandToggle: () -> Unit) : StatTab(tabName, loc, layoutY, onExpandToggle) {
     override val layoutWidth: Float
@@ -17,49 +21,147 @@ class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: Li
         }
 
     val rows: List<AbilityRow> = playerStats.mapIndexed { index, stats ->
-        AbilityRow(this, absoluteX, -HEIGHT_PX * index, stats)
+        AbilityRow(loc, this, absoluteX, -HEIGHT_PX * index, stats)
     }.toList()
 
+    private var expandTask: BukkitTask? = null
+
     override fun expand() {
-        TODO("Not yet implemented")
+        rows.forEach { it.isExpanded = true }
+        expandTask?.cancel()
+        onExpandToggle()
     }
 
     override fun collapse() {
-        TODO("Not yet implemented")
+        rows.forEach { it.isExpanded = false }
+        expandTask?.cancel()
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (!isExpanded) {
+                onExpandToggle()
+            }
+        }, ANIMATION_TICKS.toLong() + 1)
+    }
+
+    override fun remove() {
+        super.remove()
+        rows.forEach { it.remove() }
     }
 }
 
-class AbilityRow(parent: StatElement, layoutX: Float, layoutY: Float, playerStats: PlayerMatchStats) : StatElement(parent, layoutX, layoutY) {
+class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Float, playerStats: PlayerMatchStats) : StatElement(parent, layoutX, layoutY) {
 
-    val layoutWidth: Float
-        get() {
+    var isExpanded: Boolean = false
+        set(value) {
+            field = value
+            if (value) expand() else collapse()
         }
 
+    var totalWidthCache = 0f
+    val layoutWidth: Float
+        get() = totalWidthCache
+
+    val crossbowCell = AbilityCell(loc, this, 0f, 0f, BotBows.BOTBOW, Component.text(playerStats.crossbowKills, NamedTextColor.RED))
+        .apply { isHidden = true; isExpanded = true }
+    val abilityCells = playerStats.abilitySuccesses
+        .map { (abilityType, successes) -> AbilityCell(loc, this, 0f, 0f, abilityType.abilityItem, Component.text(successes)) }
+
     override fun initSelf() {
-        TODO("Not yet implemented")
+        crossbowCell.isHidden = true
+        calculateCellPlacements()
     }
 
     override fun positionX() {
-        TODO("Not yet implemented")
+        // not needed since theres no display elements
     }
 
     override fun positionY() {
-        TODO("Not yet implemented")
+        // ditto
     }
 
+    private fun expand() {
+        crossbowCell.isHidden = false
+        abilityCells.forEach { it.isExpanded = true; it.updateX() }
+        calculateCellPlacements()
+    }
+
+    private fun collapse() {
+        crossbowCell.isHidden = true
+        abilityCells.forEach { it.isExpanded = false; it.updateX() }
+        calculateCellPlacements()
+    }
+
+    fun calculateCellPlacements() {
+        var totalWidth = if (isExpanded) crossbowCell.layoutWidth else 0f
+        abilityCells.forEach { cell ->
+            cell.layoutX = totalWidth
+            totalWidth += cell.layoutWidth + 2*PX
+        }
+        totalWidthCache = totalWidth
+    }
+
+    fun remove() {
+        crossbowCell.remove()
+        abilityCells.forEach { it.remove() }
+    }
 }
 
 const val ICON_SIZE = 0.25f
 
 class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: Float, item: ItemStack, statComponent: TextComponent) : StatElement(parent, layoutX, layoutY) {
 
-    var isExpanded: Boolean
+    var isExpanded: Boolean = false
         set(value) {
+            field = value
+            if (!isHidden) {
+                if (value) expand() else collapse()
+            }
+        }
 
+    var isHidden: Boolean = false
+        set(value) {
+            field = value
+            if (value) show() else hide()
         }
 
     val layoutWidth: Float
-        get() = ICON_SIZE + (if (isExpanded) 12*PX else 0f) + 2*PX
+        get() = if (isHidden) 0f
+                else ICON_SIZE + (if (isExpanded) 12*PX else 0f) + 2*PX
+
+    private var expandTask: BukkitTask? = null
+
+    private fun expand() {
+        updateX()
+        bgDisplay.animate { scale.set(layoutWidth / textWidth(" ")) }
+
+        expandTask?.cancel()
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (isExpanded) {
+                statDisplay.animate { scale.set(1f) }
+            }
+        }, ANIMATION_TICKS.toLong() + 1)
+    }
+
+    private fun collapse() {
+        statDisplay.animate { scale.set(0f) }
+
+        expandTask?.cancel()
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (!isExpanded) {
+                updateX()
+                bgDisplay.animate { scale.set(layoutWidth / textWidth(" ")) }
+            }
+        }, ANIMATION_TICKS.toLong() + 1)
+    }
+
+    private fun show() {
+        iconDisplay.animate { scale.set(1f) }
+        if (isExpanded) expand()
+    }
+
+    private fun hide() {
+        iconDisplay.animate { scale.set(0f) }
+        if (isExpanded) collapse()
+    }
 
     private val bgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -101,4 +203,9 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
         statDisplay.animate(isExpanded) { translation.y = absoluteY }
     }
 
+    fun remove() {
+        bgDisplay.remove()
+        iconDisplay.remove()
+        statDisplay.remove()
+    }
 }
