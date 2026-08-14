@@ -47,6 +47,7 @@ public class DamageListener implements Listener {
                 }
                 if (hasKarma) {
                     attackerBp.getKarma();
+                    defenderBp.getAbility(AbilityType.KARMA_POTION).registerSuccess();
                 }
             }
         } else {

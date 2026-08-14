@@ -187,7 +187,12 @@ public class CreeperTrap extends Ability implements AbilityTrigger.OnEntityPlace
                 BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
                 hitPlayers.add(bp);
             }
-            hitPlayers.forEach(bp -> bp.damage(new DamageContext.Player(DamageType.Player.CREEPER, owner)));
+            Ability ability = owner.getAbility(AbilityType.CREEPER_TRAP);
+            hitPlayers.forEach(bp -> {
+                bp.damage(new DamageContext.Player(DamageType.Player.CREEPER, owner));
+
+                if (bp != owner) ability.registerSuccess(); else ability.registerFail();
+            });
         }
     }
 }

@@ -9,13 +9,16 @@ data class PlayerMatchStats(
     var deaths: Int = 0,
     var hits: Int = 0,
     var damage: Int = 0,
-    val abilityUses: MutableMap<AbilityType, Int> = mutableMapOf()
+    val abilitySuccesses: MutableMap<AbilityType, Int> = mutableMapOf()
 )  {
     fun addKill() { kills++ }
     fun addDeath() { deaths++ }
     fun addHit() { hits++ }
     fun addDamage() { damage++ }
-    fun addAbilityUse(abilityType: AbilityType) {
-        abilityUses[abilityType] = abilityUses.getOrDefault(abilityType, 0) + 1
+    fun addAbilitySuccess(abilityType: AbilityType) {
+        abilitySuccesses[abilityType] = abilitySuccesses.getOrDefault(abilityType, 0) + 1
+    }
+    fun subtractAbilitySuccess(abilityType: AbilityType) {
+        abilitySuccesses[abilityType] = abilitySuccesses.getOrDefault(abilityType, 0) - 1
     }
 }

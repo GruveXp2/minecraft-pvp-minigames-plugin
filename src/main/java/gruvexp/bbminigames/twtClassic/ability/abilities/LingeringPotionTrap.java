@@ -155,5 +155,6 @@ public class LingeringPotionTrap extends Ability implements AbilityTrigger.OnLin
                 .append(bp.getName())
                 .append(Component.text("'s lingering potion cloud and got "))
                 .append(Component.text(effectName, NamedTextColor.DARK_RED)));
+        registerSuccess();
     }
 }

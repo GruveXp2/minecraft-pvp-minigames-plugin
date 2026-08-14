@@ -35,10 +35,11 @@ public class BubbleJet extends Ability {
                     return;
                 }
                 bp.getNearbyPlayers(DAMAGE_RADIUS).stream()
-                        .filter(nearbyPlayer -> nearbyPlayer.getTeam() != BubbleJet.this.bp.getTeam())
+                        .filter(nearbyPlayer -> nearbyPlayer.getTeam() != bp.getTeam())
                         .forEach(target -> {
                             target.avatar.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false));
                             target.damage(new DamageContext.Player(DamageType.Player.BUBBLE_JET, bp));
+                            registerSuccess();
                         });
             }
         };

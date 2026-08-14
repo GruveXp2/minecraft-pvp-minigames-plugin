@@ -66,12 +66,14 @@ public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, Abil
 
         Color attackerTeamColor = attacker.getTeam().getDyeColor().getColor();
         World world = attacker.getLocation().getWorld();
+        Ability ability = attacker.getAbility(AbilityType.THUNDER_BOW);
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
             Location nearbyPlayerLoc = nearbyPlayer.getLocation().add(0, 1, 0); // the arc will hit the middle of the player
             world.strikeLightningEffect(nearbyPlayerLoc);
             createElectricArc(defender.getLocation().add(0, 1, 0), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
             nearbyPlayer.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker));
             handledPlayers.add(nearbyPlayer);
+            ability.registerSuccess();
         }
         for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
             handleChain(attacker, nearbyPlayer, handledPlayers);

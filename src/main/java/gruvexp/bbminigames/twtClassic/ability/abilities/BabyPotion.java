@@ -28,6 +28,7 @@ public class BabyPotion extends PotionAbility {
                 PlayerEffectManager.ScalePriority.NORMAL,
                 DURATION * 20L
         );
+        registerSuccess();
         players.forEach(bp -> {
             bp.avatar.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4));
             bp.getEffectManager().applyScale(
@@ -36,6 +37,7 @@ public class BabyPotion extends PotionAbility {
                     PlayerEffectManager.ScalePriority.NORMAL,
                     DURATION * 15L
             );
+            registerSuccess();
         }); // 75% of the effect will be given to other players on the team
     }
 

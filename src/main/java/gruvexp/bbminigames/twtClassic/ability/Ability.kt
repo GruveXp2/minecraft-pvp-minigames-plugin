@@ -64,8 +64,6 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
         val game = bp.lobby.botBowsGame ?: return
         if (game.canMove) return  // null check used when testing ability outside of match
 
-        game.matchResult.registerAbilityUse(bp, type)
-
         if (type.category == AbilityCategory.DAMAGING) {
             bp.loseWeaponAbilities()
         } else {
@@ -74,6 +72,9 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
             }
         }
     }
+
+    fun registerSuccess() = bp.lobby.botBowsGame!!.matchResult.registerAbilitySuccess(bp, type)
+    fun registerFail() = bp.lobby.botBowsGame!!.matchResult.registerAbilityFail(bp, type)
 
     private fun getCooldownItem(cooldown: Int) = when {
         cooldown > 10 -> type.cooldownItems[0].clone()
@@ -118,7 +119,9 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
 
     companion object {
         fun create(type: AbilityType, bp: BotBowsPlayer, slot: Int): Ability = when (type) {
-            AbilityType.ENDER_PEARL -> Ability(bp, slot, AbilityType.ENDER_PEARL)
+            AbilityType.ENDER_PEARL -> object : Ability(bp, slot, AbilityType.ENDER_PEARL) {
+                override fun use() = registerSuccess()
+            }
             AbilityType.RADAR -> Radar(bp, slot)
             AbilityType.SPLASH_BOW -> SplashBow(bp, slot)
             AbilityType.THUNDER_BOW -> ThunderBow(bp, slot)

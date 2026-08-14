@@ -42,7 +42,7 @@ class StatsService(
                         it[hits] = stats.hits
                         it[damage] = stats.damage
                     }
-                    stats.abilityUses.forEach { (type, amount) ->
+                    stats.abilitySuccesses.forEach { (type, amount) ->
                         MatchPlayerAbilityUsesTable.insert {
                             it[this.matchId] = matchId
                             it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName

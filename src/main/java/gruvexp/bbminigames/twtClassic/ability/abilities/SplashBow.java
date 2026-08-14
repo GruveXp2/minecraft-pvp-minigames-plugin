@@ -40,11 +40,16 @@ public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, Abili
         attacker.getWorld().spawnParticle(Particle.DUST, hitLoc, 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
         BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
         if (attackerBp == null) return;
+        Ability ability = attackerBp.getAbility(AbilityType.SPLASH_BOW);
         hitLoc.getWorld().getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS).stream()
                 .map(Entity::getUniqueId)
                 .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
                 .filter(BotBowsPlayer::isAlive)
-                .forEach(bp -> bp.damage(new DamageContext.Player(DamageType.Player.SPLASH_BOW, attackerBp)));
+                .forEach(bp -> {
+                    bp.damage(new DamageContext.Player(DamageType.Player.SPLASH_BOW, attackerBp));
+
+                    if (bp != attackerBp) ability.registerSuccess(); else ability.registerFail();
+                });
     }
 
     @Override

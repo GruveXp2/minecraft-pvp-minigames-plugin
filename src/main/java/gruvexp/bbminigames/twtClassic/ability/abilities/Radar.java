@@ -22,5 +22,6 @@ public class Radar extends Ability {
         BotBowsTeam opponentTeam = bp.getTeam().getOppositeTeam();
         opponentTeam.getPlayers().forEach(bp -> bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.RADAR, (long) DURATION, NamedTextColor.YELLOW, BLINK_PERIOD));
         CreeperTrap.glowCreepers(opponentTeam, Radar.DURATION);
+        registerSuccess();
     }
 }

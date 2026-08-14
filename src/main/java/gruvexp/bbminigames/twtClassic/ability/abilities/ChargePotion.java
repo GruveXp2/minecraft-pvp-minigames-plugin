@@ -29,11 +29,13 @@ public class ChargePotion extends PotionAbility {
         players.forEach(bp -> {
                     bp.setAbilityCooldownTickRate(13);
                     bp.obtainWeaponAbilities();
-                });
+        });
+        registerSuccess();
 
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> {
             bp.setAbilityCooldownTickRate(20);
             players.forEach(bp -> bp.setAbilityCooldownTickRate(20));
+            registerSuccess();
         }, 20L * DURATION);
     }
 

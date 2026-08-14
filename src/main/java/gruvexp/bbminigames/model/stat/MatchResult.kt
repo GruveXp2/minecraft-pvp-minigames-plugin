@@ -32,7 +32,11 @@ data class MatchResult @JvmOverloads constructor(
         getPlayerStats(defender).addDamage()
     }
 
-    fun registerAbilityUse(user: BotBowsPlayer, abilityType: AbilityType) {
-        getPlayerStats(user).addAbilityUse(abilityType)
+    fun registerAbilitySuccess(user: BotBowsPlayer, abilityType: AbilityType) {
+        getPlayerStats(user).addAbilitySuccess(abilityType)
+    }
+
+    fun registerAbilityFail(user: BotBowsPlayer, abilityType: AbilityType) {
+        getPlayerStats(user).subtractAbilitySuccess(abilityType)
     }
 }

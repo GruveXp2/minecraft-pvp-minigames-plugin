@@ -122,6 +122,7 @@ public class LaserTrap extends Ability implements AbilityTrigger.OnBlockPlace {
                         Math.abs(proximity.getY()) < offset.getY() + 1 &&
                         Math.abs(proximity.getZ()) < offset.getZ() + 0.5) {
                     defender.damage(new DamageContext.Player(DamageType.Player.LASER, bp));
+                    registerSuccess();
                 }
             }
             Location loc = origin.clone();
