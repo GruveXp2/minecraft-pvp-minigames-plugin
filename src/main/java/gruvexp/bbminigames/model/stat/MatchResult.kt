@@ -4,7 +4,6 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class MatchResult @JvmOverloads constructor(
     val map: BotBowsMap,
