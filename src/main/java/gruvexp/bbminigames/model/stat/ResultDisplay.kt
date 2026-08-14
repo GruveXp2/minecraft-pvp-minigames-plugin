@@ -74,6 +74,10 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.add(tab)
     }
 
+    val abilityTab = AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
+        tabs.add(tab)
+    }
+
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
         backgroundColor = Color.fromARGB(100, 32, 50, 100)
@@ -203,5 +207,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         displays.forEach { it.remove() }
         hitsTab.remove()
         deathsTab.remove()
+        abilityTab.remove()
     }
 }
