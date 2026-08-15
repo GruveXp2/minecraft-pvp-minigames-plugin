@@ -14,18 +14,6 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
     override val layoutWidth
         get() = cols.filter { it !in hiddenCols || isExpanded }.sumOf { it.colWidth.toDouble() }.toFloat()
 
-    override fun initSelf() {
-        super.initSelf()
-    }
-
-    override fun positionX() {
-        super.positionX()
-    }
-
-    override fun positionY() {
-        super.positionY()
-    }
-
     override fun expand() {
         recalculateColumns()
         onExpandToggle()
