@@ -149,7 +149,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
 
     private fun expand() {
         updateX()
-        bgDisplay.animate { scale.set(layoutWidth / textWidth(" ")) }
+        bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
 
         expandTask?.cancel()
         expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
@@ -166,7 +166,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
         expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
             if (!isExpanded) {
                 updateX()
-                bgDisplay.animate { scale.set(layoutWidth / textWidth(" ")) }
+                bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
             }
         }, ANIMATION_TICKS.toLong() + 1)
     }
