@@ -50,9 +50,15 @@ class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: Li
         }, ANIMATION_TICKS.toLong() + 1)
     }
 
-    fun calculateRowPlacement() { // offset them so they are left aligned instead of center (maybe replace layoutXY with leftaligned as default, and provide functions to calculate center and right aligned with the layoutWidth?)
-        val newX = -layoutWidth / 2
-        rows.forEach { it.layoutX = newX }
+    fun calculateRowPlacement() { // offset them so they are left aligned instead of center TODO: (replace with Alignment enum, LEFT, CENTER, RIGHT, that does it automatically)
+        rows.forEach {
+            val offset = if (it.isExpanded) {
+                it.crossbowCell.layoutWidth / 2
+            } else {
+                (it.abilityCells.firstOrNull()?.layoutWidth ?: 0f) / 2
+            }
+            it.layoutX = -layoutWidth / 2 + offset
+        }
     }
 
     override fun remove() {
