@@ -72,7 +72,7 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
             return totalWidthCache
         }
 
-    val crossbowCell = AbilityCell(loc, this, 0f, 0f, BotBows.BOTBOW, Component.text(playerStats.crossbowKills, NamedTextColor.RED))
+    val crossbowCell = AbilityCell(loc, this, 0f, 0f, BotBows.BOTBOW, Component.text(playerStats.crossbowHits, NamedTextColor.RED))
         .apply { isExpanded = true; isHidden = true }
         .also { children.add(it) }
     val abilityCells = playerStats.abilitySuccesses

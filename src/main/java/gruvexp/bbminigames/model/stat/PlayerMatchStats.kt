@@ -12,8 +12,8 @@ data class PlayerMatchStats(
     var damage: Int = 0,
     val abilitySuccesses: MutableMap<AbilityType, Int> = mutableMapOf()
 )  {
-    val crossbowKills: Int
-        get() = kills - abilitySuccesses
+    val crossbowHits: Int
+        get() = hits - abilitySuccesses
             .filter { it.key.category == AbilityCategory.DAMAGING }
             .filter { !listOf(AbilityType.CREEPER_TRAP, AbilityType.LASER_TRAP).contains(it.key) }
             .map { it.value }
