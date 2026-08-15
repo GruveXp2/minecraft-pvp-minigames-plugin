@@ -105,7 +105,7 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
     }
 
     fun calculateCellPlacements() {
-        var totalWidth = if (isExpanded) crossbowCell.layoutWidth + 2*PX else 0f
+        var totalWidth = 1*PX + if (isExpanded) crossbowCell.layoutWidth + 2*PX else 0f
         abilityCells.forEach { cell ->
             cell.layoutX = totalWidth
             totalWidth += cell.layoutWidth + 2*PX
