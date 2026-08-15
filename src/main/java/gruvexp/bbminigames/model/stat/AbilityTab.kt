@@ -21,7 +21,7 @@ class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: Li
         }
 
     val rows: List<AbilityRow> = playerStats
-        .mapIndexed { index, stats -> AbilityRow(loc, this, absoluteX, -HEIGHT_PX * index, stats) }
+        .mapIndexed { index, stats -> AbilityRow(loc, this, absoluteX, -HEIGHT_PX * (index + 2), stats) }
         .toList()
         .also { children.addAll(it) }
 
