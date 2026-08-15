@@ -77,6 +77,7 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
         .also { children.add(it) }
     val abilityCells = playerStats.abilitySuccesses
         .map { (abilityType, successes) -> AbilityCell(loc, this, 0f, 0f, abilityType.abilityItem, Component.text(successes, abilityType.effect.color)) }
+        .also { cells -> cells.forEach { it.isExpanded = false } }
         .also { children.addAll(it) }
 
     override fun initSelf() {
