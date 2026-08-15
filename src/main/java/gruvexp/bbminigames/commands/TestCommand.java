@@ -79,6 +79,7 @@ public class TestCommand implements CommandExecutor {
                     BotBows.debugMessage("spawned it in");
                 }
                 case "tde" -> display.getDeathsTab().setExpanded(!display.getDeathsTab().isExpanded());
+                case "tde2" -> display.getAbilityTab().setExpanded(!display.getAbilityTab().isExpanded());
                 case "end_round" -> {
                     BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
                     if (bp == null) {
