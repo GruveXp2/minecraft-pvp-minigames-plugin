@@ -153,7 +153,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
 
         expandTask?.cancel()
         expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
-            if (isExpanded) {
+            if (isExpanded && !isHidden) {
                 statDisplay.animate { scale.set(1f) }
             }
         }, ANIMATION_TICKS.toLong() + 1)
