@@ -155,7 +155,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
     }
 
     private fun show() {
-        iconDisplay.animate { scale.set(1f) }
+        iconDisplay.animate { scale.set(8*PX) }
         if (isExpanded) expand()
     }
 
@@ -175,7 +175,10 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
 
     private val iconDisplay = Main.WORLD.spawn(loc, ItemDisplay::class.java).apply {
         setItemStack(item)
-        transformation = transformation.apply { translation.set(X + absoluteX, absoluteY, 0.01f) }
+        transformation = transformation.apply {
+            translation.set(X + absoluteX, absoluteY, 0.01f)
+            scale.set(8*PX)
+        }
         billboard = Display.Billboard.VERTICAL
     }
 
