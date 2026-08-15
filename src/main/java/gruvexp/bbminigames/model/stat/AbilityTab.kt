@@ -63,8 +63,10 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
 
     val crossbowCell = AbilityCell(loc, this, 0f, 0f, BotBows.BOTBOW, Component.text(playerStats.crossbowKills, NamedTextColor.RED))
         .apply { isHidden = true; isExpanded = true }
+        .also { children.add(it) }
     val abilityCells = playerStats.abilitySuccesses
         .map { (abilityType, successes) -> AbilityCell(loc, this, 0f, 0f, abilityType.abilityItem, Component.text(successes)) }
+        .also { children.addAll(it) }
 
     override fun initSelf() {
         crossbowCell.isHidden = true
@@ -156,12 +158,14 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
     }
 
     private fun show() {
+        BotBows.debugMessage("scale -> 8*PX", debug)
         bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
         iconDisplay.animate { scale.set(8*PX) }
         if (isExpanded) expand()
     }
 
     private fun hide() {
+        BotBows.debugMessage("scale -> 0", debug)
         bgDisplay.animate { scale.x = 0f }
         iconDisplay.animate { scale.set(0f) }
         if (isExpanded) collapse()
