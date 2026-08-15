@@ -121,7 +121,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
     var isHidden: Boolean = false
         set(value) {
             field = value
-            if (value) show() else hide()
+            if (value) hide() else show()
         }
 
     val layoutWidth: Float
