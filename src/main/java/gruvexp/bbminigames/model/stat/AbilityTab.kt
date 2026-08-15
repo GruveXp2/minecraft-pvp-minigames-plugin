@@ -128,7 +128,7 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
     }
 }
 
-const val ICON_SIZE = 0.25f
+const val ICON_SIZE = 10*PX
 
 class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: Float, item: ItemStack, statComponent: TextComponent) : StatElement(parent, layoutX, layoutY) {
 
@@ -224,8 +224,8 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
 
     override fun positionX() {
         bgDisplay.animate { translation.x = X_*layoutWidth + absoluteX }
-        iconDisplay.animate { translation.x = X_*layoutWidth + absoluteX }
-        statDisplay.animate(isExpanded) { translation.x = X + absoluteX + 10*PX }
+        iconDisplay.animate { translation.x = absoluteX + (if (isExpanded) - 6*PX else 0f) }
+        statDisplay.animate(isExpanded) { translation.x = X + absoluteX + 4*PX }
     }
 
     override fun positionY() {
