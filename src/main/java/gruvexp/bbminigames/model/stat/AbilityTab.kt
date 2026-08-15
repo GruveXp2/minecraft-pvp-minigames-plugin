@@ -156,11 +156,13 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
     }
 
     private fun show() {
+        bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
         iconDisplay.animate { scale.set(8*PX) }
         if (isExpanded) expand()
     }
 
     private fun hide() {
+        bgDisplay.animate { scale.x = 0f }
         iconDisplay.animate { scale.set(0f) }
         if (isExpanded) collapse()
     }
