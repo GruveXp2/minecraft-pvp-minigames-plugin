@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.model.stat
 
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
+import gruvexp.bbminigames.twtClassic.ability.AbilityEffect
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 
 data class PlayerMatchStats(
@@ -14,8 +14,7 @@ data class PlayerMatchStats(
 )  {
     val crossbowHits: Int
         get() = hits - abilitySuccesses
-            .filter { it.key.category == AbilityCategory.DAMAGING }
-            .filter { !listOf(AbilityType.CREEPER_TRAP, AbilityType.LASER_TRAP).contains(it.key) }
+            .filter { it.key.effect == AbilityEffect.DAMAGE }
             .map { it.value }
             .sum()
 

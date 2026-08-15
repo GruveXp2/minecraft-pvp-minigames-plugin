@@ -29,10 +29,10 @@ import java.util.*
 
 val KEY: NamespacedKey = NamespacedKey("botbows", "ability_item")
 
-enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: String, category: AbilityCategory) {
+enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: String, category: AbilityCategory, effect: AbilityEffect) {
     SPLASH_BOW(
         makeSplashBow(),
-        "CONCRETE_POWDER", AbilityCategory.DAMAGING
+        "CONCRETE_POWDER", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     THUNDER_BOW(
         Menu.makeItem(
@@ -43,15 +43,15 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
             getDamageInfo("chain", 6, 'r'),
             getDurationInfo(ThunderBow.DURATION)
         ),
-        "TERRACOTTA", AbilityCategory.DAMAGING
+        "TERRACOTTA", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     BUBBLE_JET(
         makeRiptideTrident(),
-        "CANDLE", AbilityCategory.DAMAGING
+        "CANDLE", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     LONG_ARMS(
         makeLongHandsItem(),
-        "WOOL", AbilityCategory.DAMAGING
+        "WOOL", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     SALMON_SLAP(
         Menu.makeItem(
@@ -61,7 +61,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
             getDamageInfo("punch", 3, 'm'),
             getDurationInfo(SalmonSlap.DURATION)
         ),
-        "WOOL", AbilityCategory.DAMAGING
+        "WOOL", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     RADAR(
         Menu.makeItem(
@@ -70,23 +70,23 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
             Component.empty(),
             getDurationInfo(Radar.DURATION)
         ),
-        30, "BANNER", AbilityCategory.UTILITY
+        30, "BANNER", AbilityCategory.UTILITY, AbilityEffect.DEBUFF
     ),
     ENDER_PEARL(
         Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
-        15, "CONCRETE", AbilityCategory.UTILITY
+        15, "CONCRETE", AbilityCategory.UTILITY, AbilityEffect.BUFF
     ),
     BABY_POTION(
         makeBabyPotion(),
-        25, "CANDLE", AbilityCategory.POTION
+        25, "CANDLE", AbilityCategory.POTION, AbilityEffect.BUFF
     ),
     CHARGE_POTION(
         makeChargePotion(),
-        25, "CANDLE", AbilityCategory.POTION
+        25, "CANDLE", AbilityCategory.POTION, AbilityEffect.BUFF
     ),
     KARMA_POTION(
         makeKarmaPotion(),
-        30, "CANDLE", AbilityCategory.POTION
+        30, "CANDLE", AbilityCategory.POTION, AbilityEffect.DEBUFF
     ),
     CREEPER_TRAP(
         Menu.makeItem(
@@ -97,15 +97,15 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
             Component.text("Trigger radius: ", NamedTextColor.YELLOW)
                 .append(Component.text(CreeperTrap.BLAST_RADIUS, NamedTextColor.YELLOW))
         ),
-        5, "CONCRETE_POWDER", AbilityCategory.TRAP
+        5, "CONCRETE_POWDER", AbilityCategory.TRAP, AbilityEffect.DAMAGE
     ),
     LASER_TRAP(
         makeLaser(),
-        5, "CONCRETE_POWDER", AbilityCategory.TRAP
+        5, "CONCRETE_POWDER", AbilityCategory.TRAP, AbilityEffect.DAMAGE
     ),
     LINGERING_POTION(
         makeLingeringPotion(),
-        LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP
+        LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP, AbilityEffect.DEBUFF
     );
 
 
@@ -117,6 +117,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     val baseCooldown: Int
     @JvmField
     val category: AbilityCategory
+    val effect: AbilityEffect
 
     init {
         appendCooldownInfo(item, category, baseCooldown)
@@ -125,19 +126,21 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         this.abilityItem = item
         this.baseCooldown = baseCooldown
         this.category = category
+        this.effect = effect
         this.cooldownItems = arrayOf(
             ItemStack(Material.getMaterial("RED_$cooldownItemType")!!),
             ItemStack(Material.getMaterial("ORANGE_$cooldownItemType")!!),
             ItemStack(Material.getMaterial("YELLOW_$cooldownItemType")!!),
-            ItemStack(Material.getMaterial("LIME_$cooldownItemType")!!)
+            ItemStack(Material.getMaterial("LIME_$cooldownItemType")!!),
         )
     }
 
-    constructor(item: ItemStack, cooldownItemType: String, category: AbilityCategory) : this(
+    constructor(item: ItemStack, cooldownItemType: String, category: AbilityCategory, effect: AbilityEffect) : this(
         item,
         -1,
         cooldownItemType,
-        category
+        category,
+        effect,
     )
 
     fun getAbilityItem(bp: BotBowsPlayer): ItemStack {
@@ -190,7 +193,7 @@ private fun makeBabyPotion(): ItemStack {
             Component.empty(),
             getPotionEffectInfo("2x Speed"),
             getPotionEffectInfo("-30% Size"),
-            getDurationInfo(BabyPotion.DURATION)
+            getDurationInfo(BabyPotion.DURATION),
         ))
         it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
     }
@@ -206,7 +209,7 @@ private fun makeChargePotion(): ItemStack {
             Component.text("Makes your cooldowns go faster"),
             Component.empty(),
             getPotionEffectInfo("2x cooldown speed"),
-            getDurationInfo(ChargePotion.DURATION)
+            getDurationInfo(ChargePotion.DURATION),
         ))
         it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
     }
@@ -223,7 +226,7 @@ private fun makeKarmaPotion(): ItemStack {
             Component.text("slowness, levitation, nausea, or blindness"),
             Component.empty(),
             getPotionEffectInfo("karma"),
-            getDurationInfo(KarmaPotion.DURATION)
+            getDurationInfo(KarmaPotion.DURATION),
         ))
         it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
     }
@@ -240,7 +243,7 @@ private fun makeLingeringPotion(): ItemStack {
             Component.text("Slowness", NamedTextColor.LIGHT_PURPLE),
             Component.text("Levitation", NamedTextColor.LIGHT_PURPLE),
             Component.text("Blindness", NamedTextColor.LIGHT_PURPLE),
-            getDurationInfo(LingeringPotionTrap.DURATION)
+            getDurationInfo(LingeringPotionTrap.DURATION),
         ))
         it.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         it.color = Color.fromRGB(100, 62, 46)
@@ -308,7 +311,7 @@ private fun makeLaser(): ItemStack {
             Component.text("Emits a laser that damages enemies"),
             Component.text("unlimited range"),
             Component.empty(),
-            getDamageInfo("laser", 1, 'r')
+            getDamageInfo("laser", 1, 'r'),
         ))
     }
     laserHead.setData<ItemAdventurePredicate>(
