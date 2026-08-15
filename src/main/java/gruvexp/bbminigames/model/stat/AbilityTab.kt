@@ -5,14 +5,12 @@ import gruvexp.bbminigames.twtClassic.BotBows
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitTask
 
 class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: List<PlayerMatchStats>, onExpandToggle: () -> Unit) : StatTab(tabName, loc, layoutY, onExpandToggle) {
     override val layoutWidth: Float
@@ -30,24 +28,16 @@ class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: Li
         calculateRowPlacement()
     }
 
-    private var expandTask: BukkitTask? = null
-
     override fun expand() {
         rows.forEach { it.isExpanded = true }
         calculateRowPlacement()
-        expandTask?.cancel()
         onExpandToggle()
     }
 
     override fun collapse() {
         rows.forEach { it.isExpanded = false }
         calculateRowPlacement()
-        expandTask?.cancel()
-        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
-            if (!isExpanded) {
-                onExpandToggle()
-            }
-        }, ANIMATION_TICKS.toLong() + 1)
+        onExpandToggle()
     }
 
     fun calculateRowPlacement() { // offset them so they are left aligned instead of center TODO: (replace with Alignment enum, LEFT, CENTER, RIGHT, that does it automatically)
@@ -151,41 +141,25 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
         get() = if (isHidden) 0f
                 else ICON_SIZE + (if (isExpanded) 12*PX else 0f) + 2*PX
 
-    private var expandTask: BukkitTask? = null
-
     private fun expand() {
         updateX()
         bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
-
-        expandTask?.cancel()
-        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
-            if (isExpanded && !isHidden) {
-                statDisplay.animate { scale.set(1f) }
-            }
-        }, ANIMATION_TICKS.toLong() + 1)
+        statDisplay.animate { scale.set(1f) }
     }
 
     private fun collapse() {
+        updateX()
         statDisplay.animate { scale.set(0f) }
-
-        expandTask?.cancel()
-        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
-            if (!isExpanded) {
-                updateX()
-                bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
-            }
-        }, ANIMATION_TICKS.toLong() + 1)
+        bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
     }
 
     private fun show() {
-        BotBows.debugMessage("scale -> 8*PX", debug)
         bgDisplay.animate { scale.x = layoutWidth / textWidth(" ") }
         iconDisplay.animate { scale.set(8*PX) }
         if (isExpanded) expand()
     }
 
     private fun hide() {
-        BotBows.debugMessage("scale -> 0", debug)
         bgDisplay.animate { scale.x = 0f }
         iconDisplay.animate { scale.set(0f) }
         if (isExpanded) collapse()
