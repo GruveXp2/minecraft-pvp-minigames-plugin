@@ -25,22 +25,34 @@ class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: Li
         .toList()
         .also { children.addAll(it) }
 
+    override fun initSelf() {
+        super.initSelf()
+        calculateRowPlacement()
+    }
+
     private var expandTask: BukkitTask? = null
 
     override fun expand() {
         rows.forEach { it.isExpanded = true }
+        calculateRowPlacement()
         expandTask?.cancel()
         onExpandToggle()
     }
 
     override fun collapse() {
         rows.forEach { it.isExpanded = false }
+        calculateRowPlacement()
         expandTask?.cancel()
         expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
             if (!isExpanded) {
                 onExpandToggle()
             }
         }, ANIMATION_TICKS.toLong() + 1)
+    }
+
+    fun calculateRowPlacement() { // offset them so they are left aligned instead of center (maybe replace layoutXY with leftaligned as default, and provide functions to calculate center and right aligned with the layoutWidth?)
+        val newX = -layoutWidth / 2
+        rows.forEach { it.layoutX = newX }
     }
 
     override fun remove() {
