@@ -59,7 +59,10 @@ class AbilityRow(loc: Location, parent: StatElement, layoutX: Float, layoutY: Fl
 
     var totalWidthCache = 0f
     val layoutWidth: Float
-        get() = totalWidthCache
+        get() {
+            if (totalWidthCache == 0f) calculateCellPlacements()
+            return totalWidthCache
+        }
 
     val crossbowCell = AbilityCell(loc, this, 0f, 0f, BotBows.BOTBOW, Component.text(playerStats.crossbowKills, NamedTextColor.RED))
         .apply { isExpanded = true; isHidden = true }
