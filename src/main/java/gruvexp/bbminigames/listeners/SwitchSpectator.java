@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.listeners;
 
+import gruvexp.bbminigames.model.stat.ResultDisplay;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
@@ -53,6 +54,7 @@ public class SwitchSpectator implements Listener {
     @EventHandler()
     public void onMouseClick(PlayerInteractEvent e) {
         Player p = e.getPlayer();
+        ResultDisplay.Companion.registerPlayerClick(p);
         Lobby lobby = BotBows.getLobby(p);
         if (lobby == null) return;
         if (!lobby.isGameActive()) return;

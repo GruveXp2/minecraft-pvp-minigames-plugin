@@ -5,10 +5,14 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Display
+import org.bukkit.entity.Player
 import org.bukkit.entity.TextDisplay
+import org.bukkit.scheduler.BukkitTask
+import org.bukkit.util.Vector
 
 
 class ResultDisplay(val loc: Location, matchResult: MatchResult) {
@@ -98,6 +102,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     val team1BgDisplay: TextDisplay
     val team2BgDisplay: TextDisplay
 
+    private var playerScanner: BukkitTask? = null
+
     init {
         displays.addAll(listOf(titleBgDisplay, titleDisplay))
 
@@ -128,6 +134,13 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         playerTab.init()
         tabs.forEach { it.init() }
         listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
+
+        playerScanner = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), Runnable {
+            loc.getNearbyPlayers(10.0).forEach { p ->
+                rayTrace(p.eyeLocation.toVector(), p.eyeLocation.direction, clickingPlayers.contains(p))
+                clickingPlayers.remove(p)
+            }
+        }, 0, 1)
     }
 
     fun recalculateTabs(): Float {
@@ -146,6 +159,51 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             }
         }
         return totalWidth
+    }
+
+    fun rayTrace(eyeLoc: Vector, eyeDir: Vector, didClick: Boolean) {
+        // location of display (aka ResultDisplay) will be the origo
+        eyeLoc.subtract(loc.toVector()) // eyeLoc relative to new origo
+
+        // Matrix describing coordinate system aligned with display (variables prefixed with d- means theyre in this coord system)
+        // bc the display has vertical billboard, y-axis is the same as global y-axis: dYVec = Vector(0, 1, 0)
+        val dXVec = Vector(eyeLoc.z, 0.0, -eyeLoc.x).normalize() // need to be 1 long since thats how long the transformation.xy vectors are
+        val dZVec = Vector(eyeLoc.x, 0.0, eyeLoc.z).normalize()
+
+        // transforming to display coords
+        val dEyeLoc = Vector(eyeLoc.dot(dXVec), eyeLoc.y, eyeLoc.dot(dZVec))
+        val dEyeDir = Vector(eyeDir.dot(dXVec), eyeDir.y, eyeDir.dot(dZVec))
+
+        // finding how long to step in dEyeDir until hitting z=0 (where the display is)
+        val t = - dEyeLoc.z / dEyeDir.z // if dEyeDir was normalized, this would be amount of blocks between eyeloc and where the ray hits
+
+        if (t < 0) return // if we have to step backwards to hit the display plane, it means the player is looking the opposite way aka not looking at the display
+
+        // stepping that exact distance. now x and z will be the translation on the display, since z = 0
+        val dX = dEyeLoc.x + t * dEyeDir.x
+        val dY = dEyeLoc.y + t * eyeDir.y
+
+        handleLook(didClick, dX.toFloat(), dY.toFloat())
+    }
+
+    fun handleLook(didClick: Boolean, x: Float, y: Float) {
+        testDisplay.animate { translation.set(X_ + x, y, 2*PX) }
+        if (y < -HEIGHT_PX - 2*PX || y > 2*PX) return
+
+        for (tab: StatTab in tabs) {
+            if (x > tab.layoutX - tab.layoutWidth / 2 && x < tab.layoutX + tab.layoutWidth / 2) {
+                if (didClick) tab.apply { isExpanded = !isExpanded }
+                tab.apply { isHovered = true}
+                return
+            }
+        }
+    }
+
+    val testDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
+        text(Component.text(" "))
+        backgroundColor = Color.fromARGB(255, 255, 0, 0)
+        transformation = transformation.apply { scale.set(HEIGHT_PX/textWidth(" "), 1f, 1f); translation.set(X_, 0f, 0f) }
+        billboard = Display.Billboard.VERTICAL
     }
 
     fun formatRatio(positive: Int, negative: Int): TextComponent {
@@ -184,5 +242,14 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         hitsTab.remove()
         deathsTab.remove()
         abilityTab.remove()
+        playerScanner?.cancel()
+    }
+
+    companion object {
+        val clickingPlayers: MutableSet<Player> = mutableSetOf()
+
+        fun registerPlayerClick(p: Player) { // to find out if a player just clicked
+            clickingPlayers.add(p)
+        }
     }
 }
