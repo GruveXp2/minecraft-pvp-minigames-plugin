@@ -11,6 +11,7 @@ import org.bukkit.entity.Display
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
+import org.joml.AxisAngle4f
 
 class AbilityTab(tabName: String, loc: Location, layoutY: Float, playerStats: List<PlayerMatchStats>, onExpandToggle: () -> Unit) : StatTab(tabName, loc, layoutY, onExpandToggle) {
     override val layoutWidth: Float
@@ -180,6 +181,7 @@ class AbilityCell(loc: Location, parent: StatElement, layoutX: Float, layoutY: F
         transformation = transformation.apply {
             translation.set(X + absoluteX, absoluteY + 6*PX, 0.01f)
             scale.set(8*PX)
+            leftRotation.set(AxisAngle4f(Math.toRadians(180.0).toFloat(), 0f, 1f, 0f))
         }
         billboard = Display.Billboard.VERTICAL
     }
