@@ -15,6 +15,8 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
         get() = cols.filter { it !in hiddenCols || isExpanded }.sumOf { it.colWidth.toDouble() }.toFloat()
 
     override fun expand() {
+        if (hiddenCols.isEmpty()) return
+
         recalculateColumns()
         onExpandToggle()
 
@@ -27,6 +29,8 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
     }
 
     override fun collapse() {
+        if (hiddenCols.isEmpty()) return
+
         hiddenCols.forEach { it.setInvisible(true) }
 
         expandTask?.cancel()
