@@ -187,7 +187,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     }
 
     fun handleLook(didClick: Boolean, x: Float, y: Float) {
-        testDisplay.animate { translation.set(X_ + x, y, 2*PX) }
         if (y < -HEIGHT_PX - 2*PX || y > 2*PX) return
 
         for (tab: StatTab in tabs) {
@@ -197,13 +196,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 return
             }
         }
-    }
-
-    val testDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
-        text(Component.text(" "))
-        backgroundColor = Color.fromARGB(255, 255, 0, 0)
-        transformation = transformation.apply { scale.set(HEIGHT_PX/textWidth(" "), 1f, 1f); translation.set(X_, 0f, 0f) }
-        billboard = Display.Billboard.VERTICAL
     }
 
     fun formatRatio(positive: Int, negative: Int): TextComponent {
