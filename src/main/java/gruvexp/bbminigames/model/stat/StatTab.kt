@@ -33,8 +33,8 @@ abstract class StatTab(tabName: String, loc: Location, layoutY: Float, val onExp
     private val displays: Set<TextDisplay> = setOf(headerBgDisplay, headerDisplay)
 
     override fun initSelf() {
-        headerBgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
-        headerDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        headerBgDisplay.interpolationDuration = ANIMATION_TICKS
+        headerDisplay.interpolationDuration = ANIMATION_TICKS
     }
 
     override fun positionX() {

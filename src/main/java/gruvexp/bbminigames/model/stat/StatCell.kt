@@ -28,8 +28,8 @@ class StatCell(component: TextComponent, loc: Location, val layoutWidth: Float, 
     }
 
     override fun initSelf() {
-        bgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
-        statDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        bgDisplay.interpolationDuration = ANIMATION_TICKS
+        statDisplay.interpolationDuration = ANIMATION_TICKS
     }
 
     override fun positionX() {

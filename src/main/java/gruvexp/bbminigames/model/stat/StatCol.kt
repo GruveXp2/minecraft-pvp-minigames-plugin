@@ -57,8 +57,8 @@ class StatCol(val tabName: String, loc: Location, parent: StatElement, layoutY: 
     }
 
     override fun initSelf() {
-        headerBgDisplay.apply { interpolationDuration = ANIMATION_TICKS }
-        headerDisplay.apply { interpolationDuration = ANIMATION_TICKS }
+        headerBgDisplay.interpolationDuration = ANIMATION_TICKS
+        headerDisplay.interpolationDuration = ANIMATION_TICKS
     }
 
     override fun positionX() {
