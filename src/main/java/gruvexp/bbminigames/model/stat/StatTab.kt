@@ -80,7 +80,7 @@ abstract class StatTab(tabName: String, loc: Location, layoutY: Float, val onExp
     }
 
     private fun scheduleDeHover() {
-        hoverTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { deHover() }, 2L)
+        hoverTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { isHovered = false }, 2L)
     }
 
     private fun deHover() {
