@@ -3,6 +3,7 @@ package gruvexp.bbminigames.model.stat
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import java.time.LocalDateTime
 
 data class MatchResult @JvmOverloads constructor(
@@ -10,6 +11,7 @@ data class MatchResult @JvmOverloads constructor(
     val startTime: LocalDateTime = LocalDateTime.now(),
     var rounds: Int = 0,
     var team1Won: Boolean? = null, // null = draw
+    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.TEAM_1 else TeamSide.TEAM_2 },
     val playerStats: MutableMap<BotBowsPlayer, PlayerMatchStats> = mutableMapOf()
 ) {
     private fun getPlayerStats(bp: BotBowsPlayer): PlayerMatchStats {
