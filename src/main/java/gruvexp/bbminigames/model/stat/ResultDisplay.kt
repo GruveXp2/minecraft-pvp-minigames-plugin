@@ -167,8 +167,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
         // Matrix describing coordinate system aligned with display (variables prefixed with d- means theyre in this coord system)
         // bc the display has vertical billboard, y-axis is the same as global y-axis: dYVec = Vector(0, 1, 0)
-        val dXVec = Vector(eyeLoc.z, 0.0, -eyeLoc.x).normalize() // need to be 1 long since thats how long the transformation.xy vectors are
-        val dZVec = Vector(eyeLoc.x, 0.0, eyeLoc.z).normalize()
+        val dXVec = Vector(-eyeDir.z, 0.0, eyeDir.x).normalize() // need to be 1 long since thats how long the transformation.xy vectors are
+        val dZVec = Vector(eyeDir.x, 0.0, eyeDir.z).normalize()
 
         // transforming to display coords
         val dEyeLoc = Vector(eyeLoc.dot(dXVec), eyeLoc.y, eyeLoc.dot(dZVec))
