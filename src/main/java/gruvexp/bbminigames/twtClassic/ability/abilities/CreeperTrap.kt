@@ -177,7 +177,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
 
         protected var creeperOwners: MutableMap<Creeper, BotBowsPlayer> = mutableMapOf()
 
-        fun glowCreepers(team: BotBowsTeam, seconds: Int) {
+        fun glowCreepers(team: BotBowsTeam, ticks: Int) {
             val creepers: Set<Creeper> = creeperOwners.entries
                 .filter { it.value.team == team }
                 .map { it.key }
@@ -186,7 +186,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
             creepers.forEach { it.isGlowing = true }
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(),
                 Runnable { creepers.forEach { it.isGlowing = false } },
-                20L * seconds
+                ticks.toLong()
             )
         }
 
