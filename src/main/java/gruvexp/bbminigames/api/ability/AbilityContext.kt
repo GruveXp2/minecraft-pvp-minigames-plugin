@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.entity.Projectile
 
 interface AbilityContext {
-    data class EntityPlace(@JvmField val loc: Location)
+    data class EntityPlace(val loc: Location)
 
     data class Melee(@JvmField val defender: BotBowsPlayer)
 
