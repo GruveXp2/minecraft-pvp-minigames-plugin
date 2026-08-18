@@ -23,7 +23,6 @@ import org.bukkit.entity.Player
 import java.util.UUID
 
 class Settings(@JvmField val lobby: Lobby) {
-    @JvmField
     var usingExperimentalFeatures: Boolean = false
 
     @JvmField

@@ -6,7 +6,6 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import org.bukkit.Material
 import java.util.UUID
 
-@JvmRecord
 data class BattlePreset(
     val name: String,
     val icon: Material,
