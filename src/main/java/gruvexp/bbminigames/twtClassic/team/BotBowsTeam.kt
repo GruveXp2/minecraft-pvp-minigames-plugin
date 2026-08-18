@@ -313,7 +313,7 @@ enum class BotBowsTeam(
         }
 
     val glassPane: Material
-        get() = Material.getMaterial(dyeColor.name + "_STAINED_GLASS_PANE") ?: Material.GLASS_PANE
+        get() = Material.getMaterial("${dyeColor.name}_STAINED_GLASS_PANE") ?: Material.GLASS_PANE
 
     fun toComponent(): TextComponent {
         return Component.text(displayName, color)

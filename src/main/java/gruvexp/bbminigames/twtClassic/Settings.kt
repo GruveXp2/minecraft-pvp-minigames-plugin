@@ -218,8 +218,8 @@ class Settings(@JvmField val lobby: Lobby) {
         if (!leading.maps.contains(mapSettings.currentMap)) {
             val mapsString = leading.maps.joinToString(", ") { it.prettyName() }
             lobby.messagePlayers(
-                Component.text((if (triggeredByNewVote) "New" else "Current") + " leading map" + (if (mapCount == 1) "" else "s") + " with ")
-                    .append(Component.text(leading.voteCount.toString() + " votes", NamedTextColor.GREEN))
+                Component.text("${if (triggeredByNewVote) "New" else "Current"} leading map${if (mapCount == 1) "" else "s"} with ")
+                    .append(Component.text("${leading.voteCount} votes", NamedTextColor.GREEN))
                     .append(Component.text(": ")).append(Component.text(mapsString, NamedTextColor.GOLD))
             )
             if (mapCount == 1) mapSettings.currentMap = leading.maps.first()

@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
 open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: Int, @JvmField val type: AbilityType) {
-    @JvmField
+
     protected var baseCooldown: Int = 0 // seconds
     var cooldownMultiplier: Float = 1.0f
         set(value) {

@@ -275,7 +275,7 @@ private fun makeLongHandsItem(): ItemStack {
         getDamageInfo("punch", 50, 'm')
     )
     coolRod.editMeta {
-        val key = NamespacedKey(Main.getPlugin(), "extra_range_" + UUID.randomUUID())
+        val key = NamespacedKey(Main.getPlugin(), "extra_range_${UUID.randomUUID()}")
 
         val extraRangeModifier = AttributeModifier(
             key,

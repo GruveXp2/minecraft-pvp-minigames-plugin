@@ -209,7 +209,7 @@ public class BotBowsPlayer {
         if (getTotalAbilities() <= maxAbilities) return;
         int excess = getTotalAbilities() - maxAbilities;
         for (int i = 0; i < excess; i++) {
-            for (AbilityType type : AbilityType.values()) {
+            for (AbilityType type : AbilityType.getEntries()) {
                 if (!hasAbilityEquipped(type)) continue;
                 unequipAbility(type);
                 break;

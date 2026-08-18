@@ -110,7 +110,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             }
             MenuAction.TOGGLE_BAN_HAMMER -> isToggleAbilityMode = !isToggleAbilityMode
             MenuAction.RANDOMIZE_ABILITIES -> {
-                bp.abilities.toSet().forEach { bp.unequipAbility(it.type, true) }
+                bp.abilities.forEach { bp.unequipAbility(it.type, true) }
 
                 AbilityType.entries.shuffled()
                     .filter { !abilitySettings.isBanned(it) }

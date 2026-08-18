@@ -4,12 +4,8 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.stringLiteral
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.sqlite.JDBC
-import org.sqlite.SQLiteConfig
 import java.io.File
-import java.time.LocalDateTime
 
 class StatsDatabase(dataFolder: File) {
 

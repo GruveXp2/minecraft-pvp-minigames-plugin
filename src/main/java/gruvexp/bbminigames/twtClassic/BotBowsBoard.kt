@@ -41,12 +41,12 @@ class BotBowsBoard(val lobby: Lobby) {
         setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.totalPlayers + 2)
         setScore(
             "team1_title",
-            Component.text("TEAM " + team1().displayName.uppercase(Locale.getDefault()), darkenColor(team1().color)),
+            Component.text("TEAM ${team1().displayName.uppercase(Locale.getDefault())}", darkenColor(team1().color)),
             lobby.totalPlayers + 1
         )
         setScore(
             "team2_title",
-            Component.text("TEAM " + team2().displayName.uppercase(Locale.getDefault()), darkenColor(team2().color)),
+            Component.text("TEAM ${team2().displayName.uppercase(Locale.getDefault())}", darkenColor(team2().color)),
             team2().size()
         )
 

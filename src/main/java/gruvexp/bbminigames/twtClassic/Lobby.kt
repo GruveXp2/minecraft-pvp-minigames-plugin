@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.*
-import java.util.function.Consumer
 import kotlin.math.max
 
 class Lobby(val id: Int) {
@@ -60,7 +59,7 @@ class Lobby(val id: Int) {
     fun addBot(): UUID {
         val mannequin = Main.WORLD.spawn(Main.WORLD.spawnLocation, Mannequin::class.java)
         mannequin.customName(Component.text("BotBowBot ${botId++}"))
-        mannequin.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))))
+        mannequin.profile = (ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))))
         settings.joinGame(mannequin)
         BotBows.lobbyMenu.updateLobbyItem(this)
         val id = mannequin.uniqueId

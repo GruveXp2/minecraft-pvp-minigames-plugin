@@ -68,6 +68,6 @@ class BattlePresetService {
     }
 
     fun getPresetNames(): MutableSet<String> {
-        return battlePresets.keys;
+        return battlePresets.keys
     }
 }

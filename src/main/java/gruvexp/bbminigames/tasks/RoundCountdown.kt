@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.WeatherType
-import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 class RoundCountdown(val botBowsGame: BotBowsGame, val round: Int) : BukkitRunnable() {
@@ -34,7 +33,7 @@ class RoundCountdown(val botBowsGame: BotBowsGame, val round: Int) : BukkitRunna
 
                 if (botBowsGame.settings.rain > 0 && botBowsGame.stormHazard != null && !botBowsGame.stormHazard.isActive) {
                     Main.WORLD.setStorm(true)
-                    Bukkit.getOnlinePlayers().forEach { p: Player? -> p!!.setPlayerWeather(WeatherType.CLEAR) }
+                    Bukkit.getOnlinePlayers().forEach { it.setPlayerWeather(WeatherType.CLEAR) }
                 }
                 cancel()
             }

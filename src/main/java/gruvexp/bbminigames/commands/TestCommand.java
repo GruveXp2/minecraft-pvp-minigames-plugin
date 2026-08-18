@@ -384,7 +384,7 @@ public class TestCommand implements CommandExecutor {
                     BotBows.debugMessage("testAbilities set to: " + testAbilities);
                 }
                 case "give_ability_items" -> {
-                    for (AbilityType type : AbilityType.values()) {
+                    for (AbilityType type : AbilityType.getEntries()) {
                         ((Player) sender).getInventory().addItem(type.abilityItem);
                     }
                 }

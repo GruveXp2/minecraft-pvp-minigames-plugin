@@ -78,18 +78,18 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                 Component.text(hazard.getName(), NamedTextColor.RED),
                 MenuAction.TOGGLE_HAZARD.name,
                 STATUS_DISABLED,
-                Component.text("If enabled, x% of rounds " + hazard.getActionDescription() + "."),
+                Component.text("If enabled, x% of rounds ${hazard.getActionDescription()}."),
                 loreDesc[0], loreDesc[1], loreDesc[2]
             )
         } else {
             val percentage: Component =
-                Component.text(hazard.chance.percent.toString() + "%", NamedTextColor.LIGHT_PURPLE)
+                Component.text("${hazard.chance.percent}%", NamedTextColor.LIGHT_PURPLE)
             item = makeItem(
                 Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
                 MenuAction.TOGGLE_HAZARD.name,
                 STATUS_ENABLED,
                 percentage.append(
-                    Component.text(" of rounds " + hazard.getActionDescription() + ".", NamedTextColor.DARK_PURPLE)
+                    Component.text(" of rounds ${hazard.getActionDescription()}.", NamedTextColor.DARK_PURPLE)
                 ), loreDesc[0], loreDesc[1], loreDesc[2]
             )
         }
@@ -125,7 +125,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                     hazardType.menuFillItem,
                     hazardType.textColor,
                     PERCENT,
-                    hazardType.name + " chance"
+                    "${hazardType.name} chance"
                 )
             }
             slider.setStartSlot(2 + hazardsSorted.indexOf(hazardType) * 9)

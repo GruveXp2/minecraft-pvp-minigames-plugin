@@ -244,16 +244,11 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         )
     }
 
-    private enum class UiMode(menuTitle: TextComponent) {
+    private enum class UiMode(val menuTitle: TextComponent) { // TODO: gjør at tittelen endres automatisk
         MAIN(Component.text("Arena map (1/6)")),
         VOTE(Component.text("Vote for map")),
         SET(Component.text("Set map"));
 
-        val menuTitle: TextComponent // TODO: gjør at tittelen endres automatisk
-
-        init {
-            this.menuTitle = menuTitle
-        }
     }
 
     private enum class MenuAction {
