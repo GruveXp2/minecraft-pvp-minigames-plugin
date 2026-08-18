@@ -1,40 +1,33 @@
-package gruvexp.bbminigames.twtClassic.ability;
+package gruvexp.bbminigames.twtClassic.ability
 
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
-import java.util.Set;
-import java.util.stream.Collectors;
+abstract class PotionAbility protected constructor(bp: BotBowsPlayer, hotBarSlot: Int, type: AbilityType) :
+    Ability(bp, hotBarSlot, type) {
+    override fun use() {
+        super.use()
+        val nearbyPlayers = bp.getNearbyPlayers(RADIUS.toDouble())
+            .filter { it.team == this.bp.team && it != bp }
+            .toSet()
+        applyPotionEffect(nearbyPlayers)
 
-public abstract class PotionAbility extends Ability {
-
-    public static final int RADIUS = 4;
-
-    protected PotionAbility(BotBowsPlayer bp, int hotBarSlot, AbilityType type) {
-        super(bp, hotBarSlot, type);
-    }
-
-    @Override
-    public void use() {
-        super.use();
-        Set<BotBowsPlayer> nearbyPlayers = bp.getNearbyPlayers(RADIUS).stream()
-                .filter(nearbyPlayer -> nearbyPlayer.getTeam() == this.bp.getTeam())
-                .collect(Collectors.toSet());
-        nearbyPlayers.remove(bp);
-        applyPotionEffect(nearbyPlayers);
-
-        nearbyPlayers.forEach(nearbyPlayer -> nearbyPlayer.avatar.message(Component.text("Got ", NamedTextColor.GREEN)
-                .append(Component.text(getEffectDuration()))
-                .append(Component.text("s "))
-                .append(Component.text(getEffectName(), NamedTextColor.DARK_GREEN))
+        nearbyPlayers.forEach { it.avatar.message(
+            Component.text("Got ${this.effectDuration}s ", NamedTextColor.GREEN)
+                .append(Component.text(this.effectName, NamedTextColor.DARK_GREEN))
                 .append(Component.text(" effect from "))
-                .append(bp.getName())));
+                .append(bp.name)
+        )}
     }
 
-    protected abstract void applyPotionEffect(Set<BotBowsPlayer> players);
+    protected abstract fun applyPotionEffect(players: Set<BotBowsPlayer>)
 
-    protected abstract String getEffectName();
+    protected abstract val effectName: String
 
-    protected abstract int getEffectDuration();
+    protected abstract val effectDuration: Int
+
+    companion object {
+        const val RADIUS: Int = 4
+    }
 }

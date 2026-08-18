@@ -1,53 +1,41 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.ability.PotionAbility
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
-import java.util.Set;
+class BabyPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.BABY_POTION) {
 
-public class BabyPotion extends PotionAbility {
-
-    public static int DURATION = 10;
-    public static int AMPLIFIER = 4;
-
-    public BabyPotion(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot, AbilityType.BABY_POTION);
-    }
-
-    @Override
-    public void applyPotionEffect(Set<BotBowsPlayer> players) {
-
-        bp.avatar.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, AMPLIFIER));
-        bp.getEffectManager().applyScale(
+    public override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
+        bp.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 20, AMPLIFIER))
+        bp.effectManager.applyScale(
+            PlayerEffectManager.ScaleSource.BABY_POTION,
+            0.66,
+            PlayerEffectManager.ScalePriority.NORMAL,
+            DURATION * 20L
+        )
+        registerSuccess()
+        players.forEach {
+            it.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4))
+            it.effectManager.applyScale(
                 PlayerEffectManager.ScaleSource.BABY_POTION,
-                0.66,
+                0.75,
                 PlayerEffectManager.ScalePriority.NORMAL,
-                DURATION * 20L
-        );
-        registerSuccess();
-        players.forEach(bp -> {
-            bp.avatar.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4));
-            bp.getEffectManager().applyScale(
-                    PlayerEffectManager.ScaleSource.BABY_POTION,
-                    0.75,
-                    PlayerEffectManager.ScalePriority.NORMAL,
-                    DURATION * 15L
-            );
-            registerSuccess();
-        }); // 75% of the effect will be given to other players on the team
+                DURATION * 15L
+            )
+            registerSuccess()
+        } // 75% of the effect will be given to other players on the team
     }
 
-    @Override
-    protected String getEffectName() {
-        return "Baby";
-    }
+    override val effectName = "Baby"
 
-    @Override
-    protected int getEffectDuration() {
-        return (int) (DURATION * 0.75);
+    override val effectDuration: Int = (DURATION * 0.75).toInt()
+
+    companion object {
+        var DURATION: Int = 10
+        var AMPLIFIER: Int = 4
     }
 }

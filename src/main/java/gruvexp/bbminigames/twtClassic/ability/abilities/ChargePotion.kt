@@ -1,51 +1,41 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
-import org.bukkit.Bukkit;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.ability.PotionAbility
+import org.bukkit.Bukkit
 
-import java.util.Set;
-
-public class ChargePotion extends PotionAbility {
-
-    public static final int DURATION = 20;
-
-    public ChargePotion(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot, AbilityType.CHARGE_POTION);
-        this.baseCooldown = type.baseCooldown;
+class ChargePotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.CHARGE_POTION) {
+    init {
+        this.baseCooldown = type.baseCooldown
     }
 
-    @Override
-    public void use() {
-        super.use();
-        bp.obtainWeaponAbilities();
+    override fun use() {
+        super.use()
+        bp.obtainWeaponAbilities()
     }
 
-    @Override
-    protected void applyPotionEffect(Set<BotBowsPlayer> players) {
-        bp.setAbilityCooldownTickRate(10);
-        players.forEach(bp -> {
-                    bp.setAbilityCooldownTickRate(13);
-                    bp.obtainWeaponAbilities();
-        });
-        registerSuccess();
+    override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
+        bp.setAbilityCooldownTickRate(10)
+        players.forEach {
+            it.setAbilityCooldownTickRate(13)
+            it.obtainWeaponAbilities()
+        }
+        registerSuccess()
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), _ -> {
-            bp.setAbilityCooldownTickRate(20);
-            players.forEach(bp -> bp.setAbilityCooldownTickRate(20));
-            registerSuccess();
-        }, 20L * DURATION);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            bp.setAbilityCooldownTickRate(20)
+            players.forEach { it.setAbilityCooldownTickRate(20) }
+            registerSuccess()
+        }, 20L * DURATION)
     }
 
-    @Override
-    protected String getEffectName() {
-        return "Charge";
-    }
+    override val effectName = "Charge"
 
-    @Override
-    protected int getEffectDuration() {
-        return (int) (DURATION * 0.75);
+    override val effectDuration: Int = (DURATION * 0.75).toInt()
+
+    companion object {
+        const val DURATION: Int = 20
     }
 }
