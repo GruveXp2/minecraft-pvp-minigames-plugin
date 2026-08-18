@@ -113,7 +113,6 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     val abilityItem: ItemStack
     @JvmField
     val cooldownItems: Array<ItemStack>
-    @JvmField
     val baseCooldown: Int
     @JvmField
     val category: AbilityCategory
