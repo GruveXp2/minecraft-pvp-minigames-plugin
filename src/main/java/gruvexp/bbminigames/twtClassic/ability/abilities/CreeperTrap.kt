@@ -177,7 +177,6 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
 
         protected var creeperOwners: MutableMap<Creeper, BotBowsPlayer> = mutableMapOf()
 
-        @JvmStatic
         fun glowCreepers(team: BotBowsTeam, seconds: Int) {
             val creepers: Set<Creeper> = creeperOwners.entries
                 .filter { it.value.team == team }
