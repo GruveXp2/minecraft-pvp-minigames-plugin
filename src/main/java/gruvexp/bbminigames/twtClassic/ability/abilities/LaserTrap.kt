@@ -70,7 +70,7 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
             origin = block.location.add(0.5, 0.5, 0.5)
             laserUnitOffset = face.getDirection()
             val mid1 = Vector(0.5, 0.5, 0.5).add(face.getDirection().multiply(0.1)) // positions near the center of the block to check for if it collides with. //TODO: find out if there needs to be more checks and not just 2
-            val mid2 = mid1.add(face.getDirection().multiply(-0.2)) // midtpunkt i blokka
+            val mid2 = mid1.add(face.getDirection().multiply(-0.2))
             var length = 0
 
             for (i in 0..99) {
