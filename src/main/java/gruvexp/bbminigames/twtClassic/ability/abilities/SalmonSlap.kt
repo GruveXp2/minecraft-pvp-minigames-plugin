@@ -1,35 +1,30 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.ability.AbilityContext;
-import gruvexp.bbminigames.api.ability.AbilityTrigger;
-import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.api.damage.DamageType;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.ability.AbilityContext.Melee
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnMelee
+import gruvexp.bbminigames.api.damage.DamageContext
+import gruvexp.bbminigames.api.damage.DamageType
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.Ability
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
-public class SalmonSlap extends Ability implements AbilityTrigger.OnMelee {
-
-    public static final int DURATION = 5; // seconds
-    public static final ItemStack SALMON = new ItemStack(Material.SALMON);
-
-    public SalmonSlap(BotBowsPlayer bp, int slot) {
-        super(bp, slot, AbilityType.SALMON_SLAP);
+class SalmonSlap(bp: BotBowsPlayer, slot: Int) : Ability(bp, slot, AbilityType.SALMON_SLAP), OnMelee {
+    override fun use() {
+        bp.avatar.setItem(hotBarSlot, SALMON)
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { super.use() }, (20 * DURATION).toLong())
     }
 
-    @Override
-    public void use() {
-        bp.avatar.setItem(getHotBarSlot(), SALMON);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), super::use, 20 * DURATION);
+    override fun trigger(ctx: Melee) {
+        ctx.defender.damage(DamageContext.Player(DamageType.Player.SLAP, bp))
+        registerSuccess()
     }
 
-    @Override
-    public void trigger(AbilityContext.Melee ctx) {
-        ctx.defender.damage(new DamageContext.Player(DamageType.Player.SLAP, bp));
-        registerSuccess();
+    companion object {
+        const val DURATION: Int = 5 // seconds
+        val SALMON: ItemStack = ItemStack(Material.SALMON)
     }
 }
