@@ -1,448 +1,426 @@
-package gruvexp.bbminigames.twtClassic;
+package gruvexp.bbminigames.twtClassic
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.menu.menus.AbilityMenu;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.abilities.*;
-import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar;
-import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar;
-import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar;
-import gruvexp.bbminigames.twtClassic.avatar.TeamManager;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings;
-import io.papermc.paper.datacomponent.item.ResolvableProfile;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mannequin;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.damage.DamageContext
+import gruvexp.bbminigames.menu.menus.AbilityMenu
+import gruvexp.bbminigames.twtClassic.ability.Ability
+import gruvexp.bbminigames.twtClassic.ability.Ability.Companion.create
+import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.ability.abilities.KarmaPotion
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
+import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar
+import gruvexp.bbminigames.twtClassic.avatar.TeamManager
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import io.papermc.paper.datacomponent.item.ResolvableProfile
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import java.util.*
 
-import java.util.*;
-import java.util.stream.Collectors;
+class BotBowsPlayer {
+    @JvmField
+    var avatar: BotBowsAvatar
 
-public class BotBowsPlayer {
-
-    public BotBowsAvatar avatar;
-    private final Component name;
-
-    public final Lobby lobby;
-    public final PlayerSettings settings;
-    private BotBowsTeam team;
-    private int hp;
-    private boolean isDamaged = false; // cooldown når playeren er hitta
-    public static final List<List<Set<Integer>>> HEALTH_ARMOR = new ArrayList<>(); // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
-    private SneakManager sneakManager;
-    private final PlayerEffectManager effectManager;
-
-    private final HashMap<AbilityType, Ability> abilities = new HashMap<>();
-    private int thrownAbilityAmount;
-    private boolean hasKarmaEffect = false;
-
-    public BotBowsPlayer(Player player, Settings lobbySettings) {
-        avatar = new PlayerAvatar(player, this);
-        name = player.name();
-        settings = new PlayerSettings(this, lobbySettings);
-        lobby = lobbySettings.lobby;
-        hp = settings.getMaxHealth();
-        effectManager = new PlayerEffectManager(this);
-    }
-
-    public BotBowsPlayer(Mannequin mannequin, Settings lobbySettings) {
-        avatar = new NpcAvatar(mannequin, this);
-        name = mannequin.name();
-        settings = new PlayerSettings(this, lobbySettings);
-        lobby = lobbySettings.lobby;
-        hp = settings.getMaxHealth();
-        effectManager = new PlayerEffectManager(this);
-        setReady(true, 4); // bots are always ready for match
-    }
-
-    public BotBowsTeam getTeam() {return team;}
-
-    public TextColor getTeamColor() {
-        if (team != null) return team.getColor();
-        return NamedTextColor.WHITE;
-    }
-
-    public Component getName() {
-        return name.color(getTeamColor());
-    }
-
-    public String getPlainName() {
-        return PlainTextComponentSerializer.plainText().serialize(getName());
-    }
-
-    public PlayerEffectManager getEffectManager() {
-        return effectManager;
-    }
-
-    public void onTeamJoin(BotBowsTeam team) {
-        if (this.team != null) {
-            this.team.leave(this);
+    @JvmField
+    val lobby: Lobby
+    @JvmField
+    val settings: PlayerSettings
+    var team: BotBowsTeam? = null
+        private set
+    var hp: Int = 3
+        private set(value) {
+            field = value
+            avatar.setHP(value)
+            if (value == 0) avatar.eliminate()
+            lobby.botBowsGame!!.botBowsBoard.updatePlayerScore(this)
         }
-        this.team = team;
-        avatar.equipFullArmor();
+    var isDamaged: Boolean = false // cooldown når playeren er hitta
+        private set
+    private var sneakManager: SneakManager? = null
+    val effectManager: PlayerEffectManager
+
+    var karmaAura = false
+
+    private val abilities: MutableMap<AbilityType, Ability> = mutableMapOf()
+    val equippedAbilities: Set<AbilityType>
+        get() = abilities.keys
+    var usedAbilityItemAmount: Int = 0
+        private set
+    var hasKarmaEffect = false
+
+    constructor(player: Player, lobbySettings: Settings) {
+        avatar = PlayerAvatar(player, this)
+        plainName = player.name
+        settings = PlayerSettings(this, lobbySettings)
+        lobby = lobbySettings.lobby
+        hp = settings.maxHealth
+        effectManager = PlayerEffectManager(this)
     }
 
-    public void updateTeam(BotBowsTeam team) {
-        this.team = team;
+    constructor(mannequin: Mannequin, lobbySettings: Settings) {
+        avatar = NpcAvatar(mannequin, this)
+        plainName = mannequin.name
+        settings = PlayerSettings(this, lobbySettings)
+        lobby = lobbySettings.lobby
+        hp = settings.maxHealth
+        effectManager = PlayerEffectManager(this)
+        setReady(true, 4) // bots are always ready for match
     }
 
-    public void onTeamLeave() {
-        this.team = null;
+    val teamColor: TextColor
+        get() = team?.color ?: NamedTextColor.WHITE
+
+    val name: Component
+        get() = Component.text(plainName, teamColor)
+
+    val plainName: String
+
+    fun onTeamJoin(team: BotBowsTeam) {
+        this.team?.leave(this)
+        this.team = team
+        avatar.equipFullArmor()
     }
 
-    public void onGameLeave() {
-        team.leave(this);
-        avatar.destroy();
-        effectManager.clear();
-        new HashSet<>(abilities.keySet()).forEach(p -> unequipAbility(p, true));
+    fun updateTeam(team: BotBowsTeam) {
+        this.team = team
     }
 
-    public UUID turnIntoBot() {
-        if (avatar instanceof NpcAvatar) throw new IllegalStateException("This botbowsplayer is already a bot!");
-
-        Mannequin bot = Main.WORLD.spawn(avatar.getEntity().getLocation(), Mannequin.class);
-        bot.customName(getName());
-        bot.setProfile(ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID())));
-        avatar = new NpcAvatar(bot, avatar);
-        avatar.setHP(hp);
-        avatar.readyBattle(lobby.botBowsGame.botBowsBoard.getTeamManager()); // this line is kinda ugly, maybe make the teammanager be somewhere else idk
-        return bot.getUniqueId();
+    fun onTeamLeave() {
+        team = null
     }
 
-    public void turnIntoPlayer(Player p) {
-        if (avatar instanceof PlayerAvatar) throw new IllegalStateException("This botbowsplayer is already a player!");
-
-        p.teleport(avatar.getLocation());
-        avatar.destroy();
-        avatar = new PlayerAvatar(p, avatar);
-        avatar.setMaxHP(settings.getMaxHealth());
-        avatar.setHP(hp);
+    fun onGameLeave() {
+        team!!.leave(this)
+        avatar.destroy()
+        effectManager.clear()
+        abilities.keys.forEach { unequipAbility(it, true) }
     }
 
-    public void destroy() {
-        avatar.destroy();
-        effectManager.clear();
-        if (sneakManager != null) sneakManager.destroy();
-        abilities.values().forEach(Ability::destroy);
+    fun turnIntoBot(): UUID {
+        check(avatar is NpcAvatar) { "This botbowsplayer is already a bot!" }
+
+        val bot = Main.WORLD.spawn(avatar.getEntity().location, Mannequin::class.java)
+        bot.customName(name)
+        bot.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID()))
+        avatar = NpcAvatar(bot, avatar)
+        avatar.setHP(hp)
+        avatar.readyBattle(lobby.botBowsGame!!.botBowsBoard.teamManager) // this line is kinda ugly, maybe make the teammanager be somewhere else idk
+        return bot.uniqueId
     }
 
-    public void start() {
-        sneakManager = new SneakManager(avatar);
+    fun turnIntoPlayer(p: Player) {
+        check(avatar is PlayerAvatar) { "This botbowsplayer is already a player!" }
+
+        p.teleport(avatar.location)
+        avatar.destroy()
+        avatar = PlayerAvatar(p, avatar)
+        avatar.setMaxHP(settings.maxHealth)
+        avatar.setHP(hp)
     }
 
-    public void revive() { // resetter for å gjør klar til en ny runde
-        setHP(settings.getMaxHealth());
-        avatar.revive();
-        isDamaged = false;
+    fun destroy() {
+        avatar.destroy()
+        effectManager.clear()
+        sneakManager?.destroy()
+        abilities.values.forEach { it.destroy() }
     }
 
-    public void reset() {
-        if (sneakManager != null) sneakManager.destroy();
-        avatar.reset();
-        hasKarmaEffect = false;
+    fun start() {
+        sneakManager = SneakManager(avatar)
     }
 
-    public void initBattle(TeamManager teamManager) {
-        avatar.readyBattle(teamManager);
-        abilities.values().forEach(ability -> ability.setCooldownMultiplier(settings.getAbilityCooldownMultiplier()));
+    fun revive() { // resetter for å gjør klar til en ny runde
+        hp = settings.maxHealth
+        avatar.revive()
+        isDamaged = false
     }
 
-    public void clearEffects() {
-        effectManager.clear();
+    fun reset() {
+        sneakManager?.destroy()
+        avatar.reset()
+        hasKarmaEffect = false
     }
 
-    public void readyAbilities() {
-        abilities.values().forEach(Ability::obtain);
+    fun initBattle(teamManager: TeamManager) {
+        avatar.readyBattle(teamManager)
+        abilities.values.forEach { it.cooldownMultiplier = settings.abilityCooldownMultiplier }
     }
 
-    public void resetAbilities() {
-        abilities.values().forEach(Ability::reset);
+    fun clearEffects() {
+        effectManager.clear()
     }
 
-    public void registerUsedAbilityItem(int abilityItemAmount) {
-        this.thrownAbilityAmount = abilityItemAmount;
+    fun readyAbilities() {
+        abilities.values.forEach { it.obtain() }
     }
 
-    public int getUsedAbilityItemAmount() {
-        return thrownAbilityAmount;
+    fun resetAbilities() {
+        abilities.values.forEach { it.reset() }
     }
 
-    public int getHP() {return hp;}
-
-    private void setHP(int hp) { // heile hjerter
-        this.hp = hp;
-        avatar.setHP(hp);
-        if (hp == 0) avatar.eliminate();
-        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
+    fun registerUsedAbilityItem(abilityItemAmount: Int) {
+        this.usedAbilityItemAmount = abilityItemAmount
     }
 
-    public boolean isAlive() {
-        return hp > 0;
+    val isAlive: Boolean
+        get() = hp > 0
+
+    private val abilityMenu: AbilityMenu?
+        get() = lobby.settings.abilityMenus[this]
+
+    fun getAbility(type: AbilityType): Ability {
+        return abilities[type]!!
     }
 
-    private AbilityMenu getAbilityMenu() {
-        return lobby.settings.abilityMenus.get(this);
-    }
-
-    public Collection<Ability> getAbilities() {
-        return abilities.values();
-    }
-
-    public Ability getAbility(AbilityType type) {
-        return abilities.get(type);
-    }
-
-    public void onMaxAbilitiesChange() {
-        int maxAbilities = settings.getMaxAbilities();
-        if (getTotalAbilities() <= maxAbilities) return;
-        int excess = getTotalAbilities() - maxAbilities;
-        for (int i = 0; i < excess; i++) {
-            for (AbilityType type : AbilityType.getEntries()) {
-                if (!hasAbilityEquipped(type)) continue;
-                unequipAbility(type);
-                break;
+    fun onMaxAbilitiesChange() {
+        val maxAbilities = settings.maxAbilities
+        if (this.totalAbilities <= maxAbilities) return
+        val excess = this.totalAbilities - maxAbilities
+        repeat(excess) {
+            for (type in AbilityType.entries) {
+                if (!hasAbilityEquipped(type)) continue
+                unequipAbility(type)
+                break
             }
         }
     }
 
-    public void equipAbility(AbilityType type) {
-        int slot = avatar.getNextFreeSlot();
-        equipAbility(slot, type);
+    fun equipAbility(type: AbilityType) {
+        val slot = avatar.getNextFreeSlot()
+        equipAbility(slot, type)
     }
 
-    public void equipAbility(int slot, AbilityType type) {
-        equipAbility(slot, type, true);
-    }
-
-    public void equipAbility(int slot, AbilityType type, boolean updateInventory) {
-        if (lobby.settings.getAbilitySettings().getMaxAbilities() == 0) return;
-        boolean abilityAlreadyEquipped = hasAbilityEquipped(type);
+    @JvmOverloads
+    fun equipAbility(slot: Int, type: AbilityType, updateInventory: Boolean = true) {
+        if (lobby.settings.abilitySettings.maxAbilities == 0) return
+        val abilityAlreadyEquipped = hasAbilityEquipped(type)
         if (!abilityAlreadyEquipped) {
-            boolean result = lobby.settings.getAbilitySettings().attemptEquip(this, type);
+            val result = lobby.settings.abilitySettings.attemptEquip(this, type)
             if (!result) {
-                avatar.message(Component.text("Cant equip, ability already in use by team member (unique ability mode enabled)", NamedTextColor.YELLOW));
-                return;
+                avatar.message(Component.text(
+                    "Cant equip, ability already in use by team member (unique ability mode enabled)",
+                    NamedTextColor.YELLOW
+                ))
+                return
             }
         }
-        abilities.put(type, Ability.Companion.create(type, this, slot));
-        if (abilityAlreadyEquipped) return;
+        abilities[type] = create(type, this, slot)
+        if (abilityAlreadyEquipped) return
 
         if (slot > 0 && updateInventory) {
-            avatar.setItem(slot, type.getAbilityItem(this));
+            avatar.setItem(slot, type.getAbilityItem(this))
         }
 
-        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++;
+        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++
 
-        String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
-        avatar.message(Component.text("Equipping ability: ", NamedTextColor.GREEN).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
-        getAbilityMenu().onAbilityStatusChange(type);
+        val abilityName = "${type.name[0]}${type.name.substring(1).lowercase().replace('_', ' ')}"
+        avatar.message(
+            Component.text("Equipping ability: ", NamedTextColor.GREEN)
+                .append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE))
+        )
+        this.abilityMenu?.onAbilityStatusChange(type)
     }
 
-    public void unequipAbility(AbilityType type) {
-        unequipAbility(type, false);
-    }
+    @JvmOverloads
+    fun unequipAbility(type: AbilityType, hideMessage: Boolean = false) {
+        if (!abilities.containsKey(type)) return
 
-    public void unequipAbility(AbilityType type, boolean hideMessage) {
-        if (!abilities.containsKey(type)) return;
-
-        lobby.settings.getAbilitySettings().unequip(this, type);
-        Ability ability = abilities.get(type);
-        ability.resetCooldown();
-        ability.unequip();
-        int slot = ability.getHotBarSlot();
+        lobby.settings.abilitySettings.unequip(this, type)
+        val ability: Ability = abilities[type]!!
+        ability.resetCooldown()
+        ability.unequip()
+        val slot = ability.hotBarSlot
         if (slot > 0) {
-            avatar.setItem(slot, null);
+            avatar.setItem(slot, null)
         }
 
-        abilities.remove(type);
-        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--;
+        abilities.remove(type)
+        if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--
 
-        String abilityName = type.name().charAt(0) + type.name().substring(1).toLowerCase().replace('_', ' ');
+        val abilityName =
+            "${type.name[0]}${type.name.substring(1).lowercase().replace('_', ' ')}"
         if (!hideMessage) {
-            avatar.message(Component.text("Unequipping ability: ", NamedTextColor.RED).append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE)));
+            avatar.message(
+                Component.text("Unequipping ability: ", NamedTextColor.RED)
+                    .append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE))
+            )
         }
-        getAbilityMenu().onAbilityStatusChange(type);
+        this.abilityMenu?.onAbilityStatusChange(type)
     }
 
-    public boolean hasAbilityEquipped(AbilityType type) {
-        return abilities.containsKey(type);
+    fun hasAbilityEquipped(type: AbilityType?): Boolean {
+        return abilities.containsKey(type)
     }
 
-    public void obtainWeaponAbilities() {
-        abilities.values().stream().filter(a -> a.type.category == AbilityCategory.DAMAGING).forEach(Ability::obtain);
+    fun obtainWeaponAbilities() {
+        abilities.values.filter { it.type.category == AbilityCategory.DAMAGING }
+            .forEach { it.obtain() }
     }
 
-    public void loseWeaponAbilities() {
-        abilities.values().stream().filter(a -> a.type.category == AbilityCategory.DAMAGING).forEach(Ability::lose);
+    fun loseWeaponAbilities() {
+        abilities.values.filter { it.type.category == AbilityCategory.DAMAGING }
+            .forEach { it.lose() }
     }
 
-    public int getTotalAbilities() {
-        return abilities.size();
-    }
+    val totalAbilities: Int
+        get() = abilities.size
 
-    public boolean isDamaged() {
-        return isDamaged;
-    }
+    fun damage(ctx: DamageContext) {
+        if (isDamaged || !this.isAlive) return
+        avatar.damage()
+        var damageMessage = ctx.formatMessage(this)
 
-    public void damage(DamageContext ctx) {
-        if (isDamaged || !isAlive()) return;
-        avatar.damage();
-        Component damageMessage = ctx.formatMessage(this);
+        val isFatal = ctx is DamageContext.Player && hp <= ctx.attacker.settings.attackDamage
 
-        boolean isFatal = ctx instanceof DamageContext.Player pctx && hp <= pctx.getAttacker().settings.getAttackDamage();
-
-        if (ctx instanceof DamageContext.Environment) {
-            die(damageMessage);
-        } else if (ctx instanceof DamageContext.Player playerCtx) {
-            if (this != playerCtx.getAttacker()) { // dont register hit/dmg if it was self inflicted
-                lobby.botBowsGame.matchResult.registerDamage(this);
-                lobby.botBowsGame.matchResult.registerHit(playerCtx.getAttacker());
+        if (ctx is DamageContext.Environment) {
+            die(damageMessage)
+        } else if (ctx is DamageContext.Player) {
+            if (this !== ctx.attacker) { // dont register hit/dmg if it was self inflicted
+                lobby.botBowsGame!!.matchResult.registerDamage(this)
+                lobby.botBowsGame!!.matchResult.registerHit(ctx.attacker)
             }
             if (isFatal) {
-                lobby.botBowsGame.matchResult.registerDeath(this);
-                lobby.botBowsGame.matchResult.registerKill(playerCtx.getAttacker());
+                lobby.botBowsGame!!.matchResult.registerDeath(this)
+                lobby.botBowsGame!!.matchResult.registerKill(ctx.attacker)
                 damageMessage = damageMessage
-                        .append(Component.text(" and got"))
-                        .append(Component.text(" eliminated", NamedTextColor.DARK_RED));
-                die(damageMessage);
-                return;
+                    .append(Component.text(" and got"))
+                    .append(Component.text(" eliminated", NamedTextColor.DARK_RED))
+                die(damageMessage)
+                return
             }
-            setHP(hp - playerCtx.getAttacker().settings.getAttackDamage());
-            lobby.messagePlayers(ctx.formatMessage(this));
-            abilities.values().forEach(Ability::hit); // pauses the cooldowns etc
-            isDamaged = true;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isDamaged = false, BotBows.HIT_DISABLED_ITEM_TICKS);
+            hp -= ctx.attacker.settings.attackDamage
+            lobby.messagePlayers(ctx.formatMessage(this))
+            abilities.values.forEach { it.hit() } // pauses the cooldowns etc
+            isDamaged = true
+            Bukkit.getScheduler().runTaskLater(
+                Main.getPlugin(),
+                Runnable { isDamaged = false },
+                BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+            )
         }
     }
 
-    private void die(Component deathMessage) {
-        setHP(0);
-        lobby.botBowsGame.botBowsBoard.updatePlayerScore(this);
-        lobby.messagePlayers(deathMessage);
-        abilities.values().forEach(a -> a.setCooldownTickRate(20));
-        hasKarmaEffect = false;
-        lobby.check4Elimination(this);
+    private fun die(deathMessage: Component) {
+        this.hp = 0
+        lobby.botBowsGame!!.botBowsBoard.updatePlayerScore(this)
+        lobby.messagePlayers(deathMessage)
+        abilities.values.forEach { it.cooldownTickRate = 20 }
+        hasKarmaEffect = false
+        lobby.check4Elimination(this)
     }
 
-    public static void armorInit() { // definerer hvilke armor som skal mistes når playeren har x antall liv. 0=boots, 1=leggings, 2=chestplate, 3=helmet
-        List<Set<Integer>> hp2 = new ArrayList<>();
-        List<Set<Integer>> hp3 = new ArrayList<>();
-        List<Set<Integer>> hp4 = new ArrayList<>();
-        List<Set<Integer>> hp5 = new ArrayList<>();
-        hp2.add(new HashSet<>(List.of(0, 1, 2, 3)));
-        hp3.add(new HashSet<>(List.of(0, 2)));
-        hp3.add(new HashSet<>(List.of(1, 3)));
-        hp4.add(new HashSet<>(List.of(2)));
-        hp4.add(new HashSet<>(List.of(0, 1)));
-        hp4.add(new HashSet<>(List.of(3)));
-        hp5.add(new HashSet<>(List.of(2)));
-        hp5.add(new HashSet<>(List.of(1)));
-        hp5.add(new HashSet<>(List.of(0)));
-        hp5.add(new HashSet<>(List.of(3)));
-        hp5.add(new HashSet<>()); // hvis man har fler liv enn 5 så blir denne calla, men da skal det ikke skje noe
-        HEALTH_ARMOR.add(hp2);
-        HEALTH_ARMOR.add(hp3);
-        HEALTH_ARMOR.add(hp4);
-        HEALTH_ARMOR.add(hp5);
-    }
+    fun setReady(ready: Boolean, itemIndex: Int) {
+        if (settings.isReady == ready) return  //TODO: skal inn i listneren og
 
-    public void setReady(boolean ready, int itemIndex) {
-        if (settings.isReady() == ready) return; //TODO: skal inn i listneren og
-        settings.setReady(ready); // todo, flytt inn i playersettings det med itemindex. det må og med tror jeg
-        avatar.setReady(ready, itemIndex); // listener og ikke her. playersettings skal ha full ctrl
+        settings.isReady = ready // todo, flytt inn i playersettings det med itemindex. det må og med tror jeg
+        avatar.setReady(ready, itemIndex) // listener og ikke her. playersettings skal ha full ctrl
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> lobby.handlePlayerReady(this), 3L);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { lobby.handlePlayerReady(this) }, 3L)
     }
 
-    public void setAbilityCooldownTickRate(int abilityCooldownTickRate) {
-        for (Ability ability : abilities.values()) {
-            if (ability.type == AbilityType.CHARGE_POTION) continue; // charge potion wont affect itself
-            ability.setCooldownTickRate(abilityCooldownTickRate);
+    fun setAbilityCooldownTickRate(abilityCooldownTickRate: Int) {
+        for (ability in abilities.values) {
+            if (ability.type == AbilityType.CHARGE_POTION) continue  // charge potion wont affect itself
+
+            ability.cooldownTickRate = abilityCooldownTickRate
         }
     }
 
-    public boolean hasKarmaEffect() {
-        return hasKarmaEffect;
-    }
-
-    public void setKarmaEffect(boolean hasKarmaEffect) {
-        this.hasKarmaEffect = hasKarmaEffect;
-    }
-
-    public void getKarma() {
-        PotionEffectType[] effects = {
+    fun applyKarmaDebuff() {
+        val effects = arrayOf(
             PotionEffectType.SLOWNESS,
             PotionEffectType.LEVITATION,
-            PotionEffectType.BLINDNESS
-        };
+            PotionEffectType.BLINDNESS,
+            PotionEffectType.UNLUCK
+        )
         effectManager.applyGlow(
-                PlayerEffectManager.GlowSource.DEBUFF,
-                (long) (KarmaPotion.KARMA_DURATION * 20),
-                NamedTextColor.GOLD,
-                10
-        );
+            PlayerEffectManager.GlowSource.DEBUFF,
+            (KarmaPotion.KARMA_DURATION * 20).toLong(),
+            NamedTextColor.GOLD,
+            10
+        )
 
-        int effectID = BotBows.RANDOM.nextInt(effects.length + 1);
-        if (effectID == effects.length) {
+        val randomEffect = effects.random()
+        if (randomEffect == PotionEffectType.UNLUCK) {
             effectManager.applyScale(
-                    PlayerEffectManager.ScaleSource.GROW_KARMA,
-                    1.5,
-                    PlayerEffectManager.ScalePriority.NORMAL,
-                    (long) (KarmaPotion.KARMA_DURATION * 20)
-            );
-            return;
+                PlayerEffectManager.ScaleSource.GROW_KARMA,
+                1.5,
+                PlayerEffectManager.ScalePriority.NORMAL,
+                (KarmaPotion.KARMA_DURATION * 20).toLong()
+            )
+            return
         }
-        PotionEffectType randomEffect = effects[effectID];
 
-        avatar.addPotionEffect(new PotionEffect(randomEffect, KarmaPotion.KARMA_DURATION * 20, 1));
+        avatar.addPotionEffect(PotionEffect(randomEffect, KarmaPotion.KARMA_DURATION * 20, 1))
 
-        lobby.messagePlayers(Component.empty()
-                .append(getName())
+        lobby.messagePlayers(
+            Component.empty()
+                .append(name)
                 .append(Component.text(" got karma! ", NamedTextColor.RED))
-                .append(Component.text(randomEffect.getKey().value(), NamedTextColor.DARK_RED)));
+                .append(Component.text(randomEffect.key.value(), NamedTextColor.DARK_RED))
+        )
     }
 
-    public boolean isSneakingExhausted() {
-        return sneakManager.isSneakingExhausted();
+    val isSneakingExhausted: Boolean
+        get() = sneakManager!!.isSneakingExhausted
+
+    fun reloadBotBow() {
+        avatar.setItem(0, BotBows.BOTBOW)
     }
 
-    public void reloadBotBow() {
-        avatar.setItem(0, BotBows.BOTBOW);
+    fun getNearbyPlayers(radius: Double): Set<BotBowsPlayer> {
+        return avatar.location.world.getNearbyEntities(avatar.location, radius, radius, radius)
+            .mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
+            .filter { it.isAlive }
+            .toSet()
     }
 
-    public Set<BotBowsPlayer> getNearbyPlayers(double radius) {
-        return avatar.getLocation().getWorld().getNearbyEntities(avatar.getLocation(), radius, radius, radius).stream()
-                .map(Entity::getUniqueId)
-                .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
-                .filter(BotBowsPlayer::isAlive)
-                .collect(Collectors.toSet());
+    val location: Location?
+        get() = avatar.location
+
+    fun teleport(location: Location) {
+        avatar.teleport(location)
     }
 
-    public Location getLocation() {
-        return avatar.getLocation();
+    fun setInvulnerable(invulnerable: Boolean) {
+        avatar.setInvulnerable(invulnerable)
     }
 
-    public void teleport(Location location) {
-        avatar.teleport(location);
-    }
+    val isOnGround: Boolean
+        get() = avatar.isOnGround
 
-    public void setInvulnerable(boolean invulnerable) {
-        avatar.setInvulnerable(invulnerable);
-    }
-
-    public boolean isOnGround() {
-        return  avatar.isOnGround();
+    companion object {
+        @JvmField
+        val HEALTH_ARMOR: List<List<Set<Int>>> = listOf(
+            listOf( // maxHp = 2
+                setOf(0, 1, 2, 3)
+            ),
+            listOf( // maxHp = 3
+                setOf(0, 2),
+                setOf(1, 3)
+            ),
+            listOf( // maxHp = 4
+                setOf(2),
+                setOf(0, 1),
+                setOf(3)
+            ),
+            listOf( // maxHp = 5
+                setOf(2),
+                setOf(1),
+                setOf(0),
+                setOf(3),
+                setOf() // hvis man har fler liv enn 5 så blir denne calla, men da skal det ikke skje noe
+            )
+        ) // Når man tar damag så kan man gette em liste med hvilke armor pieces som skal fjernes
     }
 }

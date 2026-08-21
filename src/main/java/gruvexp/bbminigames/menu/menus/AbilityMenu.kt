@@ -110,7 +110,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             }
             MenuAction.TOGGLE_BAN_HAMMER -> isToggleAbilityMode = !isToggleAbilityMode
             MenuAction.RANDOMIZE_ABILITIES -> {
-                bp.abilities.forEach { bp.unequipAbility(it.type, true) }
+                bp.equippedAbilities.forEach { bp.unequipAbility(it, true) }
 
                 AbilityType.entries.shuffled()
                     .filter { !abilitySettings.isBanned(it) }
@@ -195,7 +195,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         } else { // clicked in player inventory
             if (cursorItem.type == Material.AIR) {
                 if (bp.hasAbilityEquipped(clickedAbility)) { // picks up ability to move it around
-                    bp.equipAbility(-1, clickedAbility)
+                    bp.equipAbility(-1, clickedAbility!!)
                 }
             } else { // places ability down in that slot
                 if (e.action == InventoryAction.COLLECT_TO_CURSOR) { // otherwise, players could collect menu items by double clicking similar items in their inventory
@@ -210,11 +210,11 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
                 if (e.slot >= 9) { // clicks somewhere else than hotbar
                     p.setItemOnCursor(null)
                     if (bp.hasAbilityEquipped(cursorAbility)) {
-                        bp.unequipAbility(cursorAbility)
+                        bp.unequipAbility(cursorAbility!!)
                     }
                     return
                 }
-                bp.equipAbility(e.slot, cursorAbility, false)
+                cursorAbility?.let { bp.equipAbility(e.slot, cursorAbility, false) }
 
                 clickedAbility?.let { bp.equipAbility(-1, it) }
             }
@@ -338,8 +338,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             inventory.setItem(53, UNIQUE_MODE_ENABLED)
 
             // removes abilities that other teammates has equipped
-            bp.abilities
-                .map { it.type }
+            bp.equippedAbilities
                 .filter { !settings.abilitySettings.attemptEquip(bp, it) }
                 .forEach { bp.unequipAbility(it) }
         } else {

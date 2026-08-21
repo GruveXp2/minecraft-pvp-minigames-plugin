@@ -38,15 +38,15 @@ public class DamageListener implements Listener {
                     return;
                 }
                 e.setDamage(0.01); // de skal ikke daue men bli satt i spectator til runda er ferdig
-                boolean hasKarma = defenderBp.hasKarmaEffect();
+                boolean hasKarmaAura = defenderBp.getKarmaAura(); // it looks ugly with the "getKarmaAura-" but its ok since it will go away when this class gets converted 2 Kotlin
                 if (attackerBp.hasAbilityEquipped(AbilityType.THUNDER_BOW) && ((ThunderBow) attackerBp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
                 } else {
                     //defenderBp.handleHit(Component.text(" was sniped by "), attackerBp);
                     defenderBp.damage(new DamageContext.Player(DamageType.Player.BOW, attackerBp));
                     attackerBp.obtainWeaponAbilities(); // if the player hits, then the weapon ability rule will make the attacker obtain weapon abilities, unless it's the one used to hit
                 }
-                if (hasKarma) {
-                    attackerBp.getKarma();
+                if (hasKarmaAura) {
+                    attackerBp.applyKarmaDebuff();
                     defenderBp.getAbility(AbilityType.KARMA_POTION).registerSuccess();
                 }
             }

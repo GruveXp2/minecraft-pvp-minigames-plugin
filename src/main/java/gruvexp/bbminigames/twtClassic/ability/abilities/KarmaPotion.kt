@@ -8,11 +8,11 @@ import org.bukkit.Bukkit
 
 class KarmaPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.KARMA_POTION) {
     override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
-        bp.setKarmaEffect(true)
-        players.forEach { it.setKarmaEffect(true) }
+        bp.hasKarmaEffect = true
+        players.forEach { it.karmaAura = true }
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { bp.setKarmaEffect(false) }, 20L * DURATION)
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { players.forEach { it.setKarmaEffect(false) } }, 15L * DURATION)
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { bp.karmaAura = false }, 20L * DURATION)
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { players.forEach { it.karmaAura = false } }, 15L * DURATION)
     }
 
     override val effectName: String = "Karma"

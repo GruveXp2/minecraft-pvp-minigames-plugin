@@ -135,7 +135,7 @@ class TestCommand : CommandExecutor {
                         p!!.sendMessage(Component.text("u need 2 join the game first"))
                         return true
                     }
-                    bp.getKarma()
+                    bp.applyKarmaDebuff()
                 }
 
                 "5_bots" -> {
@@ -201,7 +201,7 @@ class TestCommand : CommandExecutor {
 
                 "print_eq" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
-                    bp.abilities.forEach { ability -> p!!.sendMessage("a: ${ability.type}") }
+                    bp.equippedAbilities.forEach { p!!.sendMessage("a: ${it.displayName}") }
                 }
 
                 "add_spinning" -> {
@@ -368,7 +368,7 @@ class TestCommand : CommandExecutor {
                     var playerName: String? = args[1]
                     if (playerName == null) playerName = "GruveXp"
                     val team = BotBows.getLobby(Bukkit.getPlayer(playerName))
-                        .getBotBowsPlayer(Bukkit.getPlayer(playerName)!!)!!.team
+                        .getBotBowsPlayer(Bukkit.getPlayer(playerName)!!)!!.team!!
                     BotBows.debugMessage("The team of $playerName is ${team.displayName}")
                 }
 
