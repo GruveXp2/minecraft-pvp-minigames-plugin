@@ -160,10 +160,6 @@ class BotBowsPlayer {
         abilities.values.forEach { it.reset() }
     }
 
-    fun registerUsedAbilityItem(abilityItemAmount: Int) {
-        this.usedAbilityItemAmount = abilityItemAmount
-    }
-
     val isAlive: Boolean
         get() = hp > 0
 
@@ -176,8 +172,8 @@ class BotBowsPlayer {
 
     fun onMaxAbilitiesChange() {
         val maxAbilities = settings.maxAbilities
-        if (this.totalAbilities <= maxAbilities) return
-        val excess = this.totalAbilities - maxAbilities
+        if (totalAbilities <= maxAbilities) return
+        val excess = totalAbilities - maxAbilities
         repeat(excess) {
             for (type in AbilityType.entries) {
                 if (!hasAbilityEquipped(type)) continue
@@ -219,7 +215,7 @@ class BotBowsPlayer {
             Component.text("Equipping ability: ", NamedTextColor.GREEN)
                 .append(Component.text(type.displayName, NamedTextColor.LIGHT_PURPLE))
         )
-        this.abilityMenu?.onAbilityStatusChange(type)
+        abilityMenu?.onAbilityStatusChange(type)
     }
 
     @JvmOverloads
@@ -244,7 +240,7 @@ class BotBowsPlayer {
                     .append(Component.text(type.displayName, NamedTextColor.LIGHT_PURPLE))
             )
         }
-        this.abilityMenu?.onAbilityStatusChange(type)
+        abilityMenu?.onAbilityStatusChange(type)
     }
 
     fun hasAbilityEquipped(type: AbilityType?): Boolean {
@@ -265,7 +261,7 @@ class BotBowsPlayer {
         get() = abilities.size
 
     fun damage(ctx: DamageContext) {
-        if (isDamaged || !this.isAlive) return
+        if (isDamaged || !isAlive) return
         avatar.damage()
         var damageMessage = ctx.formatMessage(this)
 
