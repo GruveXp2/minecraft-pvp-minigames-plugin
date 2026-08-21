@@ -12,7 +12,7 @@ sealed interface DamageContext {
     fun getMessageColor(): TextColor
 
     data class Player(override val type: DamageType.Player, val attacker: BotBowsPlayer) : DamageContext {
-        override fun getMessageColor(): TextColor = BotBows.lighten(attacker.teamColor, 0.5)
+        override fun getMessageColor(): TextColor = BotBows.lighten(attacker.team.color, 0.5)
     }
 
     data class Environment(override val type: DamageType.Environment) : DamageContext {

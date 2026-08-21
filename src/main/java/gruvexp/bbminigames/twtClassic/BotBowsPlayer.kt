@@ -18,7 +18,6 @@ import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Mannequin
@@ -77,11 +76,8 @@ class BotBowsPlayer {
         setReady(true, 4) // bots are always ready for match
     }
 
-    val teamColor: TextColor
-        get() = team.color
-
     val name: Component
-        get() = Component.text(plainName, teamColor)
+        get() = Component.text(plainName, team.color)
 
     val plainName: String
 

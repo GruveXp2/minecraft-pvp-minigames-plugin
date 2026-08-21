@@ -126,7 +126,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         }.runTaskTimer(Main.getPlugin(), 0L, GLOW_TICK_PERIOD)
     }
 
-    private fun teamColor(): NamedTextColor = avatar.botBowsPlayer.teamColor as NamedTextColor
+    private fun teamColor(): NamedTextColor = avatar.botBowsPlayer.team.color
 
     fun clear() {
         scaleTween?.cancel()

@@ -149,7 +149,7 @@ public class LingeringPotionTrap extends Ability implements AbilityTrigger.OnLin
                 10
         );
         String effectName = effectType == PotionEffectType.UNLUCK ? "GROWING" : effectType.getKey().value();
-        affectedBp.lobby.messagePlayers(Component.text("", BotBows.lighten(bp.getTeamColor(), 0.5))
+        affectedBp.lobby.messagePlayers(Component.text("", BotBows.lighten(bp.getTeam().getColor(), 0.5))
                 .append(affectedBp.getName())
                 .append(Component.text(" took a bath in "))
                 .append(bp.getName())
