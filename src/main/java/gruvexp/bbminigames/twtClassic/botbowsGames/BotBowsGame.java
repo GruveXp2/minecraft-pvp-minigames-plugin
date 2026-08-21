@@ -228,7 +228,7 @@ public class BotBowsGame {
     private int calculateDynamicScore(BotBowsTeam winningTeam, BotBowsTeam losingTeam) {
         int HPLeft = 0;
         for (BotBowsPlayer bp : winningTeam.getPlayers()) {
-            HPLeft += bp.getHP();
+            HPLeft += bp.getHp();
         }
         lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.getColor()));
 
