@@ -1,160 +1,155 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.ability.AbilityTrigger;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.ThrownPotion;
-import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
-import org.bukkit.event.entity.LingeringPotionSplashEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnLingeringPotionUse
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.Ability
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Color
+import org.bukkit.Location
+import org.bukkit.entity.AreaEffectCloud
+import org.bukkit.entity.ThrownPotion
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent
+import org.bukkit.event.entity.LingeringPotionSplashEvent
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import org.bukkit.scheduler.BukkitRunnable
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
+    : Ability(bp, hotBarSlot, AbilityType.LINGERING_POTION), OnLingeringPotionUse {
+    fun addSizeIncreaseAreaEffect(loc: Location) {
+        val throwerBp = bp
+        object : BukkitRunnable() {
+            var counter: Int = 0
 
-public class LingeringPotionTrap extends Ability implements AbilityTrigger.OnLingeringPotionUse {
+            override fun run() {
+                if (counter++ >= DURATION * 10) {
+                    cancel()
+                    return
+                }
 
-    public static final int DURATION = 30; // how long the potion lingers on the ground
-    public static final int EFFECT_DURATION = 20; // how long you have the effect after stepping into it
-    public static final int LINGERING_POTION_RADIUS = 3;
+                loc.world.getNearbyEntities(
+                    loc,
+                    LINGERING_POTION_RADIUS.toDouble(),
+                    1.0,
+                    LINGERING_POTION_RADIUS.toDouble()
+                ).mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
+                    .filter { it.team != throwerBp.team }
+                    .forEach {
+                        it.effectManager.applyScale(
+                            PlayerEffectManager.ScaleSource.GROW_TRAP,
+                            1.5,
+                            PlayerEffectManager.ScalePriority.NORMAL,
+                            (EFFECT_DURATION * 20).toLong()
+                        )
+                    }
+            }
+        }.runTaskTimer(Main.getPlugin(), 0L, 2L)
+    }
 
-    private static final PotionEffectType[] EFFECTS = {
+    override fun reset() {
+        cloudOwners.keys.forEach { it.remove() }
+    }
+
+    override fun destroy() {
+        cloudOwners.keys.forEach { it.remove() }
+    }
+
+    override fun onSplash(e: LingeringPotionSplashEvent) {
+        val cloud = e.areaEffectCloud
+        cloud.reapplicationDelay = EFFECT_DURATION * 10
+        cloudOwners[cloud] = bp
+
+        val potion = e.entity
+        val hasUnluck = potion.effects.any { it.type == PotionEffectType.UNLUCK }
+        if (hasUnluck) {
+            addSizeIncreaseAreaEffect(potion.location)
+        }
+    }
+
+    override fun onCloudApply(e: AreaEffectCloudApplyEvent) {
+        val cloudEffect: PotionEffect = e.entity.customEffects[0]
+        val effectType = cloudEffect.type
+        val glowDuration = (cloudEffect.duration / 4).toLong() // only get 25% duration from the area effect cloud
+
+        val it = e.affectedEntities.iterator()
+        while (it.hasNext()) {
+            val entity = it.next()
+            val affectedBp = BotBows.getBotBowsPlayer(entity.uniqueId) ?: continue
+            if (affectedBp.team == bp.team) { // dont affect team of thrower
+                it.remove()
+                continue
+            }
+            onEffectReceive(affectedBp, effectType, glowDuration)
+        }
+    }
+
+    private fun onEffectReceive(affectedBp: BotBowsPlayer, effectType: PotionEffectType, glowDuration: Long) {
+        affectedBp.effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.DEBUFF,
+            glowDuration,
+            NamedTextColor.GOLD,
+            10
+        )
+        val effectName = if (effectType == PotionEffectType.UNLUCK) "GROWING" else effectType.key.value()
+        affectedBp.lobby.messagePlayers(
+            Component.text("", BotBows.lighten(bp.team.color, 0.5))
+                .append(affectedBp.name)
+                .append(Component.text(" took a bath in "))
+                .append(bp.name)
+                .append(Component.text("'s lingering potion cloud and got "))
+                .append(Component.text(effectName, NamedTextColor.DARK_RED))
+        )
+        registerSuccess()
+    }
+
+    companion object {
+        const val DURATION: Int = 30 // how long the potion lingers on the ground
+        const val EFFECT_DURATION: Int = 20 // how long you have the effect after stepping into it
+        const val LINGERING_POTION_RADIUS: Int = 3
+
+        private val EFFECTS = arrayOf(
             PotionEffectType.SLOWNESS,
             PotionEffectType.LEVITATION,
             PotionEffectType.DARKNESS,
             PotionEffectType.UNLUCK
-    };
+        )
 
-    private static final Map<PotionEffectType, Color> EFFECT_COLORS = Map.of(
-            PotionEffectType.SLOWNESS, Color.fromRGB(90, 90, 255),
-            PotionEffectType.LEVITATION, Color.fromRGB(255, 255, 255),
-            PotionEffectType.BLINDNESS, Color.fromRGB(0, 0, 0),
-            PotionEffectType.UNLUCK, Color.fromRGB(128, 100, 32)
-    );
+        private val EFFECT_COLORS = mapOf(
+            PotionEffectType.SLOWNESS to Color.fromRGB(90, 90, 255),
+            PotionEffectType.LEVITATION to Color.fromRGB(255, 255, 255),
+            PotionEffectType.BLINDNESS to Color.fromRGB(0, 0, 0),
+            PotionEffectType.UNLUCK to Color.fromRGB(128, 100, 32)
+        )
 
-    protected static HashMap<AreaEffectCloud, BotBowsPlayer> cloudOwners = new HashMap<>();
+        protected var cloudOwners: MutableMap<AreaEffectCloud, BotBowsPlayer> =
+            mutableMapOf()
 
-    public LingeringPotionTrap(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot, AbilityType.LINGERING_POTION);
-    }
-
-    public static BotBowsPlayer getCloudOwner(AreaEffectCloud cloud) {
-        return cloudOwners.get(cloud);
-    }
-
-    public static void giveRandomEffect(ThrownPotion thrownPotion) {
-        PotionEffectType randomEffect = EFFECTS[BotBows.RANDOM.nextInt(EFFECTS.length)];
-        Color potionColor = EFFECT_COLORS.getOrDefault(randomEffect, Color.GRAY);
-
-        ItemStack potion = thrownPotion.getItem();
-        PotionMeta meta = (PotionMeta) potion.getItemMeta();
-        meta.clearCustomEffects();
-        meta.addCustomEffect(new PotionEffect(randomEffect, EFFECT_DURATION * 20 * 4, 2), true); // must *=4 the effect to counteract mojangs *=0.25 (bc its an area effect cloud)
-        meta.setColor(potionColor);
-        potion.setItemMeta(meta);
-        thrownPotion.setItem(potion);
-    }
-
-    public void addSizeIncreaseAreaEffect(Location loc) {
-        BotBowsPlayer throwerBp = bp;
-        new BukkitRunnable() {
-            int counter = 0;
-
-            @Override
-            public void run() {
-                if (counter++ >= DURATION * 10) {
-                    cancel();
-                    return;
-                }
-
-                for (Entity entity : loc.getWorld().getNearbyEntities(loc, LINGERING_POTION_RADIUS, 1, LINGERING_POTION_RADIUS)) {
-                    BotBowsPlayer bp = BotBows.getBotBowsPlayer(entity.getUniqueId());
-                    if (bp == null) continue;
-                    if (bp.getTeam() == throwerBp.getTeam()) continue; // dont affect team of thrower
-
-                    bp.getEffectManager().applyScale(
-                            PlayerEffectManager.ScaleSource.GROW_TRAP,
-                            1.5,
-                            PlayerEffectManager.ScalePriority.NORMAL,
-                            (long) (EFFECT_DURATION * 20)
-                    );
-                }
-            }
-        }.runTaskTimer(Main.getPlugin(), 0L, 2L);
-    }
-
-    @Override
-    public void reset() {
-        cloudOwners.keySet().forEach(Entity::remove);
-    }
-
-    @Override
-    public void destroy() {
-        cloudOwners.keySet().forEach(Entity::remove);
-    }
-
-    @Override
-    public void onSplash(LingeringPotionSplashEvent e) {
-        AreaEffectCloud cloud = e.getAreaEffectCloud();
-        cloud.setReapplicationDelay(EFFECT_DURATION * 10);
-        cloudOwners.put(cloud, bp);
-
-        ThrownPotion potion = e.getEntity();
-        boolean hasUnluck = potion.getEffects().stream()
-                .anyMatch(effect -> effect.getType() == PotionEffectType.UNLUCK);
-        if (hasUnluck) {
-            addSizeIncreaseAreaEffect(potion.getLocation());
+        @JvmStatic
+        fun getCloudOwner(cloud: AreaEffectCloud): BotBowsPlayer? {
+            return cloudOwners[cloud]
         }
-    }
 
-    @Override
-    public void onCloudApply(AreaEffectCloudApplyEvent e) {
-        PotionEffect cloudEffect = e.getEntity().getCustomEffects().getFirst();
-        PotionEffectType effectType = cloudEffect.getType();
-        long glowDuration = cloudEffect.getDuration() / 4; // only get 25% duration from the area effect cloud
+        @JvmStatic
+        fun giveRandomEffect(thrownPotion: ThrownPotion) {
+            val randomEffect: PotionEffectType = EFFECTS[BotBows.RANDOM.nextInt(EFFECTS.size)]
+            val potionColor = EFFECT_COLORS[randomEffect] ?: Color.GRAY
 
-        Iterator<LivingEntity> it = e.getAffectedEntities().iterator();
-        while (it.hasNext()) {
-            LivingEntity entity = it.next();
-            BotBowsPlayer affectedBp = BotBows.getBotBowsPlayer(entity.getUniqueId());
-            if (affectedBp == null) continue;
-            if (affectedBp.getTeam() == bp.getTeam()) { // dont affect team of thrower
-                it.remove();
-                continue;
+            val potion = thrownPotion.item
+            potion.editMeta(PotionMeta::class.java) {
+                it.clearCustomEffects()
+                it.addCustomEffect(
+                    PotionEffect(randomEffect, EFFECT_DURATION * 20 * 4, 2),
+                    true
+                )
+                it.color = potionColor
             }
-            onEffectReceive(affectedBp, effectType, glowDuration);
+            thrownPotion.item = potion
         }
-    }
-
-    private void onEffectReceive(BotBowsPlayer affectedBp, PotionEffectType effectType, long glowDuration) {
-        affectedBp.getEffectManager().applyGlow(
-                PlayerEffectManager.GlowSource.DEBUFF,
-                glowDuration,
-                NamedTextColor.GOLD,
-                10
-        );
-        String effectName = effectType == PotionEffectType.UNLUCK ? "GROWING" : effectType.getKey().value();
-        affectedBp.lobby.messagePlayers(Component.text("", BotBows.lighten(bp.getTeam().getColor(), 0.5))
-                .append(affectedBp.getName())
-                .append(Component.text(" took a bath in "))
-                .append(bp.getName())
-                .append(Component.text("'s lingering potion cloud and got "))
-                .append(Component.text(effectName, NamedTextColor.DARK_RED)));
-        registerSuccess();
     }
 }
