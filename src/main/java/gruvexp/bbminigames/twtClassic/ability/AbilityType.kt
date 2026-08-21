@@ -108,7 +108,8 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP, AbilityEffect.DEBUFF
     );
 
-
+    val displayName: String
+        get() = "${name[0]}${name.substring(1).lowercase().replace('_', ' ')}"
     @JvmField
     val abilityItem: ItemStack
     @JvmField

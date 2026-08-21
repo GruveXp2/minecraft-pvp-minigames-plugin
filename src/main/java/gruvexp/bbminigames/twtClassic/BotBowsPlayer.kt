@@ -223,10 +223,9 @@ class BotBowsPlayer {
 
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain++
 
-        val abilityName = "${type.name[0]}${type.name.substring(1).lowercase().replace('_', ' ')}"
         avatar.message(
             Component.text("Equipping ability: ", NamedTextColor.GREEN)
-                .append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE))
+                .append(Component.text(type.displayName, NamedTextColor.LIGHT_PURPLE))
         )
         this.abilityMenu?.onAbilityStatusChange(type)
     }
@@ -247,12 +246,10 @@ class BotBowsPlayer {
         abilities.remove(type)
         if (type == AbilityType.BUBBLE_JET) lobby.settings.rain--
 
-        val abilityName =
-            "${type.name[0]}${type.name.substring(1).lowercase().replace('_', ' ')}"
         if (!hideMessage) {
             avatar.message(
                 Component.text("Unequipping ability: ", NamedTextColor.RED)
-                    .append(Component.text(abilityName, NamedTextColor.LIGHT_PURPLE))
+                    .append(Component.text(type.displayName, NamedTextColor.LIGHT_PURPLE))
             )
         }
         this.abilityMenu?.onAbilityStatusChange(type)
