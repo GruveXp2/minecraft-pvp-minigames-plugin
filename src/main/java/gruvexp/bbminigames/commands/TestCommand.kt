@@ -368,7 +368,7 @@ class TestCommand : CommandExecutor {
                     var playerName: String? = args[1]
                     if (playerName == null) playerName = "GruveXp"
                     val team = BotBows.getLobby(Bukkit.getPlayer(playerName))
-                        .getBotBowsPlayer(Bukkit.getPlayer(playerName)!!)!!.team!!
+                        .getBotBowsPlayer(Bukkit.getPlayer(playerName)!!)!!.team
                     BotBows.debugMessage("The team of $playerName is ${team.displayName}")
                 }
 

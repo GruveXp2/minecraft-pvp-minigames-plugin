@@ -35,7 +35,7 @@ class BotBowsPlayer {
     val lobby: Lobby
     @JvmField
     val settings: PlayerSettings
-    var team: BotBowsTeam? = null
+    lateinit var team: BotBowsTeam
         private set
     var hp: Int = 3
         private set(value) {
@@ -78,7 +78,7 @@ class BotBowsPlayer {
     }
 
     val teamColor: TextColor
-        get() = team?.color ?: NamedTextColor.WHITE
+        get() = team.color
 
     val name: Component
         get() = Component.text(plainName, teamColor)
@@ -86,7 +86,7 @@ class BotBowsPlayer {
     val plainName: String
 
     fun onTeamJoin(team: BotBowsTeam) {
-        this.team?.leave(this)
+        if (this::team.isInitialized) this.team.leave(this)
         this.team = team
         avatar.equipFullArmor()
     }
@@ -95,12 +95,8 @@ class BotBowsPlayer {
         this.team = team
     }
 
-    fun onTeamLeave() {
-        team = null
-    }
-
     fun onGameLeave() {
-        team!!.leave(this)
+        team.leave(this)
         avatar.destroy()
         effectManager.clear()
         abilities.keys.forEach { unequipAbility(it, true) }

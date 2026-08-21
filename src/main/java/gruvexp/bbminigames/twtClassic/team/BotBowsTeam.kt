@@ -258,7 +258,6 @@ enum class BotBowsTeam(
 
     fun leave(bp: BotBowsPlayer) {
         players.remove(bp)
-        bp.onTeamLeave()
     }
 
     fun reset() {
