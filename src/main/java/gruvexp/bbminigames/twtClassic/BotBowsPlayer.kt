@@ -304,8 +304,7 @@ class BotBowsPlayer {
     }
 
     private fun die(deathMessage: Component) {
-        this.hp = 0
-        lobby.botBowsGame!!.botBowsBoard.updatePlayerScore(this)
+        hp = 0
         lobby.messagePlayers(deathMessage)
         abilities.values.forEach { it.cooldownTickRate = 20 }
         hasKarmaEffect = false
