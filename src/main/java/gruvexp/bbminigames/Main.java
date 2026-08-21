@@ -9,7 +9,6 @@ import gruvexp.bbminigames.sumo.FloorListener;
 import gruvexp.bbminigames.sumo.SumoCommand;
 import gruvexp.bbminigames.sumo.SumoTabCompleter;
 import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
