@@ -1,30 +1,25 @@
-package gruvexp.bbminigames.listeners;
+package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import gruvexp.bbminigames.twtClassic.BotBows
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.GameMode
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerToggleSneakEvent
 
-public class ShiftListener implements Listener {
-
+class ShiftListener : Listener {
     @EventHandler
-    public void onShiftToggle(PlayerToggleSneakEvent e) {
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        if (!lobby.isGameActive()) {return;}
-        if (p.getGameMode() != GameMode.ADVENTURE) {return;}
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
+    fun onShiftToggle(e: PlayerToggleSneakEvent) {
+        val p = e.getPlayer()
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        if (!bp.lobby.isGameActive) return
+        if (p.gameMode != GameMode.ADVENTURE) return
 
-        if (bp.isSneakingExhausted() && e.isSneaking()) {
-            p.sendActionBar(Component.text("You are exhausted and cant sneak", NamedTextColor.RED));
-            e.setCancelled(true);
+
+        if (bp.isSneakingExhausted && e.isSneaking) {
+            p.sendActionBar(Component.text("You are exhausted and cant sneak", NamedTextColor.RED))
+            e.isCancelled = true
         }
     }
 }
