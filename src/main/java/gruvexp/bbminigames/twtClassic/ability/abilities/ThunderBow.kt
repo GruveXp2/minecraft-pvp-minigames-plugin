@@ -1,201 +1,235 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.ability.AbilityContext;
-import gruvexp.bbminigames.api.ability.AbilityTrigger;
-import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.api.damage.DamageType;
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import net.kyori.adventure.text.Component;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.ability.AbilityContext.Launch
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnLaunch
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnProjectileHit
+import gruvexp.bbminigames.api.damage.DamageContext
+import gruvexp.bbminigames.api.damage.DamageType
+import gruvexp.bbminigames.commands.TestCommand
+import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.Ability
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import net.kyori.adventure.text.Component
+import org.bukkit.*
+import org.bukkit.Particle.DustOptions
+import org.bukkit.entity.Arrow
+import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
+import org.bukkit.util.Vector
+import kotlin.math.abs
+import kotlin.random.Random
 
-import java.util.*;
-import java.util.stream.Collectors;
+class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
+    : Ability(bp, hotBarSlot, AbilityType.THUNDER_BOW), OnLaunch, OnProjectileHit {
+    var isActive: Boolean = false
+        private set
 
-public class ThunderBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
-
-    public static final ItemStack THUNDER_BOW = Menu.makeItem(Material.CROSSBOW, "thunder_bow", Component.text("ThunderBow"), Component.text("Shoots electric arrows"));
-    public static final double CHAIN_RADIUS = 8;
-    public static final int DURATION = 10; // seconds
-
-    private boolean isActive = false;
-    public static HashMap<Arrow, BukkitTask> activeArrows = new HashMap<>();
-
-    public ThunderBow(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot, AbilityType.THUNDER_BOW);
+    override fun use() {
+        super.use()
+        isActive = true
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { isActive = false }, 20L * DURATION)
     }
 
-    @Override
-    public void use() {
-        super.use();
-        isActive = true;
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> isActive = false, 20L * DURATION);
+    override fun onLaunch(ctx: Launch) {
+        val arrow = ctx.projectile as Arrow
+        arrow.color = Color.AQUA
+        val arrowTrail = ThunderArrowTrailGenerator(arrow, bp.team.dyeColor.color).runTaskTimer(Main.getPlugin(), 1L, 1L)
+        activeArrows[arrow] = arrowTrail
+        arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.getPlugin(), this))
+        BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2)
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public static void handleArrowHitPlayer(BotBowsPlayer attacker, BotBowsPlayer defender) {
-        if (defender.getTeam() == attacker.getTeam()) return;
-
-        defender.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW, attacker));
-        Set<BotBowsPlayer> handledPlayers = new HashSet<>();
-        handledPlayers.add(defender);
-        handleChain(attacker, defender, handledPlayers);
-    }
-
-    private static void handleChain(BotBowsPlayer attacker, BotBowsPlayer defender, Set<BotBowsPlayer> handledPlayers) {
-        Set<BotBowsPlayer> nearbyPlayers = defender.getNearbyPlayers(CHAIN_RADIUS).stream()
-                .filter(nearbyPlayer -> nearbyPlayer.getTeam() != attacker.getTeam() && !handledPlayers.contains(nearbyPlayer))
-                .collect(Collectors.toSet());
-        if (nearbyPlayers.isEmpty()) return;
-
-        Color attackerTeamColor = attacker.getTeam().getDyeColor().getColor();
-        World world = attacker.getLocation().getWorld();
-        Ability ability = attacker.getAbility(AbilityType.THUNDER_BOW);
-        for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
-            Location nearbyPlayerLoc = nearbyPlayer.getLocation().add(0, 1, 0); // the arc will hit the middle of the player
-            world.strikeLightningEffect(nearbyPlayerLoc);
-            createElectricArc(defender.getLocation().add(0, 1, 0), nearbyPlayerLoc, attackerTeamColor, 1.0, true);
-            nearbyPlayer.damage(new DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker));
-            handledPlayers.add(nearbyPlayer);
-            ability.registerSuccess();
+    override fun onHit(e: ProjectileHitEvent) {
+        val arrow = e.getEntity() as Arrow
+        e.hitBlock?.let {
+            val hitLoc = it.location
+            handleArrowHitBlock(hitLoc)
+            activeArrows[arrow]!!.cancel()
+            activeArrows.remove(arrow)
+            return@onHit
         }
-        for (BotBowsPlayer nearbyPlayer : nearbyPlayers) {
-            handleChain(attacker, nearbyPlayer, handledPlayers);
-        }
-    }
-
-    public static void handleArrowHitBlock(Location hitLoc) {
-        for (int i = 0; i < 10; i++) {
-            int x = BotBows.RANDOM.nextInt(11) - 5; // -5 til 5
-            int y = BotBows.RANDOM.nextInt(11) - 5;
-            int z = BotBows.RANDOM.nextInt(11) - 5;
-            Vector randomVec = new Vector(x, y, z);
-            Location arcLoc = hitLoc.clone().add(randomVec);
-            if (arcLoc.getBlock().getType() != Material.AIR) {
-                createElectricArc(hitLoc, arcLoc, Color.AQUA, 2.0, false);
-            }
-        }
-    }
-
-    public static void createElectricArc(Location loc1, Location loc2, Color color, double frequencyMultiplier, boolean strong) {
-        double length = loc1.distance(loc2);
-        Vector diff = new Vector(
-                loc2.getX() - loc1.getX(),
-                loc2.getY() - loc1.getY(),
-                loc2.getZ() - loc1.getZ()
-        );
-        int steps = (int) (length * frequencyMultiplier);
-        List<Vector> locations = new ArrayList<>(steps + 1);
-        Vector start = loc1.toVector();
-        Vector end = loc2.toVector();
-        locations.add(start);
-        for (int i = 1; i < steps; i++) {
-            double t = (double) i / steps; // Interpolation factor (0 to 1)
-            double x = start.getX() + t * (end.getX() - start.getX());
-            double y = start.getY() + t * (end.getY() - start.getY());
-            double z = start.getZ() + t * (end.getZ() - start.getZ());
-            Vector vecI = new Vector(x, y, z).add(getRandomPerpendicular(diff).multiply(Math.random()));
-            locations.add(vecI);
-        }
-        locations.add(end);
-        float coloredOffset = strong ? 0.5f : 0.1f;
-        int coloredAmount = strong ? 5 : 1;
-        Particle.DustOptions whiteDust = new Particle.DustOptions(Color.WHITE, strong ? 1.5f : 0.5f);
-        Particle.DustOptions coloredDust = new Particle.DustOptions(color, strong ? 1f : 0.8f);
-        for (int i = 0; i < locations.size() - 1; i++) {
-            Vector rayDiff = locations.get(i).multiply(-1).add(locations.get(i + 1)).multiply(0.1);
-            for (int j = 0; j < 10; j++) {
-                loc1.add(rayDiff);
-                if (j % 2 == 0) {
-                    loc1.getWorld().spawnParticle(Particle.DUST, loc1, coloredAmount, coloredOffset , coloredOffset , coloredOffset, 10 , coloredDust);
-                }
-                loc1.getWorld().spawnParticle(Particle.DUST, loc1, 5, 0.05, 0.05, 0.05, 0.1, whiteDust);
-            }
-        }
-    }
-
-    private static Vector getRandomPerpendicular(Vector diff) {
-        Vector reference = new Vector(0, 1, 0);
-
-        if (Math.abs(diff.getY()) > 0.99) { // If it's too close to the y-axis, switch reference
-            reference = new Vector(1, 0, 0);
-        }
-
-        Vector perpendicular = diff.clone().crossProduct(reference).normalize();
-        double angle = Math.random() * 2 * Math.PI;
-
-        return perpendicular.rotateAroundAxis(diff, angle);
-    }
-
-    @Override
-    public void onLaunch(AbilityContext.Launch ctx) {
-        Arrow arrow = (Arrow) ctx.projectile;
-        arrow.setColor(Color.AQUA);
-        BukkitTask arrowTrail = new ThunderBow.ThunderArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
-                .runTaskTimer(Main.getPlugin(), 1L, 1L);
-        activeArrows.put(arrow, arrowTrail);
-        arrow.setMetadata("botbows_ability", new FixedMetadataValue(Main.getPlugin(), this));
-        BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2);
-    }
-
-    @Override
-    public void onHit(ProjectileHitEvent e) {
-        Arrow arrow = (Arrow) e.getEntity();
-        Block hitBlock = e.getHitBlock();
-        if (hitBlock != null) {
-            Location hitLoc = e.getHitBlock().getLocation();
-            ThunderBow.handleArrowHitBlock(hitLoc);
-            activeArrows.get(arrow).cancel();
-            activeArrows.remove(arrow);
-            return;
-        }
-        BotBowsPlayer defender = BotBows.getBotBowsPlayer(e.getHitEntity().getUniqueId());
+        val defender = BotBows.getBotBowsPlayer(e.hitEntity!!.uniqueId)
 
         if (defender != null) {
-            ThunderBow.handleArrowHitPlayer(bp, defender);
+            handleArrowHitPlayer(bp, defender)
         }
 
-        activeArrows.get(arrow).cancel();
-        activeArrows.remove(arrow);
-        arrow.remove();
+        activeArrows.remove(arrow)?.cancel()
+        arrow.remove()
     }
 
-    public static class ThunderArrowTrailGenerator extends BukkitRunnable {
+    class ThunderArrowTrailGenerator(private val arrow: Arrow, private val color: Color) : BukkitRunnable() {
+        override fun run() {
+            arrow.world.spawnParticle(
+                Particle.DUST,
+                arrow.location,
+                5,
+                0.1,
+                0.1,
+                0.1,
+                0.5,
+                DustOptions(Color.WHITE, 1f),
+                true
+            )
+            arrow.world.spawnParticle(
+                Particle.DUST,
+                arrow.location,
+                5,
+                0.1,
+                0.1,
+                0.1,
+                0.3,
+                DustOptions(color, 0.5f),
+                true
+            )
+            arrow.velocity.add(Vector(0.0, 0.03, 0.0))
 
-        private final Arrow arrow;
-        private final Color color;
+            val spark: Vector = getRandomPerpendicular(arrow.velocity).multiply(Random.nextDouble(1.0, 3.0))
+            val sparkLocation = arrow.location.add(spark)
 
-        public ThunderArrowTrailGenerator(Arrow arrow, Color color) {
-            this.arrow = arrow;
-            this.color = color;
+            if (BotBows.RANDOM.nextInt(3) == 0 && sparkLocation.block.type != Material.AIR) {
+                createElectricArc(arrow.location, sparkLocation, Color.AQUA, 2.0, false)
+            }
+        }
+    }
+
+    companion object {
+        val THUNDER_BOW: ItemStack = Menu.makeItem( //TODO: custom skin som erstatter vanlig crossbow vises
+            Material.CROSSBOW,
+            "thunder_bow",
+            Component.text("ThunderBow"),
+            Component.text("Shoots electric arrows")
+        )
+        const val CHAIN_RADIUS: Double = 8.0
+        const val DURATION: Int = 10 // seconds
+
+        var activeArrows = mutableMapOf<Arrow, BukkitTask>()
+
+        fun handleArrowHitPlayer(attacker: BotBowsPlayer, defender: BotBowsPlayer) {
+            if (defender.team == attacker.team) return
+
+            defender.damage(DamageContext.Player(DamageType.Player.THUNDER_BOW, attacker))
+
+            val handledPlayers = mutableSetOf(defender)
+            handleChain(attacker, defender, handledPlayers)
         }
 
-        @Override
-        public void run() {
-            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.5, new Particle.DustOptions(Color.WHITE, 1), true);
-            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.3, new Particle.DustOptions(color, 0.5f), true);
-            arrow.getVelocity().add(new Vector(0, 0.03, 0));
-            Vector spark = getRandomPerpendicular(arrow.getVelocity()).multiply(1 + Math.random() * 2);
-            Location sparkLocation = arrow.getLocation().add(spark);
-            if (BotBows.RANDOM.nextInt(3) == 0 && sparkLocation.getBlock().getType() != Material.AIR) {
-                createElectricArc(arrow.getLocation(), sparkLocation, Color.AQUA, 2.0, false);
+        private fun handleChain(
+            attacker: BotBowsPlayer,
+            defender: BotBowsPlayer,
+            handledPlayers: MutableSet<BotBowsPlayer>
+        ) {
+            val nearbyPlayers = defender.getNearbyPlayers(CHAIN_RADIUS)
+                .filter { it.team != attacker.team && it !in handledPlayers }
+            if (nearbyPlayers.isEmpty()) return
+
+            val attackerTeamColor = attacker.team.dyeColor.color
+            val world = attacker.location.getWorld()
+            val ability = attacker.getAbility(AbilityType.THUNDER_BOW)
+            for (nearbyPlayer in nearbyPlayers) {
+                val nearbyPlayerLoc = nearbyPlayer.location.add(0.0, 1.0, 0.0) // the arc will hit the middle of the player
+                world.strikeLightningEffect(nearbyPlayerLoc)
+                createElectricArc(defender.location.add(0.0, 1.0, 0.0), nearbyPlayerLoc, attackerTeamColor, 1.0, true)
+                nearbyPlayer.damage(DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker))
+                handledPlayers.add(nearbyPlayer)
+                ability.registerSuccess()
             }
+            for (nearbyPlayer in nearbyPlayers) {
+                handleChain(attacker, nearbyPlayer, handledPlayers)
+            }
+        }
+
+        fun handleArrowHitBlock(hitLoc: Location) {
+            repeat(10) {
+                val x = (-5..5).random()
+                val y = (-5..5).random()
+                val z = (-5..5).random()
+                val randomVec = Vector(x, y, z)
+                val arcLoc = hitLoc.clone().add(randomVec)
+                if (arcLoc.block.type != Material.AIR) {
+                    createElectricArc(hitLoc, arcLoc, Color.AQUA, 2.0, false)
+                }
+            }
+        }
+
+        fun createElectricArc(
+            loc1: Location,
+            loc2: Location,
+            color: Color,
+            frequencyMultiplier: Double,
+            strong: Boolean
+        ) {
+            val length = loc1.distance(loc2)
+            val diff = Vector(
+                loc2.x - loc1.x,
+                loc2.y - loc1.y,
+                loc2.z - loc1.z
+            )
+            val steps = (length * frequencyMultiplier).toInt()
+            val locations = mutableListOf<Vector>()
+            val start = loc1.toVector()
+            val end = loc2.toVector()
+            locations.add(start)
+            for (i in 1..<steps) {
+                val t = i.toDouble() / steps // Interpolation factor (0 to 1)
+                val x = start.x + t * (end.x - start.x)
+                val y = start.y + t * (end.y - start.y)
+                val z = start.z + t * (end.z - start.z)
+                val vecI = Vector(x, y, z).add(getRandomPerpendicular(diff).multiply(Random.nextDouble()))
+                locations.add(vecI)
+            }
+            locations.add(end)
+            val coloredOffset = if (strong) 0.5f else 0.1f
+            val coloredAmount = if (strong) 5 else 1
+            val whiteDust = DustOptions(Color.WHITE, if (strong) 1.5f else 0.5f)
+            val coloredDust = DustOptions(color, if (strong) 1f else 0.8f)
+            for (i in 0..locations.size - 2) {
+                val rayDiff = locations[i].multiply(-1).add(locations[i + 1]).multiply(0.1)
+                for (j in 0..9) {
+                    loc1.add(rayDiff)
+                    if (j % 2 == 0) {
+                        loc1.world.spawnParticle(
+                            Particle.DUST,
+                            loc1,
+                            coloredAmount,
+                            coloredOffset.toDouble(),
+                            coloredOffset.toDouble(),
+                            coloredOffset.toDouble(),
+                            10.0,
+                            coloredDust
+                        )
+                    }
+                    loc1.world.spawnParticle(
+                        Particle.DUST,
+                        loc1,
+                        5,
+                        0.05,
+                        0.05,
+                        0.05,
+                        0.1,
+                        whiteDust
+                    )
+                }
+            }
+        }
+
+        private fun getRandomPerpendicular(diff: Vector): Vector {
+            var reference = Vector(0, 1, 0)
+
+            if (abs(diff.y) > 0.99) { // If it's too close to the y-axis, switch reference
+                reference = Vector(1, 0, 0)
+            }
+
+            val perpendicular = diff.clone().crossProduct(reference).normalize()
+            val angle = Math.random() * 2 * Math.PI
+
+            return perpendicular.rotateAroundAxis(diff, angle)
         }
     }
 }

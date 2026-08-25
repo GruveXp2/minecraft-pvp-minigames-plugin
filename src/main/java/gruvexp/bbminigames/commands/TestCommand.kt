@@ -501,7 +501,6 @@ class TestCommand : CommandExecutor {
         @JvmField
         var debugging: Boolean = true
         var test1: Boolean = false
-        @JvmField
         var test2: Boolean = false
         var test3: Boolean = false
         @JvmField
