@@ -87,12 +87,12 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         preset.maxAbilities?.let { maxAbilities = it }
 
         preset.individualMaxAbilities?.forEach { (uuid, max) ->
-            BotBows.getBotBowsPlayer(uuid).settings?.maxAbilities = max
+            BotBows.getBotBowsPlayer(uuid).settings.maxAbilities = max
         }
         preset.cooldownMultiplier?.let { cooldownMultiplier = it }
 
         preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
-            BotBows.getBotBowsPlayer(uuid).settings?.abilityCooldownMultiplier = cooldown
+            BotBows.getBotBowsPlayer(uuid).settings.abilityCooldownMultiplier = cooldown
         }
         preset.bannedAbilities?.let { banned ->
             val changed = bannedAbilities xor banned
@@ -104,7 +104,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
 
     fun isEquippedByTeam(bp: BotBowsPlayer, type: AbilityType): Boolean {
         val equipped = teamAbilities[bp.team.teamSide]!!
-        return equipped.contains(type) && equipped[type] != bp
+        return type in equipped && equipped[type] != bp
     }
 
     private fun notifyAbilitiesToggle() {
@@ -160,7 +160,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
 
 
     private infix fun <T> Set<T>.xor(other: Set<T>): Set<T> {
-        val intersect = this.intersect(other)
-        return (this + other) - intersect
+        val intersect = intersect(other)
+        return this + other - intersect
     }
 }

@@ -369,7 +369,7 @@ class BotBowsPlayer {
             .toSet()
     }
 
-    val location: Location?
+    val location: Location
         get() = avatar.location
 
     fun teleport(location: Location) {
