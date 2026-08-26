@@ -7,7 +7,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
-open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: Int, @JvmField val type: AbilityType) {
+open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val type: AbilityType) {
 
     protected var baseCooldown: Int = 0 // seconds
     var cooldownMultiplier: Float = 1.0f
@@ -32,7 +32,7 @@ open class Ability(@JvmField protected val bp: BotBowsPlayer, val hotBarSlot: In
 
     init {
         if (type.category != AbilityCategory.DAMAGING) {
-            this.baseCooldown = type.baseCooldown
+            baseCooldown = type.baseCooldown
         }
     }
 

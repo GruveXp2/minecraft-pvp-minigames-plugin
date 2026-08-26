@@ -1,103 +1,123 @@
-package gruvexp.bbminigames.twtClassic.ability.abilities;
+package gruvexp.bbminigames.twtClassic.ability.abilities
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.ability.AbilityContext;
-import gruvexp.bbminigames.api.ability.AbilityTrigger;
-import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.api.damage.DamageType;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import org.bukkit.*;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.ability.AbilityContext.Launch
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnLaunch
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnProjectileHit
+import gruvexp.bbminigames.api.damage.DamageContext
+import gruvexp.bbminigames.api.damage.DamageType
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.Ability
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import org.bukkit.Color
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.Particle.DustOptions
+import org.bukkit.entity.Arrow
+import org.bukkit.entity.Player
+import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
+import org.bukkit.util.Vector
 
-import java.util.HashMap;
-import java.util.Objects;
-
-public class SplashBow extends Ability implements AbilityTrigger.OnLaunch, AbilityTrigger.OnProjectileHit {
-
-    public static final double BLAST_RADIUS = 3.0;
-
-    public static HashMap<Arrow, BukkitTask> activeArrows = new HashMap<>();
-
-    public SplashBow(BotBowsPlayer bp, int hotBarSlot) {
-        super(bp, hotBarSlot, AbilityType.SPLASH_BOW);
-        bp.avatar.setItem(18, new ItemStack(Material.ARROW, 64));
+class SplashBow(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.SPLASH_BOW), OnLaunch, OnProjectileHit {
+    init {
+        bp.avatar.setItem(18, ItemStack(Material.ARROW, 64))
     }
 
-    public static void handleArrowHit(Player attacker, Location hitLoc) {
-        Color attackerTeamColor = BotBows.getLobby(attacker).getBotBowsPlayer(attacker).getTeam().getDyeColor().getColor();
-        attacker.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, hitLoc, 5, BLAST_RADIUS /4, BLAST_RADIUS /4, BLAST_RADIUS /4, 5);
-        attacker.getWorld().spawnParticle(Particle.DUST, hitLoc, 1000, 2, 2, 2, 0.4, new Particle.DustOptions(attackerTeamColor, 5));  // Red color
-        BotBowsPlayer attackerBp = BotBows.getBotBowsPlayer(attacker);
-        if (attackerBp == null) return;
-        Ability ability = attackerBp.getAbility(AbilityType.SPLASH_BOW);
-        hitLoc.getWorld().getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS).stream()
-                .map(Entity::getUniqueId)
-                .map(BotBows::getBotBowsPlayer).filter(Objects::nonNull)
-                .filter(BotBowsPlayer::isAlive)
-                .forEach(bp -> {
-                    bp.damage(new DamageContext.Player(DamageType.Player.SPLASH_BOW, attackerBp));
-
-                    if (bp != attackerBp) ability.registerSuccess(); else ability.registerFail();
-                });
-    }
-
-    @Override
-    public void onLaunch(AbilityContext.Launch ctx) {
-        if (ctx.projectile instanceof Arrow arrow) {
-            use();
-            arrow.setColor(Color.RED);
-            BukkitTask arrowTrail = new SplashBow.SplashArrowTrailGenerator(arrow, bp.getTeam().getDyeColor().getColor())
-                    .runTaskTimer(Main.getPlugin(), 1L, 1L);
-            arrow.getVelocity().multiply(0.5f);
-            activeArrows.put(arrow, arrowTrail);
-            arrow.setMetadata("botbows_ability", new FixedMetadataValue(Main.getPlugin(), this));
+    override fun onLaunch(ctx: Launch) {
+        if (ctx.projectile is Arrow) {
+            use()
+            val arrow = ctx.projectile
+            arrow.color = Color.RED
+            val arrowTrail = SplashArrowTrailGenerator(arrow, bp.team.dyeColor.color)
+                .runTaskTimer(Main.getPlugin(), 1L, 1L)
+            arrow.velocity.multiply(0.5f)
+            activeArrows[arrow] = arrowTrail
+            arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.getPlugin(), this))
         } else {
-            throw new IllegalArgumentException("Splash bow tried to fire something that wasnt an arrow");
+            throw IllegalArgumentException("Splash bow tried to fire something that wasnt an arrow")
         }
     }
 
-    @Override
-    public void onHit(ProjectileHitEvent e) {
-        Arrow arrow = (Arrow) e.getEntity();
-        Player shooter = (Player) arrow.getShooter();
-        Location hitLoc;
-        if (e.getHitEntity() != null) {
-            hitLoc = e.getHitEntity().getLocation();
-        } else {
-            hitLoc = e.getHitBlock().getLocation();
-        }
-        handleArrowHit(shooter, hitLoc);
-        activeArrows.get(arrow).cancel();
-        activeArrows.remove(arrow);
-        arrow.remove();
+    override fun onHit(e: ProjectileHitEvent) {
+        val arrow = e.getEntity() as Arrow
+        val shooter = arrow.shooter as Player
+        val hitLoc = e.hitEntity?.location ?: e.hitBlock!!.location
+        val shooterBp = BotBows.getBotBowsPlayer(shooter) ?: return
+
+        handleArrowHit(shooterBp, hitLoc)
+        activeArrows.remove(arrow)?.cancel()
+        arrow.remove()
     }
 
-    public static class SplashArrowTrailGenerator extends BukkitRunnable {
-
-        private final Arrow arrow;
-        private final Color color;
-
-        public SplashArrowTrailGenerator(Arrow arrow, Color color) {
-            this.arrow = arrow;
-            this.color = color;
+    class SplashArrowTrailGenerator(private val arrow: Arrow, private val color: Color) : BukkitRunnable() {
+        override fun run() {
+            arrow.world.spawnParticle(
+                Particle.DUST,
+                arrow.location,
+                5,
+                0.1,
+                0.1,
+                0.1,
+                0.1,
+                DustOptions(Color.RED, 3f),
+                true
+            )
+            arrow.world.spawnParticle(
+                Particle.DUST,
+                arrow.location,
+                20,
+                0.5,
+                0.5,
+                0.5,
+                0.4,
+                DustOptions(color, 2f),
+                true
+            )
+            arrow.velocity.add(Vector(0.0, 0.03, 0.0))
         }
+    }
 
-        @Override
-        public void run() {
-            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 5, 0.1, 0.1, 0.1, 0.1, new Particle.DustOptions(Color.RED, 3), true);
-            arrow.getWorld().spawnParticle(Particle.DUST, arrow.getLocation(), 20, 0.5, 0.5, 0.5, 0.4, new Particle.DustOptions(color, 2), true);
-            arrow.getVelocity().add(new Vector(0, 0.03, 0));
+    companion object {
+        const val BLAST_RADIUS: Double = 3.0
+
+        var activeArrows = mutableMapOf<Arrow, BukkitTask>()
+
+        fun handleArrowHit(attacker: BotBowsPlayer, hitLoc: Location) {
+            val attackerTeamColor = attacker.team.dyeColor.color
+            val world = attacker.avatar.location.world
+            world.spawnParticle(
+                Particle.EXPLOSION_EMITTER,
+                hitLoc,
+                5,
+                BLAST_RADIUS / 4,
+                BLAST_RADIUS / 4,
+                BLAST_RADIUS / 4,
+                5.0
+            )
+            world.spawnParticle(
+                Particle.DUST,
+                hitLoc,
+                1000,
+                2.0,
+                2.0,
+                2.0,
+                0.4,
+                DustOptions(attackerTeamColor, 5f)
+            ) // Red color
+            val ability = attacker.getAbility(AbilityType.SPLASH_BOW)
+            hitLoc.world.getNearbyEntities(hitLoc, BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS)
+                .mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
+                .filter { it.isAlive }
+                .forEach { defender ->
+                    defender.damage(DamageContext.Player(DamageType.Player.SPLASH_BOW, attacker))
+                    if (defender != attacker) ability.registerSuccess() else ability.registerFail()
+                }
         }
     }
 }
