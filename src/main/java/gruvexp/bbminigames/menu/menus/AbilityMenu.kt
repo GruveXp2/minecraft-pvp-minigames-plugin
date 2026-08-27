@@ -140,7 +140,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         val menuInventory: Inventory = inventory
         val abilitySettings = settings.abilitySettings
-        if (e.clickedInventory === menuInventory) {
+        if (e.clickedInventory == menuInventory) {
             if (cursorAbility != null) {
                 p.setItemOnCursor(null)
                 if (bp.hasAbilityEquipped(cursorAbility)) {
@@ -404,7 +404,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun onUniqueAbilityOccupancyChange(type: AbilityType, bp: BotBowsPlayer, equipped: Boolean) {
-        if (bp === this.bp || bp.team !== this.bp.team) return
+        if (bp == this.bp || bp.team != this.bp.team) return
         val slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot()
         inventory.setItem(slot - 9, if (equipped) ABILITY_TAKEN else VOID)
     }

@@ -149,7 +149,7 @@ class BotBowsBoard(val lobby: Lobby) {
 
         private fun darkenColor(color: TextColor): TextColor {
             if (color is NamedTextColor) {
-                if (color === NamedTextColor.LIGHT_PURPLE) {
+                if (color == NamedTextColor.LIGHT_PURPLE) {
                     return NamedTextColor.DARK_PURPLE
                 }
                 val colorName = color.toString()

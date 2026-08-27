@@ -41,7 +41,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         val loc = ctx.loc
         // explode already placed creepers (so players cant farm creeper mines and trap another player completely)
         creeperOwners.entries
-            .filter { it.value === bp }
+            .filter { it.value == bp }
             .map { it.key }
             .forEach { ignite(it) }
 

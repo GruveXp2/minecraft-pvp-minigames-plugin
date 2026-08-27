@@ -42,7 +42,7 @@ class Lobby(val id: Int) {
             return
         }
         if (BotBows.getLobby(p) != null) {
-            if (BotBows.getLobby(p) === this) {
+            if (BotBows.getLobby(p) == this) {
                 p.sendMessage(Component.text("You already joined!", NamedTextColor.RED))
                 return
             }
