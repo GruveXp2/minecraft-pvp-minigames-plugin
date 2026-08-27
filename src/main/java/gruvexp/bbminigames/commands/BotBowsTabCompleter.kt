@@ -40,7 +40,7 @@ class BotBowsTabCompleter : TabCompleter {
                 if (args.size == 2) return listOf("<name>")
                 if (args.size == 3) return Material.entries
                     .map { it.name.lowercase(Locale.getDefault()) }
-                    .filter { it.contains("legacy") }
+                    .filter { "legacy" in it }
                     .filter { it.startsWith(args[2]) }
             }
 

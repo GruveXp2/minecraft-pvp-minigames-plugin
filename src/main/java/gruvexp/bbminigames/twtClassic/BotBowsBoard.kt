@@ -87,7 +87,7 @@ class BotBowsBoard(val lobby: Lobby) {
     fun removePlayerScore(bp: BotBowsPlayer) {
         val sb = objective.scoreboard!!
         for (entries in sb.entries) {
-            if (entries.contains(bp.plainName)) {
+            if (bp.plainName in entries) {
                 sb.resetScores(entries)
             }
         }

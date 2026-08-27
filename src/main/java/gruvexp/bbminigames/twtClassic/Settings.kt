@@ -137,11 +137,11 @@ class Settings(@JvmField val lobby: Lobby) {
 
         preset.team1
             .map { id -> BotBows.getBotBowsPlayer(id) }
-            .filter { players.contains(it) }
+            .filter { it in players }
             .forEach { team1.join(it) }
         preset.team2
             .map { id -> BotBows.getBotBowsPlayer(id) }
-            .filter { players.contains(it) }
+            .filter { it in players }
             .forEach { team2.join(it) }
 
         preset.health.maxHp?.let { healthSettings.maxHealth = it }
@@ -213,7 +213,7 @@ class Settings(@JvmField val lobby: Lobby) {
         val mapCount = leading.maps.size
         if (mapCount == 0) return
 
-        if (!leading.maps.contains(mapSettings.currentMap)) {
+        if (mapSettings.currentMap !in leading.maps) {
             val mapsString = leading.maps.joinToString(", ") { it.prettyName() }
             lobby.messagePlayers(
                 Component.text("${if (triggeredByNewVote) "New" else "Current"} leading map${if (mapCount == 1) "" else "s"} with ")
@@ -342,7 +342,7 @@ class Settings(@JvmField val lobby: Lobby) {
     }
 
     fun leaveGame(bp: BotBowsPlayer) {
-        if (!players.contains(bp)) {
+        if (bp !in players) {
             bp.avatar.message(Component.text("You cant leave when youre not in a game", NamedTextColor.RED))
             return
         }
@@ -376,7 +376,7 @@ class Settings(@JvmField val lobby: Lobby) {
     }
 
     fun isPlayerJoined(playerId: UUID): Boolean {
-        return players.contains(lobby.getBotBowsPlayer(playerId))
+        return lobby.getBotBowsPlayer(playerId) in players
     }
 
     fun setModPlayer(bp: BotBowsPlayer) {
@@ -396,6 +396,6 @@ class Settings(@JvmField val lobby: Lobby) {
     }
 
     fun isPlayerMod(bp: BotBowsPlayer): Boolean {
-        return bp === modPlayer
+        return bp == modPlayer
     }
 }

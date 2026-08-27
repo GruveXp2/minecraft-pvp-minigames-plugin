@@ -59,7 +59,7 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
     fun recalculateColumns() {
         var x = - layoutWidth / 2
         cols.forEach {
-            if (!hiddenCols.contains(it) || isExpanded) {
+            if (it !in hiddenCols || isExpanded) {
                 x += it.colWidth/2
                 it.layoutX = x
                 x += it.colWidth/2

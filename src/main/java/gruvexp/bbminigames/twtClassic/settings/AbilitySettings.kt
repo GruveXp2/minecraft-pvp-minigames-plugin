@@ -76,7 +76,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
     }
 
     fun isBanned(type: AbilityType): Boolean {
-        return bannedAbilities.contains(type)
+        return type in bannedAbilities
     }
 
     fun getBanned(): Set<AbilityType> {

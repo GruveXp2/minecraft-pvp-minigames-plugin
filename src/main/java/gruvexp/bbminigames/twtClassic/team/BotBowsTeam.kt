@@ -269,7 +269,7 @@ enum class BotBowsTeam(
     }
 
     fun hasPlayer(bp: BotBowsPlayer): Boolean {
-        return players.contains(bp)
+        return bp in players
     }
 
     fun getPlayer(id: Int): BotBowsPlayer {

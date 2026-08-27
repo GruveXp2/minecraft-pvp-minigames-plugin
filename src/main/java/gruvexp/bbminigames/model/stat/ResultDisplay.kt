@@ -137,7 +137,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
         playerScanner = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), Runnable {
             loc.getNearbyPlayers(10.0).forEach { p ->
-                rayTrace(p.eyeLocation.toVector(), p.eyeLocation.direction, clickingPlayers.contains(p))
+                rayTrace(p.eyeLocation.toVector(), p.eyeLocation.direction, p in clickingPlayers)
                 clickingPlayers.remove(p)
             }
         }, 0, 1)

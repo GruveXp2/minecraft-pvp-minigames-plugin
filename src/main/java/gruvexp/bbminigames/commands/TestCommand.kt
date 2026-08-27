@@ -479,7 +479,7 @@ class TestCommand : CommandExecutor {
         assertThat(preset != null, "preset exists", bp)
         checkNotNull(preset)
         assertThat(preset.abilities.bannedAbilities != null, "some abilities are banned", bp)
-        assertThat(preset.abilities.bannedAbilities!!.contains(AbilityType.ENDER_PEARL), "preset has banned pearl", bp)
+        assertThat(AbilityType.ENDER_PEARL in preset.abilities.bannedAbilities!!, "preset has banned pearl", bp)
 
         settings.applyBattlePreset(preset)
         assertThat(abilitySettings.isBanned(AbilityType.ENDER_PEARL), "enderpearl banned", bp)

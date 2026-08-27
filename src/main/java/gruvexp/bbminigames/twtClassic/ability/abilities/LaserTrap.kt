@@ -86,7 +86,7 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                 if (blockData is Stairs || blockData is Slab || blockData is Wall) { // handling when the ray hits blocks that it should or shouldnt pass thru
                     val shape = block.blockData.getCollisionShape(block.location)
                     if (!shape.boundingBoxes.isEmpty()) {
-                        val hit = shape.boundingBoxes.any { it.contains(mid1) || it.contains(mid2) }
+                        val hit = shape.boundingBoxes.any { mid1 in it || mid2 in it }
                         if (hit) break
                     }
                 }
