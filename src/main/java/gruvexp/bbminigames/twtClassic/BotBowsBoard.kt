@@ -12,7 +12,6 @@ import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import java.awt.Color
-import java.util.*
 import kotlin.math.min
 
 class BotBowsBoard(val lobby: Lobby) {
@@ -41,12 +40,12 @@ class BotBowsBoard(val lobby: Lobby) {
         setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.totalPlayers + 2)
         setScore(
             "team1_title",
-            Component.text("TEAM ${team1().displayName.uppercase(Locale.getDefault())}", darkenColor(team1().color)),
+            Component.text("TEAM ${team1().displayName.uppercase()}", darkenColor(team1().color)),
             lobby.totalPlayers + 1
         )
         setScore(
             "team2_title",
-            Component.text("TEAM ${team2().displayName.uppercase(Locale.getDefault())}", darkenColor(team2().color)),
+            Component.text("TEAM ${team2().displayName.uppercase()}", darkenColor(team2().color)),
             team2().size()
         )
 
@@ -152,17 +151,17 @@ class BotBowsBoard(val lobby: Lobby) {
                 if (color == NamedTextColor.LIGHT_PURPLE) {
                     return NamedTextColor.DARK_PURPLE
                 }
-                val colorName = color.toString()
+                val colorName = "$color"
                 val darkened = if (colorName.startsWith("light_")) {
-                    NamedTextColor.NAMES.value(colorName.replace("light_", "").lowercase(Locale.getDefault()))
+                    NamedTextColor.NAMES.value(colorName.replace("light_", "").lowercase())
                 } else {
-                    NamedTextColor.NAMES.value(("dark_$colorName").lowercase(Locale.getDefault()))
+                    NamedTextColor.NAMES.value("dark_$colorName".lowercase())
                 }
                 if (darkened != null) return darkened
             }
             val rgb = color.value()
-            val red = (rgb shr 16) and 0xFF
-            val green = (rgb shr 8) and 0xFF
+            val red = rgb shr 16 and 0xFF
+            val green = rgb shr 8 and 0xFF
             val blue = rgb and 0xFF
 
             val hsv = Color.RGBtoHSB(red, green, blue, null)
