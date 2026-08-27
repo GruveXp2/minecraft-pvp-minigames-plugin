@@ -25,7 +25,7 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.UUID
 
 val KEY: NamespacedKey = NamespacedKey("botbows", "ability_item")
 
@@ -112,10 +112,8 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         get() = "${name[0]}${name.substring(1).lowercase().replace('_', ' ')}"
     @JvmField
     val abilityItem: ItemStack
-    @JvmField
     val cooldownItems: Array<ItemStack>
     val baseCooldown: Int
-    @JvmField
     val category: AbilityCategory
     val effect: AbilityEffect
 
@@ -123,11 +121,11 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         appendCooldownInfo(item, category, baseCooldown)
         item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name) }
 
-        this.abilityItem = item
+        abilityItem = item
         this.baseCooldown = baseCooldown
         this.category = category
         this.effect = effect
-        this.cooldownItems = arrayOf(
+        cooldownItems = arrayOf(
             ItemStack(Material.getMaterial("RED_$cooldownItemType")!!),
             ItemStack(Material.getMaterial("ORANGE_$cooldownItemType")!!),
             ItemStack(Material.getMaterial("YELLOW_$cooldownItemType")!!),
@@ -144,7 +142,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     )
 
     fun getAbilityItem(bp: BotBowsPlayer): ItemStack {
-        val abilityItem = this.abilityItem.clone()
+        val abilityItem = abilityItem.clone()
         abilityItem.editMeta {
             val lore = it.lore() ?: mutableListOf()
             lore[lore.lastIndex] = getCooldownComponent(bp)
@@ -161,7 +159,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         val percentage = ((bp.settings.abilityCooldownMultiplier - 1) * 100).toInt()
         var cooldownComponent = Component.text("Cooldown: ", NamedTextColor.GOLD)
             .append(Component.text(
-                "${this.baseCooldown * bp.settings.abilityCooldownMultiplier.toInt()}s",
+                "${baseCooldown * bp.settings.abilityCooldownMultiplier.toInt()}s",
                 NamedTextColor.YELLOW
             ))
         if (percentage != 0) {

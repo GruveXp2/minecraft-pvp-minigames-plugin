@@ -1,233 +1,252 @@
-package gruvexp.bbminigames.listeners;
+package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.ability.AbilityContext;
-import gruvexp.bbminigames.api.ability.AbilityTrigger;
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import gruvexp.bbminigames.twtClassic.ability.Ability;
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import gruvexp.bbminigames.twtClassic.ability.PotionAbility;
-import gruvexp.bbminigames.twtClassic.ability.abilities.*;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.ability.AbilityContext.*
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnMelee
+import gruvexp.bbminigames.api.ability.AbilityTrigger.OnProjectileHit
+import gruvexp.bbminigames.commands.TestCommand
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.ability.PotionAbility
+import gruvexp.bbminigames.twtClassic.ability.abilities.*
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.WeatherType
+import org.bukkit.block.BlockFace
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Arrow
+import org.bukkit.entity.Player
+import org.bukkit.entity.ThrownPotion
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.LingeringPotionSplashEvent
+import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
+import org.bukkit.event.player.PlayerAnimationEvent
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerRiptideEvent
+import org.bukkit.inventory.ItemStack
+import kotlin.math.cos
+import kotlin.math.sin
 
-public class AbilityListener implements Listener {
-
-    public static void onAbilityUse(PlayerInteractEvent e) {
-        if (e.getItem() == null) return;
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        ItemStack abilityItem = e.getItem();
-        AbilityType type = AbilityType.fromItem(abilityItem);
-        if (type == null) return;
-        if (!lobby.isGameActive() && !TestCommand.testAbilities || !lobby.botBowsGame.canInteract) {
-            e.setCancelled(true); // kanke bruke abilities i lobbyen
-            return;
-        }
-        switch (type) {
-            case ENDER_PEARL, RADAR, THUNDER_BOW, SALMON_SLAP, LINGERING_POTION -> bp.getAbility(type).use();
-            case BUBBLE_JET -> {
-                p.resetPlayerWeather();
-                p.getInventory().getItemInMainHand().addEnchantment(Enchantment.RIPTIDE, 3);
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                    if (!bp.lobby.botBowsGame.getStormHazard().isActive()) {
-                        p.setPlayerWeather(WeatherType.CLEAR);
-                    } else {
-                        p.resetPlayerWeather();
-                    }
-                }, 60L);
-            }
-            case CREEPER_TRAP -> {
-                Block clickedBlock = e.getClickedBlock();
-                if (clickedBlock == null) return;
-                BlockFace face = e.getBlockFace();
-                Block spawnBlock = clickedBlock.getRelative(face);
-                if (spawnBlock.getRelative(BlockFace.UP).getType().isSolid()) return;
-                while (!spawnBlock.getRelative(BlockFace.DOWN).getType().isSolid()) {
-                    spawnBlock = spawnBlock.getRelative(BlockFace.DOWN);
-                }
-                Location placeLoc = spawnBlock.getLocation().add(0.5, 0, 0.5);
-
-                ((CreeperTrap) bp.getAbility(type)).trigger(new AbilityContext.EntityPlace(placeLoc));
-            }
-            case LASER_TRAP -> {
-                Block clickedBlock = e.getClickedBlock();
-                if (clickedBlock == null) return;
-                BlockFace face = e.getBlockFace();
-                Block spawnBlock = clickedBlock.getRelative(face);
-                if (spawnBlock.getType() != Material.AIR) {
-                    e.setCancelled(true);
-                    return;
-                }
-                ((LaserTrap) bp.getAbility(type)).onPlace(new AbilityContext.BlockPlace(spawnBlock, face));
-            }
-            default -> {
-                if (type.category == AbilityCategory.POTION) {
-                    int particleCount = 200;
-                    int radius = PotionAbility.RADIUS;
-                    Location loc = p.getLocation().add(0, 0.1, 0);
-                    double y = loc.getY();
-                    for (int i = 0; i < particleCount; i++) {
-                        double θ = 2 * Math.PI * i / particleCount;
-                        double x = loc.getX() + radius * Math.cos(θ);
-                        double z = loc.getZ() + radius * Math.sin(θ);
-
-                        Location particleLoc = new Location(loc.getWorld(), x, y, z);
-                        p.getWorld().spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0.4,
-                                new Particle.DustOptions(bp.getTeam().getDyeColor().getColor(), 2.5f));
-                    }
-                }
-            }
-        }
-    }
-
-    public static void onSlap(EntityDamageByEntityEvent e, BotBowsPlayer attackerBp, BotBowsPlayer defenderBp, ItemStack weapon) {
-        if (defenderBp == null) return;
-        if (attackerBp.getTeam() == defenderBp.getTeam()) {
-            e.setCancelled(true);
-            return;
-        }
-        AbilityType type = AbilityType.fromItem(weapon);
-        Ability ability = attackerBp.getAbility(type);
-        if (ability instanceof AbilityTrigger.OnMelee meleeAbility) {
-            meleeAbility.trigger(new AbilityContext.Melee(defenderBp));
-        }
-        e.setCancelled(true);
-    }
-
+class AbilityListener : Listener {
     @EventHandler
-    public void onProjectileLaunch(ProjectileLaunchEvent e) {
-        if (!(e.getEntity().getShooter() instanceof Player p)) return;
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        if (e.getEntity() instanceof Arrow arrow) {
-            ItemStack itemInMainHand = p.getInventory().getItemInMainHand();
+    fun onProjectileLaunch(e: ProjectileLaunchEvent) {
+        val p = e.entity.shooter as? Player ?: return
+        val bp: BotBowsPlayer = BotBows.getBotBowsPlayer(p) ?: return
+
+        if (e.entity is Arrow) {
+            val arrow = e.entity
+            val itemInMainHand: ItemStack = p.inventory.itemInMainHand
             if (AbilityType.fromItem(itemInMainHand) == AbilityType.SPLASH_BOW) {
-                ((SplashBow) bp.getAbility(AbilityType.SPLASH_BOW)).onLaunch(new AbilityContext.Launch(arrow));
-            } else if (itemInMainHand.getType() == Material.CROSSBOW) {
-                arrow.setGravity(false);
-                 if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
-                         && ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).isActive()) {
-                     ((ThunderBow) bp.getAbility(AbilityType.THUNDER_BOW)).onLaunch(new AbilityContext.Launch(arrow));
+                (bp.getAbility(AbilityType.SPLASH_BOW) as SplashBow).onLaunch(Launch(arrow))
+            } else if (itemInMainHand.type == Material.CROSSBOW) {
+                arrow.setGravity(false)
+                if (bp.hasAbilityEquipped(AbilityType.THUNDER_BOW)
+                    && (bp.getAbility(AbilityType.THUNDER_BOW) as ThunderBow).isActive
+                ) {
+                    (bp.getAbility(AbilityType.THUNDER_BOW) as ThunderBow).onLaunch(Launch(arrow))
                 }
             }
-        } else if (e.getEntity() instanceof ThrownPotion potion) {
-            if (potion.getItem().getType() == Material.LINGERING_POTION) {
-                LingeringPotionTrap.giveRandomEffect(potion);
+        } else if (e.entity is ThrownPotion) {
+            val potion = e.entity as ThrownPotion
+            if (potion.item.type == Material.LINGERING_POTION) {
+                LingeringPotionTrap.giveRandomEffect(potion)
             }
         }
     }
 
     @EventHandler
-    public void onPotionAbilityUse(PlayerItemConsumeEvent e) {
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        AbilityType type = AbilityType.fromItem(e.getItem());
-        if (type == null) return;
-        if (!lobby.isGameActive()) {
-            e.setCancelled(true); // kanke bruke abilities i lobbyen
-            return;
+    fun onPotionAbilityUse(e: PlayerItemConsumeEvent) {
+        val p = e.player
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        val type = AbilityType.fromItem(e.item) ?: return
+        if (!bp.lobby.isGameActive) {
+            e.isCancelled = true // kanke bruke abilities i lobbyen
+            return
         }
-        switch (type) {
-            case BABY_POTION, CHARGE_POTION, KARMA_POTION -> bp.getAbility(type).use();
+        when (type) {
+            AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION -> bp.getAbility(type).use()
+            else -> error("not a registered potion")
         }
     }
 
     @EventHandler
-    public void onLingeringPotionSplash(LingeringPotionSplashEvent e) {
-        ThrownPotion potion = e.getEntity();
-        if (!(potion.getShooter() instanceof Player thrower)) return;
+    fun onLingeringPotionSplash(e: LingeringPotionSplashEvent) {
+        val potion = e.entity
+        val thrower = potion.shooter as? Player ?: return
+        val throwerBp = BotBows.getBotBowsPlayer(thrower) ?: return
 
-        Lobby lobby = BotBows.getLobby(thrower);
-        if (lobby == null) return;
-        BotBowsPlayer throwerBp = lobby.getBotBowsPlayer(thrower);
-
-        LingeringPotionTrap ability = (LingeringPotionTrap) throwerBp.getAbility(AbilityType.LINGERING_POTION);
-        ability.onSplash(e);
+        val ability = throwerBp.getAbility(AbilityType.LINGERING_POTION) as LingeringPotionTrap
+        ability.onSplash(e)
     }
 
     @EventHandler
-    public void onCloudApply(AreaEffectCloudApplyEvent e) {
-        AreaEffectCloud cloud = e.getEntity();
+    fun onCloudApply(e: AreaEffectCloudApplyEvent) {
+        val cloud = e.entity
+        val cloudOwningBp = LingeringPotionTrap.getCloudOwner(cloud) ?: return
 
-        BotBowsPlayer cloudOwningBp = LingeringPotionTrap.getCloudOwner(cloud);
-        if (cloudOwningBp != null) {
-            ((LingeringPotionTrap) cloudOwningBp.getAbility(AbilityType.LINGERING_POTION)).onCloudApply(e);
-        }
+        val ability = cloudOwningBp.getAbility(AbilityType.LINGERING_POTION) as LingeringPotionTrap
+        ability.onCloudApply(e)
     }
 
     @EventHandler
-    public void onAbilityDrop(PlayerDropItemEvent e) {
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        AbilityType type = AbilityType.fromItem(e.getItemDrop().getItemStack());
-        if (type == null) return;
-        if (!bp.hasAbilityEquipped(type)) return; // kan droppe itemet hvis det ikke var equippa
-        e.setCancelled(true); // kanke droppe ability items
+    fun onAbilityDrop(e: PlayerDropItemEvent) {
+        val p = e.player
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        val type = AbilityType.fromItem(e.itemDrop.itemStack) ?: return
+        if (!bp.hasAbilityEquipped(type)) return  // kan droppe itemet hvis det ikke var equippa
+
+        e.isCancelled = true // kanke droppe ability items
     }
 
     @EventHandler
-    public void onArrowHit(ProjectileHitEvent e) {
-        Projectile projectile = e.getEntity();
-        if (!(projectile instanceof Arrow arrow)) return;
-        if (!(arrow.getShooter() instanceof Player)) {return;} // den som skøyt
+    fun onArrowHit(e: ProjectileHitEvent) {
+        val projectile = e.entity
+        if (projectile !is Arrow) return
+        if (projectile.shooter !is Player) return // den som skøyt
+
 
         if (projectile.hasMetadata("botbows_ability")) {
-            Object value = projectile.getMetadata("botbows_ability").getFirst().value();
-
-            if (value instanceof AbilityTrigger.OnProjectileHit handler) {
-                handler.onHit(e);
-            }
+            val ability = projectile.getMetadata("botbows_ability").first().value() as? OnProjectileHit ?: return
+            ability.onHit(e)
         }
     }
 
     @EventHandler
-    public void onSwing(PlayerAnimationEvent e) { // left clicking but not hitting anything
-        Player p = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) return;
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        AbilityType type = AbilityType.fromItem(p.getInventory().getItemInMainHand());
-        if (type == null) return;
-        if (lobby.isGameActive() && type == AbilityType.LONG_ARMS) {
-            bp.getAbility(AbilityType.LONG_ARMS).use();
+    fun onSwing(e: PlayerAnimationEvent) { // left clicking but not hitting anything
+        val p = e.player
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        val type = AbilityType.fromItem(p.inventory.itemInMainHand) ?: return
+        if (bp.lobby.isGameActive && type == AbilityType.LONG_ARMS) {
+            bp.getAbility(AbilityType.LONG_ARMS).use()
         }
     }
 
     @EventHandler
-    public void onRiptide(PlayerRiptideEvent e) {
-        Player attacker = e.getPlayer();
-        Lobby lobby = BotBows.getLobby(attacker);
-        if (lobby == null) return;
-        BotBowsPlayer attackerBp = lobby.getBotBowsPlayer(attacker);
+    fun onRiptide(e: PlayerRiptideEvent) {
+        val attacker = e.player
+        val attackerBp = BotBows.getBotBowsPlayer(attacker) ?: return
+        if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return
 
-        if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return;
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            if (!attackerBp.lobby.botBowsGame.getStormHazard().isActive()) {
-                attacker.setPlayerWeather(WeatherType.CLEAR);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            if (!attackerBp.lobby.botBowsGame!!.stormHazard.isActive) {
+                attacker.setPlayerWeather(WeatherType.CLEAR)
             } else {
-                attacker.resetPlayerWeather();
+                attacker.resetPlayerWeather()
             }
-        }, 10L);
-        attackerBp.getAbility(AbilityType.BUBBLE_JET).use();
+        }, 10L)
+        attackerBp.getAbility(AbilityType.BUBBLE_JET).use()
+    }
+
+    companion object {
+        @JvmStatic
+        fun onAbilityUse(e: PlayerInteractEvent) {
+            val p = e.player
+            val bp = BotBows.getBotBowsPlayer(p) ?: return
+            val abilityItem = e.item ?: return
+            val type = AbilityType.fromItem(abilityItem) ?: return
+
+            if (!bp.lobby.isGameActive && !TestCommand.testAbilities || !bp.lobby.botBowsGame!!.canInteract) {
+                e.isCancelled = true // kanke bruke abilities i lobbyen
+                return
+            }
+            when (type) {
+                AbilityType.ENDER_PEARL, AbilityType.RADAR, AbilityType.THUNDER_BOW, AbilityType.SALMON_SLAP, AbilityType.LINGERING_POTION -> bp.getAbility(type).use()
+
+                AbilityType.BUBBLE_JET -> {
+                    p.resetPlayerWeather()
+                    p.inventory.itemInMainHand.addEnchantment(Enchantment.RIPTIDE, 3)
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                        if (!bp.lobby.botBowsGame!!.stormHazard.isActive) {
+                            p.setPlayerWeather(WeatherType.CLEAR)
+                        } else {
+                            p.resetPlayerWeather()
+                        }
+                    }, 60L)
+                }
+
+                AbilityType.CREEPER_TRAP -> {
+                    val clickedBlock = e.clickedBlock ?: return
+                    val face = e.blockFace
+                    var spawnBlock = clickedBlock.getRelative(face)
+                    if (spawnBlock.getRelative(BlockFace.UP).type.isSolid()) return
+
+                    while (!spawnBlock.getRelative(BlockFace.DOWN).type.isSolid()) {
+                        spawnBlock = spawnBlock.getRelative(BlockFace.DOWN)
+                    }
+                    val placeLoc = spawnBlock.location.add(0.5, 0.0, 0.5)
+
+                    (bp.getAbility(type) as CreeperTrap).trigger(EntityPlace(placeLoc))
+                }
+
+                AbilityType.LASER_TRAP -> {
+                    val clickedBlock = e.clickedBlock ?: return
+                    val face = e.blockFace
+                    val spawnBlock = clickedBlock.getRelative(face)
+                    if (spawnBlock.type != Material.AIR) {
+                        e.isCancelled = true
+                        return
+                    }
+                    (bp.getAbility(type) as LaserTrap).onPlace(BlockPlace(spawnBlock, face))
+                }
+
+                else -> {
+                    if (type.category == AbilityCategory.POTION) {
+                        val particleCount = 200
+                        val radius = PotionAbility.RADIUS
+                        val loc = p.location.add(0.0, 0.1, 0.0)
+                        val y = loc.y
+                        var i = 0
+                        while (i < particleCount) {
+                            val θ = 2 * Math.PI * i / particleCount
+                            val x = loc.x + radius * cos(θ)
+                            val z = loc.z + radius * sin(θ)
+
+                            val particleLoc = Location(loc.world, x, y, z)
+                            p.world.spawnParticle(
+                                Particle.DUST,
+                                particleLoc,
+                                1,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.4,
+                                Particle.DustOptions(bp.team.dyeColor.color, 2.5f)
+                            )
+                            i++
+                        }
+                    }
+                }
+            }
+        }
+
+        @JvmStatic
+        fun onSlap(
+            e: EntityDamageByEntityEvent,
+            attackerBp: BotBowsPlayer,
+            defenderBp: BotBowsPlayer?,
+            weapon: ItemStack
+        ) {
+            if (defenderBp == null) return
+            if (attackerBp.team == defenderBp.team) {
+                e.isCancelled = true
+                return
+            }
+            val type = AbilityType.fromItem(weapon) ?: return
+            val ability = attackerBp.getAbility(type)
+            if (ability is OnMelee) {
+                ability.trigger(Melee(defenderBp))
+            }
+            e.isCancelled = true
+        }
     }
 }

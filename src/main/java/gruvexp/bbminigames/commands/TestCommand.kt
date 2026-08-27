@@ -503,7 +503,6 @@ class TestCommand : CommandExecutor {
         var test1: Boolean = false
         var test2: Boolean = false
         var test3: Boolean = false
-        @JvmField
         var testAbilities: Boolean = false
         var rotatingStructure: RotatingStructure? = null
         var testInv: Inventory = Bukkit.createInventory(null, 54, Component.text("Lagre-Chest"))
