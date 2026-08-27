@@ -9,9 +9,9 @@ import org.bukkit.entity.Projectile
 interface AbilityContext {
     data class EntityPlace(val loc: Location)
 
-    data class Melee(@JvmField val defender: BotBowsPlayer)
+    data class Melee(val defender: BotBowsPlayer)
 
-    data class Launch(@JvmField val projectile: Projectile)
+    data class Launch(val projectile: Projectile)
 
-    data class BlockPlace(@JvmField val block: Block, @JvmField val face: BlockFace)
+    data class BlockPlace(val block: Block, val face: BlockFace)
 }

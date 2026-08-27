@@ -130,12 +130,10 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         protected var cloudOwners: MutableMap<AreaEffectCloud, BotBowsPlayer> =
             mutableMapOf()
 
-        @JvmStatic
         fun getCloudOwner(cloud: AreaEffectCloud): BotBowsPlayer? {
             return cloudOwners[cloud]
         }
 
-        @JvmStatic
         fun giveRandomEffect(thrownPotion: ThrownPotion) {
             val randomEffect: PotionEffectType = EFFECTS[BotBows.RANDOM.nextInt(EFFECTS.size)]
             val potionColor = EFFECT_COLORS[randomEffect] ?: Color.GRAY
