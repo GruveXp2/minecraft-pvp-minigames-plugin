@@ -110,7 +110,6 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
 
     val displayName: String
         get() = "${name[0]}${name.substring(1).lowercase().replace('_', ' ')}"
-    @JvmField
     val abilityItem: ItemStack
     val cooldownItems: Array<ItemStack>
     val baseCooldown: Int
@@ -173,7 +172,6 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     }
 
     companion object {
-        @JvmStatic
         fun fromItem(item: ItemStack): AbilityType? {
             val mapStr = item.persistentDataContainer.get(KEY, PersistentDataType.STRING) ?: return null
             return valueOf(mapStr)

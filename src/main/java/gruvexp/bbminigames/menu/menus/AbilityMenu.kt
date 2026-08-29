@@ -369,8 +369,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     fun getRelativeAbilitySlot(type: AbilityType): Int? { // åssen rad det er, 1-9. negative verdier hvis det er på feil side
-        val slot = abilityRow.getAbilitySlot(type) ?: return null
-        return if (slot > abilityRow.size) null else slot
+        val slot = abilityRow.getAbilitySlot(type)
+        return if (slot > abilityRow.size) null else slot //TODO: why does it only check upper bound but not lower??
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {

@@ -1,48 +1,37 @@
-package gruvexp.bbminigames.menu;
+package gruvexp.bbminigames.menu
 
-import gruvexp.bbminigames.menu.menus.AbilityMenu;
-import gruvexp.bbminigames.twtClassic.ability.AbilityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import gruvexp.bbminigames.menu.menus.AbilityMenu
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AbilityMenuRow extends MenuRow {
-
-    private final AbilityMenu menu;
-
-    public AbilityMenuRow(Inventory inventory, String menuActionId, int startSlot, int size, AbilityMenu menu) {
-        super(inventory, menuActionId, startSlot, size);
-        this.menu = menu;
-        initItems();
+class AbilityMenuRow(
+    inventory: Inventory,
+    menuActionId: String,
+    startSlot: Int,
+    size: Int,
+    private val menu: AbilityMenu
+) : MenuRow(inventory, menuActionId, startSlot, size) {
+    init {
+        AbilityType.entries.forEach { addItem(it.abilityItem.clone()) }
     }
 
-    public void initItems() {
-        for (AbilityType type : AbilityType.getEntries()) {
-            addItem(type.abilityItem.clone());
-        }
-    }
-
-    public Integer getAbilitySlot(AbilityType type) {
-        for (int i = 0; i < itemList.size(); i++) {
-            if (AbilityType.fromItem(itemList.get(i)) == type) {
-                int slot = i - firstVisibleItem;
-                if (currentPage > 1) slot++;
-                return slot;
+    fun getAbilitySlot(type: AbilityType): Int {
+        for (i in itemList.indices) {
+            if (AbilityType.fromItem(itemList[i]) == type) {
+                var slot = i - firstVisibleItem
+                if (currentPage > 1) slot++
+                return slot
             }
         }
-        return null;
+        error("missing ability in abilityRow")
     }
 
-    protected void goTo(int page) {
-        super.goTo(page);
-        menu.updateAbilityStatuses();
-        List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
-        for (HumanEntity viewer : viewers) {
-            Player p = (Player) viewer;
-            menu.open(p);
-        }
+    override fun goTo(page: Int) {
+        super.goTo(page)
+        menu.updateAbilityStatuses()
+        inventory.viewers
+            .map { it as Player }
+            .forEach { menu.open(it) }
     }
 }
