@@ -4,7 +4,6 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.api.damage.DamageContext
 import gruvexp.bbminigames.menu.menus.AbilityMenu
 import gruvexp.bbminigames.twtClassic.ability.Ability
-import gruvexp.bbminigames.twtClassic.ability.Ability.Companion.create
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.ability.abilities.KarmaPotion
@@ -202,7 +201,7 @@ class BotBowsPlayer {
                 return
             }
         }
-        abilities[type] = create(type, this, slot)
+        abilities[type] = Ability.create(type, this, slot)
         if (abilityAlreadyEquipped) return
 
         if (slot > 0 && updateInventory) {
