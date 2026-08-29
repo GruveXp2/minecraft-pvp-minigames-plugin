@@ -94,6 +94,10 @@ public class BotBows {
         return getLobby(p) != null;
     }
 
+    public static boolean isPlayerJoined(UUID playerId) {
+        return getLobby(playerId) != null;
+    }
+
     public static void replacePlayerId(UUID oldId, UUID newId) {
         Lobby lobby = getLobby(oldId);
         players.remove(oldId);

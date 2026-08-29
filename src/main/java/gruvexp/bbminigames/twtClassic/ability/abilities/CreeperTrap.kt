@@ -190,7 +190,6 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
             )
         }
 
-        @JvmStatic
         fun ignite(creeper: Creeper) {
             if (!creeperOwners.containsKey(creeper)) {
                 creeper.ignite()
