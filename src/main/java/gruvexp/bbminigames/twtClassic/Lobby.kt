@@ -37,7 +37,7 @@ class Lobby(val id: Int) {
 
 
     fun joinGame(p: Player) {
-        if (this.isGameActive) {
+        if (isGameActive) {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED))
             return
         }
@@ -101,7 +101,7 @@ class Lobby(val id: Int) {
         val playerId = p.uniqueId
         val bp: BotBowsPlayer = getBotBowsPlayer(playerId) ?: run {
             p.sendMessage("Nothing happened, you werent in the game in the first place")
-            return
+            return@leaveGame
         }
         leaveGame(bp)
     }
@@ -223,7 +223,6 @@ class Lobby(val id: Int) {
             Component.text("To ready up, right click this item")
         )
 
-        @JvmField
         val LOADING: ItemStack = Menu.makeItem(
             Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
             Component.text("Please wait for your action to be processed")

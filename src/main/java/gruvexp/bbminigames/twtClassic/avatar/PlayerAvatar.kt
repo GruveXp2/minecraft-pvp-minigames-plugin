@@ -1,321 +1,278 @@
-package gruvexp.bbminigames.twtClassic.avatar;
+package gruvexp.bbminigames.twtClassic.avatar
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.title.Title;
-import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.Lobby
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar.ArmorSet
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
+import org.bukkit.*
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import java.time.Duration
+import kotlin.math.ceil
 
-import java.time.Duration;
-import java.util.*;
+class PlayerAvatar : BotBowsAvatar {
+    private val player: Player
+    private val bp: BotBowsPlayer
+    private val sneakBar: BossBar
+    private val hazardBars  = mutableMapOf<HazardType, BossBar>()
+    private var visualHp = 0
+    private var teamManager: TeamManager? = null
 
-public class PlayerAvatar implements BotBowsAvatar{
-
-    private final Player player;
-    private final BotBowsPlayer bp;
-    private final BossBar sneakBar;
-    private final Map<HazardType, BossBar> hazardBars = new EnumMap<>(HazardType.class);
-    private int visualHp;
-    private TeamManager teamManager;
-
-    public PlayerAvatar(Player player, BotBowsPlayer bp) {
-        this.player = player;
-        this.bp = bp;
-        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
-        player.setGameMode(GameMode.ADVENTURE);
+    constructor(player: Player, bp: BotBowsPlayer) {
+        this.player = player
+        this.bp = bp
+        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
+        player.gameMode = GameMode.ADVENTURE
     }
 
-    public PlayerAvatar(Player player, BotBowsAvatar previousAvatar) {
-        this.player = player;
-        this.bp = previousAvatar.getBotBowsPlayer();
-        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
-        this.teamManager = previousAvatar.getTeamManager();
+    constructor(player: Player, previousAvatar: BotBowsAvatar) {
+        this.player = player
+        bp = previousAvatar.botBowsPlayer
+        sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
+        this.teamManager = previousAvatar.teamManager
     }
 
-    @Override
-    public void message(Component component) {
-        player.sendMessage(component);
+    override fun message(component: Component) {
+        player.sendMessage(component)
     }
 
-    @Override
-    public LivingEntity getEntity() {
-        return player;
+    override fun getEntity(): LivingEntity = player
+    override fun getTeamManager() = teamManager
+    override fun getBotBowsPlayer() = bp
+
+    override fun eliminate() {
+        player.gameMode = GameMode.SPECTATOR
     }
 
-    @Override
-    public TeamManager getTeamManager() {
-        return teamManager;
+    override fun revive() {
+        player.gameMode = GameMode.ADVENTURE
     }
 
-    @Override
-    public BotBowsPlayer getBotBowsPlayer() {
-        return bp;
-    }
-
-    @Override
-    public void eliminate() {
-        player.setGameMode(GameMode.SPECTATOR);
-    }
-
-    @Override
-    public void revive() {
-        player.setGameMode(GameMode.ADVENTURE);
-    }
-
-    @Override
-    public void setHP(int hp) {
-        visualHp = hp;
+    override fun setHP(hp: Int) {
+        visualHp = hp
         if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
-            player.setHealth(1); // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
+            player.health = 1.0 // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
         } else {
-            player.setHealth(hp * 2); // halve hjerter
-            updateArmor();
+            player.health = hp * 2.0 // halve hjerter
+            updateArmor()
         }
     }
 
-    @Override
-    public void setMaxHP(int maxHP) {
-        getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHP * 2);
-        setHP(maxHP);
+    override fun setMaxHP(maxHP: Int) {
+        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = maxHP * 2.0
+        setHP(maxHP)
     }
 
-    @Override
-    public ArmorSet getArmor() {
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        return new ArmorSet(armor[0], armor[1], armor[2], armor[3]);
+    override fun getArmor(): ArmorSet {
+        val armor = player.inventory.armorContents
+        return ArmorSet(armor[0], armor[1], armor[2], armor[3])
     }
 
-    @Override
-    public void equipFullArmor() {
-        player.getInventory().setArmorContents(new ItemStack[] {
-                getArmorPiece(Material.LEATHER_BOOTS),
-                getArmorPiece(Material.LEATHER_LEGGINGS),
-                getArmorPiece(Material.LEATHER_CHESTPLATE),
-                getArmorPiece(Material.LEATHER_HELMET)});
+    override fun equipFullArmor() {
+        player.inventory.armorContents = arrayOf(
+            makeArmorPiece(Material.LEATHER_BOOTS),
+            makeArmorPiece(Material.LEATHER_LEGGINGS),
+            makeArmorPiece(Material.LEATHER_CHESTPLATE),
+            makeArmorPiece(Material.LEATHER_HELMET)
+        )
     }
 
-    @Override
-    public void destroy() {
-        reset();
-        player.getInventory().setItem(0, BotBows.MENU_ITEM);
+    override fun destroy() {
+        reset()
+        player.inventory.setItem(0, BotBows.MENU_ITEM)
     }
 
-    @Override
-    public void reset() {
-        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-        player.getInventory().clear();
-        player.setGlowing(false);
-        player.setInvulnerable(false);
-        getRequiredAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
-        player.setGameMode(GameMode.SPECTATOR);
-        hazardBars.values().forEach(bar -> bar.removeViewer(player));
-        sneakBar.removeViewer(player);
+    override fun reset() {
+        player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
+        player.inventory.clear()
+        player.isGlowing = false
+        player.isInvulnerable = false
+        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = 20.0
+        player.gameMode = GameMode.SPECTATOR
+        hazardBars.values.forEach { it.removeViewer(player) }
+        sneakBar.removeViewer(player)
     }
 
-    @Override
-    public void readyBattle(TeamManager teamManager) {
-        player.getInventory().remove(Lobby.READY.clone()); // removes ready up item
-        this.teamManager = teamManager;
+    override fun readyBattle(teamManager: TeamManager) {
+        player.inventory.remove(Lobby.READY.clone()) // removes ready up item
+        this.teamManager = teamManager
     }
 
-    @Override
-    public void setReady(boolean ready, int itemIndex) {
-        player.getInventory().setItem(itemIndex, Lobby.LOADING);
+    override fun setReady(ready: Boolean, itemIndex: Int) {
+        player.inventory.setItem(itemIndex, Lobby.LOADING)
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> player.getInventory().setItem(itemIndex, ready ? Lobby.READY : Lobby.NOT_READY), 2L);
+        Bukkit.getScheduler().runTaskLater(
+            Main.getPlugin(),
+            Runnable { player.inventory.setItem(itemIndex, if (ready) Lobby.READY else Lobby.NOT_READY) },
+            2L
+        )
     }
 
-    @Override
-    public int getNextFreeSlot() {
-        PlayerInventory inv = player.getInventory();
-        for (int slot = 1; slot < 9; slot++) {
+    override fun getNextFreeSlot(): Int {
+        val inv = player.inventory
+        for (slot in 1..8) {
             if (inv.getItem(slot) == null) {
-                return slot;
+                return slot
             }
         }
-        return -1;
+        return -1
     }
 
-    @Override
-    public void damage() {
-        player.damage(0.001);
-        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
-        player.setInvulnerable(true);
+    override fun damage() {
+        player.damage(0.001)
+        bp.effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
+            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+        )
+        player.isInvulnerable = true
 
-        PlayerInventory inv = player.getInventory();
-        for (int i = 0; i < 9; i++) { // fyller inventoriet med barrier blocks for å vise at man ikke kan skyte eller bruke abilities og flytter items fra hotbar 1 hakk opp
-            if (inv.getItem(i) == null) continue;
+        val inv = player.inventory
+        for (i in 0..8) { // fills the hotbar with barriers to show that they cant shoot or use abilities (and moves prev items up into inventory as buffer)
+            if (inv.getItem(i) == null) continue
 
-            inv.setItem(i + 27, inv.getItem(i));
-            inv.setItem(i, new ItemStack(Material.BARRIER));
+            inv.setItem(i + 27, inv.getItem(i))
+            inv.setItem(i, ItemStack(Material.BARRIER))
         }
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            player.setInvulnerable(false);
-            for (int i = 0; i < 9; i++) { // flytter items tilbake
-                ItemStack item = inv.getItem(i + 27);
-                inv.setItem(i, item);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            player.isInvulnerable = false
+            for (i in 0..8) { // moving items back
+                val item = inv.getItem(i + 27)
+                inv.setItem(i, item)
             }
-        }, BotBows.HIT_DISABLED_ITEM_TICKS);
+        }, BotBows.HIT_DISABLED_ITEM_TICKS.toLong())
     }
 
-    @Override
-    public double getScale() {
-        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    override fun getScale(): Double {
+        return player.getAttribute(Attribute.SCALE)!!.baseValue
     }
 
-    @Override
-    public void setScale(double size) {
-        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
+    override fun setScale(size: Double) {
+        player.getAttribute(Attribute.SCALE)!!.baseValue = size
     }
 
-    @Override
-    public void setGlowing(boolean flag) {
-        player.setGlowing(flag);
+    override fun setGlowing(flag: Boolean) {
+        player.isGlowing = flag
     }
 
-    @Override
-    public void addPotionEffect(PotionEffect effect) {
-        player.addPotionEffect(effect);
+    override fun addPotionEffect(effect: PotionEffect) {
+        player.addPotionEffect(effect)
     }
 
-    @Override
-    public void setColor(NamedTextColor color) {
-        if (teamManager == null) return;
-        teamManager.setColor(player, color);
+    override fun setColor(color: NamedTextColor) {
+        if (teamManager == null) return
+        teamManager!!.setColor(player, color)
     }
 
-    @Override
-    public UUID getUUID() {
-        return player.getUniqueId();
+    override fun getUUID() = player.uniqueId
+    override fun isSneaking() = player.isSneaking
+
+    override fun updateSneakStamina(progress: Float) {
+        val isExhausted = bp.isSneakingExhausted
+        sneakBar.progress(progress)
+        if (progress > 0) player.showBossBar(sneakBar) else player.hideBossBar(sneakBar)
+        sneakBar.color(if (isExhausted) BossBar.Color.RED else BossBar.Color.YELLOW)
+        sneakBar.name(Component.text("Sneaking", if (isExhausted) NamedTextColor.RED else NamedTextColor.YELLOW))
+        if (progress >= 1 && isExhausted) player.isSneaking = false
     }
 
-    @Override
-    public boolean isSneaking() {
-        return player.isSneaking();
-    }
-
-    @Override
-    public void updateSneakStamina(float progress) {
-        boolean isExhausted = bp.isSneakingExhausted();
-        sneakBar.progress(progress);
-        if (progress > 0) player.showBossBar(sneakBar); else player.hideBossBar(sneakBar);
-        sneakBar.color(isExhausted ? BossBar.Color.RED : BossBar.Color.YELLOW);
-        sneakBar.name(Component.text ("Sneaking", isExhausted ? NamedTextColor.RED : NamedTextColor.YELLOW));
-        if (progress >= 1 && isExhausted) player.setSneaking(false);
-    }
-
-    @Override
-    public ItemStack getHeadItem() {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.displayName(bp.getName().decoration(TextDecoration.ITALIC, false));
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, player.getUniqueId().toString());
-        itemMeta.setOwningPlayer(Bukkit.getPlayer(player.getName()));
-
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-
-    @Override
-    public void setItem(int index, ItemStack item) {
-        player.getInventory().setItem(index, item);
-    }
-
-    @Override
-    public void showTitle(Title title) {
-        player.showTitle(title);
-    }
-
-    @Override
-    public void showTitle(Component component, int seconds) {
-        player.showTitle(Title.title(component, Component.text(""),
-                Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))));
-    }
-
-    @Override
-    public void playSound(Location location, String sound, float volume, float pitch) {
-        player.playSound(location, sound, volume, pitch);
-    }
-
-    @Override
-    public void initHazardBar(HazardType hazardType, BossBar bar) {
-        if (hazardBars.containsKey(hazardType)) throw new IllegalStateException("That hazardbar already exists");
-        hazardBars.put(hazardType, bar);
-    }
-
-    @Override
-    public void setHazardBarProgress(HazardType hazardType, float progress) {
-        BossBar bar = hazardBars.get(hazardType);
-        if (progress == 0) {
-            bar.removeViewer(player);
-            return;
+    override fun getHeadItem(): ItemStack {
+        val item = ItemStack(Material.PLAYER_HEAD)
+        item.editMeta(SkullMeta::class.java) {
+            it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
+            it.persistentDataContainer.set(
+                NamespacedKey(Main.getPlugin(), "uuid"),
+                PersistentDataType.STRING,
+                player.uniqueId.toString()
+            )
+            it.owningPlayer = Bukkit.getPlayer(player.name)
         }
-        bar.addViewer(player);
-        bar.progress(progress);
+        return item
     }
 
-    private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.settings.getMaxHealth();
-        if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            equipFullArmor();
-            return;
+    override fun setItem(index: Int, item: ItemStack?) {
+        player.inventory.setItem(index, item)
+    }
+
+    override fun showTitle(title: Title) {
+        player.showTitle(title)
+    }
+
+    override fun showTitle(component: Component, seconds: Int) {
+        player.showTitle(Title.title(
+            component, Component.empty(),
+            Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds.toLong()), Duration.ofMillis(250))
+        ))
+    }
+
+    override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
+        player.playSound(location, sound, volume, pitch)
+    }
+
+    override fun initHazardBar(hazardType: HazardType, bar: BossBar) {
+        check(!hazardBars.containsKey(hazardType)) { "That hazardbar already exists" }
+        hazardBars[hazardType] = bar
+    }
+
+    override fun setHazardBarProgress(hazardType: HazardType, progress: Float) {
+        val bar: BossBar = hazardBars[hazardType]!!
+        if (progress == 0f) {
+            bar.removeViewer(player)
+            return
         }
-        Set<Integer> slots;
+        bar.addViewer(player)
+        bar.progress(progress)
+    }
+
+    private fun updateArmor() { // updates all individual armor pieces of the player
+        val maxHP = bp.settings.maxHealth
+        if (visualHp == maxHP) {
+            equipFullArmor()
+            return
+        }
+        val slots: Set<Int>
         if (maxHP > 5) {
-            float d = (float) maxHP / 5;
-            int i = (int) Math.ceil((maxHP - visualHp) / d);
-            slots = BotBowsPlayer.HEALTH_ARMOR.get(3).get(i - 1);
+            val d = maxHP / 5.0
+            val i = ceil((maxHP - visualHp) / d).toInt()
+            slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR.get(maxHP - 2).get(maxHP - visualHp - 1);
+            slots = BotBowsPlayer.HEALTH_ARMOR[maxHP - 2][maxHP - visualHp - 1]
         }
 
-        for (Integer slot : slots) {
-            switch (slot) {
-                case 0 -> player.getInventory().setBoots(null);
-                case 1 -> player.getInventory().setLeggings(null);
-                case 2 -> player.getInventory().setChestplate(null);
-                case 3 -> player.getInventory().setHelmet(null);
+        for (slot in slots) {
+            when (slot) {
+                0 -> player.inventory.setBoots(null)
+                1 -> player.inventory.setLeggings(null)
+                2 -> player.inventory.setChestplate(null)
+                3 -> player.inventory.setHelmet(null)
             }
         }
     }
 
-    private ItemStack getArmorPiece(Material material) { // makes armor pieces
-        ItemStack armor = new ItemStack(material);
-        LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
-        assert meta != null;
-        meta.setColor(bp.getTeam().getDyeColor().getColor());
-        armor.setItemMeta(meta);
-        return armor;
+    private fun makeArmorPiece(material: Material): ItemStack {
+        val armor = ItemStack(material)
+        armor.editMeta(LeatherArmorMeta::class.java) { it.setColor(bp.team.dyeColor.color) }
+        return armor
     }
 
-    public void spectate(BotBowsAvatar avatar) {
-        player.setSpectatorTarget(avatar.getEntity());
-        player.sendMessage(Component.text("Now spectating ", NamedTextColor.GRAY)
-                .append(avatar.getBotBowsPlayer().getName()));
-    }
-
-    private AttributeInstance getRequiredAttribute(Attribute attribute) {
-        return Objects.requireNonNull( // it should always exist but if not throw
-                player.getAttribute(attribute),
-                () -> "Missing attribute " + attribute + " for player " + player.getName()
-        );
+    fun spectate(avatar: BotBowsAvatar) {
+        player.spectatorTarget = avatar.entity
+        player.sendMessage(
+            Component.text("Now spectating ", NamedTextColor.GRAY).append(avatar.botBowsPlayer.name)
+        )
     }
 }
