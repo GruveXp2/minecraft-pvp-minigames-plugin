@@ -89,7 +89,6 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         }.runTaskTimer(Main.getPlugin(), 0L, 1L)
     }
 
-    @JvmOverloads
     fun applyGlow(source: GlowSource, durationTicks: Long? = null, color: NamedTextColor? = null, blinkPeriodTicks: Int = 10) {
         glowContributions[source] = GlowContribution(color, blinkPeriodTicks)
         glowExpiry.remove(source)?.cancel()

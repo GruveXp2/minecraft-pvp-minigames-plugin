@@ -1,280 +1,219 @@
-package gruvexp.bbminigames.twtClassic.avatar;
+package gruvexp.bbminigames.twtClassic.avatar
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mannequin;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar.ArmorSet
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mannequin
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import kotlin.math.ceil
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+class NpcAvatar : BotBowsAvatar {
+    private var mannequin: Mannequin
+    private val bp: BotBowsPlayer
+    private var visualHp = -1
+    private var teamManager: TeamManager? = null
 
-public class NpcAvatar implements BotBowsAvatar{
-
-    private Mannequin mannequin;
-    private final BotBowsPlayer bp;
-    private int visualHp = -1;
-    private TeamManager teamManager;
-
-    public NpcAvatar(Mannequin mannequin, BotBowsPlayer bp) {
-        this.mannequin = mannequin;
-        this.bp = bp;
+    constructor(mannequin: Mannequin, bp: BotBowsPlayer) {
+        this.mannequin = mannequin
+        this.bp = bp
     }
 
-    public NpcAvatar(Mannequin mannequin, BotBowsAvatar previousAvatar) {
-        this.mannequin = mannequin;
-        this.bp = previousAvatar.getBotBowsPlayer();
-        this.teamManager = previousAvatar.getTeamManager();
+    constructor(mannequin: Mannequin, previousAvatar: BotBowsAvatar) {
+        this.mannequin = mannequin
+        this.bp = previousAvatar.botBowsPlayer
+        this.teamManager = previousAvatar.teamManager
     }
 
-    @Override
-    public void message(Component component) {
-
+    override fun message(component: Component) {
     }
 
-    @Override
-    public LivingEntity getEntity() {
-        return mannequin;
+    override fun getEntity(): LivingEntity = mannequin
+    override fun getTeamManager(): TeamManager = teamManager!!
+    override fun getBotBowsPlayer(): BotBowsPlayer = bp
+
+    override fun eliminate() {
+        val newMannequin = Main.WORLD.spawn(bp.team.tribunePos, Mannequin::class.java).apply {
+            profile = mannequin.profile
+            customName(mannequin.customName())
+            isCustomNameVisible = true
+        }
+        val oldId = uuid
+        val newId = newMannequin.uniqueId
+        BotBows.replacePlayerId(oldId, newId)
+        mannequin.health = 0.0
+        mannequin = newMannequin
+        setInvis(true)
     }
 
-    @Override
-    public TeamManager getTeamManager() {
-        return teamManager;
+    override fun revive() {
+        setInvis(false)
     }
 
-    @Override
-    public BotBowsPlayer getBotBowsPlayer() {
-        return bp;
+    override fun setHP(hp: Int) {
+        visualHp = hp
+        if (hp != 0) updateArmor()
     }
 
-    @Override
-    public void eliminate() {
-        Mannequin newMannequin = (Mannequin) Main.WORLD.spawnEntity(bp.getTeam().getTribunePos(), EntityType.MANNEQUIN);
-        newMannequin.setProfile(mannequin.getProfile());
-        newMannequin.customName(mannequin.customName());
-        newMannequin.setCustomNameVisible(true);
-        UUID oldId = getUUID();
-        UUID newId = newMannequin.getUniqueId();
-        BotBows.replacePlayerId(oldId, newId);
-        mannequin.setHealth(0);
-        mannequin = newMannequin;
-        setInvis(true);
+    override fun setMaxHP(maxHP: Int) {
+        setHP(maxHP)
     }
 
-    @Override
-    public void revive() {
-        setInvis(false);
+    override fun getArmor(): ArmorSet {
+        val armor = mannequin.equipment.armorContents
+        return ArmorSet(armor[0], armor[1], armor[2], armor[3])
     }
 
-    @Override
-    public void setHP(int hp) {
-        visualHp = hp;
-        if (hp != 0) updateArmor();
+    override fun equipFullArmor() {
+        mannequin.equipment.armorContents = arrayOf(
+            makeArmorPiece(Material.LEATHER_BOOTS),
+            makeArmorPiece(Material.LEATHER_LEGGINGS),
+            makeArmorPiece(Material.LEATHER_CHESTPLATE),
+            makeArmorPiece(Material.LEATHER_HELMET)
+        )
     }
 
-    @Override
-    public void setMaxHP(int maxHP) {
-        setHP(maxHP);
+    override fun destroy() {
+        mannequin.remove()
     }
 
-    @Override
-    public ArmorSet getArmor() {
-        ItemStack[] armor = mannequin.getEquipment().getArmorContents();
-        return new ArmorSet(armor[0], armor[1], armor[2], armor[3]);
+    override fun reset() {
     }
 
-    @Override
-    public void equipFullArmor() {
-        mannequin.getEquipment().setArmorContents(new ItemStack[] {
-                getArmorPiece(Material.LEATHER_BOOTS),
-                getArmorPiece(Material.LEATHER_LEGGINGS),
-                getArmorPiece(Material.LEATHER_CHESTPLATE),
-                getArmorPiece(Material.LEATHER_HELMET)});
+    override fun readyBattle(teamManager: TeamManager) {
+        this.teamManager = teamManager
     }
 
-    @Override
-    public void destroy() {
-        mannequin.remove();
+    override fun setReady(ready: Boolean, itemIndex: Int) {
     }
 
-    @Override
-    public void reset() {
+    override fun getNextFreeSlot() = 0
 
+    override fun damage() {
+        mannequin.damage(0.001)
+        bp.effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
+            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+        )
+        mannequin.isInvulnerable = true
+
+        Bukkit.getScheduler().runTaskLater(
+            Main.getPlugin(),
+            Runnable { mannequin.isInvulnerable = false },
+            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+        )
     }
 
-    @Override
-    public void readyBattle(TeamManager teamManager) {
-        this.teamManager = teamManager;
+    override fun getScale(): Double {
+        return mannequin.getAttribute(Attribute.SCALE)!!.baseValue
     }
 
-    @Override
-    public void setReady(boolean ready, int itemIndex) {
-
+    override fun setScale(size: Double) {
+        mannequin.getAttribute(Attribute.SCALE)!!.baseValue = size
     }
 
-    @Override
-    public int getNextFreeSlot() {
-        return 0;
+    override fun setGlowing(flag: Boolean) {
+        mannequin.isGlowing = flag
     }
 
-    @Override
-    public void damage() {
-        mannequin.damage(0.001);
-        bp.getEffectManager().applyGlow(PlayerEffectManager.GlowSource.HIT_COOLDOWN, (long) BotBows.HIT_DISABLED_ITEM_TICKS);
-        mannequin.setInvulnerable(true);
-
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> mannequin.setInvulnerable(false), BotBows.HIT_DISABLED_ITEM_TICKS);
+    override fun addPotionEffect(effect: PotionEffect) {
+        mannequin.addPotionEffect(effect)
     }
 
-    @Override
-    public double getScale() {
-        return getRequiredAttribute(Attribute.SCALE).getBaseValue();
+    override fun setColor(color: NamedTextColor) {
+        teamManager!!.setColor(mannequin, color)
     }
 
-    @Override
-    public void setScale(double size) {
-        getRequiredAttribute(Attribute.SCALE).setBaseValue(size);
+    override fun getUUID() = mannequin.uniqueId
+
+    override fun isSneaking() = mannequin.isSneaking
+
+    override fun updateSneakStamina(progress: Float) {
+        if (progress >= 1) mannequin.isSneaking = false
     }
 
-    @Override
-    public void setGlowing(boolean flag) {
-        mannequin.setGlowing(flag);
+    override fun getHeadItem(): ItemStack {
+        val item = ItemStack(Material.PLAYER_HEAD)
+        item.editMeta(SkullMeta::class.java) {
+            it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
+            val key = NamespacedKey(Main.getPlugin(), "uuid")
+            it.persistentDataContainer.set(key, PersistentDataType.STRING, "${mannequin.uniqueId}")
+            it.owningPlayer = Bukkit.getOfflinePlayer("Robotagz")
+        }
+        return item
     }
 
-    @Override
-    public void addPotionEffect(PotionEffect effect) {
-        mannequin.addPotionEffect(effect);
+    override fun setItem(index: Int, item: ItemStack?) {
     }
 
-    @Override
-    public void setColor(NamedTextColor color) {
-        teamManager.setColor(mannequin, color);
-    }
-
-    @Override
-    public UUID getUUID() {
-        return mannequin.getUniqueId();
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return mannequin.isSneaking();
-    }
-
-    @Override
-    public void updateSneakStamina(float progress) {
-        if (progress >= 1) mannequin.setSneaking(false);
-    }
-
-    @Override
-    public ItemStack getHeadItem() {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        itemMeta.displayName(bp.getName().decoration(TextDecoration.ITALIC, false));
-        NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
-        itemMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, mannequin.getUniqueId().toString());
-        itemMeta.setOwningPlayer(Bukkit.getOfflinePlayer("Robotagz"));
-
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-
-    @Override
-    public void setItem(int index, ItemStack item) {
-
-    }
-
-    public void setInvis(boolean invis) {
+    fun setInvis(invis: Boolean) {
         if (invis) {
-            mannequin.getEquipment().setArmorContents(new ItemStack[4]);
+            mannequin.equipment.clear()
         } else {
-            updateArmor();
+            updateArmor()
         }
     }
 
-    @Override
-    public void showTitle(Title title) {
-
+    override fun showTitle(title: Title) {
     }
 
-    @Override
-    public void showTitle(Component component, int seconds) {
-
+    override fun showTitle(component: Component, seconds: Int) {
     }
 
-    @Override
-    public void playSound(Location location, String sound, float volume, float pitch) {
-
+    override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
     }
 
-    @Override
-    public void initHazardBar(HazardType hazardType, BossBar bar) {
-
+    override fun initHazardBar(hazardType: HazardType, bar: BossBar) {
     }
 
-    @Override
-    public void setHazardBarProgress(HazardType hazardType, float progress) {
-
+    override fun setHazardBarProgress(hazardType: HazardType, progress: Float) {
     }
 
-    private void updateArmor() { // updates the armor pieces of the player
-        int maxHP = bp.settings.getMaxHealth();
-        if (visualHp == maxHP) { // hvis playeren har maxa liv så skal de få fullt ut med armor
-            equipFullArmor();
-            return;
+    private fun updateArmor() { // updates the armor pieces of the player
+        val maxHP = bp.settings.maxHealth
+        if (visualHp == maxHP) {
+            equipFullArmor()
+            return
         }
-        Set<Integer> slots;
+        val slots: Set<Int>
         if (maxHP > 5) {
-            float d = (float) maxHP / 5;
-            int i = (int) Math.ceil((maxHP - visualHp) / d);
-            slots = BotBowsPlayer.HEALTH_ARMOR.get(3).get(i - 1);
+            val d = maxHP / 5.0
+            val i = ceil((maxHP - visualHp) / d).toInt()
+            slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR.get(maxHP - 2).get(maxHP - visualHp - 1);
+            slots = BotBowsPlayer.HEALTH_ARMOR[maxHP - 2][maxHP - visualHp - 1]
         }
 
-        for (Integer slot : slots) {
-            switch (slot) {
-                case 0 -> mannequin.getEquipment().setBoots(null);
-                case 1 -> mannequin.getEquipment().setLeggings(null);
-                case 2 -> mannequin.getEquipment().setChestplate(null);
-                case 3 -> mannequin.getEquipment().setHelmet(null);
+        for (slot in slots) {
+            when (slot) {
+                0 -> mannequin.equipment.setBoots(null)
+                1 -> mannequin.equipment.setLeggings(null)
+                2 -> mannequin.equipment.setChestplate(null)
+                3 -> mannequin.equipment.setHelmet(null)
             }
         }
     }
 
-    private ItemStack getArmorPiece(Material material) { // makes armor pieces
-        ItemStack armor = new ItemStack(material);
-        LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
-        assert meta != null;
-        meta.setColor(bp.getTeam().getDyeColor().getColor());
-        armor.setItemMeta(meta);
-        return armor;
-    }
-
-    private AttributeInstance getRequiredAttribute(Attribute attribute) {
-        return Objects.requireNonNull( // it should always exist but if not throw
-                mannequin.getAttribute(attribute),
-                () -> "Missing attribute " + attribute + " for mannequin " + mannequin.getName()
-        );
+    private fun makeArmorPiece(material: Material): ItemStack {
+        val armor = ItemStack(material)
+        armor.editMeta(LeatherArmorMeta::class.java) { it.setColor(bp.team.dyeColor.color) }
+        return armor
     }
 }
