@@ -29,7 +29,7 @@ public class PlayerMenuRow extends MenuRow{
             SkullMeta meta = (SkullMeta) item.getItemMeta();
             NamespacedKey key = new NamespacedKey(Main.getPlugin(), "uuid");
             String storedUUID = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            if (storedUUID.equals(bp.avatar.getUUID().toString())) {
+            if (storedUUID.equals(bp.avatar.getUuid().toString())) {
                 return item;
             }
         }

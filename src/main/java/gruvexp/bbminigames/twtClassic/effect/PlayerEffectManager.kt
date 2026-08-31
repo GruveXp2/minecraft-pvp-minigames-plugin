@@ -77,12 +77,12 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         scaleTween?.cancel()
         scaleTween = null
         val target = getTargetScale()
-        val start = avatar.getScale()
+        val start = avatar.scale
         if (start == target) return
         scaleTween = object : BukkitRunnable() {
             var i = 1
             override fun run() {
-                avatar.setScale(start + (target - start) / animationTicks * i)
+                avatar.scale = start + (target - start) / animationTicks * i
                 if (i >= animationTicks) cancel()
                 i++
             }
@@ -125,7 +125,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         }.runTaskTimer(Main.getPlugin(), 0L, GLOW_TICK_PERIOD)
     }
 
-    private fun teamColor(): NamedTextColor = avatar.botBowsPlayer.team.color
+    private fun teamColor(): NamedTextColor = avatar.bp.team.color
 
     fun clear() {
         scaleTween?.cancel()
@@ -133,7 +133,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         scaleContributions.clear()
         scaleExpiry.values.forEach { it.cancel() }
         scaleExpiry.clear()
-        avatar.setScale(1.0)
+        avatar.scale = 1.0
 
         glowTicker?.cancel()
         glowTicker = null

@@ -26,33 +26,34 @@ import kotlin.math.ceil
 
 class PlayerAvatar : BotBowsAvatar {
     private val player: Player
-    private val bp: BotBowsPlayer
+    private val _bp: BotBowsPlayer
     private val sneakBar: BossBar
     private val hazardBars  = mutableMapOf<HazardType, BossBar>()
     private var visualHp = 0
-    private var teamManager: TeamManager? = null
+    override lateinit var teamManager: TeamManager
 
     constructor(player: Player, bp: BotBowsPlayer) {
         this.player = player
-        this.bp = bp
+        _bp = bp
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
         player.gameMode = GameMode.ADVENTURE
     }
 
     constructor(player: Player, previousAvatar: BotBowsAvatar) {
         this.player = player
-        bp = previousAvatar.botBowsPlayer
+        _bp = previousAvatar.bp
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
-        this.teamManager = previousAvatar.teamManager
+        teamManager = previousAvatar.teamManager
     }
 
     override fun message(component: Component) {
         player.sendMessage(component)
     }
 
-    override fun getEntity(): LivingEntity = player
-    override fun getTeamManager() = teamManager
-    override fun getBotBowsPlayer() = bp
+    override val entity: LivingEntity
+        get() = player
+    override val bp
+        get() = _bp
 
     override fun eliminate() {
         player.gameMode = GameMode.SPECTATOR
@@ -77,7 +78,8 @@ class PlayerAvatar : BotBowsAvatar {
         setHP(maxHP)
     }
 
-    override fun getArmor(): ArmorSet {
+    override val armor: ArmorSet
+        get() {
         val armor = player.inventory.armorContents
         return ArmorSet(armor[0], armor[1], armor[2], armor[3])
     }
@@ -122,7 +124,8 @@ class PlayerAvatar : BotBowsAvatar {
         )
     }
 
-    override fun getNextFreeSlot(): Int {
+    override val nextFreeSlot: Int
+        get() {
         val inv = player.inventory
         for (slot in 1..8) {
             if (inv.getItem(slot) == null) {
@@ -157,13 +160,11 @@ class PlayerAvatar : BotBowsAvatar {
         }, BotBows.HIT_DISABLED_ITEM_TICKS.toLong())
     }
 
-    override fun getScale(): Double {
-        return player.getAttribute(Attribute.SCALE)!!.baseValue
-    }
-
-    override fun setScale(size: Double) {
-        player.getAttribute(Attribute.SCALE)!!.baseValue = size
-    }
+    override var scale: Double
+        get() = player.getAttribute(Attribute.SCALE)!!.baseValue
+        set(value) {
+            player.getAttribute(Attribute.SCALE)!!.baseValue = value
+        }
 
     override fun setGlowing(flag: Boolean) {
         player.isGlowing = flag
@@ -174,12 +175,13 @@ class PlayerAvatar : BotBowsAvatar {
     }
 
     override fun setColor(color: NamedTextColor) {
-        if (teamManager == null) return
-        teamManager!!.setColor(player, color)
+        teamManager.setColor(player, color)
     }
 
-    override fun getUUID() = player.uniqueId
-    override fun isSneaking() = player.isSneaking
+    override val uuid
+        get() = player.uniqueId
+    override val isSneaking
+        get() = player.isSneaking
 
     override fun updateSneakStamina(progress: Float) {
         val isExhausted = bp.isSneakingExhausted
@@ -190,7 +192,8 @@ class PlayerAvatar : BotBowsAvatar {
         if (progress >= 1 && isExhausted) player.isSneaking = false
     }
 
-    override fun getHeadItem(): ItemStack {
+    override val headItem: ItemStack
+        get() {
         val item = ItemStack(Material.PLAYER_HEAD)
         item.editMeta(SkullMeta::class.java) {
             it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
@@ -272,7 +275,7 @@ class PlayerAvatar : BotBowsAvatar {
     fun spectate(avatar: BotBowsAvatar) {
         player.spectatorTarget = avatar.entity
         player.sendMessage(
-            Component.text("Now spectating ", NamedTextColor.GRAY).append(avatar.botBowsPlayer.name)
+            Component.text("Now spectating ", NamedTextColor.GRAY).append(avatar.bp.name)
         )
     }
 }

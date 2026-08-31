@@ -29,10 +29,10 @@ class SneakManager(private val avatar: BotBowsAvatar) {
         var isExhausted: Boolean = false
 
         override fun run() {
-            val isAlive = avatar.botBowsPlayer.isAlive
+            val isAlive = avatar.bp.isAlive
             if (!isAlive) {
                 time -= min(time, 10)
-            } else if (avatar.isSneaking()) {
+            } else if (avatar.isSneaking) {
                 if (time < CROUCH_LIMIT * 20 - 1) {
                     time += 2
                 } else {

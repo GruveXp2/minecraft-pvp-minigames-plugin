@@ -23,31 +23,33 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
+import java.util.UUID
 import kotlin.math.ceil
 
 class NpcAvatar : BotBowsAvatar {
     private var mannequin: Mannequin
-    private val bp: BotBowsPlayer
+    private val _bp: BotBowsPlayer
     private var visualHp = -1
-    private var teamManager: TeamManager? = null
+    override lateinit var teamManager: TeamManager
 
     constructor(mannequin: Mannequin, bp: BotBowsPlayer) {
         this.mannequin = mannequin
-        this.bp = bp
+        _bp = bp
     }
 
     constructor(mannequin: Mannequin, previousAvatar: BotBowsAvatar) {
         this.mannequin = mannequin
-        this.bp = previousAvatar.botBowsPlayer
-        this.teamManager = previousAvatar.teamManager
+        _bp = previousAvatar.bp
+        teamManager = previousAvatar.teamManager
     }
 
     override fun message(component: Component) {
     }
 
-    override fun getEntity(): LivingEntity = mannequin
-    override fun getTeamManager(): TeamManager = teamManager!!
-    override fun getBotBowsPlayer(): BotBowsPlayer = bp
+    override val entity: LivingEntity
+        get() =  mannequin
+    override val bp: BotBowsPlayer
+        get() = _bp
 
     override fun eliminate() {
         val newMannequin = Main.WORLD.spawn(bp.team.tribunePos, Mannequin::class.java).apply {
@@ -76,10 +78,11 @@ class NpcAvatar : BotBowsAvatar {
         setHP(maxHP)
     }
 
-    override fun getArmor(): ArmorSet {
-        val armor = mannequin.equipment.armorContents
-        return ArmorSet(armor[0], armor[1], armor[2], armor[3])
-    }
+    override val armor: ArmorSet
+        get() {
+            val armor = mannequin.equipment.armorContents
+            return ArmorSet(armor[0], armor[1], armor[2], armor[3])
+        }
 
     override fun equipFullArmor() {
         mannequin.equipment.armorContents = arrayOf(
@@ -104,7 +107,7 @@ class NpcAvatar : BotBowsAvatar {
     override fun setReady(ready: Boolean, itemIndex: Int) {
     }
 
-    override fun getNextFreeSlot() = 0
+    override val nextFreeSlot = 0
 
     override fun damage() {
         mannequin.damage(0.001)
@@ -121,13 +124,11 @@ class NpcAvatar : BotBowsAvatar {
         )
     }
 
-    override fun getScale(): Double {
-        return mannequin.getAttribute(Attribute.SCALE)!!.baseValue
-    }
-
-    override fun setScale(size: Double) {
-        mannequin.getAttribute(Attribute.SCALE)!!.baseValue = size
-    }
+    override var scale: Double
+        get() = mannequin.getAttribute(Attribute.SCALE)!!.baseValue
+        set(value) {
+            mannequin.getAttribute(Attribute.SCALE)!!.baseValue = value
+        }
 
     override fun setGlowing(flag: Boolean) {
         mannequin.isGlowing = flag
@@ -138,27 +139,30 @@ class NpcAvatar : BotBowsAvatar {
     }
 
     override fun setColor(color: NamedTextColor) {
-        teamManager!!.setColor(mannequin, color)
+        teamManager.setColor(mannequin, color)
     }
 
-    override fun getUUID() = mannequin.uniqueId
+    override val uuid: UUID
+        get() = mannequin.uniqueId
 
-    override fun isSneaking() = mannequin.isSneaking
+    override val isSneaking
+        get() = mannequin.isSneaking
 
     override fun updateSneakStamina(progress: Float) {
         if (progress >= 1) mannequin.isSneaking = false
     }
 
-    override fun getHeadItem(): ItemStack {
-        val item = ItemStack(Material.PLAYER_HEAD)
-        item.editMeta(SkullMeta::class.java) {
-            it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
-            val key = NamespacedKey(Main.getPlugin(), "uuid")
-            it.persistentDataContainer.set(key, PersistentDataType.STRING, "${mannequin.uniqueId}")
-            it.owningPlayer = Bukkit.getOfflinePlayer("Robotagz")
+    override val headItem: ItemStack
+        get() {
+            val item = ItemStack(Material.PLAYER_HEAD)
+            item.editMeta(SkullMeta::class.java) {
+                it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
+                val key = NamespacedKey(Main.getPlugin(), "uuid")
+                it.persistentDataContainer.set(key, PersistentDataType.STRING, "${mannequin.uniqueId}")
+                it.owningPlayer = Bukkit.getOfflinePlayer("Robotagz")
+            }
+            return item
         }
-        return item
-    }
 
     override fun setItem(index: Int, item: ItemStack?) {
     }

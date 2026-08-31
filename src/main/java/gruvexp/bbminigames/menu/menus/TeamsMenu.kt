@@ -92,7 +92,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
-        rows.getValue(bp.team.teamSide).addItem(bp.avatar.getHeadItem())
+        rows.getValue(bp.team.teamSide).addItem(bp.avatar.headItem)
     }
 
     override fun removePlayer(bp: BotBowsPlayer) {
@@ -101,7 +101,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
 
     override fun updatePlayer(bp: BotBowsPlayer) {
         rows.getValue(bp.team.oppositeTeam.teamSide).removeItem(bp)
-        rows.getValue(bp.team.teamSide).addItem(bp.avatar.getHeadItem())
+        rows.getValue(bp.team.teamSide).addItem(bp.avatar.headItem)
     }
 
     companion object {

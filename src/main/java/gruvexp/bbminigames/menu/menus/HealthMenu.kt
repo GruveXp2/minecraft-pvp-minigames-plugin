@@ -152,10 +152,10 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
-        val maxHealthHead = bp.avatar.getHeadItem().apply { amount = bp.settings.maxHealth }
+        val maxHealthHead = bp.avatar.headItem.apply { amount = bp.settings.maxHealth }
         healthRow.addItem(maxHealthHead)
 
-        val damageHead = bp.avatar.getHeadItem().apply { amount = bp.settings.attackDamage }
+        val damageHead = bp.avatar.headItem.apply { amount = bp.settings.attackDamage }
         damageRow.addItem(damageHead)
     }
 

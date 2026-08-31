@@ -52,8 +52,6 @@ class BotBowsPlayer {
     private val abilities: MutableMap<AbilityType, Ability> = mutableMapOf()
     val equippedAbilities: Set<AbilityType>
         get() = abilities.keys
-    var usedAbilityItemAmount: Int = 0
-        private set
     var hasKarmaEffect = false
 
     constructor(player: Player, lobbySettings: Settings) {
@@ -100,12 +98,12 @@ class BotBowsPlayer {
     fun turnIntoBot(): UUID {
         check(avatar is NpcAvatar) { "This botbowsplayer is already a bot!" }
 
-        val bot = Main.WORLD.spawn(avatar.getEntity().location, Mannequin::class.java)
+        val bot = Main.WORLD.spawn(avatar.entity.location, Mannequin::class.java)
         bot.customName(name)
-        bot.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.getUUID()))
+        bot.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.uuid))
         avatar = NpcAvatar(bot, avatar)
         avatar.setHP(hp)
-        avatar.readyBattle(lobby.botBowsGame!!.botBowsBoard.teamManager) // this line is kinda ugly, maybe make the teammanager be somewhere else idk
+        avatar.readyBattle(lobby.botBowsGame!!.botBowsBoard.teamManager!!) // this line is kinda ugly, maybe make the teammanager be somewhere else idk
         return bot.uniqueId
     }
 
@@ -183,7 +181,7 @@ class BotBowsPlayer {
     }
 
     fun equipAbility(type: AbilityType) {
-        val slot = avatar.getNextFreeSlot()
+        val slot = avatar.nextFreeSlot
         equipAbility(slot, type)
     }
 

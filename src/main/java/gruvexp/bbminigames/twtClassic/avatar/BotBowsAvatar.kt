@@ -1,54 +1,68 @@
-package gruvexp.bbminigames.twtClassic.avatar;
+package gruvexp.bbminigames.twtClassic.avatar
 
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
+import org.bukkit.Location
+import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import java.util.UUID
 
-import java.util.UUID;
+interface BotBowsAvatar {
+    fun message(component: Component)
+    val entity: LivingEntity
+    val teamManager: TeamManager
+    val bp: BotBowsPlayer
+    fun eliminate()
+    fun revive()
+    fun setHP(hp: Int)
+    fun setMaxHP(maxHP: Int)
+    val armor: ArmorSet?
+    fun equipFullArmor()
+    fun destroy() // removes the player from the game
+    fun reset() // its like removing and recreating this avatar, but reusing the object
+    fun readyBattle(teamManager: TeamManager)
+    fun setReady(ready: Boolean, itemIndex: Int)
+    val nextFreeSlot: Int
+    fun damage()
+    var scale: Double
+    fun setGlowing(flag: Boolean)
+    fun addPotionEffect(effect: PotionEffect)
+    fun setColor(color: NamedTextColor)
+    val uuid: UUID
+    val isSneaking: Boolean
+    fun updateSneakStamina(progress: Float)
+    val headItem: ItemStack
+    fun setItem(index: Int, item: ItemStack?)
+    val isOnGround: Boolean
+        get() = entity.isOnGround
 
-public interface BotBowsAvatar {
-    void message(Component component);
-    LivingEntity getEntity();
-    TeamManager getTeamManager();
-    BotBowsPlayer getBotBowsPlayer();
-    void eliminate();
-    void revive();
-    void setHP(int hp);
-    void setMaxHP(int maxHP);
-    ArmorSet getArmor();
-    void equipFullArmor();
-    void destroy(); // removes the player from the game
-    void reset(); // its like removing and recreating this avatar, but reusing the object
-    void readyBattle(TeamManager teamManager);
-    void setReady(boolean ready, int itemIndex);
-    int getNextFreeSlot();
-    void damage();
-    double getScale();
-    void setScale(double size);
-    void setGlowing(boolean flag);
-    void addPotionEffect(PotionEffect effect);
-    void setColor(NamedTextColor color);
-    UUID getUUID();
-    boolean isSneaking();
-    void updateSneakStamina(float progress);
-    ItemStack getHeadItem();
-    void setItem(int index, ItemStack item);
-    default boolean isOnGround() {return getEntity().isOnGround();}
-    default void setInvulnerable(boolean invulnerable) {getEntity().setInvulnerable(invulnerable);}
-    default Location getLocation() {return getEntity().getLocation();}
-    default void teleport(Location location) {getEntity().teleport(location);}
-    void showTitle(Title title);
-    void showTitle(Component component, int seconds);
-    void playSound(Location location, String sound, float volume, float pitch);
-    void initHazardBar(HazardType hazardType, BossBar bar);
-    void setHazardBarProgress(HazardType hazardType, float progress);
+    fun setInvulnerable(invulnerable: Boolean) {
+        entity.isInvulnerable = invulnerable
+    }
 
-    record ArmorSet(ItemStack boots, ItemStack leggings, ItemStack chestplate, ItemStack helmet) {}
+    val location: Location
+        get() = entity.location
+
+    fun teleport(location: Location) {
+        entity.teleport(location)
+    }
+
+    fun showTitle(title: Title)
+    fun showTitle(component: Component, seconds: Int)
+    fun playSound(location: Location, sound: String, volume: Float, pitch: Float)
+    fun initHazardBar(hazardType: HazardType, bar: BossBar)
+    fun setHazardBarProgress(hazardType: HazardType, progress: Float)
+
+    @JvmRecord
+    data class ArmorSet(
+        val boots: ItemStack?,
+        val leggings: ItemStack?,
+        val chestplate: ItemStack?,
+        val helmet: ItemStack?
+    )
 }

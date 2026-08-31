@@ -374,10 +374,10 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
-        val maxAbilitiesHead = bp.avatar.getHeadItem().apply { amount = max(bp.settings.maxAbilities, 1) }
+        val maxAbilitiesHead = bp.avatar.headItem.apply { amount = max(bp.settings.maxAbilities, 1) }
         maxAbilitiesRow.addItem(maxAbilitiesHead)
 
-        val cooldownMultiplierHead = bp.avatar.getHeadItem()
+        val cooldownMultiplierHead = bp.avatar.headItem
         cooldownMultiplierHead.editMeta {
             it.lore(
                 listOf(

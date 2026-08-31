@@ -121,8 +121,8 @@ class Lobby(val id: Int) {
     }
 
     fun registerBotBowsPlayerAvatar(bp: BotBowsPlayer) {
-        if (players.containsKey(bp.avatar.getUUID())) return
-        players[bp.avatar.getUUID()] = bp
+        if (players.containsKey(bp.avatar.uuid)) return
+        players[bp.avatar.uuid] = bp
     }
 
     fun getPlayers(): MutableCollection<BotBowsPlayer> {
@@ -130,7 +130,7 @@ class Lobby(val id: Int) {
     }
 
     fun startGame(gameStarter: Player) {
-        if (this.isGameActive) {
+        if (isGameActive) {
             gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED))
             return
         } else if (settings.team1.isEmpty || settings.team2.isEmpty) {
@@ -180,7 +180,7 @@ class Lobby(val id: Int) {
     fun titlePlayers(component: Component, seconds: Long) {
         for (bp in players.values) {
             bp.avatar.showTitle(Title.title(
-                component, Component.text(""),
+                component, Component.empty(),
                 Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))
             ))
         }
