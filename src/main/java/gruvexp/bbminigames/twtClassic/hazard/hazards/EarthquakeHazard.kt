@@ -42,21 +42,17 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
         }, 5 * 20L)
     }
 
-    override fun getAnnounceMessage(): HazardMessage {
-        return HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING")
-    }
+    override val announceMessage = HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING")
 
-    override fun getName() = "Earthquakes"
+    override val name = "Earthquakes"
 
-    override fun getDescription(): Array<Component> {
-        return arrayOf(
-            Component.text("When there is an earthwuake, you will get hit by"),
-            Component.text("stones if you go underground"),
-            Component.text("for more than 5 seconds")
-        )
-    }
+    override val description = arrayOf(
+        Component.text("When there is an earthwuake, you will get hit by"),
+        Component.text("stones if you go underground"),
+        Component.text("for more than 5 seconds")
+    )
 
-    override fun getActionDescription() = "will have storms"
+    override val actionDescription = "will have storms"
 
     override fun end() {
         super.end()
@@ -75,9 +71,8 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
         private val isPlayerUnderground: Boolean
             get() {
                 val pLoc = bp.location
-                if (pLoc.y >= GROUND_LEVEL) {
-                    return false
-                }
+
+                if (pLoc.y >= GROUND_LEVEL) return false
 
                 val pBlock = pLoc.block
                 return (pLoc.blockY + 2..UPPER_BOUND).all { y ->

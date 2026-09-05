@@ -75,21 +75,21 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
         if (hazard.chance == HazardChance.DISABLED) {
             item = makeItem(
                 Material.RED_STAINED_GLASS_PANE,
-                Component.text(hazard.getName(), NamedTextColor.RED),
+                Component.text(hazard.name, NamedTextColor.RED),
                 MenuAction.TOGGLE_HAZARD.name,
                 STATUS_DISABLED,
-                Component.text("If enabled, x% of rounds ${hazard.getActionDescription()}."),
+                Component.text("If enabled, x% of rounds ${hazard.actionDescription}."),
                 loreDesc[0], loreDesc[1], loreDesc[2]
             )
         } else {
             val percentage: Component =
                 Component.text("${hazard.chance.percent}%", NamedTextColor.LIGHT_PURPLE)
             item = makeItem(
-                Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.getName(), NamedTextColor.GREEN),
+                Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.name, NamedTextColor.GREEN),
                 MenuAction.TOGGLE_HAZARD.name,
                 STATUS_ENABLED,
                 percentage.append(
-                    Component.text(" of rounds ${hazard.getActionDescription()}.", NamedTextColor.DARK_PURPLE)
+                    Component.text(" of rounds ${hazard.actionDescription}.", NamedTextColor.DARK_PURPLE)
                 ), loreDesc[0], loreDesc[1], loreDesc[2]
             )
         }

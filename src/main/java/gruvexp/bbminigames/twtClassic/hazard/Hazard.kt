@@ -1,73 +1,57 @@
-package gruvexp.bbminigames.twtClassic.hazard;
+package gruvexp.bbminigames.twtClassic.hazard
 
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.scheduler.BukkitRunnable;
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.scheduler.BukkitRunnable
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+abstract class Hazard protected constructor(val type: HazardType) {
+    var chance: HazardChance = type.defaultChance
+    var isActive: Boolean = false
+        private set
 
-public abstract class Hazard {
+    var hazardTimers = mutableMapOf<BotBowsPlayer, BukkitRunnable>()
 
-    public final HazardType type;
-    private HazardChance hazardChance;
-    private boolean isActive = false;
-
-    protected Hazard(HazardType type) {
-        this.type = type;
-        this.hazardChance = type.defaultChance;
-    }
-
-    public HazardChance getChance() {return hazardChance;}
-
-    public void setChance(HazardChance chance) {hazardChance = chance;}
-
-    public Map<BotBowsPlayer, BukkitRunnable> hazardTimers = new HashMap<>();
-
-    public void triggerOnChance(Set<BotBowsPlayer> players) {
-        if (hazardChance.occurs()) {
-            isActive = true;
-            announce(players);
-            trigger(players);
+    fun triggerOnChance(players: Set<BotBowsPlayer>) {
+        if (chance.occurs()) {
+            isActive = true
+            announce(players)
+            trigger(players)
         }
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
+    abstract fun init(players: Set<BotBowsPlayer>)
 
-    public abstract void init(Set<BotBowsPlayer> players);
+    protected abstract fun trigger(players: Set<BotBowsPlayer>) // hazarden starter
+    protected abstract val announceMessage: HazardMessage
 
-    protected abstract void trigger(Set<BotBowsPlayer> players); // hazarden starter
-    protected abstract HazardMessage getAnnounceMessage();
-    private void announce(Set<BotBowsPlayer> players) {
-        HazardMessage msg = getAnnounceMessage();
-        players.forEach(bp -> {
-            bp.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
-                    .append(Component.text(" " + msg.chatDescription, NamedTextColor.RED)));
-            bp.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4);
-        });
-    }
-    public abstract String getName();
-
-    public abstract Component[] getDescription();
-
-    public abstract String getActionDescription();
-
-    public void end() {
-        for (BukkitRunnable timer : hazardTimers.values()) { // stopp timerene
-            timer.cancel();
+    private fun announce(players: Set<BotBowsPlayer>) {
+        val msg = announceMessage
+        players.forEach {
+            it.avatar.message(
+                Component.text(msg.chatHeader, NamedTextColor.DARK_RED)
+                    .append(Component.text(" ${msg.chatDescription}", NamedTextColor.RED))
+            )
+            it.avatar.showTitle(Component.text(msg.screenTitle, NamedTextColor.RED), 4)
         }
-        hazardTimers.clear();
-        isActive = false;
-    } // stopper hazarden
+    }
 
-    public record HazardMessage(
-            String chatHeader,
-            String chatDescription,
-            String screenTitle
-    ) {}
+    abstract val name: String
+
+    abstract val description: Array<TextComponent>
+
+    abstract val actionDescription: String
+
+    open fun end() {
+        hazardTimers.values.forEach { it.cancel() }
+        hazardTimers.clear()
+        isActive = false
+    }
+
+    data class HazardMessage(
+        val chatHeader: String,
+        val chatDescription: String,
+        val screenTitle: String
+    )
 }

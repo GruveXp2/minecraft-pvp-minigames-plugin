@@ -56,21 +56,17 @@ class GhostHazard : Hazard(HazardType.GHOST) {
         BotBows.setTimeSmooth(6000, 18000, 5)
     }
 
-    override fun getAnnounceMessage(): HazardMessage {
-        return HazardMessage("HAUNTED ARENA", "Stay in motion!", "HAUNTED ARENA")
-    }
+    override val announceMessage = HazardMessage("HAUNTED ARENA", "Stay in motion!", "HAUNTED ARENA")
 
-    override fun getName() = "Haunted Arena"
+    override val name = "Haunted Arena"
 
-    override fun getDescription(): Array<Component> {
-        return arrayOf(
-            Component.text("When there is ghost mode, you will get haunted"),
-            Component.text("by your own ghost, and when you touch it,"),
-            Component.text("you die")
-        )
-    }
+    override val description = arrayOf(
+        Component.text("When there is ghost mode, you will get haunted"),
+        Component.text("by your own ghost, and when you touch it,"),
+        Component.text("you die")
+    )
 
-    override fun getActionDescription() = "will be haunted by ghosts"
+    override val actionDescription = "will be haunted by ghosts"
 
     override fun end() {
         hazardTimers.values.forEach { (it as PlayerGhostMover).descendGhost() }

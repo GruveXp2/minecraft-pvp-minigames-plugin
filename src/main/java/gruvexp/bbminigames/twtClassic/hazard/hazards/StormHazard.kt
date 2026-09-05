@@ -42,21 +42,17 @@ class StormHazard : Hazard(HazardType.STORM) {
         }, 5 * 20L)
     }
 
-    override fun getAnnounceMessage(): HazardMessage {
-        return HazardMessage("STORM INCOMING!", "Seek shelter immediately!", "STORM INCOMING")
-    }
+    override val announceMessage = HazardMessage("STORM INCOMING!", "Seek shelter immediately!", "STORM INCOMING")
 
-    override fun getName() = "Storms"
+    override val name = "Storms"
 
-    override fun getDescription(): Array<Component> {
-        return arrayOf(
-            Component.text("When there is a storm, you will get hit by"),
-            Component.text("lightning if you stand in dirext exposure"),
-            Component.text("to the sky for more than 5 seconds")
-        )
-    }
+    override val description = arrayOf(
+        Component.text("When there is a storm, you will get hit by"),
+        Component.text("lightning if you stand in dirext exposure"),
+        Component.text("to the sky for more than 5 seconds")
+    )
 
-    override fun getActionDescription() = "will have storms"
+    override val actionDescription = "will have storms"
 
     override fun end() {
         super.end()
@@ -71,16 +67,13 @@ class StormHazard : Hazard(HazardType.STORM) {
         private val isPlayerExposed: Boolean
             get() {
                 val pLoc = bp.location
-                if (pLoc.y < GROUND_LEVEL) {
-                    return false
-                }
-                if (pLoc.y >= UPPER_BOUND) {
-                    return true
-                }
 
-                val baseBlock = pLoc.block
+                if (pLoc.y < GROUND_LEVEL) return false
+                if (pLoc.y >= UPPER_BOUND) return true
+
+                val pBlock = pLoc.block
                 return (pLoc.blockY + 2..UPPER_BOUND).all { y -> // check all blocks above for air
-                    baseBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type == Material.AIR
+                    pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type == Material.AIR
                 }
             }
 
