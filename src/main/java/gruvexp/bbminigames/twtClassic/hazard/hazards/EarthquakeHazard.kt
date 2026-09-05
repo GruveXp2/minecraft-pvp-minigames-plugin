@@ -14,6 +14,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.FallingBlock
 import org.bukkit.scheduler.BukkitRunnable
 
 class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
@@ -92,7 +93,8 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
                         bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, time / (SECONDS * 40f))
                     }
                 } else {
-                    val fallingAnvil = Main.WORLD.spawnFallingBlock(bp.location.add(0.0, 3.9, 0.0), Material.ANVIL.createBlockData())
+                    val fallingAnvil = Main.WORLD.spawn(bp.location.add(0.0, 3.9, 0.0), FallingBlock::class.java)
+                        .apply { blockData = Material.ANVIL.createBlockData() }
                     fallingAnvil.setHurtEntities(true)
                     fallingAnvil.dropItem = false
                     time = 0 // resetting
