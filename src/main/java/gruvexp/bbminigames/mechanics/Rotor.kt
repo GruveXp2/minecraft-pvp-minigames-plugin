@@ -1,58 +1,55 @@
-package gruvexp.bbminigames.mechanics;
+package gruvexp.bbminigames.mechanics
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import org.bukkit.Location;
-import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.structure.Structure;
-import org.bukkit.util.Vector;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import org.bukkit.Location
+import org.bukkit.block.structure.StructureRotation
+import org.bukkit.entity.BlockDisplay
+import org.bukkit.scheduler.BukkitRunnable
 
-import java.util.HashSet;
-import java.util.Set;
+class Rotor(id: Int, location: Location, tag: String, speed: Float, teleportDuration: Int) {
+    private val displays = mutableSetOf<BlockDisplay>()
+    private val rotationStep: Float = speed * listOf(1, -1).random() * ((100..112).random() / 100f)
+    private var runnable: BukkitRunnable? = null
 
-public class Rotor {
-    private final Set<BlockDisplay> displays;
-    private final float rotationStep;
-    private BukkitRunnable runnable;
+    private var jaw = 0f
 
-    private float jaw = 0f;
-    public final String tag;
+    init {
 
-    public Rotor(int id, Location location, String structureName, float speed, int teleportDuration) {
-        displays = new HashSet<>();
-        rotationStep = speed * (BotBows.RANDOM.nextInt(2) == 1 ? 1 : -1) * (1 + BotBows.RANDOM.nextInt(4) / 25f);
-        tag = structureName;
+        for (nearbyEntity in location.getNearbyEntities(2.0, 2.0, 2.0)) {
+            if (nearbyEntity !is BlockDisplay) continue
+            if ("@{tag}_$id" !in nearbyEntity.scoreboardTags) continue
 
-        for (Entity nearbyEntity : location.getNearbyEntities(2, 2, 2)) {
-            if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(structureName + "_" + id)) continue;
-
-            displays.add(display);
-            display.setRotation(display.getYaw(), 0);
+            displays.add(nearbyEntity)
+            nearbyEntity.setRotation(nearbyEntity.yaw, 0f)
         }
         if (displays.isEmpty()) {
-            Structure structure = BotBows.loadStructure(structureName);
-            if (structure == null) return;
-            Vector size = structure.getSize().multiply(0.5);
-            BotBows.placeSymmetricalStructure(structure, location.clone().add(-size.getBlockX(), -size.getBlockY(), -size.getBlockZ()), location.clone().add(0.5, 0.5, 0.5), StructureRotation.NONE, teleportDuration, tag + "_" + id, displays);
+            BotBows.loadStructure(tag)?.let { structure ->
+                val size = structure.size.multiply(0.5)
+                BotBows.placeSymmetricalStructure(
+                    structure,
+                    location.clone()
+                        .add(-size.blockX.toDouble(), -size.blockY.toDouble(), -size.blockZ.toDouble()),
+                    location.clone().add(0.5, 0.5, 0.5),
+                    StructureRotation.NONE,
+                    teleportDuration,
+                    "@{tag}_$id",
+                    displays
+                )
+            }
         }
     }
 
-    public void startRotating() {
-        runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                jaw += rotationStep;
-                displays.forEach(display -> display.setRotation(jaw, 0));
+    fun startRotating() {
+        runnable = object : BukkitRunnable() {
+            override fun run() {
+                jaw += rotationStep
+                displays.forEach { it.setRotation(jaw, 0f) }
             }
-        };
-        runnable.runTaskTimer(Main.getPlugin(), 0, 1);
+        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
     }
 
-    public void stop() {
-        runnable.cancel();
+    fun stop() {
+        runnable!!.cancel()
     }
 }
