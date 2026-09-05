@@ -51,7 +51,6 @@ class Settings(@JvmField val lobby: Lobby) {
     lateinit var teamsMenu: TeamsMenu
     lateinit var winConditionMenu: WinConditionMenu
     lateinit var hazardMenu: HazardMenu
-    @JvmField
     val abilityMenus: MutableMap<BotBowsPlayer, AbilityMenu> = hashMapOf()
 
     private val playerListMenus: Sequence<PlayerListMenu>

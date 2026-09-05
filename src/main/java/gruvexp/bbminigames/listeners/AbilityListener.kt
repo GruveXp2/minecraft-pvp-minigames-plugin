@@ -148,7 +148,6 @@ class AbilityListener : Listener {
     }
 
     companion object {
-        @JvmStatic
         fun onAbilityUse(e: PlayerInteractEvent) {
             val p = e.player
             val bp = BotBows.getBotBowsPlayer(p) ?: return
@@ -229,7 +228,6 @@ class AbilityListener : Listener {
             }
         }
 
-        @JvmStatic
         fun onSlap(
             e: EntityDamageByEntityEvent,
             attackerBp: BotBowsPlayer,

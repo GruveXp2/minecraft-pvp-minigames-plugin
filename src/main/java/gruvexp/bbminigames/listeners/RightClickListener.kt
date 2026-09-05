@@ -1,58 +1,46 @@
-package gruvexp.bbminigames.listeners;
+package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import org.bukkit.Material;
-import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import gruvexp.bbminigames.listeners.AbilityListener.Companion.onAbilityUse
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.Lobby
+import org.bukkit.Material
+import org.bukkit.block.data.type.TrapDoor
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
 
-public class RightClickListener implements Listener {
-
+class RightClickListener : Listener {
     @EventHandler
-    public void onPlayerRightClick(PlayerInteractEvent e) {
-        switch (e.getAction()) {
-            case RIGHT_CLICK_AIR:
-                break;
-            case RIGHT_CLICK_BLOCK:
-                Player p = e.getPlayer();
-                BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-                if (bp == null) break;
-                Material type = e.getClickedBlock().getType();
-                if (type == Material.CHEST || type == Material.TRAPPED_CHEST || type == Material.BARREL) { // stop accidentally opening containers mid-game
-                    e.setCancelled(true);
-                    return;
+    fun onPlayerRightClick(e: PlayerInteractEvent) {
+        when (e.action) {
+            Action.RIGHT_CLICK_AIR -> {}
+            Action.RIGHT_CLICK_BLOCK -> {
+                val p = e.getPlayer()
+                BotBows.getBotBowsPlayer(p)?.let {
+                    val type = e.clickedBlock!!.type
+                    if (type == Material.CHEST || type == Material.TRAPPED_CHEST || type == Material.BARREL) { // stop accidentally opening containers mid-game
+                        e.setCancelled(true)
+                        return@onPlayerRightClick
+                    }
                 }
-                break;
-            default:
-                return;
+            }
+            else -> return
         }
 
-        Player p = e.getPlayer();
-        PlayerInventory inv = p.getInventory();
-        ItemStack item = inv.getItemInMainHand();
-        if (item.isSimilar(BotBows.MENU_ITEM)) {
-            BotBows.gameMenu.open(p);
-        } else if (item.isSimilar(BotBows.SETTINGS_ITEM)) {
-            BotBows.accessSettings(p);
-        } else if (item.isSimilar(Lobby.NOT_READY)) {
-            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-            bp.setReady(true, inv.getHeldItemSlot());
-        } else if (item.isSimilar(Lobby.READY)) {
-            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-            bp.setReady(false, inv.getHeldItemSlot());
-        } else if (e.getClickedBlock() != null && e.getClickedBlock().getType().data == TrapDoor.class) {
-            // toggling copper trapdoors is not allowed ingame, they should behave like other metal trapdoors like iron
-            Lobby lobby = BotBows.getLobby(p);
-            if (lobby == null) return;
-            if (lobby.isGameActive()) e.setCancelled(true);
-        } else {
-            AbilityListener.onAbilityUse(e);
+        val p = e.getPlayer()
+        val inv = p.inventory
+        val item = inv.itemInMainHand
+        when {
+            item.isSimilar(BotBows.MENU_ITEM) -> BotBows.gameMenu.open(p)
+            item.isSimilar(BotBows.SETTINGS_ITEM) -> BotBows.accessSettings(p)
+            item.isSimilar(Lobby.NOT_READY) -> BotBows.getBotBowsPlayer(p)?.setReady(true, inv.heldItemSlot)
+            item.isSimilar(Lobby.READY) -> BotBows.getBotBowsPlayer(p)?.setReady(false, inv.heldItemSlot)
+            e.clickedBlock?.type?.data == TrapDoor::class.java -> {
+                val lobby = BotBows.getLobby(p) ?: return
+                if (lobby.isGameActive) e.isCancelled = true
+            }
+            else -> onAbilityUse(e)
         }
     }
 }

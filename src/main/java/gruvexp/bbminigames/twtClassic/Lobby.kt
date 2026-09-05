@@ -209,14 +209,12 @@ class Lobby(val id: Int) {
     }
 
     companion object {
-        @JvmField
         val READY: ItemStack = Menu.makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Ready", NamedTextColor.GREEN),
             Component.text("When everyone else is also ready, the match will start"),
             Component.text("To unready, right click this item")
         )
 
-        @JvmField
         val NOT_READY: ItemStack = Menu.makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Not Ready", NamedTextColor.RED),
             Component.text("The match will not start until youre ready"),

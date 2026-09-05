@@ -29,7 +29,6 @@ class BotBowsPlayer {
     @JvmField
     var avatar: BotBowsAvatar
 
-    @JvmField
     val lobby: Lobby
     @JvmField
     val settings: PlayerSettings
@@ -185,7 +184,6 @@ class BotBowsPlayer {
         equipAbility(slot, type)
     }
 
-    @JvmOverloads
     fun equipAbility(slot: Int, type: AbilityType, updateInventory: Boolean = true) {
         if (lobby.settings.abilitySettings.maxAbilities == 0) return
         val abilityAlreadyEquipped = hasAbilityEquipped(type)
@@ -215,7 +213,6 @@ class BotBowsPlayer {
         abilityMenu?.onAbilityStatusChange(type)
     }
 
-    @JvmOverloads
     fun unequipAbility(type: AbilityType, hideMessage: Boolean = false) {
         if (!abilities.containsKey(type)) return
 
@@ -381,7 +378,6 @@ class BotBowsPlayer {
         get() = avatar.isOnGround
 
     companion object {
-        @JvmField
         val HEALTH_ARMOR: List<List<Set<Int>>> = listOf(
             listOf( // maxHp = 2
                 setOf(0, 1, 2, 3)
