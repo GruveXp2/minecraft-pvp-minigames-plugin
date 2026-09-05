@@ -1,143 +1,128 @@
-package gruvexp.bbminigames.twtClassic.hazard.hazards;
+package gruvexp.bbminigames.twtClassic.hazard.hazards
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.api.damage.DamageContext;
-import gruvexp.bbminigames.api.damage.DamageType;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.HazardChance;
-import gruvexp.bbminigames.twtClassic.hazard.HazardType;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.scheduler.BukkitRunnable;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.api.damage.DamageContext
+import gruvexp.bbminigames.api.damage.DamageType
+import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.twtClassic.hazard.Hazard
+import gruvexp.bbminigames.twtClassic.hazard.HazardChance
+import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.block.BlockFace
+import org.bukkit.scheduler.BukkitRunnable
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
+    var anvilLocations = mutableSetOf<Location>()
 
-public class EarthquakeHazard extends Hazard {
-    Set<Location> anvilLocations = new HashSet<>();
-
-    public EarthquakeHazard() {
-        super(HazardType.EARTHQUAKE);
-    }
-
-    @Override
-    public void init(Set<BotBowsPlayer> players) { // calles når spillet begynner
-        if (getChance() == HazardChance.DISABLED) return;
-        for (BotBowsPlayer bp : players) {
-            BossBar bar = BossBar.bossBar(Component.text("Anvil timer", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_6);
-            bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar);
+    override fun init(players: Set<BotBowsPlayer>) {
+        if (chance == HazardChance.DISABLED) return
+        for (bp in players) {
+            val bar = BossBar.bossBar(
+                Component.text("Anvil timer", NamedTextColor.GOLD),
+                0f,
+                BossBar.Color.YELLOW,
+                BossBar.Overlay.NOTCHED_6
+            )
+            bp.avatar.initHazardBar(HazardType.EARTHQUAKE, bar)
         }
     }
 
-    @Override
-    protected void trigger(Set<BotBowsPlayer> players) {
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-            for (BotBowsPlayer bp : players) {
-                PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(bp);
-                earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L);
-                hazardTimers.put(bp, earthQuakeTimer);
+    override fun trigger(players: Set<BotBowsPlayer>) {
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+            for (bp in players) {
+                val earthQuakeTimer = PlayerEarthQuakeTimer(bp)
+                earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L)
+                hazardTimers[bp] = earthQuakeTimer
             }
-        }, 100L); // 5 sekunder
+        }, 5 * 20L)
     }
 
-    @Override
-    protected HazardMessage getAnnounceMessage() {
-        return new HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING");
+    override fun getAnnounceMessage(): HazardMessage {
+        return HazardMessage("EARTHQUAKE INCOMING!", "Stay above ground!", "EARTHQUAKE INCOMING")
     }
 
-    @Override
-    public String getName() {
-        return "Earthquakes";
+    override fun getName() = "Earthquakes"
+
+    override fun getDescription(): Array<Component> {
+        return arrayOf(
+            Component.text("When there is an earthwuake, you will get hit by"),
+            Component.text("stones if you go underground"),
+            Component.text("for more than 5 seconds")
+        )
     }
 
-    @Override
-    public Component[] getDescription() {
-        return new Component[] {Component.text("When there is an earthwuake, you will get hit by"),
-                Component.text("stones if you go underground"),
-                Component.text("for more than 5 seconds")};
-    }
+    override fun getActionDescription() = "will have storms"
 
-    @Override
-    public String getActionDescription() {
-        return "will have storms";
-    }
-
-    @Override
-    public void end() {
-        super.end();
-        for (Location anvilLocation : anvilLocations) {
-            Block block = anvilLocation.getBlock();
-            if (block.getType() == Material.ANVIL) {
-                anvilLocation.getBlock().setType(Material.AIR);
+    override fun end() {
+        super.end()
+        for (anvilLocation in anvilLocations) {
+            val block = anvilLocation.block
+            if (block.type == Material.ANVIL) {
+                anvilLocation.block.type = Material.AIR
             }
         }
-        anvilLocations.clear();
+        anvilLocations.clear()
     }
 
-    public class PlayerEarthQuakeTimer extends BukkitRunnable {
+    inner class PlayerEarthQuakeTimer(val bp: BotBowsPlayer) : BukkitRunnable() {
+        var time: Int = 0
 
-        static final int GROUND_LEVEL = 22;
-        static final int UPPER_BOUND = 29;
-        static final int SECONDS = 6; // hvor lenge man kan stå før Einstein kommer p
+        private val isPlayerUnderground: Boolean
+            get() {
+                val pLoc = bp.location
+                if (pLoc.y >= GROUND_LEVEL) {
+                    return false
+                }
 
-        final BotBowsPlayer bp;
-        int time = 0;
-        public PlayerEarthQuakeTimer(BotBowsPlayer bp) {
-            this.bp = bp;
-        }
-
-        private boolean isPlayerUnderground() {
-            Location loc = bp.getLocation();
-            if (loc.getY() >= GROUND_LEVEL) {return false;}
-
-            int x = (int) Math.floor(loc.getX());
-            int y = (int) Math.floor(loc.getY());
-            int z = (int) Math.floor(loc.getZ());
-            //p.sendMessage(ChatColor.GRAY + "======== [DEBUG] ========\np_coord = " + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
-            for (int i = y + 2; i < UPPER_BOUND + 2; i++) {
-                //p.sendMessage(ChatColor.GRAY + "" + x + ", " + y + ", " + z + " : " + world.getBlockAt(x, y, z).getType());
-                if (Main.WORLD.getBlockAt(x, i, z).getType() != Material.AIR) {return true;}
+                val pBlock = pLoc.block
+                return (pLoc.blockY + 2..UPPER_BOUND).all { y ->
+                    pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type != Material.AIR
+                }
             }
-            return false;
-        }
 
-        @Override
-        public void run() { // annehver tick = 10Hz
-            if (!bp.isAlive()) return; // if the player is dead, dont do anything
-            if (isPlayerUnderground()) {
-                if (time < SECONDS*40) { // 40 = run().frekvens*hvor_mye
-                    time += 4; // tida går opp 4x så kjapt som når cooldownen går ned. Altså går tida opp 1s/s
-                    if (time >= SECONDS*40) {
-                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 1);
+        override fun run() { // annehver tick = 10Hz
+            if (!bp.isAlive) return  // if the player is dead, dont do anything
+
+            if (isPlayerUnderground) {
+                if (time < SECONDS * 40) { // 40 = run().frekvens*hvor_mye
+                    time += 4 // tida går opp 4x så kjapt som når cooldownen går ned. Altså går tida opp 1s/s
+                    if (time >= SECONDS * 40) {
+                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 1f)
                     } else {
-                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, (float) time /(SECONDS*40));
+                        bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, time / (SECONDS * 40f))
                     }
                 } else {
-                    FallingBlock fallingAnvil = Main.WORLD.spawnFallingBlock(bp.getLocation().add(0, 3.9, 0), Material.ANVIL.createBlockData());
-                    fallingAnvil.setHurtEntities(true);
-                    fallingAnvil.setDropItem(false);
-                    time = 0; // resetter
-                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 0);
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> bp.damage(new DamageContext.Environment(DamageType.Environment.EARTHQUAKE)), 20L);
-                    Location anvilLoc = bp.getLocation().toBlockLocation();
-                    while (anvilLoc.getBlock().getType() == Material.AIR) {
-                        anvilLoc.subtract(0, 1, 0);
+                    val fallingAnvil = Main.WORLD.spawnFallingBlock(bp.location.add(0.0, 3.9, 0.0), Material.ANVIL.createBlockData())
+                    fallingAnvil.setHurtEntities(true)
+                    fallingAnvil.dropItem = false
+                    time = 0 // resetting
+                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 0f)
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                        bp.damage(DamageContext.Environment(DamageType.Environment.EARTHQUAKE))
+                    }, 20L)
+                    val anvilLoc = bp.location.toBlockLocation()
+                    while (anvilLoc.block.type == Material.AIR) {
+                        anvilLoc.subtract(0.0, 1.0, 0.0)
                     }
-                    anvilLoc.add(0, 1, 0);
-                    anvilLocations.add(anvilLoc);
+                    anvilLoc.add(0.0, 1.0, 0.0)
+                    anvilLocations.add(anvilLoc)
                 }
             } else {
                 if (time > 0) {
-                    time--; // cooldownen går ned 0.25s/s
-                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, (float) time /(SECONDS*40));
+                    time-- // cooldownen går ned 0.25s/s
+                    bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, time / (SECONDS * 40f))
                 }
             }
         }
+    }
+    companion object {
+        const val GROUND_LEVEL: Int = 22
+        const val UPPER_BOUND: Int = 29
+        const val SECONDS: Int = 6 // hvor lenge man kan stå før Einstein kommer p
     }
 }
