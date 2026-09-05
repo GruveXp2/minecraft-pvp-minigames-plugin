@@ -1,26 +1,21 @@
-package gruvexp.bbminigames.listeners;
+package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.menu.Menu;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.InventoryHolder;
+import gruvexp.bbminigames.menu.Menu
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.inventory.InventoryClickEvent
 
-public class MenuListener implements Listener {
-
+class MenuListener : Listener {
     @EventHandler
-    public void onMenuClick(InventoryClickEvent e){
-
-        InventoryHolder holder = e.getInventory().getHolder();
-        // If the inventoryholder of the inventory clicked on is an instance of Menu, then gg. The reason that
-        // an InventoryHolder can be a Menu is because our Menu class implements InventoryHolder
-        if (holder instanceof Menu menu) {
-            if (e.getClickedInventory() != e.getWhoClicked().getInventory()) { // only cancel clicks in the menu
-                e.setCancelled(true);
+    fun onMenuClick(e: InventoryClickEvent) {
+        // holder is the entity/block etc who owns the inventory, but since the menus are also holders of their inventory
+        // it means if a menu owns it, we can get its reference from the inventory alone
+        val holder = e.inventory.holder
+        if (holder is Menu) {
+            if (e.clickedInventory != e.whoClicked.inventory) { // only cancel clicks in the menu
+                e.isCancelled = true
             }
-            // Since we know our inventoryholder is a menu, get the Menu Object representing the menu we clicked on
-            // Call the handleMenu object which takes the event and processes it
-            menu.handleMenu(e);
+            holder.handleMenu(e) // menu logic
         }
     }
 }
