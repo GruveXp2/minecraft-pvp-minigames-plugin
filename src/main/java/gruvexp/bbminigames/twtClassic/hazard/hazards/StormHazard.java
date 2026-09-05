@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
+import java.util.Set;
 
 public class StormHazard extends Hazard {
 
@@ -24,7 +25,7 @@ public class StormHazard extends Hazard {
     }
 
     @Override
-    public void init(Collection<BotBowsPlayer> players) { // calles når spillet begynner
+    public void init(Set<BotBowsPlayer> players) { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer bp : players) {
             BossBar bar = BossBar.bossBar(Component.text("Lightning timer", NamedTextColor.AQUA), 0, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_6);
@@ -33,7 +34,7 @@ public class StormHazard extends Hazard {
     }
 
     @Override
-    protected void trigger(Collection<BotBowsPlayer> players) {
+    protected void trigger(Set<BotBowsPlayer> players) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer bp : players) {
                 PlayerStormTimer stormTimer = new PlayerStormTimer(bp);

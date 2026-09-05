@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Hazard {
 
@@ -26,7 +27,7 @@ public abstract class Hazard {
 
     public Map<BotBowsPlayer, BukkitRunnable> hazardTimers = new HashMap<>();
 
-    public void triggerOnChance(Collection<BotBowsPlayer> players) {
+    public void triggerOnChance(Set<BotBowsPlayer> players) {
         if (hazardChance.occurs()) {
             isActive = true;
             announce(players);
@@ -38,11 +39,11 @@ public abstract class Hazard {
         return isActive;
     }
 
-    public abstract void init(Collection<BotBowsPlayer> players);
+    public abstract void init(Set<BotBowsPlayer> players);
 
-    protected abstract void trigger(Collection<BotBowsPlayer> players); // hazarden starter
+    protected abstract void trigger(Set<BotBowsPlayer> players); // hazarden starter
     protected abstract HazardMessage getAnnounceMessage();
-    private void announce(Collection<BotBowsPlayer> players) {
+    private void announce(Set<BotBowsPlayer> players) {
         HazardMessage msg = getAnnounceMessage();
         players.forEach(bp -> {
             bp.avatar.message(Component.text(msg.chatHeader, NamedTextColor.DARK_RED)

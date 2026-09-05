@@ -27,7 +27,7 @@ public class EarthquakeHazard extends Hazard {
     }
 
     @Override
-    public void init(Collection<BotBowsPlayer> players) { // calles når spillet begynner
+    public void init(Set<BotBowsPlayer> players) { // calles når spillet begynner
         if (getChance() == HazardChance.DISABLED) return;
         for (BotBowsPlayer bp : players) {
             BossBar bar = BossBar.bossBar(Component.text("Anvil timer", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_6);
@@ -36,7 +36,7 @@ public class EarthquakeHazard extends Hazard {
     }
 
     @Override
-    protected void trigger(Collection<BotBowsPlayer> players) {
+    protected void trigger(Set<BotBowsPlayer> players) {
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
             for (BotBowsPlayer bp : players) {
                 PlayerEarthQuakeTimer earthQuakeTimer = new PlayerEarthQuakeTimer(bp);
