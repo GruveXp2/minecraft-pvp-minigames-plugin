@@ -125,7 +125,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                     hazardType.menuFillItem,
                     hazardType.textColor,
                     HazardChance.PERCENT_STRINGS,
-                    "${hazardType.name} chance"
+                    "${hazardType.displayName} chance"
                 )
             }
             slider.setStartSlot(2 + hazardsSorted.indexOf(hazardType) * 9)
