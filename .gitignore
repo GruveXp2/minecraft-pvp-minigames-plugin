@@ -119,7 +119,7 @@ runs/
 !gradle-wrapper.jar
 
 # Avoid leaking file paths on my pc
-/src/main/java/gruvexp/bbminigames/FilePath.java
+/src/main/java/gruvexp/bbminigames/FilePath.kt
 
 # Only the version number in build.gradle should be in git, the build number changes so fast even when just testing, so it should be ignored from git
 /build-number.txt
