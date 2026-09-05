@@ -14,7 +14,7 @@ abstract class Hazard protected constructor(val type: HazardType) {
     var hazardTimers = mutableMapOf<BotBowsPlayer, BukkitRunnable>()
 
     fun triggerOnChance(players: Set<BotBowsPlayer>) {
-        if (chance.occurs()) {
+        if (chance.rollChance()) {
             isActive = true
             announce(players)
             trigger(players)

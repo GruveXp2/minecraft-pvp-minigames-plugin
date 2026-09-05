@@ -124,7 +124,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                     2 + hazardsSorted.indexOf(hazardType) * 9,
                     hazardType.menuFillItem,
                     hazardType.textColor,
-                    PERCENT,
+                    HazardChance.PERCENT_STRINGS,
                     "${hazardType.name} chance"
                 )
             }
@@ -140,10 +140,6 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
     override fun onHazardUpdate(type: HazardType) {
         val row = hazardsSorted.indexOf(type)
         updateBar(type, row)
-    }
-
-    companion object {
-        private val PERCENT = HazardChance.getPercentStrings()
     }
 
     private enum class MenuAction {
