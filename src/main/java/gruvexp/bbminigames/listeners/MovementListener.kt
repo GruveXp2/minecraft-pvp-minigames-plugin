@@ -1,38 +1,37 @@
-package gruvexp.bbminigames.listeners;
+package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.Lobby
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerMoveEvent
 
-public class MovementListener implements Listener {
-
+class MovementListener : Listener {
     @EventHandler
-    public void onMove(PlayerMoveEvent e) {
-        Player p = e.getPlayer();
+    fun onMove(e: PlayerMoveEvent) {
+        val p = e.getPlayer()
         if (!BotBows.isPlayerJoined(p)) {
-            BotBows.handleMovement(e);
-            return;
+            BotBows.handleMovement(e)
+            return
         }
-        Lobby lobby = BotBows.getLobby(p);
-        if (!lobby.isGameActive()) return;
+        val lobby = BotBows.getLobby(p)
+        if (!lobby.isGameActive) return
 
-        if (lobby.botBowsGame.canMove) {
-            lobby.botBowsGame.handleMovement(e);
+        if (lobby.botBowsGame!!.canMove) {
+            lobby.botBowsGame!!.handleMovement(e)
         } else {
-            freeze(lobby, p);
+            freeze(lobby, p)
         }
     }
 
-    private void freeze(Lobby lobby, Player p) {
-        BotBowsPlayer bp = lobby.getBotBowsPlayer(p);
-        Location spawnPos = bp.getTeam().getSpawnPos(bp);
-        if (p.getLocation().getX() == spawnPos.getX() && p.getLocation().getZ() == spawnPos.getZ()) {return;}
-        // hvis det er countdown (!canMove), playeren er joina og playeren har gått vekk fra spawn blir han telportert tebake
-        p.teleport(spawnPos);
+    private fun freeze(lobby: Lobby, p: Player) {
+        val bp = lobby.getBotBowsPlayer(p)
+        val spawnPos = bp!!.team.getSpawnPos(bp)
+        if (p.location.x == spawnPos.x && p.location.z == spawnPos.z) {
+            return
+        }
+        // hvis det er countdown (!canMove), playeren er joina og playeren har gått vekk fra spawn blir man telportert tebake
+        p.teleport(spawnPos)
     }
 }
