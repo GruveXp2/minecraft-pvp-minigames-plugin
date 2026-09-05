@@ -1,184 +1,201 @@
-package gruvexp.bbminigames.mechanics;
+package gruvexp.bbminigames.mechanics
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.structure.Structure;
-import org.bukkit.util.Vector;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.BotBows
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
+import org.bukkit.block.structure.StructureRotation
+import org.bukkit.entity.BlockDisplay
+import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.util.Vector
+import kotlin.math.max
+import kotlin.math.min
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+class Hatch(id: Int, location: Location, rotation: StructureRotation, structureName: String) {
+    private var open = false
+    private val displays = mutableSetOf<BlockDisplay>()
+    private val openHitbox = mutableSetOf<Block>()
+    private val closedHitbox = mutableSetOf<Block>()
 
-public class Hatch {
+    init {
+        BotBows.loadStructure(structureName)?.let { structure ->
+            val offset = structure.size.add(Vector(-1, -1, -1))
+            val openOffset = Vector(offset.blockX, offset.blockZ, offset.blockY)
+            val closedTarget = rotateVector(offset, rotation)
+            val originLoc = location.clone().add(-1.0, 0.0, 0.0)
+            val origin = location.toVector().add(rotateVector(Vector(-1, 0, 0), rotation))
+            val openTarget = rotateVector(openOffset, rotation)
 
-    private static final int TOTAL_STEPS = 20;
+            val closedBounds = getBounds(origin, closedTarget)
+            val openBounds = getBounds(origin, openTarget)
 
-    private boolean open = false;
-    private final HashSet<BlockDisplay> displays;
-    private final HashSet<Block> openHitbox;
-    private final HashSet<Block> closedHitbox;
+            val hatchArea = Location(Main.WORLD, origin.x, origin.y, origin.z)
+            hatchArea.getNearbyEntities(10.0, 10.0, 10.0)
+                .filterIsInstance<BlockDisplay>()
+                .filter { "${structureName}_$id" in it.scoreboardTags }
+                .forEach {
+                    it.setRotation(it.yaw, 0f)
+                    displays.add(it)
+                }
 
-    public Hatch(int id, Location location, StructureRotation rotation, String structureName) {
-        this.displays = new HashSet<>();
-        this.closedHitbox = new HashSet<>();
-        this.openHitbox = new HashSet<>();
+            if (displays.isEmpty()) {
+                BotBows.placeSymmetricalStructure(
+                    structure,
+                    originLoc,
+                    location.clone().add(0.5, 0.5, 0.5),
+                    rotation,
+                    2,
+                    "${structureName}_$id",
+                    displays
+                )
+            }
 
-        Structure structure = BotBows.loadStructure(structureName);
-        if (structure == null) return;
-
-        Vector offset = structure.getSize().add(new Vector(-1, -1, -1));
-        Vector openOffset = new Vector(offset.getBlockX(), offset.getBlockZ(), offset.getBlockY());
-        Vector closedTarget = rotateVector(offset, rotation);
-        Location originLoc = location.clone().add(-1, 0, 0);
-        Vector origin = location.toVector().add(rotateVector(new Vector(-1, 0, 0), rotation));
-        Vector openTarget = rotateVector(openOffset, rotation);
-
-        Vector[] closedBounds = getBounds(origin, closedTarget);
-        Vector[] openBounds = getBounds(origin, openTarget);
-
-        Location hatchArea = new Location(Main.WORLD, origin.getX(), origin.getY(), origin.getZ());
-        for (Entity nearbyEntity : hatchArea.getNearbyEntities(10, 10, 10)) {
-            if (!(nearbyEntity instanceof BlockDisplay display)) continue;
-            if (!display.getScoreboardTags().contains(structureName + "_" + id)) continue;
-
-            displays.add(display);
-            display.setRotation(display.getYaw(), 0);
-        }
-
-        if (displays.isEmpty()) {
-            BotBows.placeSymmetricalStructure(structure, originLoc, location.clone().add(0.5, 0.5, 0.5), rotation, 2, structureName + "_" + id, displays);
-        }
-
-        for (int x = (int) closedBounds[0].getX(); x <= closedBounds[1].getX(); x++) {
-            for (int y = (int) closedBounds[0].getY(); y <= closedBounds[1].getY(); y++) {
-                for (int z = (int) closedBounds[0].getZ(); z <= closedBounds[1].getZ(); z++) {
-                    Block block = Main.WORLD.getBlockAt(x, y, z);
-                    block.setType(Material.BARRIER);
-                    closedHitbox.add(block);
+            run {
+                var x = closedBounds[0].blockX
+                while (x <= closedBounds[1].x) {
+                    var y = closedBounds[0].blockY
+                    while (y <= closedBounds[1].y) {
+                        var z = closedBounds[0].blockZ
+                        while (z <= closedBounds[1].z) {
+                            val block = Main.WORLD.getBlockAt(x, y, z)
+                            block.type = Material.BARRIER
+                            closedHitbox.add(block)
+                            z++
+                        }
+                        y++
+                    }
+                    x++
                 }
             }
-        }
 
-        for (int x = (int) openBounds[0].getX(); x <= openBounds[1].getX(); x++) {
-            for (int y = (int) openBounds[0].getY(); y <= openBounds[1].getY(); y++) {
-                for (int z = (int) openBounds[0].getZ(); z <= openBounds[1].getZ(); z++) {
-                    Block block = Main.WORLD.getBlockAt(x, y, z);
-                    block.setType(Material.AIR);
-                    openHitbox.add(block);
+            var x = openBounds[0].blockX
+            while (x <= openBounds[1].x) {
+                var y = openBounds[0].blockY
+                while (y <= openBounds[1].y) {
+                    var z = openBounds[0].blockZ
+                    while (z <= openBounds[1].z) {
+                        val block = Main.WORLD.getBlockAt(x, y, z)
+                        block.type = Material.AIR
+                        openHitbox.add(block)
+                        z++
+                    }
+                    y++
                 }
+                x++
             }
         }
     }
 
-    private Vector[] getBounds(Vector origin, Vector size) {
-        Vector end = origin.clone().add(size);
+    private fun getBounds(origin: Vector, size: Vector): Array<Vector> {
+        val end = origin.clone().add(size)
 
-        Vector min = new Vector(
-                Math.min(origin.getX(), end.getX()),
-                Math.min(origin.getY(), end.getY()),
-                Math.min(origin.getZ(), end.getZ())
-        );
+        val min = Vector(
+            min(origin.x, end.x),
+            min(origin.y, end.y),
+            min(origin.z, end.z)
+        )
 
-        Vector max = new Vector(
-                Math.max(origin.getX(), end.getX()),
-                Math.max(origin.getY(), end.getY()),
-                Math.max(origin.getZ(), end.getZ())
-        );
+        val max = Vector(
+            max(origin.x, end.x),
+            max(origin.y, end.y),
+            max(origin.z, end.z)
+        )
 
-        return new Vector[]{min, max};
+        return arrayOf(min, max)
     }
 
-    private Vector rotateVector(Vector vec, StructureRotation rotation) {
-        double x = vec.getX();
-        double z = vec.getZ();
+    private fun rotateVector(vec: Vector, rotation: StructureRotation): Vector {
+        val x = vec.x
+        val z = vec.z
 
-        switch (rotation) {
-            case CLOCKWISE_90 -> {
-                vec.setX(-z);
-                vec.setZ(x);
+        when (rotation) {
+            StructureRotation.CLOCKWISE_90 -> {
+                vec.x = -z
+                vec.z = x
             }
-            case COUNTERCLOCKWISE_90 -> {
-                vec.setX(z);
-                vec.setZ(-x);
+
+            StructureRotation.COUNTERCLOCKWISE_90 -> {
+                vec.x = z
+                vec.z = -x
             }
-            case CLOCKWISE_180 -> {
-                vec.setX(-x);
-                vec.setZ(-z);
+
+            StructureRotation.CLOCKWISE_180 -> {
+                vec.x = -x
+                vec.z = -z
             }
-            case NONE -> {
+
+            StructureRotation.NONE -> {
                 // Nothing
             }
         }
-        return vec;
+        return vec
     }
 
-    public void toggle() {
-        if (open) close();
-        else open();
-        open = !open;
+    fun toggle() {
+        if (open) close()
+        else open()
+        open = !open
     }
 
-    public void open() {
-        // shoot up players that stand on the hatch when it opens
-        Set<Player> players = closedHitbox.iterator().next().getLocation().getNearbyEntities(4, 2, 3).stream()
-                .filter(entity -> entity instanceof Player)
-                .filter(entity -> entity.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BARRIER)
-                .map(entity -> (Player) entity)
-                .collect(Collectors.toSet());
+    fun open() {
+        // launch up players that stand on the hatch when it opens
+        val players = closedHitbox.first().location.getNearbyEntities(4.0, 2.0, 3.0)
+            .filterIsInstance<Player>()
+            .filter { it.location.block.getRelative(BlockFace.DOWN).type == Material.BARRIER }
+            .toSet()
 
-        closedHitbox.forEach(block -> block.setType(Material.AIR));
-        players.forEach(p -> {
-            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
-                Vector v = p.getVelocity();
-                v.add(new Vector(0, 1, 0));
-                p.setVelocity(v);
+        closedHitbox.forEach { block -> block.type = Material.AIR }
+        players.forEach {
+            if (it.location.block.getRelative(BlockFace.DOWN).type == Material.AIR) {
+                it.velocity = it.velocity.apply { add(Vector(0, 1, 0)) }
             }
-        });
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                openHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
+        }
+        Bukkit.getScheduler().runTaskLater(
+            Main.getPlugin(),
+            Runnable { openHitbox.forEach { block -> block.type = Material.BARRIER } },
+            TOTAL_STEPS / 2L
+        )
         // rotate them upwards
-        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
-            final float jaw = displays.iterator().next().getYaw();
-            float pitch = 0;
-            @Override
-            public void accept(BukkitTask task) {
-                pitch -= 90f / TOTAL_STEPS;
-                displays.forEach(display -> display.setRotation(jaw, pitch));
+        object : BukkitRunnable() {
+            val jaw = displays.first().yaw
+            var pitch = 0f
+            override fun run() {
+                pitch -= 90f / TOTAL_STEPS
+                displays.forEach { it.setRotation(jaw, pitch) }
                 if (pitch <= -90) {
-                    task.cancel();
-                    open = true;
+                    cancel()
+                    open = true
                 }
             }
-        }, 0, 1);
+        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
     }
 
-    public void close() {
-        openHitbox.forEach(block -> block.setType(Material.AIR));
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
-                closedHitbox.forEach(block -> block.setType(Material.BARRIER)), TOTAL_STEPS / 2);
-        Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() {
-            final float jaw = displays.iterator().next().getYaw();
-            float pitch = -90;
-            @Override
-            public void accept(BukkitTask task) {
-                pitch += 90f / TOTAL_STEPS;
-                displays.forEach(display -> display.setRotation(jaw, pitch));
+    fun close() {
+        openHitbox.forEach { block -> block.type = Material.AIR }
+        Bukkit.getScheduler().runTaskLater(
+            Main.getPlugin(),
+            Runnable { closedHitbox.forEach { block -> block.type = Material.BARRIER } },
+            TOTAL_STEPS / 2L
+        )
+        object : BukkitRunnable() {
+            val jaw = displays.first().yaw
+            var pitch = -90f
+            override fun run() {
+                pitch += 90f / TOTAL_STEPS
+                displays.forEach { it.setRotation(jaw, pitch) }
                 if (pitch >= 0) {
-                    task.cancel();
-                    open = false;
+                    cancel()
+                    open = false
                 }
             }
-        }, 0, 1);
+        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
+    }
+
+    companion object {
+        private const val TOTAL_STEPS = 20
     }
 }
