@@ -40,7 +40,6 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
     private var glowTicker: BukkitTask? = null
     private var glowElapsedTicks = 0 // used for blink phase (its just to have a number that ++es each tick so we can % it)
 
-    @JvmOverloads // java compat bc 3 last args are optional (it generates overloads based on usages)
     fun applyScale(
         source: ScaleSource,
         targetScale: Double,

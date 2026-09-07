@@ -1,218 +1,208 @@
-package gruvexp.bbminigames.mechanics;
+package gruvexp.bbminigames.mechanics
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.Util;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.BotBowsPlayer;
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager;
-import org.bukkit.Axis;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.type.CopperBulb;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.Util
+import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.util.editData
+import org.bukkit.Axis
+import org.bukkit.Bukkit
+import org.bukkit.Chunk
+import org.bukkit.Location
+import org.bukkit.block.Block
+import org.bukkit.block.data.type.CopperBulb
+import org.bukkit.entity.Player
+import org.bukkit.util.Vector
+import kotlin.math.abs
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+class SteamPipe(val isDualWay: Boolean, private val nodes: List<Location>, entryAxis: Axis, exitAxis: Axis) {
+    private var pipeStatus = PipeStatus.INACTIVE
+    private var shuttingDown = false
+    private val playerEdge = mutableMapOf<Player, Int>()
 
-public class SteamPipe {
+    private var tick = 0
+    private val firstBulbs: List<Block> = Util.getOrthogonalLocations(nodes.first(), entryAxis)
+        .map { it.block }
+        .filter { it.type.data == CopperBulb::class.java }
+    private val secondBulbs: List<Block> = Util.getOrthogonalLocations(nodes.last(), exitAxis)
+        .map { it.block }
+        .filter { it.type.data == CopperBulb::class.java }
 
-    public final boolean isDualWay;
-    private PipeStatus pipeStatus = PipeStatus.INACTIVE;
-    private boolean shuttingDown = false;
-    private final List<Location> nodes;
-    private final HashMap<Player, Integer> playerEdge = new HashMap<>();
+    val tickedChunks: Set<Chunk>
+        // the chunks that has the entry and exit. only check if players are near entry/exit if theyre in these chunks, to save performance
+        get() {
+            val chunks = Util.getChunksAround(nodes.first(), 3)
+            if (isDualWay) chunks.addAll(Util.getChunksAround(nodes.last(), 3))
+            return chunks
+        }
 
-    private int tick = 0;
-    private final List<Block> firstBulbs;
-    private final List<Block> secondBulbs;
-
-    public SteamPipe(boolean isDualWay, List<Location> nodes, Axis entryAxis, Axis exitAxis) {
-        this.isDualWay = isDualWay;
-        this.nodes = nodes;
-        this.firstBulbs = Util.getOrthogonalLocations(nodes.getFirst(), entryAxis).stream()
-                .map(Location::getBlock)
-                .filter(block -> block.getType().data.equals(CopperBulb.class))
-                .collect(Collectors.toList());
-        this.secondBulbs = Util.getOrthogonalLocations(nodes.getLast(), exitAxis).stream()
-                .map(Location::getBlock)
-                .filter(block -> block.getType().data.equals(CopperBulb.class))
-                .collect(Collectors.toList());
-    }
-
-    // the chunks that has the entry and exit. only check if players are near entry/exit if theyre in these chunks, to save performance
-    public Set<Chunk> getTickedChunks() {
-        Set<Chunk> chunks = Util.getChunksAround(nodes.getFirst(), 3);
-        if (isDualWay) chunks.addAll(Util.getChunksAround(nodes.getLast(), 3));
-        return chunks;
-    }
-
-    private void setPipeStatus(PipeStatus status) {
-        if (this.pipeStatus == status) return;
-        switch (status) {
-            case ACTIVE -> {
-                pipeStatus = status;
-                firstBulbs.forEach(bulb -> setLit(bulb,true));
-                secondBulbs.forEach(bulb -> setPowered(bulb, true));
+    private fun setPipeStatus(status: PipeStatus) {
+        if (pipeStatus == status) return
+        when (status) {
+            PipeStatus.ACTIVE -> {
+                pipeStatus = status
+                firstBulbs.forEach { it.editData<CopperBulb> { isLit = true } }
+                secondBulbs.forEach { it.editData<CopperBulb> { isPowered = true } }
             }
-            case ACTIVE_REVERSED -> {
-                pipeStatus = status;
-                firstBulbs.forEach(bulb -> setPowered(bulb, true));
-                secondBulbs.forEach(bulb -> setLit(bulb,true));
+
+            PipeStatus.ACTIVE_REVERSED -> {
+                pipeStatus = status
+                firstBulbs.forEach { it.editData<CopperBulb> { isPowered = true } }
+                secondBulbs.forEach { it.editData<CopperBulb> { isLit = true } }
             }
-            case INACTIVE -> {
-                shuttingDown = true;
 
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                    if (!playerEdge.isEmpty()) return;
-                    pipeStatus = status;
-                    firstBulbs.forEach(bulb -> setPowered(bulb, false));
-                    firstBulbs.forEach(bulb -> setLit(bulb, false));
+            PipeStatus.INACTIVE -> {
+                shuttingDown = true
 
-                    secondBulbs.forEach(bulb -> setPowered(bulb, false));
-                    secondBulbs.forEach(bulb -> setLit(bulb, false));
-                    shuttingDown = false;
-                }, 20L);
+                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                    if (playerEdge.isNotEmpty()) return@Runnable
+                    pipeStatus = status
+                    firstBulbs.forEach { it.editData<CopperBulb> { isPowered = false; isLit = false } }
+
+                    secondBulbs.forEach { it.editData<CopperBulb> { isPowered = false; isLit = false } }
+                    shuttingDown = false
+                }, 20L)
             }
         }
     }
 
-    private static void setPowered(Block block, boolean powered) {
-        CopperBulb bulb = (CopperBulb) block.getBlockData();
-        bulb.setPowered(powered);
-        block.setBlockData(bulb);
-    }
-
-    private static void setLit(Block block, boolean lit) {
-        CopperBulb bulb = (CopperBulb) block.getBlockData();
-        bulb.setLit(lit);
-        block.setBlockData(bulb);
-    }
-
-    public void checkProximity(Player p) {
-        if (playerEdge.containsKey(p)) return;
+    fun checkProximity(p: Player) {
+        if (p in playerEdge) return
         if (isDualWay) {
-            if (pipeStatus != PipeStatus.ACTIVE_REVERSED && checkProximity(true , p)) return;
-            if (pipeStatus != PipeStatus.ACTIVE          && checkProximity(false, p)) return;
-            return;
+            if (pipeStatus != PipeStatus.ACTIVE_REVERSED && checkProximity(true, p)) return
+            if (pipeStatus != PipeStatus.ACTIVE && checkProximity(false, p)) return
+            return
         }
-        checkProximity(true, p);
+        checkProximity(true, p)
     }
 
-    private boolean checkProximity(boolean firstEntry, Player p) {
-        Location enterLocation = firstEntry ? nodes.getFirst() : nodes.getLast();
-        if (enterLocation.distanceSquared(p.getLocation()) < 9) {
-            Vector playerEntryDir = enterLocation.clone().subtract(p.getLocation()).toVector();
-            Location nextNode = firstEntry ? nodes.get(1) : nodes.get(nodes.size() - 2);
-            Vector pipeEntryDir = nextNode.clone().subtract(enterLocation).toVector();
-            if (playerEntryDir.normalize().dot(pipeEntryDir.normalize()) < 0.6) return false; // if youre close to the entry point, but not standing at the front
+    private fun checkProximity(firstEntry: Boolean, p: Player): Boolean {
+        val enterLocation = if (firstEntry) nodes.first() else nodes.last()
+        if (enterLocation.distanceSquared(p.location) < 9) {
+            val playerEntryDir = enterLocation.clone().subtract(p.location).toVector()
+            val nextNode = if (firstEntry) nodes[1] else nodes[nodes.lastIndex - 1]
+            val pipeEntryDir = nextNode.clone().subtract(enterLocation).toVector()
+            if (playerEntryDir.normalize().dot(pipeEntryDir.normalize()) < 0.6) return false // if youre close to the entry point, but not standing at the front
+
+
             // you wont get sucked in. this is to fix getting stuck at the back of the entry
             // 0.6 here means around 55 deg, so if angle between player->entry and entry->nextnode is more than that its not gonna suck the player in
+            playerEdge[p] = if (firstEntry) -1 else nodes.size
 
-            playerEdge.put(p, firstEntry ? -1 : nodes.size());
             //Bukkit.broadcast(Component.text("Registerd enter"));
+            setPipeStatus(if (firstEntry) PipeStatus.ACTIVE else PipeStatus.ACTIVE_REVERSED)
 
-            if (firstEntry) setPipeStatus(PipeStatus.ACTIVE);
-            else setPipeStatus(PipeStatus.ACTIVE_REVERSED);
-
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 
-    public void tick() {
-        if (pipeStatus == PipeStatus.INACTIVE) return;
-        tick++;
+    fun tick() {
+        if (pipeStatus == PipeStatus.INACTIVE) return
+        tick++
 
-        playerEdge.forEach((p, currentNode) -> {
-            int nextNode = pipeStatus == PipeStatus.ACTIVE ? currentNode + 1 : currentNode - 1;
-            Location currentNodeLoc = (currentNode < 0 || currentNode == nodes.size()) ? p.getLocation() : nodes.get(currentNode);
-            Location nextNodeLoc = nodes.get(nextNode);
-            Location pLoc = p.getLocation();
+        playerEdge.forEach { (p: Player, currentNode: Int) ->
+            val nextNode = if (pipeStatus == PipeStatus.ACTIVE) currentNode + 1 else currentNode - 1
 
-            int nodeX = currentNodeLoc.getBlockX();
-            int nodeY = currentNodeLoc.getBlockY();
-            int nodeZ = currentNodeLoc.getBlockZ();
+            val currentNodeLoc = if (currentNode < 0 || currentNode == nodes.size) p.location else nodes[currentNode]
+            val nextNodeLoc = nodes[nextNode]
+
+            val pLoc = p.location
+            val nodeX = currentNodeLoc.blockX
+            val nodeY = currentNodeLoc.blockY
+            val nodeZ = currentNodeLoc.blockZ
             if (tick % 5 == 0) { // if the player goes outside of the pipe bounds, they exited
-                if ((nodeX == nextNodeLoc.getBlockX() && Math.abs(pLoc.getBlockX() - nodeX) > 1)
-                 || (nodeY == nextNodeLoc.getBlockY() && Math.abs(pLoc.getBlockY() - nodeY) > 1)
-                 || (nodeZ == nextNodeLoc.getBlockZ() && Math.abs(pLoc.getBlockZ() - nodeZ) > 1)) {
-                    exitPlayer(p);
-                    return;
+                if (nodeX == nextNodeLoc.blockX && abs(pLoc.blockX - nodeX) > 1
+                    || nodeY == nextNodeLoc.blockY && abs(pLoc.blockY - nodeY) > 1
+                    || nodeZ == nextNodeLoc.blockZ && abs(pLoc.blockZ - nodeZ) > 1
+                ) {
+                    exitPlayer(p)
+                    return@forEach
                 }
             }
 
-            boolean isEntering = pipeStatus == PipeStatus.ACTIVE ? currentNode == -1 : currentNode == nodes.size();
-            boolean onFirstNode = pipeStatus == PipeStatus.ACTIVE ? currentNode == 0 : currentNode == nodes.size() - 1;
-            boolean onLastNode = pipeStatus == PipeStatus.ACTIVE ? nextNode == nodes.size() - 1 : nextNode == 0;
-            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
+            val isEntering = if (pipeStatus == PipeStatus.ACTIVE) currentNode == -1 else currentNode == nodes.size
+            val onFirstNode = if (pipeStatus == PipeStatus.ACTIVE) currentNode == 0 else currentNode == nodes.size - 1
+            val onLastNode = if (pipeStatus == PipeStatus.ACTIVE) nextNode == nodes.size - 1 else nextNode == 0
+
+            val bp = BotBows.getBotBowsPlayer(p)
             if (isEntering) {
                 if (nextNodeLoc.clone().distanceSquared(pLoc) > 12) {
-                    playerEdge.put(p, -2); // the player exited and will be removed
+                    playerEdge[p] = -2 // the player exited and will be removed
                 }
-                bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, 3L, 10);
+                bp.effectManager.applyScale(
+                    PlayerEffectManager.ScaleSource.STEAM_PIPE,
+                    0.4,
+                    PlayerEffectManager.ScalePriority.OVERRIDE,
+                    3L
+                )
             } else if (onFirstNode) {
-                bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, null, 10); // will be small "forever" until exiting
+                bp.effectManager.applyScale(
+                    PlayerEffectManager.ScaleSource.STEAM_PIPE,
+                    0.4,
+                    PlayerEffectManager.ScalePriority.OVERRIDE,
+                    null
+                ) // will be small "forever" until exiting
             }
 
-            Vector a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize();
-            Vector v = p.getVelocity();
+            val a = nextNodeLoc.clone().subtract(currentNodeLoc).toVector().normalize()
 
-            double distanceToNextNode = pLoc.distanceSquared(nextNodeLoc);
-            if ((isEntering || v.lengthSquared() > 1)) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
-                a.multiply(new Vector(0.1, 0.3, 0.1));
+            val distanceToNextNode = pLoc.distanceSquared(nextNodeLoc)
+            if (isEntering || p.velocity.lengthSquared() > 1) { // get slowly sucked in, then go fast but dont go too much faster than 1b/t
+                a.multiply(Vector(0.1, 0.3, 0.1))
                 if (isEntering) { // the closer you get to the entry, the stronger the pull
-                    double multiply = (9 - distanceToNextNode) / 6;
-                    a.multiply(new Vector(multiply, 1.5, multiply));
+                    val multiply = (9 - distanceToNextNode) / 6
+                    a.multiply(Vector(multiply, 1.5, multiply))
                 }
             }
-            v.add(a);
-            p.setVelocity(v);
-            boolean reachedNextNode = isEntering ? distanceToNextNode < 0.5 : distanceToNextNode < 1; // you must be closer to the first node to have reached it
+            p.velocity = p.velocity.add(a)
+            val reachedNextNode = if (isEntering) distanceToNextNode < 0.5 else distanceToNextNode < 1 // you must be closer to the first node to have reached it
             // this secures that the player is actually inside the pipe
             if (reachedNextNode) {
                 if (onLastNode) {
-                    exitPlayer(p);
+                    exitPlayer(p)
                 } else {
-                    playerEdge.put(p, nextNode);
+                    playerEdge[p] = nextNode
                 }
             }
-        });
-        playerEdge.entrySet().removeIf(entry -> entry.getValue() == -2);
-        if (playerEdge.isEmpty() && !shuttingDown) setPipeStatus(PipeStatus.INACTIVE);
+        }
+        playerEdge.entries.removeIf { it.value == -2 }
+        if (playerEdge.isEmpty() && !shuttingDown) setPipeStatus(PipeStatus.INACTIVE)
         if (tick % 4 == 0) {
-            updateAnimation();
+            updateAnimation()
         }
     }
 
-    void exitPlayer(Player p) {
-        playerEdge.put(p, -2); // the player exited and will be removed
-        BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
-        bp.getEffectManager().applyScale(PlayerEffectManager.ScaleSource.STEAM_PIPE, 0.4, PlayerEffectManager.ScalePriority.OVERRIDE, 3L, 10);
-        BotBows.debugMessage("3. will be big in 3 ticks");
+    fun exitPlayer(p: Player) {
+        playerEdge[p] = -2 // the player exited and will be removed
+        val bp = BotBows.getBotBowsPlayer(p)
+        bp.effectManager.applyScale(
+            PlayerEffectManager.ScaleSource.STEAM_PIPE,
+            0.4,
+            PlayerEffectManager.ScalePriority.OVERRIDE,
+            3L,
+            10
+        )
+        BotBows.debugMessage("3. will be big in 3 ticks")
     }
 
-    void updateAnimation() {
-        List<Block> entryBulbs = pipeStatus == PipeStatus.ACTIVE ? firstBulbs : secondBulbs;
-        List<Block> exitBulbs = pipeStatus == PipeStatus.ACTIVE ? secondBulbs : firstBulbs;
+    fun updateAnimation() {
+        val entryBulbs = if (pipeStatus == PipeStatus.ACTIVE) firstBulbs else secondBulbs
+        val exitBulbs = if (pipeStatus == PipeStatus.ACTIVE) secondBulbs else firstBulbs
 
-        if (!entryBulbs.isEmpty()) {
-            entryBulbs.forEach(bulb -> setPowered(bulb, false));
-            int entryBulb = (tick / 4) % entryBulbs.size();
-            setPowered(entryBulbs.get(entryBulb), true);
+        if (entryBulbs.isNotEmpty()) {
+            entryBulbs.forEach { it.editData<CopperBulb> { isPowered = false } }
+            val entryBulb = tick / 4 % entryBulbs.size
+            entryBulbs[entryBulb].editData<CopperBulb> { isPowered = true }
         }
-        if (!exitBulbs.isEmpty()) {
-            exitBulbs.forEach(bulb -> setLit(bulb,false));
-            int exitBulb = (tick / 4) % exitBulbs.size();
-            setLit(exitBulbs.get(exitBulb), true);
+        if (exitBulbs.isNotEmpty()) {
+            exitBulbs.forEach { it.editData<CopperBulb> { isLit = false } }
+            val exitBulb = tick / 4 % exitBulbs.size
+            exitBulbs[exitBulb].editData<CopperBulb> { isLit = true }
         }
     }
 
-    private enum PipeStatus {
+    private enum class PipeStatus {
         INACTIVE,
         ACTIVE,
         ACTIVE_REVERSED
