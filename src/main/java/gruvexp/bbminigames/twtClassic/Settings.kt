@@ -22,7 +22,7 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import java.util.UUID
 
-class Settings(@JvmField val lobby: Lobby) {
+class Settings(val lobby: Lobby) {
     var usingExperimentalFeatures: Boolean = false
 
     @JvmField
@@ -40,7 +40,6 @@ class Settings(@JvmField val lobby: Lobby) {
         { triggeredByNewVote: Boolean -> updateLeadingMap(triggeredByNewVote) }
     )
 
-    @JvmField
     var rain: Int = 0 // temporary workaround
 
     // menus

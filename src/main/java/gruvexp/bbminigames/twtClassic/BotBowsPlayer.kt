@@ -23,14 +23,13 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.*
+import java.util.UUID
 
 class BotBowsPlayer {
     @JvmField
     var avatar: BotBowsAvatar
 
     val lobby: Lobby
-    @JvmField
     val settings: PlayerSettings
     lateinit var team: BotBowsTeam
         private set
@@ -323,7 +322,7 @@ class BotBowsPlayer {
         )
         effectManager.applyGlow(
             PlayerEffectManager.GlowSource.DEBUFF,
-            (KarmaPotion.KARMA_DURATION * 20).toLong(),
+            KarmaPotion.KARMA_DURATION * 20L,
             NamedTextColor.GOLD,
             10
         )
@@ -334,7 +333,7 @@ class BotBowsPlayer {
                 PlayerEffectManager.ScaleSource.GROW_KARMA,
                 1.5,
                 PlayerEffectManager.ScalePriority.NORMAL,
-                (KarmaPotion.KARMA_DURATION * 20).toLong()
+                KarmaPotion.KARMA_DURATION * 20L
             )
             return
         }

@@ -1,318 +1,323 @@
-package gruvexp.bbminigames.twtClassic.botbowsGames;
+package gruvexp.bbminigames.twtClassic.botbowsGames
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.model.stat.MatchResult;
-import gruvexp.bbminigames.model.stat.ResultDisplay;
-import gruvexp.bbminigames.tasks.BotBowsGiver;
-import gruvexp.bbminigames.tasks.RoundCountdown;
-import gruvexp.bbminigames.tasks.RoundTimer;
-import gruvexp.bbminigames.twtClassic.*;
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
-import gruvexp.bbminigames.twtClassic.hazard.Hazard;
-import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard;
-import gruvexp.bbminigames.twtClassic.settings.WinConditionSettings;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerMoveEvent;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.commands.TestCommand
+import gruvexp.bbminigames.model.stat.MatchResult
+import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.tasks.BotBowsGiver
+import gruvexp.bbminigames.tasks.RoundCountdown
+import gruvexp.bbminigames.tasks.RoundTimer
+import gruvexp.bbminigames.twtClassic.*
+import gruvexp.bbminigames.twtClassic.hazard.Hazard
+import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
+import org.bukkit.Bukkit
+import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.scheduler.BukkitTask
+import java.time.Duration
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+open class BotBowsGame(@JvmField val settings: Settings) {
+    @JvmField
+    val lobby: Lobby = settings.lobby
+    protected val team1: BotBowsTeam = settings.team1
+    protected val team2: BotBowsTeam = settings.team2
 
-import org.bukkit.scheduler.BukkitTask;
+    @JvmField
+    protected val players: Set<BotBowsPlayer> = settings.getPlayers()
+    val botBowsBoard: BotBowsBoard = BotBowsBoard(lobby)
+    protected val hazards: Collection<Hazard> = settings.hazardSettings.createActiveHazards()
 
-public class BotBowsGame {
+    var canMove: Boolean = true
+    var canInteract: Boolean = false // if youre able to shoot or use abilities
+    var activeRound: Boolean = false // if the game is currently ongoing, this includes the countdown in the start of rounds
+    protected var round: Int = 0
+    private var roundTimer: BukkitTask? = null
+    private var startRoundTask: BukkitTask? = null
 
-    public final Settings settings;
-    public final Lobby lobby;
-    protected final BotBowsTeam team1;
-    protected final BotBowsTeam team2;
-    protected final Set<BotBowsPlayer> players;
-    public final BotBowsBoard botBowsBoard;
-    protected final Collection<Hazard> hazards;
+    var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
 
-    public boolean canMove = true;
-    public boolean canInteract = false; // if you are able to shoot or use abilities
-    public boolean activeRound = false; // if the game is currently ongoing, this includes the countdown in the start of rounds
-    protected int round = 0; // hvilken runde man er på
-    private BukkitTask roundTimer;
-    private BukkitTask startRoundTask;
-
-    public MatchResult matchResult;
-
-    public BotBowsGame(Settings settings) {
-        this.settings = settings;
-        this.lobby = settings.lobby;
-        this.team1 = settings.team1;
-        this.team2 = settings.team2;
-        this.players = settings.getPlayers();
-        this.hazards = settings.getHazardSettings().createActiveHazards();
-        this.botBowsBoard = new BotBowsBoard(lobby);
-        matchResult = new MatchResult(settings.getMapSettings().getCurrentMap());
+    open fun leaveGame(bp: BotBowsPlayer) {
+        val team = bp.team
+        settings.leaveGame(bp)
+        botBowsBoard.removePlayerScore(bp)
+        if (team.isEmpty) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { endGame() }, 10L)
     }
 
-    public void leaveGame(BotBowsPlayer bp) {
-        BotBowsTeam team = bp.getTeam();
-        settings.leaveGame(bp);
-        botBowsBoard.removePlayerScore(bp);
-        if (team.isEmpty()) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endGame(), 10L);
-    }
-
-    public void startGame() {
+    open fun startGame() {
         if (TestCommand.debugging) {
-            lobby.messagePlayers(Component.text("WARNING: test mode is on, match data wont be saved!", NamedTextColor.YELLOW));
-            lobby.messagePlayers(Component.text("To turn off test mode, run ")
+            lobby.messagePlayers(Component.text("WARNING: test mode is on, match data wont be saved!", NamedTextColor.YELLOW))
+            lobby.messagePlayers(
+                Component.text("To turn off test mode, run ")
                     .append(Component.text("/test toggle_debugging", NamedTextColor.AQUA)
-                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/test toggle_debugging")))));
+                        .clickEvent(ClickEvent.clickEvent(
+                            ClickEvent.Action.RUN_COMMAND,
+                            ClickEvent.Payload.string("/test toggle_debugging")
+                        ))
+                    )
+            )
         }
-        botBowsBoard.createBoard();
-        startRound();
-        hazards.forEach(hazard -> hazard.init(players));
+        val teamManager = botBowsBoard.createBoard()
+        startRound()
+        hazards.forEach { it.init(players) }
 
         // legger til player liv osv
-        for (BotBowsPlayer bp : players) {
-            bp.initBattle(botBowsBoard.getTeamManager());
-            botBowsBoard.updatePlayerScore(bp);
+        players.forEach {
+            it.initBattle(teamManager)
+            botBowsBoard.updatePlayerScore(it)
         }
-        botBowsBoard.initPlayers(); // makes the player join the Team's to get the correct color outline
-        botBowsBoard.updateTeamScores();
-        players.forEach(BotBowsPlayer::start);
-        new BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L);
+        botBowsBoard.initPlayers() // makes the player join the Team's to get the correct color outline
+        botBowsBoard.updateTeamScores()
+        players.forEach { it.start() }
+        BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L)
     }
-    public void startRound() {
-        round ++;
+
+    open fun startRound() {
+        round++
         // alle har fullt med liv
-        for (BotBowsPlayer bp : players) {
-            bp.revive();
-            bp.readyAbilities();
+        players.forEach {
+            it.revive()
+            it.readyAbilities()
         }
-        // teleporterer til spawn
-        team1.tpPlayersToSpawn();
-        team2.tpPlayersToSpawn();
-        canMove = false;
-        canInteract = false;
-        activeRound = true;
-        new RoundCountdown(this, round).runTaskTimer(Main.getPlugin(), 0L, 20L); // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
-        int roundDuration = settings.getWinConditionSettings().getRoundDuration();
+        team1.tpPlayersToSpawn()
+        team2.tpPlayersToSpawn()
+        canMove = false
+        canInteract = false
+        activeRound = true
+        RoundCountdown(this, round).runTaskTimer(
+            Main.getPlugin(),
+            0L,
+            20L
+        ) // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
+        val roundDuration = settings.winConditionSettings.roundDuration
         if (roundDuration != 0) {
-            roundTimer = new RoundTimer(this, roundDuration).runTaskTimer(Main.getPlugin(), 200L, 20L);
+            roundTimer = RoundTimer(this, roundDuration).runTaskTimer(Main.getPlugin(), 200L, 20L)
         }
     }
 
-    public void triggerHazards() {
-        hazards.forEach(hazard -> hazard.triggerOnChance(players));
+    fun triggerHazards() {
+        hazards.forEach { it.triggerOnChance(players) }
     }
 
-    public Hazard getStormHazard() { // temporary until trident ability is revamped
-        List<Hazard> stormHazard = hazards.stream().filter(hazard -> hazard instanceof StormHazard).toList();
-        if (!stormHazard.isEmpty()) return stormHazard.getFirst();
-        return null;
+    val stormHazard: Hazard?
+        get() = hazards.filterIsInstance<StormHazard>().firstOrNull()
+
+    open fun handleMovement(e: PlayerMoveEvent) {
+        BotBows.handleMovement(e)
     }
 
-    public void handleMovement(PlayerMoveEvent e) {
-        BotBows.handleMovement(e);
-    }
+    fun check4Elimination(dedPlayer: BotBowsPlayer) {
+        val losingTeam = dedPlayer.team
 
-    public void check4Elimination(BotBowsPlayer dedPlayer) {
-        BotBowsTeam losingTeam = dedPlayer.getTeam();
-
-        if (losingTeam.isEliminated()) {
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> endRoundEliminated(losingTeam), 2L);
+        if (losingTeam.isEliminated) {
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { endRoundEliminated(losingTeam) }, 2L)
         }
     }
 
-    private void endRoundEliminated(BotBowsTeam losingTeam) {
-        BotBowsTeam winningTeam = losingTeam.getOppositeTeam();
-        if (winningTeam.isEliminated()) { // begge daua på likt
-            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
-            postRound(null, 0);
-            return;
+    private fun endRoundEliminated(losingTeam: BotBowsTeam) {
+        val winningTeam = losingTeam.oppositeTeam
+        if (winningTeam.isEliminated) { // last players on each team died ≈ at the same time
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
+            postRound(null, 0)
+            return
         }
-        lobby.messagePlayers(winningTeam.toComponent()
-                .append(Component.text(" won the round!", NamedTextColor.GREEN)));
-        int winScore = settings.getWinConditionSettings().isDynamicScoring() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
-        winningTeam.addPoints(winScore);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> postRound(winningTeam, winScore), 2L); // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
+        lobby.messagePlayers(
+            winningTeam.toComponent()
+                .append(Component.text(" won the round!", NamedTextColor.GREEN))
+        )
+        val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
+        val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
+
+        winningTeam.addPoints(winScore)
+        Bukkit.getScheduler().runTaskLater(
+            Main.getPlugin(),
+            Runnable { postRound(winningTeam, winScore) },
+            2L
+        ) // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
 
-    public void endRoundTimeout() {
-        int team1Percentage = team1.getHealthPercentage();
-        int team2Percentage = team2.getHealthPercentage();
-        BotBowsTeam winningTeam = null;
-        NamedTextColor team1ResultColor;
-        NamedTextColor team2ResultColor;
+    fun endRoundTimeout() {
+        val team1Percentage = team1.healthPercentage
+        val team2Percentage = team2.healthPercentage
+        var winningTeam: BotBowsTeam? = null
+        val team1ResultColor: NamedTextColor
+        val team2ResultColor: NamedTextColor
         if (team1Percentage > team2Percentage) {
-            winningTeam = team1;
-            team1ResultColor = NamedTextColor.GREEN;
-            team2ResultColor = NamedTextColor.RED;
+            winningTeam = team1
+            team1ResultColor = NamedTextColor.GREEN
+            team2ResultColor = NamedTextColor.RED
         } else if (team1Percentage < team2Percentage) {
-            winningTeam = team2;
-            team1ResultColor = NamedTextColor.RED;
-            team2ResultColor = NamedTextColor.GREEN;
+            winningTeam = team2
+            team1ResultColor = NamedTextColor.RED
+            team2ResultColor = NamedTextColor.GREEN
         } else {
-            team1ResultColor = team2ResultColor = NamedTextColor.YELLOW;
+            team2ResultColor = NamedTextColor.YELLOW
+            team1ResultColor = team2ResultColor
         }
-        lobby.messagePlayers(Component.empty()
+        lobby.messagePlayers(
+            Component.empty()
                 .append(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD))
                 .append(team1.toComponent())
-                .append(Component.text(": "))
-                .append(Component.text(team1Percentage, team1ResultColor))
-                .append(Component.text("% hp left\n", team1ResultColor))
+                .append(Component.text(": $team1Percentage% hp left\n", team1ResultColor))
                 .append(team2.toComponent())
-                .append(Component.text(": "))
-                .append(Component.text(team2Percentage, team2ResultColor))
-                .append(Component.text("% hp left\n", team2ResultColor)));
+                .append(Component.text(": $team2Percentage% hp left\n", team2ResultColor))
+        )
         if (winningTeam != null) {
-            lobby.messagePlayers(winningTeam.toComponent()
-                    .append(Component.text(" won the round!", NamedTextColor.GREEN)));
-            BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-            int winScore = settings.getWinConditionSettings().isDynamicScoring() ? calculateDynamicScore(winningTeam, losingTeam) : 1;
-            winningTeam.addPoints(winScore);
-            postRound(winningTeam, winScore);
+            lobby.messagePlayers(
+                winningTeam.toComponent()
+                    .append(Component.text(" won the round!", NamedTextColor.GREEN))
+            )
+            val losingTeam = winningTeam.oppositeTeam
+            val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
+            val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
+
+            winningTeam.addPoints(winScore)
+            postRound(winningTeam, winScore)
         } else {
-            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW));
-            postRound(null, 0);
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
+            postRound(null, 0)
         }
     }
 
-    protected void postRound(BotBowsTeam winningTeam, int winScore) {
-        if (!activeRound) return;
-        activeRound = false;
-        players.forEach(BotBowsPlayer::resetAbilities);
-        players.forEach(BotBowsPlayer::clearEffects);
+    protected open fun postRound(winningTeam: BotBowsTeam?, winScore: Int) {
+        if (!activeRound) return
+        activeRound = false
+        players.forEach {
+            it.resetAbilities()
+            it.clearEffects()
+        }
         lobby.messagePlayers( // team1: %d points, team2: %d points
-                team1.toComponent()
-                        .append(Component.text(": ", NamedTextColor.WHITE))
-                        .append(Component.text(team1.getPoints() + "\n", NamedTextColor.GREEN))
-                        .append(team2.toComponent())
-                        .append(Component.text(": ", NamedTextColor.WHITE))
-                        .append(Component.text(team2.getPoints(), NamedTextColor.GREEN)));
-        if (settings.getWinConditionSettings().getRoundDuration() > 0) {
-            roundTimer.cancel();
-        }
+            team1.toComponent()
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text("${team1.points}\n", NamedTextColor.GREEN))
+                .append(team2.toComponent())
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text(team2.points, NamedTextColor.GREEN))
+        )
+        roundTimer?.cancel()
         if (settings.rain > 0) {
-            Main.WORLD.setStorm(false);
-            Bukkit.getOnlinePlayers().forEach(Player::resetPlayerWeather);
+            Main.WORLD.setStorm(false)
+            Bukkit.getOnlinePlayers().forEach { it.resetPlayerWeather() }
         }
-        hazards.stream()
-                .filter(Hazard::isActive)
-                .forEach(Hazard::end);
+        hazards.forEach { if (it.isActive) it.end() }
 
         if (winningTeam == null) {
-            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2);
-            canInteract = false;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
-            return;
+            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2)
+            canInteract = false
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { startRound() }, 40L)
+            return
         }
 
-        lobby.titlePlayers(Component.text(winningTeam.getDisplayName() + " +" + winScore, winningTeam.getColor()), 2);
-        botBowsBoard.updateTeamScores();
+        lobby.titlePlayers(Component.text("${winningTeam.displayName} +$winScore", winningTeam.color), 2)
+        botBowsBoard.updateTeamScores()
 
-        WinConditionSettings winConditionSettings = settings.getWinConditionSettings();
-        if (winningTeam.getPoints() >= winConditionSettings.getWinScoreThreshold() && winConditionSettings.getWinScoreThreshold() > 0) {
-            postGame(winningTeam);
+        val winScoreThreshold = settings.winConditionSettings.winScoreThreshold
+        if (winningTeam.points >= winScoreThreshold && winScoreThreshold > 0) {
+            postGame(winningTeam)
         } else {
-            canInteract = false;
-            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), this::startRound, 40L);
+            canInteract = false
+            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { startRound() }, 40L)
         }
     }
 
-    private int calculateDynamicScore(BotBowsTeam winningTeam, BotBowsTeam losingTeam) {
-        int HPLeft = 0;
-        for (BotBowsPlayer bp : winningTeam.getPlayers()) {
-            HPLeft += bp.getHp();
-        }
-        lobby.messagePlayers(Component.text(HPLeft + "p for remaining hp", winningTeam.getColor()));
+    private fun calculateDynamicScore(winningTeam: BotBowsTeam, losingTeam: BotBowsTeam): Int {
+        val hpLeft = winningTeam.players.sumOf { it.hp }
+        lobby.messagePlayers(Component.text("${hpLeft}p for remaining hp", winningTeam.color))
 
-        int enemyHPTaken = 0;
-        for (BotBowsPlayer bp : losingTeam.getPlayers()) {
-            enemyHPTaken += bp.settings.getMaxHealth();
-        }
-        lobby.messagePlayers(Component.text(enemyHPTaken + "p for enemy hp lost", winningTeam.getColor()));
+        val enemyHPTaken = losingTeam.players.sumOf { it.settings.maxHealth }
+        lobby.messagePlayers(Component.text("${enemyHPTaken}p for enemy hp lost", winningTeam.color))
 
-        return HPLeft + enemyHPTaken;
+        return hpLeft + enemyHPTaken
     }
 
-    public void postGame(BotBowsTeam winningTeam) {
-        canMove = true;
-        matchResult.setRounds(round);
+    open fun postGame(winningTeam: BotBowsTeam?) {
+        canMove = true
+        matchResult.rounds = round
         if (winningTeam == null) {
-            lobby.messagePlayers(Component.text("================\n" +
-                    "The game ended in a tie after " + round + " round" + (round == 1 ? "" : "s") + "\n" +
-                    "================", NamedTextColor.LIGHT_PURPLE)); // TODO: make the tie color be defined in the BotBowsMap as "neutralColor". For example, in blaudVwakcy, its purple, bc its between red & blue
+            lobby.messagePlayers(
+                Component.text(
+                    "================\n" +
+                            "The game ended in a tie after $round round${if (round == 1) "" else "s"}\n" +
+                            "================", NamedTextColor.LIGHT_PURPLE
+                )
+            ) // TODO: make the tie color be defined in the BotBowsMap as "neutralColor". For example, in blaudVwakcy, its purple, bc its between red & blue
         } else {
-            matchResult.setTeam1Won(winningTeam == team1);
-            lobby.messagePlayers(Component.text("================\n" +
-                    "TEAM " + winningTeam.getDisplayName().toUpperCase() + " won the game after " + round + " round" + (round == 1 ? "" : "s") + "! GG\n" +
-                    "================", winningTeam.getColor()));
+            matchResult.team1Won = winningTeam == team1
+            lobby.messagePlayers(
+                Component.text(
+                    "================\n" +
+                            "TEAM ${winningTeam.displayName.uppercase()} won the game after $round round${if (round == 1) "" else "s"}! GG\n" +
+                            "================", winningTeam.color
+                )
+            )
+            showPostGameTitle(winningTeam)
+            showPostGameStats(winningTeam)
         }
-        showPostGameTitle(winningTeam);
-        showPostGameStats(winningTeam);
 
-        if (!TestCommand.debugging) Main.getPlugin().getStatsService().saveMatchResult(matchResult);
+        if (!TestCommand.debugging) Main.getPlugin().statsService.saveMatchResult(matchResult)
 
-        Main.WORLD.setThundering(false);
-        Main.WORLD.setStorm(false);
-        Main.WORLD.setClearWeatherDuration(10000);
-
-        team1.reset();
-        team2.reset();
-        lobby.reset();
+        Main.WORLD.apply {
+            isThundering = false
+            setStorm(false)
+            clearWeatherDuration = 10000
+        }
+        team1.reset()
+        team2.reset()
+        lobby.reset()
     }
 
-    private void showPostGameTitle(BotBowsTeam winningTeam) {
-        if (winningTeam == null) {
-            return;
+    private fun showPostGameTitle(winningTeam: BotBowsTeam) {
+        val losingTeam = winningTeam.oppositeTeam
+        winningTeam.players.forEach {
+            it.avatar.showTitle(
+                Title.title(
+                    Component.text("Victory", winningTeam.color), Component.text(""),
+                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
+                )
+            )
         }
-        BotBowsTeam losingTeam = winningTeam.getOppositeTeam();
-        for (BotBowsPlayer bp : winningTeam.getPlayers()) {
-            bp.avatar.showTitle(Title.title(Component.text("Victory", winningTeam.getColor()), Component.text(""),
-                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
-        }
-        for (BotBowsPlayer bp : losingTeam.getPlayers()) {
-            bp.avatar.showTitle(Title.title(Component.text("Defeat", losingTeam.getColor()), Component.text(""),
-                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))));
+        losingTeam.players.forEach {
+            it.avatar.showTitle(
+                Title.title(
+                    Component.text("Defeat", losingTeam.color), Component.text(""),
+                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
+                )
+            )
         }
     }
 
-    private void showPostGameStats(BotBowsTeam winningTeam) {
-        Location statsLocation = winningTeam != null ? winningTeam.getTribunePos().clone() : BotBows.GLOBAL_LOBBY_LOCATION.clone();
-        players.forEach(bp -> bp.teleport(statsLocation));
-        int statsLocY = statsLocation.getBlockY();
-        statsLocation.add(statsLocation.getDirection().multiply(10));
-        statsLocation.setY(statsLocY + 3);
-        ResultDisplay resultDisplay = new ResultDisplay(statsLocation, matchResult);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), resultDisplay::remove, 60 * 20L);
+    private fun showPostGameStats(winningTeam: BotBowsTeam?) {
+        val statsLocation = winningTeam?.tribunePos?.clone() ?: BotBows.GLOBAL_LOBBY_LOCATION.clone()
+        players.forEach { it.teleport(statsLocation) }
+
+        val statsLocY = statsLocation.blockY
+        statsLocation.add(statsLocation.getDirection().multiply(10))
+        statsLocation.y = (statsLocY + 3).toDouble()
+
+        val resultDisplay = ResultDisplay(statsLocation, matchResult)
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { resultDisplay.remove() }, 60 * 20L)
     }
 
-    public void endGame(BotBowsPlayer ender) {
-        lobby.messagePlayers(Component.text("The game was ended by ").append(ender.getName()));
-        endGame();
+    fun endGame(ender: BotBowsPlayer) {
+        lobby.messagePlayers(Component.text("The game was ended by ").append(ender.name))
+        endGame()
     }
 
-    public void endGame() { // the game has ended, check who won
-        if (settings.getWinConditionSettings().getRoundDuration() > 0) {
-            roundTimer.cancel();
-        }
-        if (startRoundTask != null) startRoundTask.cancel();
-        hazards.stream()
-                .filter(Hazard::isActive)
-                .forEach(Hazard::end);
+    fun endGame() { // the game has ended, check who won
+        roundTimer?.cancel()
+        startRoundTask?.cancel()
+        hazards.forEach { if (it.isActive) it.end() }
 
-        if (team1.getPoints() == team2.getPoints()) {
-            postGame(null);
-        } else if (team1.getPoints() > team2.getPoints()) {
-            postGame(team1);
+        if (team1.points == team2.points) {
+            postGame(null)
+        } else if (team1.points > team2.points) {
+            postGame(team1)
         } else {
-            postGame(team2);
+            postGame(team2)
         }
     }
 }

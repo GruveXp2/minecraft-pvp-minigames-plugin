@@ -6,7 +6,7 @@ import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.team.TeamSide
 import java.time.LocalDateTime
 
-data class MatchResult @JvmOverloads constructor(
+data class MatchResult(
     val map: BotBowsMap,
     val startTime: LocalDateTime = LocalDateTime.now(),
     var rounds: Int = 0,

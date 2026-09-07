@@ -11,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
+import org.bukkit.scoreboard.Team
 import java.awt.Color
 import kotlin.math.min
 
@@ -27,7 +28,7 @@ class BotBowsBoard(val lobby: Lobby) {
         return lobby.settings.team2
     }
 
-    fun createBoard() {
+    fun createBoard(): TeamManager {
         val board = Bukkit.getScoreboardManager().newScoreboard
         val objectiveTitle: Component =
             Component.text("BotBows").style(Style.style(NamedTextColor.GOLD, TextDecoration.BOLD))
@@ -55,7 +56,8 @@ class BotBowsBoard(val lobby: Lobby) {
         }
         objective.displaySlot = DisplaySlot.SIDEBAR
 
-        teamManager = TeamManager(board) // manages scoreboard teams, used for player coloring (username, glow)
+        teamManager = TeamManager(board)
+        return teamManager!!
     }
 
     fun initPlayers() {

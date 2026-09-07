@@ -31,7 +31,7 @@ class RoundCountdown(val botBowsGame: BotBowsGame, val round: Int) : BukkitRunna
 
                 botBowsGame.triggerHazards()
 
-                if (botBowsGame.settings.rain > 0 && botBowsGame.stormHazard != null && !botBowsGame.stormHazard.isActive) {
+                if (botBowsGame.settings.rain > 0 && !(botBowsGame.stormHazard?.isActive ?: false)) {
                     Main.WORLD.setStorm(true)
                     Bukkit.getOnlinePlayers().forEach { it.setPlayerWeather(WeatherType.CLEAR) }
                 }
