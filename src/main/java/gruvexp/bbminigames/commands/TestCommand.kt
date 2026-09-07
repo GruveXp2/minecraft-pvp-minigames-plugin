@@ -116,9 +116,7 @@ class TestCommand : CommandExecutor {
                 "vote" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
                     val playerName = args[1].replace("_", " ")
-                    val votingBp = bp.lobby.getPlayers().stream()
-                        .filter { lbp: BotBowsPlayer? -> lbp!!.avatar.entity.name == playerName }.findFirst()
-                        .orElse(null)
+                    val votingBp = bp.lobby.getPlayers().firstOrNull { it.avatar.entity.name == playerName }
                     if (votingBp == null) {
                         p!!.sendMessage(Component.text("That botbowsplayer doesnt exist.", NamedTextColor.RED))
                         return true

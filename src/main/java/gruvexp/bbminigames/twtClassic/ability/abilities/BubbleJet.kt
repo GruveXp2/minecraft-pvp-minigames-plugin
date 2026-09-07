@@ -25,7 +25,7 @@ class BubbleJet(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                     riptideTask = null
                     return
                 }
-                bp.getNearbyPlayers(DAMAGE_RADIUS).stream()
+                bp.getNearbyPlayers(DAMAGE_RADIUS)
                     .filter { it.team != bp.team }
                     .forEach {
                         it.avatar.addPotionEffect(PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false))
