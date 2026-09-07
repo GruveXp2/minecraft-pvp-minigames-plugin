@@ -15,14 +15,13 @@ class Rotor(id: Int, location: Location, tag: String, speed: Float, teleportDura
     private var jaw = 0f
 
     init {
-
-        for (nearbyEntity in location.getNearbyEntities(2.0, 2.0, 2.0)) {
-            if (nearbyEntity !is BlockDisplay) continue
-            if ("@{tag}_$id" !in nearbyEntity.scoreboardTags) continue
-
-            displays.add(nearbyEntity)
-            nearbyEntity.setRotation(nearbyEntity.yaw, 0f)
-        }
+        location.getNearbyEntities(2.0, 2.0, 2.0)
+            .filterIsInstance<BlockDisplay>()
+            .filter { "@{tag}_$id" in it.scoreboardTags }
+            .forEach {
+                it.setRotation(it.yaw, 0f)
+                displays.add(it)
+            }
         if (displays.isEmpty()) {
             BotBows.loadStructure(tag)?.let { structure ->
                 val size = structure.size.multiply(0.5)
