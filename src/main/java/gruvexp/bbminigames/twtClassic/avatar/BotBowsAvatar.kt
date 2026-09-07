@@ -58,7 +58,6 @@ interface BotBowsAvatar {
     fun initHazardBar(hazardType: HazardType, bar: BossBar)
     fun setHazardBarProgress(hazardType: HazardType, progress: Float)
 
-    @JvmRecord
     data class ArmorSet(
         val boots: ItemStack?,
         val leggings: ItemStack?,

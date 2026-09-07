@@ -21,13 +21,11 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 
-open class BotBowsGame(@JvmField val settings: Settings) {
-    @JvmField
+open class BotBowsGame(val settings: Settings) {
     val lobby: Lobby = settings.lobby
     protected val team1: BotBowsTeam = settings.team1
     protected val team2: BotBowsTeam = settings.team2
 
-    @JvmField
     protected val players: Set<BotBowsPlayer> = settings.getPlayers()
     val botBowsBoard: BotBowsBoard = BotBowsBoard(lobby)
     protected val hazards: Collection<Hazard> = settings.hazardSettings.createActiveHazards()
