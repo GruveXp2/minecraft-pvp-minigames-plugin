@@ -1,81 +1,64 @@
-package gruvexp.bbminigames.twtClassic.botbowsGames;
+package gruvexp.bbminigames.twtClassic.botbowsGames
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.mechanics.SpaceStationDoor;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.Settings;
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam;
-import org.bukkit.Axis;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.scheduler.BukkitRunnable;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.mechanics.SpaceStationDoor
+import gruvexp.bbminigames.twtClassic.Settings
+import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import org.bukkit.Axis
+import org.bukkit.Location
+import org.bukkit.scheduler.BukkitRunnable
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+class SpaceStationGame(settings: Settings) : BotBowsGame(settings) {
+    private val doors: Set<SpaceStationDoor>
+    private val doorMotors = mutableMapOf<SpaceStationDoor, DoorMotor>()
 
-public class SpaceStationGame extends BotBowsGame {
+    init {
+        val world = Main.WORLD_END
 
-    private final Set<SpaceStationDoor> doors = new HashSet<>();
-    private final Map<SpaceStationDoor, DoorMotor> doorMotors = new HashMap<>();
-
-    public SpaceStationGame(Settings settings) {
-        super(settings);
-        World world = Main.WORLD_END;
-
-        doors.add(new SpaceStationDoor(new Location(world, 147, 74, 188), Axis.Z)); // lower green
-        doors.add(new SpaceStationDoor(new Location(world, 147, 86, 180), Axis.Z)); // upper green
-        doors.add(new SpaceStationDoor(new Location(world, 140, 86, 171), Axis.X)); // green-orange
-        doors.add(new SpaceStationDoor(new Location(world, 136, 74, 199), Axis.X)); // lower orange
-        doors.add(new SpaceStationDoor(new Location(world, 138, 86, 199), Axis.X)); // upper orange
-        doors.add(new SpaceStationDoor(new Location(world, 147, 86, 212), Axis.Z)); // upper blue
-        doors.add(new SpaceStationDoor(new Location(world, 134, 74, 242), Axis.X)); // blue-red
-        doors.add(new SpaceStationDoor(new Location(world, 162, 74, 199), Axis.X)); // lower red
-        doors.add(new SpaceStationDoor(new Location(world, 160, 86, 199), Axis.X)); // upper red
+        doors = mutableSetOf(
+            SpaceStationDoor(Location(world, 147.0, 74.0, 188.0), Axis.Z), // lower green
+            SpaceStationDoor(Location(world, 147.0, 86.0, 180.0), Axis.Z), // upper green
+            SpaceStationDoor(Location(world, 140.0, 86.0, 171.0), Axis.X), // green-orange
+            SpaceStationDoor(Location(world, 136.0, 74.0, 199.0), Axis.X), // lower orange
+            SpaceStationDoor(Location(world, 138.0, 86.0, 199.0), Axis.X), // upper orange
+            SpaceStationDoor(Location(world, 147.0, 86.0, 212.0), Axis.Z), // upper blue
+            SpaceStationDoor(Location(world, 134.0, 74.0, 242.0), Axis.X), // blue-red
+            SpaceStationDoor(Location(world, 162.0, 74.0, 199.0), Axis.X), // lower red
+            SpaceStationDoor(Location(world, 160.0, 86.0, 199.0), Axis.X), // upper red
+        )
     }
 
-    @Override
-    public void startRound() {
-        super.startRound();
-        doors.forEach(door -> {
-            door.open();
-            doorMotors.put(door, new DoorMotor(door));
-            scheduleDoor(door);
-        });
-    }
-
-    @Override
-    protected void postRound(BotBowsTeam winningTeam, int winScore) {
-        doorMotors.values().forEach(BukkitRunnable::cancel);
-        doorMotors.clear();
-        doors.forEach(SpaceStationDoor::open);
-        super.postRound(winningTeam, winScore);
-    }
-
-    private void scheduleDoor(SpaceStationDoor door) {
-        int randomDelay = BotBows.RANDOM.nextInt(5) + 1 + ((int) Main.WORLD_END.getFullTime() % 150 / 10); // they toggle each 5-10 - 35-40 seconds
-        if (door.isOpen()) { // the game switches between times when the doors are open ≈85% of the time and ≈15% of the time
-            randomDelay = 45 - randomDelay;
+    override fun startRound() {
+        super.startRound()
+        doors.forEach {
+            it.open()
+            doorMotors[it] = DoorMotor(it)
+            scheduleDoor(it)
         }
-        DoorMotor motor = new DoorMotor(door);
-        motor.runTaskLater(Main.getPlugin(), randomDelay * 20);
-        doorMotors.put(door, motor);
+    }
+
+    override fun postRound(winningTeam: BotBowsTeam?, winScore: Int) {
+        doorMotors.values.forEach { it.cancel() }
+        doorMotors.clear()
+        doors.forEach { it.open() }
+        super.postRound(winningTeam, winScore)
+    }
+
+    private fun scheduleDoor(door: SpaceStationDoor) {
+        var randomDelay = (1..5).random() + Main.WORLD_END.fullTime % 150 / 10 // they toggle each 5-10 - 35-40 seconds
+        if (door.isOpen) { // the game switches between times when the doors are open ≈85% of the time and ≈15% of the time
+            randomDelay = 45 - randomDelay
+        }
+        val motor = DoorMotor(door)
+        motor.runTaskLater(Main.getPlugin(), randomDelay * 20)
+        doorMotors[door] = motor
     }
 
 
-    private class DoorMotor extends BukkitRunnable {
-
-        public final SpaceStationDoor door;
-
-        public DoorMotor(SpaceStationDoor door) {
-            this.door = door;
-        }
-
-        @Override
-        public void run() {
-            door.toggle();
-            scheduleDoor(door);
+    private inner class DoorMotor(val door: SpaceStationDoor) : BukkitRunnable() {
+        override fun run() {
+            door.toggle()
+            scheduleDoor(door)
         }
     }
 }
