@@ -1,17 +1,12 @@
-package gruvexp.bbminigames.menu;
+package gruvexp.bbminigames.menu
 
-import gruvexp.bbminigames.twtClassic.Settings;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import gruvexp.bbminigames.twtClassic.Settings
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
-public abstract class SettingsMenu extends PaginatedMenu {
-
-    protected final Settings settings;
-
-    protected static final Component STATUS_ENABLED = Component.text("Enabled", NamedTextColor.GREEN);
-    protected static final Component STATUS_DISABLED = Component.text("Disabled", NamedTextColor.RED);
-
-    protected SettingsMenu(Settings settings) {
-        this.settings = settings;
+abstract class SettingsMenu protected constructor(protected val settings: Settings) : PaginatedMenu() {
+    companion object {
+        internal val STATUS_ENABLED = Component.text("Enabled", NamedTextColor.GREEN)
+        internal val STATUS_DISABLED = Component.text("Disabled", NamedTextColor.RED)
     }
 }
