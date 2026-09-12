@@ -123,7 +123,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     override fun onMaxHealthChange(bp: BotBowsPlayer) {
         if (!settings.healthSettings.isIndividualMaxHealth) return
 
-        val headItem = healthRow.getItem(bp)
+        val headItem = healthRow.getItem(bp) ?: return
         headItem.amount = bp.settings.maxHealth
         healthRow.displayRow()
     }
@@ -146,7 +146,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     override fun onAttackDamageChange(bp: BotBowsPlayer) {
         if (!settings.healthSettings.isCustomDamage) return
 
-        val headItem = damageRow.getItem(bp)
+        val headItem = damageRow.getItem(bp) ?: return
         headItem.amount = bp.settings.attackDamage
         damageRow.displayRow()
     }
@@ -165,8 +165,8 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     }
 
     override fun updatePlayer(bp: BotBowsPlayer) {
-        healthRow.editItem(bp) { it.displayName(bp.name) }
-        damageRow.editItem(bp) { it.displayName(bp.name) }
+        healthRow.editItem(bp) { displayName(bp.name) }
+        damageRow.editItem(bp) { displayName(bp.name) }
     }
 
     companion object {

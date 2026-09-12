@@ -18,7 +18,9 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
+import java.util.UUID
 import kotlin.math.max
 
 class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsMenu(settings), PlayerListMenu, AbilityUpdateListener,
@@ -74,7 +76,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         clickedItem ?: run {
             handleAbilityClick(e, clicker, bp, clickedItem)
-            return
+            return@handleMenu
         }
 
         if (clickedItem.type == Material.ARROW && e.clickedInventory !== inventory) e.isCancelled = true
@@ -93,7 +95,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             }
             MenuAction.SET_INDIVIDUAL_MAX_ABILITIES -> {
                 val clickedBp = getPlayerFromHead(clickedItem) ?: return
-                with(clickedBp.settings) { maxAbilities = (maxAbilities % 3) + 1 }
+                with(clickedBp.settings) { maxAbilities = maxAbilities % 3 + 1 }
             }
             MenuAction.TOGGLE_INDIVIDUAL_COOLDOWN -> with(abilitySettings) { isIndividualCooldown = !isIndividualCooldown }
             MenuAction.SET_COOLDOWN_MULTIPLIER -> {
@@ -243,15 +245,9 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             inventory.setItem(0, DISABLED_SLOT)
             inventory.setItem(53, DISABLED_SLOT)
             inventory.setItem(18, DISABLED_SLOT)
-            for (i in 20..26) {
-                inventory.setItem(i, DISABLED_SLOT)
-            }
-            for (i in 27..35) {
-                inventory.setItem(i, VOID)
-            }
-            for (i in 36..44) {
-                inventory.setItem(i, DISABLED_SLOT)
-            }
+            for (i in 20..26) inventory.setItem(i, DISABLED_SLOT)
+            for (i in 27..35) inventory.setItem(i, VOID)
+            for (i in 36..44) inventory.setItem(i, DISABLED_SLOT)
         }
     }
 
@@ -294,7 +290,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
     override fun onMaxAbilitiesChange(bp: BotBowsPlayer) {
         if (!settings.abilitySettings.isIndividualMax) return
-        val headItem = maxAbilitiesRow.getItem(bp)
+        val headItem = maxAbilitiesRow.getItem(bp) ?: return
         headItem.amount = max(bp.settings.maxAbilities, 1) // oppdaterer head count
         maxAbilitiesRow.displayRow()
     }
@@ -312,19 +308,17 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
     override fun onCooldownMultiplierChange(bp: BotBowsPlayer) {
         if (!settings.abilitySettings.isIndividualCooldown) return
-        val headItem = cooldownMultiplierRow.getItem(bp)
+        val headItem = cooldownMultiplierRow.getItem(bp) ?: return
         headItem.editMeta {
-            it.lore(
-                listOf(
-                    Component.text("Cooldown multiplier: ")
-                        .append(
-                            Component.text(
-                                "%.2fx".format(Locale.US, bp.settings.abilityCooldownMultiplier),
-                                NamedTextColor.LIGHT_PURPLE
-                            )
+            it.lore(listOf(
+                Component.text("Cooldown multiplier: ")
+                    .append(
+                        Component.text(
+                            "%.2fx".format(Locale.US, bp.settings.abilityCooldownMultiplier),
+                            NamedTextColor.LIGHT_PURPLE
                         )
-                )
-            )
+                    )
+            ))
         }
         cooldownMultiplierRow.displayRow()
     }
@@ -379,16 +373,14 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
 
         val cooldownMultiplierHead = bp.avatar.headItem
         cooldownMultiplierHead.editMeta {
-            it.lore(
-                listOf(
-                    Component.text("Cooldown multiplier: ").append(
-                        Component.text(
-                            "%.2fx".format(Locale.US, bp.settings.abilityCooldownMultiplier),
-                            NamedTextColor.LIGHT_PURPLE
-                        )
+            it.lore(listOf(
+                Component.text("Cooldown multiplier: ").append(
+                    Component.text(
+                        "%.2fx".format(Locale.US, bp.settings.abilityCooldownMultiplier),
+                        NamedTextColor.LIGHT_PURPLE
                     )
                 )
-            )
+            ))
         }
         cooldownMultiplierRow.addItem(cooldownMultiplierHead)
     }
@@ -399,13 +391,13 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
     }
 
     override fun updatePlayer(bp: BotBowsPlayer) {
-        maxAbilitiesRow.editItem(bp) { it.displayName(bp.name) }
-        cooldownMultiplierRow.editItem(bp) { it.displayName(bp.name) }
+        maxAbilitiesRow.editItem(bp) { displayName(bp.name) }
+        cooldownMultiplierRow.editItem(bp) { displayName(bp.name) }
     }
 
     override fun onUniqueAbilityOccupancyChange(type: AbilityType, bp: BotBowsPlayer, equipped: Boolean) {
         if (bp == this.bp || bp.team != this.bp.team) return
-        val slot = abilityRow.getAbilitySlot(type) + abilityRow.getStartSlot()
+        val slot = abilityRow.getAbilitySlot(type) + abilityRow.startSlot
         inventory.setItem(slot - 9, if (equipped) ABILITY_TAKEN else VOID)
     }
 
