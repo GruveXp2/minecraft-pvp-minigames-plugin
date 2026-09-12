@@ -128,7 +128,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                     "${hazardType.displayName} chance"
                 )
             }
-            slider.setStartSlot(2 + hazardsSorted.indexOf(hazardType) * 9)
+            slider.startSlot = 2 + hazardsSorted.indexOf(hazardType) * 9
             updateBar(hazardType, hazardsSorted.indexOf(hazardType))
         }
 

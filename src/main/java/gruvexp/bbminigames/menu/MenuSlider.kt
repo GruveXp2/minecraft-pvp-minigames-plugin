@@ -1,78 +1,74 @@
-package gruvexp.bbminigames.menu;
+package gruvexp.bbminigames.menu
 
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import gruvexp.bbminigames.commands.TestCommand
+import gruvexp.bbminigames.twtClassic.BotBows
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Material
+import org.bukkit.inventory.Inventory
+import kotlin.math.min
 
-import java.util.List;
+open class MenuSlider(
+    protected val inventory: Inventory,
+    protected val menuActionId: String?,
+    var startSlot: Int,
+    protected val filledTrackMaterial: Material,
+    protected val filledTrackColor: NamedTextColor,
+    protected val sliderSteps: List<String>,
+    protected val description: String
+) {
+    constructor(
+        inventory: Inventory,
+        startSlot: Int,
+        filledTrackMaterial: Material,
+        filledTrackColor: NamedTextColor,
+        sliderSteps: MutableList<String>,
+        description: String
+    ) : this(inventory, null, startSlot, filledTrackMaterial, filledTrackColor, sliderSteps, description)
 
-public class MenuSlider {
-
-    protected final Inventory inventory;
-    protected final String menuActionId;
-    protected int startSlot;
-    protected final Material filledTrackMaterial;
-    protected final NamedTextColor filledTrackColor;
-    private static final Material EMPTY_TRACK_MATERIAL = Material.WHITE_STAINED_GLASS_PANE;
-    private static final NamedTextColor EMPTY_TRACK_COLOR = NamedTextColor.WHITE;
-    protected final List<String> sliderSteps;
-    protected final String description;
-
-    public MenuSlider(Inventory inventory, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps, String description) {
-        this(inventory, null, startSlot, filledTrackMaterial, filledTrackColor, sliderSteps, description);
-    }
-
-    public MenuSlider(Inventory inventory, String menuActionId, int startSlot, Material filledTrackMaterial, NamedTextColor filledTrackColor, List<String> sliderSteps, String description) {
-        this.inventory = inventory;
-        this.menuActionId = menuActionId;
-        this.startSlot = startSlot;
-        this.filledTrackMaterial = filledTrackMaterial;
-        this.filledTrackColor = filledTrackColor;
-        this.sliderSteps = sliderSteps;
-        this.description = description;
-    }
-
-    public void setProgressSlots(int slots) {
-        slots = Math.min(slots, sliderSteps.size()); // Begrenser slots til sliderens størrelse
-        for (int i = 0; i < sliderSteps.size(); i++) {
-            ItemStack item = i < slots ? Menu.makeItem(filledTrackMaterial, Component.text(sliderSteps.get(i), filledTrackColor), menuActionId, Component.text(description))
-                    : Menu.makeItem(EMPTY_TRACK_MATERIAL, Component.text(sliderSteps.get(i), EMPTY_TRACK_COLOR), menuActionId, Component.text(description));
-            inventory.setItem(i + startSlot, item);
+    fun setProgressSlots(slots: Int) {
+        var slots = slots
+        slots = min(slots, sliderSteps.size) // Begrenser slots til sliderens størrelse
+        for (i in sliderSteps.indices) {
+            val item = if (i < slots)
+                Menu.makeItem(
+                    filledTrackMaterial,
+                    Component.text(sliderSteps[i], filledTrackColor),
+                    menuActionId,
+                    Component.text(description)
+                )
+            else
+                Menu.makeItem(
+                    EMPTY_TRACK_MATERIAL,
+                    Component.text(sliderSteps[i], EMPTY_TRACK_COLOR),
+                    menuActionId,
+                    Component.text(description)
+                )
+            inventory.setItem(i + startSlot, item)
         }
     }
 
-    public void setProgress(String progressTick) {
-        if (!sliderSteps.contains(progressTick)) {
-            setProgressSlots(0);
-            BotBows.debugMessage(progressTick + " Doesnt exist", TestCommand.verboseDebugging);
+    fun setProgress(progressTick: String?) {
+        if (progressTick !in sliderSteps) {
+            setProgressSlots(0)
+            BotBows.debugMessage("$progressTick Doesnt exist", TestCommand.verboseDebugging)
         }
-        setProgressSlots(sliderSteps.indexOf(progressTick) + 1);
+        setProgressSlots(sliderSteps.indexOf(progressTick) + 1)
     }
 
-    public int size() {
-        return sliderSteps.size();
-    }
-
-    public int getStartSlot() {
-        return startSlot;
-    }
-
-    public void setStartSlot(int startSlot) {
-        this.startSlot = startSlot;
-    }
-
-    public String getNext(String step) {
-        int i = sliderSteps.indexOf(step);
+    fun getNext(step: String): String {
+        var i = sliderSteps.indexOf(step)
         //BotBows.debugMessage(String.format("current(%d): %s", i, sliderSteps.get(i)));
-        i++;
-        if (i == sliderSteps.size()) {
-            i = 0;
+        i++
+        if (i == sliderSteps.size) {
+            i = 0
         }
         //BotBows.debugMessage(String.format("next(%d): %s", i, sliderSteps.get(i)));
-        return sliderSteps.get(i);
+        return sliderSteps[i]
+    }
+
+    companion object {
+        private val EMPTY_TRACK_MATERIAL = Material.WHITE_STAINED_GLASS_PANE
+        private val EMPTY_TRACK_COLOR: NamedTextColor = NamedTextColor.WHITE
     }
 }
