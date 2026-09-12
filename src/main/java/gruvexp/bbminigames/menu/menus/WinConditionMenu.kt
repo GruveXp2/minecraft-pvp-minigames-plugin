@@ -8,11 +8,10 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 
 class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditionUpdateListener {
     init {
-        setPageButtons(2, true, true)
+        setPageButtons(2, prevMenuButton = true, nextMenuButton = true)
 
         inventory.setItem(2, SUB_10)
         inventory.setItem(3, SUB_1)
@@ -29,8 +28,8 @@ class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditio
         onDynamicScoreToggle()
     }
 
-    override fun getMenuName(): Component = Component.text("Win condition (4/6)")
-    override fun getSlots(): Int = 27
+    override val menuName = Component.text("Win condition (4/6)")
+    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -136,7 +135,7 @@ class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditio
     }
 
     companion object {
-        private val DYNAMIC_POINTS_DISABLED: ItemStack = makeItem(
+        private val DYNAMIC_POINTS_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.RED),
             MenuAction.TOGGLE_DYNAMIC_POINTS.name,
             STATUS_DISABLED,
@@ -145,7 +144,7 @@ class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditio
             Component.text("If disbabled, winning team only gets 1 point.")
         )
 
-        private val DYNAMIC_POINTS_ENABLED: ItemStack = makeItem(
+        private val DYNAMIC_POINTS_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Dynamic points", NamedTextColor.GREEN),
             MenuAction.TOGGLE_DYNAMIC_POINTS.name,
             STATUS_ENABLED,

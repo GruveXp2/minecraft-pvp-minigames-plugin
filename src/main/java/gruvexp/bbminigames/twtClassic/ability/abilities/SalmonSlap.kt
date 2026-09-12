@@ -25,6 +25,6 @@ class SalmonSlap(bp: BotBowsPlayer, slot: Int) : Ability(bp, slot, AbilityType.S
 
     companion object {
         const val DURATION: Int = 5 // seconds
-        val SALMON: ItemStack = ItemStack(Material.SALMON)
+        val SALMON = ItemStack(Material.SALMON)
     }
 }

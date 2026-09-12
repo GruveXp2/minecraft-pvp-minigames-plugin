@@ -15,7 +15,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.*
 import kotlin.math.max
@@ -209,19 +208,19 @@ class Lobby(val id: Int) {
     }
 
     companion object {
-        val READY: ItemStack = Menu.makeItem(
+        val READY = Menu.makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Ready", NamedTextColor.GREEN),
             Component.text("When everyone else is also ready, the match will start"),
             Component.text("To unready, right click this item")
         )
 
-        val NOT_READY: ItemStack = Menu.makeItem(
+        val NOT_READY = Menu.makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Not Ready", NamedTextColor.RED),
             Component.text("The match will not start until youre ready"),
             Component.text("To ready up, right click this item")
         )
 
-        val LOADING: ItemStack = Menu.makeItem(
+        val LOADING = Menu.makeItem(
             Material.YELLOW_STAINED_GLASS_PANE, Component.text("Loading...", NamedTextColor.YELLOW),
             Component.text("Please wait for your action to be processed")
         )

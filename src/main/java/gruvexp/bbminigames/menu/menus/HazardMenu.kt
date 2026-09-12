@@ -23,11 +23,11 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
     private val hazardSliders = HashMap<HazardType, MenuSlider>()
 
     init {
-        setPageButtons(3, true, true)
+        setPageButtons(3, prevMenuButton = true, nextMenuButton = true)
     }
 
-    override fun getMenuName(): Component = Component.text("Hazards (5/6)")
-    override fun getSlots(): Int = 36
+    override val menuName = Component.text("Hazards (5/6)")
+    override val slots = 36
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -82,8 +82,7 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
                 loreDesc[0], loreDesc[1], loreDesc[2]
             )
         } else {
-            val percentage: Component =
-                Component.text("${hazard.chance.percent}%", NamedTextColor.LIGHT_PURPLE)
+            val percentage = Component.text("${hazard.chance.percent}%", NamedTextColor.LIGHT_PURPLE)
             item = makeItem(
                 Material.LIME_STAINED_GLASS_PANE, Component.text(hazard.name, NamedTextColor.GREEN),
                 MenuAction.TOGGLE_HAZARD.name,

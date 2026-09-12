@@ -1,10 +1,10 @@
 package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.menu.SettingsMenu
-import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
+import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.settings.MapUpdateListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -14,7 +14,6 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
@@ -31,12 +30,12 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         }
 
     init {
-        setPageButtons(1, true, true)
+        setPageButtons(1, prevMenuButton = true, nextMenuButton = true)
         updateMenu()
     }
 
-    override fun getMenuName(): Component = Component.text("Arena map (1/6)")
-    override fun getSlots(): Int = 18
+    override val menuName= Component.text("Arena map (1/6)")
+    override val slots = 18
 
     override fun open(p: Player) {
         super.open(p)
@@ -195,39 +194,39 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
     }
 
     companion object {
-        val MAP_CATEGORY_MODERN: ItemStack = makeItem(
+        val MAP_CATEGORY_MODERN = makeItem(
             "gear", Component.text("Map category"),
             MenuAction.CYCLE_MAP_CATEGORY.name,
             Component.text("Modern BotBows", NamedTextColor.GREEN),
             Component.text("2023-", NamedTextColor.DARK_GREEN)
         )
 
-        val MAP_CATEGORY_OLD: ItemStack = makeItem(
+        val MAP_CATEGORY_OLD = makeItem(
             "gear", Component.text("Map category"),
             MenuAction.CYCLE_MAP_CATEGORY.name,
             Component.text("Old BotBows", NamedTextColor.YELLOW),
             Component.text("2019-2020", NamedTextColor.GOLD)
         )
 
-        val VOTE: ItemStack = makeItem(Material.PAPER, Component.text("Vote for map"), MenuAction.VOTE.name)
-        val SET_MAP: ItemStack = makeItem(Material.MAP, Component.text("Set the map"), MenuAction.SET.name)
-        val BACK: ItemStack = makeItem("back", Component.text("Back"), MenuAction.BACK.name)
+        val VOTE = makeItem(Material.PAPER, Component.text("Vote for map"), MenuAction.VOTE.name)
+        val SET_MAP = makeItem(Material.MAP, Component.text("Set the map"), MenuAction.SET.name)
+        val BACK = makeItem("back", Component.text("Back"), MenuAction.BACK.name)
 
-        val VOTE_MODE_ENABLED: ItemStack = makeItem(
+        val VOTE_MODE_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Vote mode"),
             MenuAction.TOGGLE_VOTE.name,
             STATUS_ENABLED,
             Component.text("The map with most votes will be used in the match")
         )
 
-        val VOTE_MODE_DISABLED: ItemStack = makeItem(
+        val VOTE_MODE_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Vote mode"),
             MenuAction.TOGGLE_VOTE.name,
             STATUS_DISABLED,
             Component.text("The map with most votes will be used in the match")
         )
 
-        val WEIGHTED_VOTING_ENABLED: ItemStack = makeItem(
+        val WEIGHTED_VOTING_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Weighted voting"),
             MenuAction.TOGGLE_WEIGHTED_VOTING.name,
             STATUS_ENABLED,
@@ -235,7 +234,7 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
             Component.text("Maps with more votes have a higher chance to be picked")
         )
 
-        val WEIGHTED_VOTING_DISABLED: ItemStack = makeItem(
+        val WEIGHTED_VOTING_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Weighted voting"),
             MenuAction.TOGGLE_WEIGHTED_VOTING.name,
             STATUS_DISABLED,

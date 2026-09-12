@@ -4,7 +4,6 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.abilities.*
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
 open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val type: AbilityType) {
@@ -94,7 +93,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
     }
 
     private inner class CooldownTimer(private val bp: BotBowsPlayer, var currentCooldown: Int) : BukkitRunnable() {
-        var cooldownItem: ItemStack = getCooldownItem(currentCooldown)
+        var cooldownItem = getCooldownItem(currentCooldown)
 
         override fun run() {
             if (currentCooldown <= 0) {

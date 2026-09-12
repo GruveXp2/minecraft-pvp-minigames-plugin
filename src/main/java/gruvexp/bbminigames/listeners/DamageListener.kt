@@ -15,7 +15,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
-import org.bukkit.inventory.ItemStack
 
 class DamageListener : Listener {
     @EventHandler
@@ -56,7 +55,7 @@ class DamageListener : Listener {
             val defender = e.entity as? LivingEntity ?: return
             val attacker = e.damager as? Player ?: return // vurder å gjør at det blir as LivingEntity itilfelle det var en BotBowsBot
 
-            val weapon: ItemStack = attacker.inventory.itemInMainHand
+            val weapon = attacker.inventory.itemInMainHand
             if (weapon.type == Material.STICK) {
                 e.damage = 0.01 // basically no dmg but still makes dmg sound
                 return

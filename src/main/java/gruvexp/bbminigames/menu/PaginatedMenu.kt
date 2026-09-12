@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 abstract class PaginatedMenu : Menu() {
@@ -49,7 +48,7 @@ abstract class PaginatedMenu : Menu() {
     companion object {
         val KEY_PAGE_ACTION: NamespacedKey = NamespacedKey("botbows", "page_action")
 
-        val PAGE_PREV: ItemStack = makeItem("prev", Component.text("Prev"), KEY_PAGE_ACTION, PageAction.PREV.name)
-        val PAGE_NEXT: ItemStack = makeItem("next", Component.text("Next"), KEY_PAGE_ACTION, PageAction.NEXT.name)
+        val PAGE_PREV = makeItem("prev", Component.text("Prev"), KEY_PAGE_ACTION, PageAction.PREV.name)
+        val PAGE_NEXT = makeItem("next", Component.text("Next"), KEY_PAGE_ACTION, PageAction.NEXT.name)
     }
 }

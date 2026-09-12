@@ -14,7 +14,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
@@ -27,7 +26,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
     private val rows: Map<TeamSide, PlayerMenuRow>
 
     init {
-        setPageButtons(2, true, true)
+        setPageButtons(2, prevMenuButton = true, nextMenuButton = true)
         inventory.setItem(22, SWITCH_SIDE)
         registerTeams()
 
@@ -36,9 +35,9 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
         rows = mapOf(TeamSide.TEAM_1 to team1Row, TeamSide.TEAM_2 to team2Row)
     }
 
-    override fun getMenuName(): Component = Component.text("Teams (2/6)")
+    override val menuName = Component.text("Teams (2/6)")
 
-    override fun getSlots(): Int = 27
+    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -105,7 +104,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
     }
 
     companion object {
-        val SWITCH_SIDE: ItemStack = makeItem(
+        val SWITCH_SIDE = makeItem(
             "switch",
             Component.text("Switch sides", NamedTextColor.LIGHT_PURPLE),
             MenuAction.FLIP_TEAMS.name,

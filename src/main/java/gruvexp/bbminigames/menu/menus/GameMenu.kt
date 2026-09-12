@@ -7,7 +7,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 
 class GameMenu : Menu() {
     init {
@@ -15,8 +14,8 @@ class GameMenu : Menu() {
         inventory.setItem(5, SUMO)
     }
 
-    override fun getMenuName(): Component = Component.text("Game Menu")
-    override fun getSlots(): Int = 9
+    override val menuName = Component.text("Game Menu")
+    override val slots = 9
 
     override fun handleMenu(e: InventoryClickEvent) {
         val p = e.whoClicked as Player
@@ -30,13 +29,13 @@ class GameMenu : Menu() {
     }
 
     companion object {
-        val BOTBOWS: ItemStack = makeItem(
+        val BOTBOWS = makeItem(
             Material.BOW,
             Component.text("BotBows Classic"),
             MenuAction.JOIN_BOTBOWS.name,
             Component.text("The classic game of BotBows")
         )
-        val SUMO: ItemStack = makeItem(
+        val SUMO = makeItem(
             Material.STICK,
             Component.text("Sumo"),
             MenuAction.JOIN_SUMO.name,

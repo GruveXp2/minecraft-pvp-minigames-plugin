@@ -17,7 +17,6 @@ import org.bukkit.*
 import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Arrow
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
@@ -100,7 +99,7 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
     }
 
     companion object {
-        val THUNDER_BOW: ItemStack = Menu.makeItem( //TODO: custom skin som erstatter vanlig crossbow vises
+        val THUNDER_BOW = Menu.makeItem( //TODO: custom skin som erstatter vanlig crossbow vises
             Material.CROSSBOW,
             "thunder_bow",
             Component.text("ThunderBow"),

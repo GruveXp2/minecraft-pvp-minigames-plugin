@@ -19,8 +19,8 @@ class LobbyMenu : Menu() {
         }
     }
 
-    override fun getMenuName(): Component = Component.text("Join Lobby")
-    override fun getSlots(): Int = 9
+    override val menuName = Component.text("Join Lobby")
+    override val slots = 9
 
     override fun handleMenu(e: InventoryClickEvent) {
         val clickedItem = e.getCurrentItem() ?: return
@@ -29,7 +29,7 @@ class LobbyMenu : Menu() {
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
             MenuAction.JOIN_LOBBY -> {
-                val displayName: Component = clickedItem.itemMeta.displayName() ?: return
+                val displayName = clickedItem.itemMeta.displayName() ?: return
                 val text = PlainTextComponentSerializer.plainText().serialize(displayName)
                 val lobbyID = text.substringAfter('#').trim().toInt() - 1
                 BotBows.getLobby(lobbyID).joinGame(p)

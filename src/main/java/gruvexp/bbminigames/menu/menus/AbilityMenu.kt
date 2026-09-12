@@ -55,12 +55,12 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         }
 
     init {
-        setPageButtons(5, true, false)
+        setPageButtons(5, prevMenuButton = true, nextMenuButton = false)
         updateUIState()
     }
 
-    override fun getMenuName(): Component = Component.text("Abilities (6/6)")
-    override fun getSlots(): Int = 54
+    override val menuName = Component.text("Abilities (6/6)")
+    override val slots = 54
     override fun handlesEmptySlots(): Boolean = true
 
     override fun handleMenu(e: InventoryClickEvent) {
@@ -409,49 +409,49 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             MenuAction.EDIT_PLAYER_ABILITIES, MenuAction.TOGGLE_UNIQUE_MODE
         )
 
-        private val ABILITIES_DISABLED: ItemStack = makeItem(
+        private val ABILITIES_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.RED),
             MenuAction.TOGGLE_ABILITIES.name,
             STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow")
         )
 
-        private val ABILITIES_ENABLED: ItemStack = makeItem(
+        private val ABILITIES_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Abilities", NamedTextColor.GREEN),
             MenuAction.TOGGLE_ABILITIES.name,
             STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have abilities in addition to the bow")
         )
 
-        private val INDIVIDUAL_MAX_ABILITIES_DISABLED: ItemStack = makeItem(
+        private val INDIVIDUAL_MAX_ABILITIES_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.RED),
             MenuAction.TOGGLE_INDIVIDUAL_MAX_ABILITIES.name,
             STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different max ability cap")
         )
 
-        private val INDIVIDUAL_MAX_ABILITIES_ENABLED: ItemStack = makeItem(
+        private val INDIVIDUAL_MAX_ABILITIES_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Individual max abilities", NamedTextColor.GREEN),
             MenuAction.TOGGLE_INDIVIDUAL_MAX_ABILITIES.name,
             STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different max ability cap")
         )
 
-        private val INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED: ItemStack = makeItem(
+        private val INDIVIDUAL_COOLDOWN_MULTIPLIER_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.RED),
             MenuAction.TOGGLE_INDIVIDUAL_COOLDOWN.name,
             STATUS_DISABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier")
         )
 
-        private val INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED: ItemStack = makeItem(
+        private val INDIVIDUAL_COOLDOWN_MULTIPLIER_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Individual cooldown multiplier", NamedTextColor.GREEN),
             MenuAction.TOGGLE_INDIVIDUAL_COOLDOWN.name,
             STATUS_ENABLED,
             Component.text("By enabling this, each player"), Component.text("can have a different cooldown multiplier")
         )
 
-        private val UNIQUE_MODE_DISABLED: ItemStack = makeItem(
+        private val UNIQUE_MODE_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE,
             Component.text("Unique mode", NamedTextColor.RED),
             MenuAction.TOGGLE_UNIQUE_MODE.name,
@@ -460,7 +460,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             Component.text("can can only be equipped by max team member")
         )
 
-        private val UNIQUE_MODE_ENABLED: ItemStack = makeItem(
+        private val UNIQUE_MODE_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE,
             Component.text("Unique mode", NamedTextColor.GREEN),
             MenuAction.TOGGLE_UNIQUE_MODE.name,
@@ -469,7 +469,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             Component.text("can can only be equipped by max team member")
         )
 
-        val MOD_TOGGLE: ItemStack = makeItem(
+        val MOD_TOGGLE = makeItem(
             Material.MACE,
             Component.text("Mod Toggle"),
             MenuAction.TOGGLE_BAN_HAMMER.name,
@@ -477,13 +477,13 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             Component.text("which abilities will be allowed")
         )
 
-        val MOD_TOGGLE_DISABLED: ItemStack = makeItem("inactive_slot_covered", Component.empty())
+        val MOD_TOGGLE_DISABLED = makeItem("inactive_slot_covered", Component.empty())
         val MOD_TOGGLE_ENABLED:  ItemStack = makeItem("active_slot_covered",   Component.empty())
         val ABILITY_DISABLED:    ItemStack = makeItem("disabled_slot_covered", Component.empty())
         val ABILITY_TAKEN:       ItemStack = makeItem("yellow_slot_covered",   Component.empty())
         val ABILITY_EQUIPPED:    ItemStack = makeItem("enabled_slot_covered",  Component.empty())
 
-        private val RANDOMIZE_ABILITIES: ItemStack = makeItem(
+        private val RANDOMIZE_ABILITIES = makeItem(
             Material.TARGET,
             Component.text("Randomize abilities", NamedTextColor.LIGHT_PURPLE),
             MenuAction.RANDOMIZE_ABILITIES.name,
@@ -491,7 +491,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
             Component.text("from the allowed abilities")
         )
 
-        private val INDIVIDUAL_PLAYER_ABILITIES: ItemStack = makeItem(
+        private val INDIVIDUAL_PLAYER_ABILITIES = makeItem(
             "gear",
             Component.text("Edit player abilities", NamedTextColor.LIGHT_PURPLE),
             MenuAction.EDIT_PLAYER_ABILITIES.name,

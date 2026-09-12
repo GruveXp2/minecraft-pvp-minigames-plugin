@@ -26,7 +26,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     private val damageRow: PlayerMenuRow
 
     init {
-        setPageButtons(2, true, true)
+        setPageButtons(2, prevMenuButton = true, nextMenuButton = true)
         healthSlider = MenuSlider(
             inventory,
             MenuAction.SET_HEALTH.name,
@@ -44,8 +44,8 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
         onCustomDamageToggle()
     }
 
-    override fun getMenuName(): Component = Component.text("Health & Damage (3/6)")
-    override fun getSlots(): Int = 27
+    override val menuName = Component.text("Health & Damage (3/6)")
+    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
@@ -170,7 +170,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
     }
 
     companion object {
-        private val CUSTOM_HEALTH_DISABLED: ItemStack = makeItem(
+        private val CUSTOM_HEALTH_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.RED),
             MenuAction.TOGGLE_INDIVIDUAL_HEALTH.name,
             STATUS_DISABLED,
@@ -178,7 +178,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
             Component.text("can have a different amount of hp")
         )
 
-        private val CUSTOM_HEALTH_ENABLED: ItemStack = makeItem(
+        private val CUSTOM_HEALTH_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Custom player HP", NamedTextColor.GREEN),
             MenuAction.TOGGLE_INDIVIDUAL_HEALTH.name,
             STATUS_ENABLED,
@@ -186,7 +186,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
             Component.text("can have a different amount of hp")
         )
 
-        private val CUSTOM_DAMAGE_DISABLED: ItemStack = makeItem(
+        private val CUSTOM_DAMAGE_DISABLED = makeItem(
             Material.RED_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.RED),
             MenuAction.TOGGLE_CUSTOM_DAMAGE.name,
             STATUS_DISABLED,
@@ -194,7 +194,7 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
             Component.text("ca do different amounts of damage")
         )
 
-        private val CUSTOM_DAMAGE_ENABLED: ItemStack = makeItem(
+        private val CUSTOM_DAMAGE_ENABLED = makeItem(
             Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Damage", NamedTextColor.GREEN),
             MenuAction.TOGGLE_CUSTOM_DAMAGE.name,
             STATUS_ENABLED,

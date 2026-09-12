@@ -339,7 +339,7 @@ private fun getPotionEffectInfo(potionEffect: String): TextComponent {
 }
 
 private fun appendCooldownInfo(item: ItemStack, category: AbilityCategory, baseCooldown: Int) {
-    val cooldownComponent: Component = if (category == AbilityCategory.DAMAGING)
+    val cooldownComponent = if (category == AbilityCategory.DAMAGING)
         Component.text("Cooldown: ", NamedTextColor.GOLD)
             .append(Component.text("obtain by hitting opponent", NamedTextColor.YELLOW))
     else

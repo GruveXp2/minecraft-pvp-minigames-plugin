@@ -1,142 +1,181 @@
-package gruvexp.bbminigames.menu;
+package gruvexp.bbminigames.menu
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.CustomModelDataComponent;
-import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
-import java.util.List;
+abstract class Menu : InventoryHolder {
+    @JvmField // jvm bc its used in sumo aswell
+    protected var inventory: Inventory
 
-public abstract class Menu implements InventoryHolder {
-
-    public static final NamespacedKey ACTION_KEY = new NamespacedKey("botbows", "menu_action");
-    public static final ItemStack DISABLED_SLOT = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty());
-    public static final ItemStack VOID = makeItem("void", Component.empty());
-
-    protected Inventory inventory;
-
-    //The owner of the inventory created is the Menu itself,
-    // so we are able to reverse engineer the Menu object from the
-    // inventoryHolder in the MenuListener class when handling clicks
-    public Menu() {
-        inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
-        setFillerVoid();
+    // menu is an InventoryHolder, that holds our inventory menu. Since all inventories have an owner, we can get the Menu object from the inventory when handling inventory events
+    init {
+        inventory = Bukkit.createInventory(this, slots, menuName)
+        setFillerVoid()
     }
 
-    // name at the top of the inventory
-    public abstract Component getMenuName();
+    abstract val menuName: Component
 
-    // how many slots in the menu, must be 9n
-    public abstract int getSlots();
+    // the amount of slots must be 9n
+    abstract val slots: Int
 
-    // what happens when clicking in the menu
-    public abstract void handleMenu(InventoryClickEvent e);
+    abstract fun handleMenu(e: InventoryClickEvent)
 
-    public boolean handlesEmptySlots() {
-        return false; // By default, menus don't handle empty slots
+    open fun handlesEmptySlots(): Boolean {
+        return false // By default, menus dont handle empty slots
     }
 
-    //When called, an inventory is created and opened for the player
-    public void open(Player p) {
-        p.openInventory(inventory);
+    open fun open(p: Player) {
+        p.openInventory(inventory)
     }
 
-    //Overridden method from the InventoryHolder interface
-    @Override
-    public @NotNull Inventory getInventory() {
-        return inventory;
+    override fun getInventory(): Inventory {
+        return inventory
     }
 
-    //Helpful utility method to fill all remaining slots with "filler glass"
-    public void setFillerVoid(){
-        for (int i = 0; i < getSlots(); i++) {
-            if (inventory.getItem(i) == null){
-                inventory.setItem(i, VOID);
+    fun setFillerVoid() {
+        for (i in 0..<slots) {
+            if (inventory.getItem(i) == null) {
+                inventory.setItem(i, VOID)
             }
         }
     }
 
-    public static String getActionId(ItemStack item) {
-        return item.getPersistentDataContainer().get(ACTION_KEY, PersistentDataType.STRING);
-    }
+    companion object {
+        val ACTION_KEY: NamespacedKey = NamespacedKey("botbows", "menu_action")
+        val DISABLED_SLOT = makeItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty())
+        val VOID = makeItem("void", Component.empty())
 
-    public static ItemStack makeItem(Material material, TextComponent displayName, String actionId, Component... lore) {
-
-        ItemStack item = new ItemStack(material);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
-        itemMeta.lore(List.of(lore));
-
-        if (actionId != null) {
-            itemMeta.getPersistentDataContainer().set(ACTION_KEY, PersistentDataType.STRING, actionId);
+        fun getActionId(item: ItemStack): String? {
+            return item.persistentDataContainer.get(ACTION_KEY, PersistentDataType.STRING)
         }
 
-        item.setItemMeta(itemMeta);
-        return item;
-    }
+        fun makeItem(
+            material: Material,
+            displayName: TextComponent,
+            actionId: String?,
+            vararg lore: Component?
+        ): ItemStack {
+            return ItemStack(material).apply {
+                editMeta {
+                    it.displayName(displayName.decoration(TextDecoration.ITALIC, false))
+                    it.lore(listOf(*lore))
 
-    public static ItemStack makeItem(Material material, TextComponent displayName, Component... lore) {
-        return makeItem(material, displayName, null, lore);
-    }
-
-    public static ItemStack makeItem(Material material, TextComponent displayName, String actionId) {
-        return makeItem(material, displayName, actionId, new Component[0]);
-    }
-
-    public static ItemStack makeItem(Material material, TextComponent displayName, int amount) {
-
-        ItemStack item = new ItemStack(material);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
-
-        item.setItemMeta(itemMeta);
-        item.setAmount(amount);
-        return item;
-    }
-
-    public static ItemStack makeItem(String customModelData, TextComponent displayName, Component... lore) {
-        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, null, lore);
-    }
-
-    public static ItemStack makeItem(String customModelData, TextComponent displayName, String actionId, Component... lore) {
-        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, actionId, lore);
-    }
-
-    public static ItemStack makeItem(String customModelData, TextComponent displayName, NamespacedKey actionKey, String actionId, Component... lore) {
-        return makeItem(Material.FIREWORK_STAR, customModelData, displayName.decoration(TextDecoration.ITALIC, false), actionKey, actionId, lore);
-    }
-
-    public static ItemStack makeItem(Material material, String customModelData, TextComponent displayName, Component... lore) {
-        return makeItem(material, customModelData, displayName.decoration(TextDecoration.ITALIC, false), null, null, lore);
-    }
-
-    public static ItemStack makeItem(Material material, String customModelData, TextComponent displayName, NamespacedKey actionKey, String actionId, Component... lore) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
-        itemMeta.lore(List.of(lore));
-
-        CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
-        customModelDataComponent.setStrings(List.of(customModelData));
-        itemMeta.setCustomModelDataComponent(customModelDataComponent);
-
-        if (actionId != null) {
-            itemMeta.getPersistentDataContainer().set(actionKey != null ? actionKey : ACTION_KEY, PersistentDataType.STRING, actionId);
+                    if (actionId != null) {
+                        it.persistentDataContainer.set(ACTION_KEY, PersistentDataType.STRING, actionId)
+                    }
+                }
+            }
         }
 
-        item.setItemMeta(itemMeta);
-        return item;
+        @JvmStatic // jvm bc used by sumo
+        fun makeItem(material: Material, displayName: TextComponent, vararg lore: Component): ItemStack {
+            return makeItem(material, displayName, null, *lore)
+        }
+
+        fun makeItem(material: Material, displayName: TextComponent, actionId: String?): ItemStack {
+            return makeItem(material, displayName, actionId, *arrayOfNulls<Component>(0))
+        }
+
+        fun makeItem(material: Material, displayName: TextComponent, amount: Int): ItemStack {
+            return ItemStack(material).apply {
+                editMeta { it.displayName(displayName.decoration(TextDecoration.ITALIC, false)) }
+                setAmount(amount)
+            }
+        }
+
+        @JvmStatic
+        fun makeItem(customModelData: String, displayName: TextComponent, vararg lore: Component): ItemStack {
+            return makeItem(
+                Material.FIREWORK_STAR,
+                customModelData,
+                displayName.decoration(TextDecoration.ITALIC, false),
+                null,
+                null,
+                *lore
+            )
+        }
+
+        fun makeItem(customModelData: String, displayName: TextComponent, actionId: String?, vararg lore: Component): ItemStack {
+            return makeItem(
+                Material.FIREWORK_STAR,
+                customModelData,
+                displayName.decoration(TextDecoration.ITALIC, false),
+                null,
+                actionId,
+                *lore
+            )
+        }
+
+        fun makeItem(
+            customModelData: String,
+            displayName: TextComponent,
+            actionKey: NamespacedKey?,
+            actionId: String?,
+            vararg lore: Component
+        ): ItemStack {
+            return makeItem(
+                Material.FIREWORK_STAR,
+                customModelData,
+                displayName.decoration(TextDecoration.ITALIC, false),
+                actionKey,
+                actionId,
+                *lore
+            )
+        }
+
+        fun makeItem(
+            material: Material,
+            customModelData: String,
+            displayName: TextComponent,
+            vararg lore: Component
+        ): ItemStack {
+            return makeItem(
+                material,
+                customModelData,
+                displayName.decoration(TextDecoration.ITALIC, false),
+                null,
+                null,
+                *lore
+            )
+        }
+
+        fun makeItem(
+            material: Material,
+            customModelData: String,
+            displayName: TextComponent,
+            actionKey: NamespacedKey?,
+            actionId: String?,
+            vararg lore: Component
+        ): ItemStack {
+            return ItemStack(material).apply {
+                editMeta {
+                    it.displayName(displayName.decoration(TextDecoration.ITALIC, false))
+                    it.lore(listOf(*lore))
+
+                    val customModelDataComponent = it.getCustomModelDataComponent()
+                    customModelDataComponent.setStrings(listOf(customModelData))
+                    it.setCustomModelDataComponent(customModelDataComponent)
+
+                    if (actionId != null) {
+                        it.persistentDataContainer.set(
+                            actionKey ?: ACTION_KEY,
+                            PersistentDataType.STRING,
+                            actionId
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

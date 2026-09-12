@@ -45,7 +45,7 @@ class AbilityListener : Listener {
 
         if (e.entity is Arrow) {
             val arrow = e.entity
-            val itemInMainHand: ItemStack = p.inventory.itemInMainHand
+            val itemInMainHand = p.inventory.itemInMainHand
             if (AbilityType.fromItem(itemInMainHand) == AbilityType.SPLASH_BOW) {
                 (bp.getAbility(AbilityType.SPLASH_BOW) as SplashBow).onLaunch(Launch(arrow))
             } else if (itemInMainHand.type == Material.CROSSBOW) {

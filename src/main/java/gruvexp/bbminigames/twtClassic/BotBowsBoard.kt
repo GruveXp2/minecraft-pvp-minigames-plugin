@@ -11,7 +11,6 @@ import org.bukkit.Bukkit
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
-import org.bukkit.scoreboard.Team
 import java.awt.Color
 import kotlin.math.min
 
@@ -30,8 +29,7 @@ class BotBowsBoard(val lobby: Lobby) {
 
     fun createBoard(): TeamManager {
         val board = Bukkit.getScoreboardManager().newScoreboard
-        val objectiveTitle: Component =
-            Component.text("BotBows").style(Style.style(NamedTextColor.GOLD, TextDecoration.BOLD))
+        val objectiveTitle = Component.text("BotBows").style(Style.style(NamedTextColor.GOLD, TextDecoration.BOLD))
                 .append(Component.text("Classic").color(NamedTextColor.AQUA))
         objective = board.registerNewObjective("botbows", Criteria.DUMMY, objectiveTitle)
 
