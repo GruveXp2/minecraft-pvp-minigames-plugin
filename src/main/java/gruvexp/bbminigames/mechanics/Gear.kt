@@ -8,7 +8,7 @@ import org.bukkit.entity.BlockDisplay
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.abs
 
-class Gear @JvmOverloads constructor(
+class Gear(
     id: Int,
     location: Location,
     rotation: StructureRotation,
