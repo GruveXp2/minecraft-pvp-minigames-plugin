@@ -17,8 +17,8 @@ class AbilityMenuRow(
     }
 
     fun getAbilitySlot(type: AbilityType): Int {
-        for (i in itemList.indices) {
-            if (AbilityType.fromItem(itemList[i]) == type) {
+        for (i in items.indices) {
+            if (AbilityType.fromItem(items[i] ?: continue) == type) {
                 var slot = i - firstVisibleItem
                 if (currentPage > 1) slot++
                 return slot

@@ -17,14 +17,6 @@ open class MenuSlider(
     protected val sliderSteps: List<String>,
     protected val description: String
 ) {
-    constructor(
-        inventory: Inventory,
-        startSlot: Int,
-        filledTrackMaterial: Material,
-        filledTrackColor: NamedTextColor,
-        sliderSteps: MutableList<String>,
-        description: String
-    ) : this(inventory, null, startSlot, filledTrackMaterial, filledTrackColor, sliderSteps, description)
 
     fun setProgressSlots(slots: Int) {
         var slots = slots

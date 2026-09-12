@@ -1,176 +1,147 @@
-package gruvexp.bbminigames.menu;
+package gruvexp.bbminigames.menu
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.NamespacedKey;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
+import net.kyori.adventure.text.Component
+import org.bukkit.NamespacedKey
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import kotlin.math.min
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MenuRow {
-
-    public enum RowAction {
+open class MenuRow(
+    protected val inventory: Inventory,
+    protected val menuActionId: String?,
+    val startSlot: Int, // slotten i inventoriet som man begynner på
+    val size: Int // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
+) {
+    enum class RowAction {
         PREV,
         NEXT
     }
-    public static final NamespacedKey KEY_ROW_ACTION = new NamespacedKey("botbows", "row_action");
 
-    private static final ItemStack ROW_PREV = Menu.makeItem("prev", Component.text("Prev"), KEY_ROW_ACTION, RowAction.PREV.name());
-    private static final ItemStack ROW_NEXT = Menu.makeItem("next", Component.text("Next"), KEY_ROW_ACTION, RowAction.NEXT.name());
+    val items = mutableListOf<ItemStack?>()
+    var currentPage: Int = 1 // 1 based index
+    protected var isVisible: Boolean = false
+    protected var firstVisibleItem: Int = 0
 
-    protected final Inventory inventory;
-    protected final String menuActionId;
-    public final int startSlot; // slotten i inventoriet som man begynner på
-    protected final List<ItemStack> itemList = new ArrayList<>();
-    public final int size; // hvor mange slots som blir tatt opp, inkluderer knapper hvis det er det
-    protected int currentPage = 1; // åssen side man er på nå
-    protected boolean isVisible = false;
-    protected int firstVisibleItem = 0;
+    val totalPages: Int
+        get() {
+            val count = items.size
+            return if (items.size <= size) 1 else (count + size - 5) / (size - 2)
+        }
 
-
-    public MenuRow(Inventory inventory, String menuActionId, int startSlot, int size) {
-        this.inventory = inventory;
-        this.menuActionId = menuActionId;
-        this.startSlot = startSlot;
-        this.size = size;
+    fun nextPage() {
+        currentPage++
+        goTo(currentPage)
     }
 
-    public MenuRow(Inventory inventory, int startSlot, int size) {
-        this(inventory, null, startSlot, size);
+    fun prevPage() {
+        currentPage--
+        goTo(currentPage)
     }
 
-    public int getStartSlot() {
-        return startSlot;
+    fun displayRow() {
+        goTo(currentPage)
     }
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public int getTotalPages() {
-        int count = itemList.size();
-        return itemList.size() <= size ? 1 : (count + size - 5) / (size-2);
-    }
-
-    public void nextPage() {
-        currentPage++;
-        goTo(currentPage);
-    }
-
-    public void prevPage() {
-        currentPage--;
-        goTo(currentPage);
-    }
-
-    public void displayRow() {
-        goTo(currentPage);
-    }
-
-    public List<ItemStack> getItems() {
-        return itemList;
-    }
-
-    protected void goTo(int page) {
-        int totalPages = getTotalPages();
-        page = Math.min(page, totalPages);
-        firstVisibleItem = 0;
+    protected open fun goTo(page: Int) {
+        var page = page
+        page = min(page, totalPages)
+        firstVisibleItem = 0
         if (totalPages == 1) { // alle itemsene fyller heile rada
-            for (int i = 0; i < size; i++) {
-                ItemStack item = i < itemList.size() ? itemList.get(i) : null;
-                inventory.setItem(startSlot + i, item);
+            for (i in 0..<size) {
+                val item = if (i < items.size) items[i] else null
+                inventory.setItem(startSlot + i, item)
             }
-            return;
+            return
         }
         if (page == 1) { // rada fylles med første side bortsett fra en next knapp på slutten
-            for (int i = 0; i < size - 1; i++) {
-                ItemStack item = i < itemList.size() ? itemList.get(i) : null;
-                inventory.setItem(startSlot + i, item);
+            for (i in 0..<size - 1) {
+                val item = if (i < items.size) items.get(i) else null
+                inventory.setItem(startSlot + i, item)
             }
-            inventory.setItem(startSlot + size - 1, ROW_NEXT);
-            return;
+            inventory.setItem(startSlot + size - 1, ROW_NEXT)
+            return
         }
-        firstVisibleItem = size - 1 + (size - 2)*(page - 2); // første element på den sida
-        setItem(0, ROW_PREV); // en prev knapp først, deretter fylles rada opp bortsett fra den siste hvis det er en midtside, da blir det en next på slutten
-        for (int i = 0; i < size - 2; i++) {
-            int targetSlot = 1 + i; // begynner på slot 2 pga nr 1 er for PREV knappen
-            ItemStack item = firstVisibleItem + i < itemList.size() ? itemList.get(firstVisibleItem + i) : null;
-            setItem(targetSlot, item);
+        firstVisibleItem = size - 1 + (size - 2) * (page - 2) // første element på den sida
+        setItem(0, ROW_PREV) // en prev knapp først, deretter fylles rada opp bortsett fra den siste hvis det er en midtside, da blir det en next på slutten
+        for (i in 0..<size - 2) {
+            val targetSlot = 1 + i // begynner på slot 2 pga nr 1 er for PREV knappen
+            val item = if (firstVisibleItem + i < items.size) items[firstVisibleItem + i] else null
+            setItem(targetSlot, item)
         }
         if (page == totalPages) {
-            ItemStack item = firstVisibleItem + size - 2 < itemList.size() ? itemList.get(firstVisibleItem + size - 2) : null; // size-2: size er 1 indexed, så -1, og første slot er opptatt (prev knapp), så -1 igjen
-            setItem(size - 1, item);
+            val item = if (firstVisibleItem + size - 2 < items.size) items[firstVisibleItem + size - 2] else null // size-2: size er 1 indexed, så -1, og første slot er opptatt (prev knapp), så -1 igjen
+            setItem(size - 1, item)
         } else {
-            setItem(size - 1, ROW_NEXT);
+            setItem(size - 1, ROW_NEXT)
         }
     }
 
-    public boolean handleClick(InventoryClickEvent e) {
-        if (!isVisible) return false;
+    fun handleClick(e: InventoryClickEvent): Boolean {
+        if (!isVisible) return false
 
-        int slot = e.getSlot();
+        val slot = e.slot
         if (slot < startSlot || slot >= startSlot + size) { // check if the clicked item was inside this sliders space, since its possible to have many sliders on a page
-            return false;
+            return false
         }
-        ItemStack item = e.getCurrentItem();
-        if (item == null || !item.hasItemMeta()) return false;
+        val item = e.getCurrentItem() ?: return false
+        if (!item.hasItemMeta()) return false
 
-        String actionString = item.getItemMeta().getPersistentDataContainer() // check if it has a row action tag = its a button (prev/next)
-                .get(KEY_ROW_ACTION, PersistentDataType.STRING);
+        val actionString = item.itemMeta.persistentDataContainer // check if it has a row action tag = its a button (prev/next)
+            .get(KEY_ROW_ACTION, PersistentDataType.STRING) ?: return false
 
-        if (actionString == null) return false;
-
-        RowAction action = RowAction.valueOf(actionString);
+        val action = RowAction.valueOf(actionString)
 
         if (action == RowAction.PREV) {
-            prevPage();
+            prevPage()
         } else if (action == RowAction.NEXT) {
-            nextPage();
+            nextPage()
         }
-        return true;
+        return true
     }
 
-    private void setItem(int index, ItemStack item) {
-        inventory.setItem(startSlot + index, item);
+    private fun setItem(index: Int, item: ItemStack?) {
+        inventory.setItem(startSlot + index, item)
     }
 
-    public void addItem(ItemStack item) {
-        if (menuActionId != null) item.editMeta(meta -> meta.getPersistentDataContainer().set(Menu.ACTION_KEY, PersistentDataType.STRING, menuActionId));
-        itemList.add(item);
-        if (isVisible && currentPage == getTotalPages()) {
-            displayRow();
+    open fun addItem(item: ItemStack) {
+        if (menuActionId != null) item.editMeta {
+            it.persistentDataContainer.set(Menu.ACTION_KEY, PersistentDataType.STRING, menuActionId)
+        }
+        items.add(item)
+        if (isVisible && currentPage == totalPages) {
+            displayRow()
         }
     }
 
-    public void removeItem(ItemStack item) {
-        itemList.remove(item);
-        if (isVisible) displayRow();
+    fun removeItem(item: ItemStack?) {
+        items.remove(item)
+        if (isVisible) displayRow()
     }
 
-    public void show() {
-        isVisible = true;
-        displayRow();
+    fun show() {
+        isVisible = true
+        displayRow()
     }
 
-    public void hide() {
-        isVisible = false;
-    }
-
-    // xxxxxx
+    fun hide() {
+        isVisible = false
+    } // xxxxxx
     // 111122
-
     // xxxxxx--     xxxxxxxx
     // 111222       11112222
-
     // xxxxxxx--    xxxxxxxxx
     // 111222333    111122233
-
     // xxxxxxxxxxx
     // 11112222
+
+    companion object {
+        val KEY_ROW_ACTION: NamespacedKey = NamespacedKey("botbows", "row_action")
+
+        private val ROW_PREV: ItemStack =
+            Menu.makeItem("prev", Component.text("Prev"), KEY_ROW_ACTION, RowAction.PREV.name)
+        private val ROW_NEXT: ItemStack =
+            Menu.makeItem("next", Component.text("Next"), KEY_ROW_ACTION, RowAction.NEXT.name)
+    }
 }
