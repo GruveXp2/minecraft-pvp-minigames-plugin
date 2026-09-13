@@ -15,7 +15,7 @@ class MovementListener : Listener {
             BotBows.handleMovement(e)
             return
         }
-        val lobby = BotBows.getLobby(p)
+        val lobby = BotBows.getLobby(p) ?: return
         if (!lobby.isGameActive) return
 
         if (lobby.botBowsGame!!.canMove) {

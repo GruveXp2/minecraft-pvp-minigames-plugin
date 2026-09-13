@@ -36,7 +36,7 @@ import kotlin.math.min
 //import gruvexp.bbminigames.model.stat.MatchResult;
 class TestCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
-        val p = sender as? Player ?: Bukkit.getPlayer("GruveXp")
+        val p = sender as? Player ?: Bukkit.getPlayer("GruveXp")!!
 
         if (args.isNotEmpty()) {
             when (args[0]) {
@@ -45,17 +45,17 @@ class TestCommand : CommandExecutor {
                 "end_round" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
                     if (bp == null) {
-                        p!!.sendMessage(Component.text("You arent even in a game!", NamedTextColor.RED))
+                        p.sendMessage(Component.text("You arent even in a game!", NamedTextColor.RED))
                         return true
                     }
                     val lobby = bp.lobby
                     if (!lobby.isGameActive) {
-                        p!!.sendMessage(Component.text("Game hasnt started yet!", NamedTextColor.RED))
+                        p.sendMessage(Component.text("Game hasnt started yet!", NamedTextColor.RED))
                         return true
                     }
                     val game = lobby.botBowsGame
                     if (!game!!.activeRound) {
-                        p!!.sendMessage(Component.text("No ongoing round to end", NamedTextColor.RED))
+                        p.sendMessage(Component.text("No ongoing round to end", NamedTextColor.RED))
                         return true
                     }
                     game.endRoundTimeout()
@@ -65,7 +65,7 @@ class TestCommand : CommandExecutor {
                     val lobby = BotBows.getLobby(0)
                     lobby.joinGame(Bukkit.getPlayer("GruveXp")!!)
                     lobby.addBot()
-                    lobby.startGame(p!!)
+                    lobby.startGame(p)
                 }
 
                 "qk" -> {
@@ -79,13 +79,13 @@ class TestCommand : CommandExecutor {
                     abilitySettings.maxAbilities = 2
                     abilitySettings.ban(AbilityType.ENDER_PEARL)
                     settings.mapSettings.currentMap = BotBowsMap.ROYAL_CASTLE
-                    val gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"))
+                    val gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp")!!)!!
                     gxbp.equipAbility(AbilityType.BABY_POTION)
                     gxbp.equipAbility(AbilityType.KARMA_POTION)
                     gxbp.equipAbility(AbilityType.RADAR)
                     botBp!!.equipAbility(AbilityType.LASER_TRAP)
                     if (args.size > 1) return true
-                    lobby.startGame(p!!)
+                    lobby.startGame(p)
                 }
 
                 "h" -> {
@@ -114,11 +114,11 @@ class TestCommand : CommandExecutor {
                 }
 
                 "vote" -> {
-                    val bp = BotBows.getBotBowsPlayer(p)
+                    val bp = BotBows.getBotBowsPlayer(p)!!
                     val playerName = args[1].replace("_", " ")
                     val votingBp = bp.lobby.getPlayers().firstOrNull { it.avatar.entity.name == playerName }
                     if (votingBp == null) {
-                        p!!.sendMessage(Component.text("That botbowsplayer doesnt exist.", NamedTextColor.RED))
+                        p.sendMessage(Component.text("That botbowsplayer doesnt exist.", NamedTextColor.RED))
                         return true
                     }
                     val mapName = args[2].uppercase()
@@ -130,7 +130,7 @@ class TestCommand : CommandExecutor {
                 "get_karma" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
                     if (bp == null) {
-                        p!!.sendMessage(Component.text("u need 2 join the game first"))
+                        p.sendMessage(Component.text("u need 2 join the game first"))
                         return true
                     }
                     bp.applyKarmaDebuff()
@@ -151,12 +151,12 @@ class TestCommand : CommandExecutor {
                     abilitySettings.cooldownMultiplier = 1.25f
                     settings.mapSettings.currentMap = BotBowsMap.ICY_RAVINE
                     settings.winConditionSettings.winScoreThreshold = 67
-                    val gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp"))
+                    val gxbp = BotBows.getBotBowsPlayer(Bukkit.getPlayer("GruveXp")!!)!!
                     gxbp.equipAbility(AbilityType.THUNDER_BOW)
                     gxbp.equipAbility(AbilityType.SPLASH_BOW)
                     gxbp.equipAbility(AbilityType.RADAR)
                     if (args.size > 1) return true
-                    lobby.startGame(p!!)
+                    lobby.startGame(p)
                 }
 
                 "add_bot" -> {
@@ -171,20 +171,20 @@ class TestCommand : CommandExecutor {
                 "toggle_experimental" -> {
                     val lobby = BotBows.getLobby(p)
                     if (lobby == null) {
-                        p!!.sendMessage(Component.text("Go in a lobby and try again"))
+                        p.sendMessage(Component.text("Go in a lobby and try again"))
                         return true
                     }
                     lobby.settings.usingExperimentalFeatures = !lobby.settings.usingExperimentalFeatures
-                    p!!.sendMessage("Exprimental features is now ${if (lobby.settings.usingExperimentalFeatures) "enabled" else "disabled"}")
+                    p.sendMessage("Exprimental features is now ${if (lobby.settings.usingExperimentalFeatures) "enabled" else "disabled"}")
                 }
 
                 "w1" -> {
-                    val below = p!!.location.block.getRelative(BlockFace.DOWN)
+                    val below = p.location.block.getRelative(BlockFace.DOWN)
                     below.type = Material.RED_SHULKER_BOX
                 }
 
                 "w2" -> {
-                    val below = p!!.location.block.getRelative(BlockFace.DOWN)
+                    val below = p.location.block.getRelative(BlockFace.DOWN)
                     orientable = below.blockData as Directional
                     below.type = Material.RED_SHULKER_BOX
                     val newo = below.blockData as Directional
@@ -193,18 +193,18 @@ class TestCommand : CommandExecutor {
                 }
 
                 "w3" -> {
-                    val below = p!!.location.block.getRelative(BlockFace.DOWN)
+                    val below = p.location.block.getRelative(BlockFace.DOWN)
                     below.blockData = orientable!!
                 }
 
                 "print_eq" -> {
-                    val bp = BotBows.getBotBowsPlayer(p)
-                    bp.equippedAbilities.forEach { p!!.sendMessage("a: ${it.displayName}") }
+                    val bp = BotBows.getBotBowsPlayer(p)!!
+                    bp.equippedAbilities.forEach { p.sendMessage("a: ${it.displayName}") }
                 }
 
                 "add_spinning" -> {
                     val tag = args[1]
-                    val s0 = p!!.location.add(-1.0, -1.0, -1.0)
+                    val s0 = p.location.add(-1.0, -1.0, -1.0)
                     val s1 = p.location.add(1.0, -1.0, 1.0)
                     val center = p.location.add(0.0, -1.0, 0.0).toCenterLocation()
 
@@ -238,7 +238,7 @@ class TestCommand : CommandExecutor {
                     val x = args[1].toDouble() + 0.5
                     val y = args[2].toDouble() + 0.5
                     val z = args[3].toDouble() + 0.5
-                    val centerLocation = Location(p!!.world, x, y, z)
+                    val centerLocation = Location(p.world, x, y, z)
                     rotatingStructure = RotatingStructure(centerLocation)
                     p.sendMessage(Component.text("Made a weel at that location"))
                 }
@@ -285,14 +285,14 @@ class TestCommand : CommandExecutor {
                             }
                         }
                     }
-                    p!!.sendMessage(Component.text("Registerd a total of $totalAdded blocks"))
+                    p.sendMessage(Component.text("Registerd a total of $totalAdded blocks"))
                 }
 
                 "w" -> {
                     val gruveXp = Bukkit.getPlayer("GruveXp")
                     val judith = Bukkit.getPlayer("SamTheRabbit5")
                     if (judith == null) {
-                        p!!.sendMessage(Component.text("Error! Judiths bruker ække inne på serveren! Join med skolepcen"))
+                        p.sendMessage(Component.text("Error! Judiths bruker ække inne på serveren! Join med skolepcen"))
                         return true
                     }
                     val lobby = BotBows.getLobby(0)
@@ -308,7 +308,7 @@ class TestCommand : CommandExecutor {
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { gruveBp.setReady(true, 4) }, 10)
                     Bukkit.getScheduler().runTaskLater(
                         Main.getPlugin(),
-                        Runnable { gruveXp.teleport(Location(gruveXp.getWorld(), 150.0, 87.0, 208.0)) },
+                        Runnable { gruveXp.teleport(Location(gruveXp.world, 150.0, 87.0, 208.0)) },
                         20
                     )
 
@@ -326,10 +326,10 @@ class TestCommand : CommandExecutor {
                     //item1.setData(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().addPredicate(B).build());
                     val meta = item1.itemMeta
                     //meta.setCanPlaceOn(Set.of());
-                    item1.setItemMeta(meta)
+                    item1.itemMeta = meta
                     val item2 = ItemStack(Material.COBBLED_DEEPSLATE)
 
-                    item2.setData<ItemAdventurePredicate?>(
+                    item2.setData(
                         DataComponentTypes.CAN_PLACE_ON,
                         ItemAdventurePredicate.itemAdventurePredicate().addPredicate(BlockPredicate.predicate().build())
                     )
@@ -365,7 +365,7 @@ class TestCommand : CommandExecutor {
                 "c" -> {
                     var playerName: String? = args[1]
                     if (playerName == null) playerName = "GruveXp"
-                    val team = BotBows.getLobby(Bukkit.getPlayer(playerName))
+                    val team = BotBows.getLobby(Bukkit.getPlayer(playerName)!!)!!
                         .getBotBowsPlayer(Bukkit.getPlayer(playerName)!!)!!.team
                     BotBows.debugMessage("The team of $playerName is ${team.displayName}")
                 }
@@ -402,7 +402,7 @@ class TestCommand : CommandExecutor {
 
                 "give_ability_items" -> {
                     for (type in AbilityType.entries) {
-                        p!!.inventory.addItem(type.abilityItem)
+                        p.inventory.addItem(type.abilityItem)
                     }
                 }
 
@@ -416,7 +416,7 @@ class TestCommand : CommandExecutor {
                     ThunderBow.createElectricArc(loc1, loc2, Color.RED, 1.0, strong)
                 }
 
-                "inv" -> p!!.openInventory(testInv)
+                "inv" -> p.openInventory(testInv)
                 "set_blaze_rod_cooldown" -> StickSlap.cooldown = args[1].toInt()
                 else -> sender.sendMessage("Wrong arg (${args[0]})")
             }

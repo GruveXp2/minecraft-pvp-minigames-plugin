@@ -46,7 +46,7 @@ class BotBowsTabCompleter : TabCompleter {
 
             "transfer_mod" -> {
                 if (args.size == 2 && sender is Player) {
-                    val bp = BotBows.getBotBowsPlayer(sender)
+                    val bp = BotBows.getBotBowsPlayer(sender) ?: return listOf("You are not in a game")
                     return bp.lobby.getPlayers()
                         .filter { it !== bp }
                         .filter { it.avatar is PlayerAvatar }

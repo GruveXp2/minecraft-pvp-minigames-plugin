@@ -1,7 +1,7 @@
 package gruvexp.bbminigames.api.damage
 
-import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
+import gruvexp.bbminigames.util.lighten
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -12,7 +12,8 @@ sealed interface DamageContext {
     fun getMessageColor(): TextColor
 
     data class Player(override val type: DamageType.Player, val attacker: BotBowsPlayer) : DamageContext {
-        override fun getMessageColor(): TextColor = BotBows.lighten(attacker.team.color, 0.5)
+        override fun getMessageColor(): TextColor = attacker.team.color.lighten(0.5f)
+
     }
 
     data class Environment(override val type: DamageType.Environment) : DamageContext {

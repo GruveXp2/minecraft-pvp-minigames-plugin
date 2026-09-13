@@ -1,269 +1,158 @@
-package gruvexp.bbminigames.twtClassic;
+package gruvexp.bbminigames.twtClassic
 
-import gruvexp.bbminigames.Main;
-import gruvexp.bbminigames.commands.TestCommand;
-import gruvexp.bbminigames.menu.Menu;
-import gruvexp.bbminigames.menu.menus.*;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Light;
-import org.bukkit.block.structure.Mirror;
-import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CrossbowMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.structure.Structure;
-import org.bukkit.util.BlockVector;
-import org.bukkit.util.Transformation;
-import org.bukkit.util.Vector;
-import org.joml.Vector3f;
+import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.commands.TestCommand
+import gruvexp.bbminigames.menu.Menu.Companion.makeItem
+import gruvexp.bbminigames.menu.menus.GameMenu
+import gruvexp.bbminigames.menu.menus.LobbyMenu
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Sound
+import org.bukkit.block.data.type.Light
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.CrossbowMeta
+import org.bukkit.inventory.meta.Damageable
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import org.bukkit.util.Vector
+import java.util.UUID
 
-import java.util.*;
+object BotBows {
+    val BOTBOW: ItemStack
+        get() = botBow.clone()
+    @JvmStatic
+    val lobbies = arrayOf(Lobby(0), Lobby(1), Lobby(2))
+    private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
 
-public class BotBows {
+    val gameMenu = GameMenu()
+    val lobbyMenu = LobbyMenu()
 
-    public static final ItemStack BOTBOW = getBotBow();
-    private static Lobby[] lobbies;
-    private static final HashMap<UUID, Lobby> players = new HashMap<>(); // liste med alle players som er i gamet
+    val MENU_ITEM = makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
+    val SETTINGS_ITEM = makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
 
-    public static GameMenu gameMenu;
-    public static LobbyMenu lobbyMenu;
+    const val HIT_DISABLED_ITEM_TICKS: Int = 40
 
-    public static ItemStack MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE));
-    public static ItemStack SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE));
+    val GLOBAL_LOBBY_LOCATION = Location(Main.WORLD, -129.0, 39.0, -197.0)
 
-    public static int HIT_DISABLED_ITEM_TICKS = 40;
-    public static final Random RANDOM = new Random();
-
-    public static final Location GLOBAL_LOBBY_LOCATION = new Location(Main.WORLD, -129, 39, -197);
-
-    public static void init() { // a
-        gameMenu = new GameMenu();
-        lobbyMenu = new LobbyMenu();
-        lobbies = new Lobby[]{new Lobby(0), new Lobby(1), new Lobby(2)};
-    }
-
-    public static void registerPlayerLobby(UUID playerId, Lobby lobby) {
-        players.put(playerId, lobby);
-    }
-
-    public static void unRegisterPlayerLobby(UUID playerId) {
-        players.remove(playerId);
-    }
-
-    public static Lobby getLobby(int ID) {
-        return lobbies[ID];
-    }
-
-    public static Lobby getLobby(Player p) {
-        return getLobby(p.getUniqueId());
-    }
-
-    public static Lobby getLobby(UUID playerId) {
-        return players.get(playerId);
-    }
-
-    public static BotBowsPlayer getBotBowsPlayer(Player p) { // gets the BotBowsPlayer that is used by the lobby the player is in
-        return getBotBowsPlayer(p.getUniqueId());
-    }
-
-    public static BotBowsPlayer getBotBowsPlayer(UUID playerId) { // gets the BotBowsPlayer that is used by the lobby the player is in
-        Lobby lobby = getLobby(playerId);
-        if (lobby == null) return null;
-        return lobby.getBotBowsPlayer(playerId);
-    }
-
-    public static Lobby[] getLobbies() {
-        return lobbies;
-    }
-
-    public static boolean isPlayerJoined(Player p) {
-        return getLobby(p) != null;
-    }
-
-    public static boolean isPlayerJoined(UUID playerId) {
-        return getLobby(playerId) != null;
-    }
-
-    public static void replacePlayerId(UUID oldId, UUID newId) {
-        Lobby lobby = getLobby(oldId);
-        players.remove(oldId);
-        players.put(newId, lobby);
-        lobby.replacePlayerId(oldId, newId);
-    }
-
-    private static ItemStack getBotBow() {
-        ItemStack botBow = new ItemStack(Material.CROSSBOW);
-        CrossbowMeta meta = (CrossbowMeta) botBow.getItemMeta();
-        meta.displayName(Component.text("BotBow").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
-        meta.lore(List.of(Component.text("The strongest bow"), Component.text("ever known to man")));
-        meta.addEnchant(Enchantment.POWER, 10, true);
-        meta.addEnchant(Enchantment.PUNCH, 10, true);
-        meta.addChargedProjectile(new ItemStack(Material.ARROW));
-        Damageable damageable = (Damageable) meta;
-        damageable.setDamage((short) 464);
-        botBow.setItemMeta(damageable);
-        return botBow;
-    }
-
-    public static void debugMessage(String message) {
-        if (!TestCommand.debugging) return;
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(Component.text("[DEBUG]: " + message, NamedTextColor.GRAY)));
-        Main.getPlugin().getLogger().info("[DEBUG]: " + message);
-    }
-
-    public static void debugMessage(String message, boolean showMessage) {
-        if (showMessage) debugMessage(message);
-    }
-
-    public static void placeSymmetricalStructure(Structure structure, Location location, Location centerLocation, StructureRotation rotation, int teleportDuration, String tag, Set<BlockDisplay> displays) {
-        Location bottomLocation = location.clone().add(0, -50, 0);
-        structure.place(bottomLocation, false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
-        BlockVector start = bottomLocation.toVector().toBlockVector();
-        BlockVector size = structure.getSize();
-        World world = location.getWorld();
-
-        Location bottomCenter = centerLocation.clone().add(0, -50, 0);
-        for (int relX = 0; relX < size.getBlockX(); relX++) {
-            for (int relY = 0; relY < size.getBlockY(); relY++) {
-                for (int relZ = 0; relZ < size.getBlockZ(); relZ++) {
-                    int x = start.getBlockX() + relX;
-                    int y = start.getBlockY() + relY;
-                    int z = start.getBlockZ() + relZ;
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != Material.AIR) {
-                        // turn the block into a block display
-                        BlockDisplay display = (BlockDisplay) world.spawnEntity(new Location(world, x, y, z), EntityType.BLOCK_DISPLAY);
-                        BlockData blockData = block.getBlockData();
-                        display.setBlock(blockData);
-                        display.addScoreboardTag(tag);
-                        displays.add(display);
-                        block.setType(Material.AIR);
-
-                        // tp the block to the center, but make it display where it was
-                        Vector3f Δpos = display.getLocation().subtract(bottomCenter).toVector().toVector3f();
-                        display.teleport(centerLocation);
-                        Transformation transformation = display.getTransformation();
-                        transformation.getTranslation().set(Δpos);
-                        display.setTransformation(transformation);
-                        display.setTeleportDuration(teleportDuration);
-                    }
-                }
-            }
+    private val botBow = ItemStack(Material.CROSSBOW).apply {
+        editMeta(CrossbowMeta::class.java) {
+            it.displayName(
+                Component.text("BotBow")
+                    .color(NamedTextColor.GREEN)
+                    .decorate(TextDecoration.BOLD)
+            )
+            it.lore(listOf(
+                Component.text("The strongest bow"),
+                Component.text("ever known to man")
+            ))
+            it.addEnchant(Enchantment.POWER, 10, true)
+            it.addEnchant(Enchantment.PUNCH, 10, true)
+            it.addChargedProjectile(ItemStack(Material.ARROW))
         }
-
-        int yaw = switch (rotation) {
-            case NONE -> 0;
-            case CLOCKWISE_90 -> 90;
-            case CLOCKWISE_180 -> 180;
-            case COUNTERCLOCKWISE_90 -> -90;
-        };
-        displays.forEach(display -> {
-            Location loc = display.getLocation();
-            loc.setYaw(yaw);
-            display.teleport(loc);
-        });
+        editMeta(Damageable::class.java) { it.damage = 464 }
     }
 
-    public static Structure loadStructure(String name) {
-        Structure structure = Bukkit.getStructureManager().loadStructure(new NamespacedKey("botbows", name));
-        if (structure == null) {
-            debugMessage("ERROR! Structure \"botbows:" + name + "\" failed to load");
-            return null;
-        }
-        return structure;
+    fun registerPlayerLobby(playerId: UUID, lobby: Lobby) {
+        players[playerId] = lobby
     }
 
-    public static void accessSettings(Player p) {
-        Lobby lobby = BotBows.getLobby(p);
-        if (lobby == null) {
-            p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED));
-            return;
-        }
-        if (lobby.isGameActive()) {
-            p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED));
-            return;
-        }
-        lobby.settings.overviewMenu.open(p);
+    fun unRegisterPlayerLobby(playerId: UUID) {
+        players.remove(playerId)
     }
 
-    public static void handleMovement(PlayerMoveEvent e) {
-        Player p = e.getPlayer();
-        boolean b = TestCommand.verboseDebugging;
-        Block block = p.getLocation().add(0, -0.05, 0).getBlock(); // sjekker rett under, bare 0.05 itilfelle det er teppe
+    @JvmStatic
+    fun getLobby(id: Int): Lobby = lobbies[id]
+    @JvmStatic
+    fun getLobby(p: Player): Lobby? = getLobby(p.uniqueId)
+    fun getLobby(playerId: UUID): Lobby? = players[playerId]
 
-        BotBows.debugMessage("1: Material: " + block.getType().name(), b);
-        if (block.getType() == Material.AIR) {
-            block = p.getLocation().add(0, -0.9, 0).getBlock(); // hvis man står på kanten av et teppe kan det være en effektblokk under
-            BotBows.debugMessage("2: Material: " + block.getType().name(), b);
+    fun getBotBowsPlayer(p: Player): BotBowsPlayer? = getBotBowsPlayer(p.uniqueId) // gets the BotBowsPlayer that is used by the lobby the player is in
+    fun getBotBowsPlayer(playerId: UUID): BotBowsPlayer? = getLobby(playerId)?.getBotBowsPlayer(playerId) // gets the BotBowsPlayer that is used by the lobby the player is in
+
+    fun isPlayerJoined(p: Player): Boolean = getLobby(p) != null
+    fun isPlayerJoined(playerId: UUID): Boolean = getLobby(playerId) != null
+
+    fun replacePlayerId(oldId: UUID, newId: UUID) {
+        val lobby = getLobby(oldId)!!
+        players.remove(oldId)
+        players[newId] = lobby
+        lobby.replacePlayerId(oldId, newId)
+    }
+
+    fun debugMessage(message: String, showMessage: Boolean = true) {
+        if (!TestCommand.debugging || !showMessage) return
+        Bukkit.getOnlinePlayers()
+            .forEach { it.sendMessage(Component.text("[DEBUG]: $message", NamedTextColor.GRAY)) }
+        Main.getPlugin().logger.info("[DEBUG]: $message")
+    }
+
+    fun accessSettings(p: Player) {
+        val lobby = getLobby(p) ?: run {
+            p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED))
+            return
         }
-        if (block.getType() == Material.AIR) {
-            block = p.getLocation().add(0, 0, 0).getBlock();
-            BotBows.debugMessage("3: Material: " + block.getType().name(), b);
+        if (lobby.isGameActive) {
+            p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED))
+            return
+        }
+        lobby.settings.overviewMenu.open(p)
+    }
+
+    fun handleMovement(e: PlayerMoveEvent) {
+        val p = e.player
+        val b = TestCommand.verboseDebugging
+        var block = p.location.add(0.0, -0.05, 0.0).block // sjekker rett under, bare 0.05 itilfelle det er teppe
+
+        debugMessage("1: Material: ${block.type.name}", b)
+        if (block.type == Material.AIR) {
+            block = p.location.add(0.0, -0.9, 0.0).block // hvis man står på kanten av et teppe kan det være en effektblokk under
+            debugMessage("2: Material: ${block.type.name}", b)
+        }
+        if (block.type == Material.AIR) {
+            block = p.location.block
+            debugMessage("3: Material: ${block.type.name}", b)
         } else {
-            BotBows.debugMessage("Material: " + block.getType().name(), b);
+            debugMessage("Material: ${block.type.name}", b)
         }
-        Material material = block.getType();
-        if (block.getType() == Material.LIGHT) {
-            BotBows.debugMessage("Light level: " + ((Light) block.getBlockData()).getLevel(), b);
-            if (((Light) block.getBlockData()).getLevel() == 0) { // sida det ikke går an å sjekke når players står uttafor kanten, så workarounder jeg det ved å sette light bloccs ved sida cyan yeetpads
-                material = Material.CYAN_CARPET;
-                BotBows.debugMessage("yee it works", b);
-            } else if (((Light) block.getBlockData()).getLevel() == 1) {
-                material = Material.YELLOW_CARPET;
-            } else if (((Light) block.getBlockData()).getLevel() == 2) {
-                material = Material.AIR;
+        var material = block.type
+        if (block.type == Material.LIGHT) {
+            val light = block.blockData as Light
+            debugMessage("Light level: ${(block.blockData as Light).level}", b)
+            when (light.level) {
+                0 -> { // sida det ikke går an å sjekke når players står uttafor kanten, så workarounder jeg det ved å sette light bloccs ved sida cyan yeetpads
+                    material = Material.CYAN_CARPET
+                    debugMessage("yee it works", b)
+                }
+                1 -> material = Material.YELLOW_CARPET
+                2 -> material = Material.AIR
             }
         }
-        switch (material) { // add effekter basert på åssen blokk som er under
-            case YELLOW_CONCRETE, YELLOW_CONCRETE_POWDER, YELLOW_CARPET -> p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 1200, 6, true, false));
-            case CYAN_CONCRETE, CYAN_CONCRETE_POWDER, CYAN_CARPET -> {
-                double Δy = e.getTo().getY() - e.getFrom().getY();
-                if (Δy <= 0.1) {break;} // fortsett bare viss man har hoppa (et visst antall upwards momentum)
-                double vX = p.getLocation().getDirection().getX();
-                double vZ = p.getLocation().getDirection().getZ();
+        when (material) {
+            Material.YELLOW_CONCRETE, Material.YELLOW_CONCRETE_POWDER, Material.YELLOW_CARPET -> p.addPotionEffect(
+                PotionEffect(PotionEffectType.JUMP_BOOST, 1200, 6, true, false)
+            )
 
-                p.setVelocity(new Vector(vX*2.5, 0.5, vZ*2.5));
-                p.playSound(p.getLocation(), Sound.ITEM_FIRECHARGE_USE, 10, 2);
+            Material.CYAN_CONCRETE, Material.CYAN_CONCRETE_POWDER, Material.CYAN_CARPET -> {
+                val Δy = e.to.y - e.from.y
+                if (Δy <= 0.1) {
+                    return
+                } // fortsett bare viss man har hoppa (et visst antall upwards momentum)
+
+                val vX = p.location.getDirection().getX()
+                val vZ = p.location.getDirection().getZ()
+
+                p.velocity = Vector(vX * 2.5, 0.5, vZ * 2.5)
+                p.playSound(p.location, Sound.ITEM_FIRECHARGE_USE, 10f, 2f)
             }
-            default -> p.removePotionEffect(PotionEffectType.JUMP_BOOST);
+
+            else -> p.removePotionEffect(PotionEffectType.JUMP_BOOST)
         }
-    }
-
-    public static void setTimeSmooth(long start, long end, int seconds) {
-        int ticks = seconds * 20;
-        long step = (end - start) / ticks;
-        new BukkitRunnable() {
-            long count = 0;
-            public void run() {
-                if (count >= ticks) cancel();
-                else Main.WORLD.setTime(start + (count++ * step));
-            }
-        }.runTaskTimer(Main.getPlugin(), 0, 1);
-    }
-
-    public static TextColor lighten(TextColor color, double factor) {
-        int r = color.red();
-        int g = color.green();
-        int b = color.blue();
-
-        r += (int)((255 - r) * factor);
-        g += (int)((255 - g) * factor);
-        b += (int)((255 - b) * factor);
-
-        return TextColor.color(r, g, b);
     }
 }

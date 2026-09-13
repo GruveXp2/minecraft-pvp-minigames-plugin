@@ -1,7 +1,8 @@
 package gruvexp.bbminigames.mechanics
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.util.loadStructure
+import gruvexp.bbminigames.util.placeSymmetricalStructure
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -22,7 +23,7 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
     private val closedHitbox = mutableSetOf<Block>()
 
     init {
-        BotBows.loadStructure(structureName)?.let { structure ->
+        loadStructure(structureName)?.let { structure ->
             val offset = structure.size.add(Vector(-1, -1, -1))
             val openOffset = Vector(offset.blockX, offset.blockZ, offset.blockY)
             val closedTarget = rotateVector(offset, rotation)
@@ -43,7 +44,7 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
                 }
 
             if (displays.isEmpty()) {
-                BotBows.placeSymmetricalStructure(
+                placeSymmetricalStructure(
                     structure,
                     originLoc,
                     location.clone().add(0.5, 0.5, 0.5),

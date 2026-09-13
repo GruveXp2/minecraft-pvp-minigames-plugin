@@ -22,7 +22,6 @@ class JoinLeaveListener : Listener {
         if (p.name !in listOf("ColinStorm", "GruveXp")) { // only admins stay op
             p.isOp = false
         }
-        BotBows.getLobby(p)?.reconnect(p)
         if (p.inventory.itemInMainHand.type != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
             Main.WORLD.dropItem(p.location, p.inventory.itemInMainHand)
         }
@@ -56,6 +55,9 @@ class JoinLeaveListener : Listener {
                     ClickEvent.Payload.string("/botbows stop")
                 )))
         )
+
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        bp.lobby.reconnect(bp, p)
     }
 
     @EventHandler

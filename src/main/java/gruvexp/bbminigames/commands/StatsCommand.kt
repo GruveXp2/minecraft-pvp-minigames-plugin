@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 
 private val ioRunner = CoroutineScope(Dispatchers.IO) // runs the async methods that can take some time bc db io
 
-class StatsCommand : CommandExecutor {
+class StatsCommand : CommandExecutor { // temporary clanker ai code, just for testing (quality might succ)
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val p = sender as Player
 
@@ -30,7 +30,6 @@ class StatsCommand : CommandExecutor {
         if (args.isEmpty()) {
             return Component.text("You must specify subcommand!", NamedTextColor.RED)
         }
-        val playerId = p.uniqueId
         when (args[0]) {
             "last_match" -> handleLastMatch(p)
         }
@@ -73,11 +72,11 @@ class StatsCommand : CommandExecutor {
 
                 .append(Component.text("Høydepunkter fra kampen:\n", NamedTextColor.AQUA))
                 .append(Component.text("⚔️ Mest kills: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostKillsCount} (${BotBows.getBotBowsPlayer(result.mostKillsPlayer).name})\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostKillsCount} (${BotBows.getBotBowsPlayer(result.mostKillsPlayer)!!.name})\n", NamedTextColor.WHITE))
                 .append(Component.text("💀 Mest deaths: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostDeathsCount} (${BotBows.getBotBowsPlayer(result.mostDeathsPlayer).name})\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostDeathsCount} (${BotBows.getBotBowsPlayer(result.mostDeathsPlayer)!!.name})\n", NamedTextColor.WHITE))
                 .append(Component.text("💥 Mest skade: ", NamedTextColor.YELLOW))
-                .append(Component.text("${result.mostDamageCount} (${BotBows.getBotBowsPlayer(result.mostDamagePlayer).name})\n\n", NamedTextColor.WHITE))
+                .append(Component.text("${result.mostDamageCount} (${BotBows.getBotBowsPlayer(result.mostDamagePlayer)!!.name})\n\n", NamedTextColor.WHITE))
 
                 .append(Component.text("Dine mest brukte evner:\n", NamedTextColor.LIGHT_PURPLE))
                 .build()
