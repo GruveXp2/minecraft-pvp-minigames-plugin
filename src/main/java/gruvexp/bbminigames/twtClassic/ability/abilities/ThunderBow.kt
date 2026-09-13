@@ -92,7 +92,7 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
             val spark: Vector = getRandomPerpendicular(arrow.velocity).multiply(Random.nextDouble(1.0, 3.0))
             val sparkLocation = arrow.location.add(spark)
 
-            if (BotBows.RANDOM.nextInt(3) == 0 && sparkLocation.block.type != Material.AIR) {
+            if ((0..2).random() == 0 && sparkLocation.block.type != Material.AIR) {
                 createElectricArc(arrow.location, sparkLocation, Color.AQUA, 2.0, false)
             }
         }

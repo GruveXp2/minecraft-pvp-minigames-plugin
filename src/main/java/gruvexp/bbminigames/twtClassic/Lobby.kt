@@ -40,12 +40,12 @@ class Lobby(val id: Int) {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED))
             return
         }
-        if (BotBows.getLobby(p) != null) {
-            if (BotBows.getLobby(p) == this) {
+        BotBows.getLobby(p)?.let { lobby ->
+            if (lobby == this) {
                 p.sendMessage(Component.text("You already joined!", NamedTextColor.RED))
                 return
             }
-            BotBows.getLobby(p).leaveGame(p)
+            lobby.leaveGame(p)
         }
         p.inventory.clear()
         settings.joinGame(p)
@@ -88,10 +88,9 @@ class Lobby(val id: Int) {
         registerBotBowsPlayerAvatar(bp)
     }
 
-    fun reconnect(p: Player) {
+    fun reconnect(bp: BotBowsPlayer, p: Player) {
         if (!isGameActive) return
 
-        val bp = BotBows.getBotBowsPlayer(p)
         messagePlayers(bp.name.append(Component.text(" reconnected to the game", NamedTextColor.GREEN)))
         bp.turnIntoPlayer(p)
     }

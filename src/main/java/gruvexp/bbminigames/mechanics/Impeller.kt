@@ -1,7 +1,8 @@
 package gruvexp.bbminigames.mechanics
 
 import gruvexp.bbminigames.Util
-import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.util.loadStructure
+import gruvexp.bbminigames.util.placeSymmetricalStructure
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.block.structure.StructureRotation
@@ -31,9 +32,9 @@ class Impeller(
                 displays.add(it)
             }
         if (displays.isEmpty()) {
-            BotBows.loadStructure(structureName)?.let { structure ->
+            loadStructure(structureName)?.let { structure ->
                 val originLoc = centerLocation.clone().add(-2.0, 0.0, -2.0)
-                BotBows.placeSymmetricalStructure(
+                placeSymmetricalStructure(
                     structure,
                     originLoc,
                     centerLocation.clone().add(0.5, 0.5, 0.5),

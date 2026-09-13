@@ -53,7 +53,7 @@ class TestTabCompleter : TabCompleter {
             }
         } else if (oper == "vote") {
             if (args.size == 2) {
-                val bp = BotBows.getBotBowsPlayer(p)
+                val bp = BotBows.getBotBowsPlayer(p) ?: return mutableListOf("You arent in a lobby")
                 return bp.lobby.getPlayers()
                     .map { it.plainName }
                     .map { name -> name.replace(" ", "_") }

@@ -1,7 +1,8 @@
 package gruvexp.bbminigames.mechanics
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.twtClassic.BotBows
+import gruvexp.bbminigames.util.loadStructure
+import gruvexp.bbminigames.util.placeSymmetricalStructure
 import org.bukkit.Location
 import org.bukkit.block.structure.StructureRotation
 import org.bukkit.entity.BlockDisplay
@@ -31,9 +32,9 @@ class Gear(
                 displays.add(it)
             }
         if (displays.isEmpty()) {
-            BotBows.loadStructure(tag)?.let { structure ->
+            loadStructure(tag)?.let { structure ->
                 val size = structure.size.multiply(0.5)
-                BotBows.placeSymmetricalStructure(
+                placeSymmetricalStructure(
                     structure,
                     location.clone()
                         .add(-size.blockX.toDouble(), -size.blockY.toDouble(), -size.blockZ.toDouble()),

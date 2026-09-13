@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.util.lighten
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
@@ -98,7 +99,7 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         )
         val effectName = if (effectType == PotionEffectType.UNLUCK) "GROWING" else effectType.key.value()
         affectedBp.lobby.messagePlayers(
-            Component.text("", BotBows.lighten(bp.team.color, 0.5))
+            Component.text("", bp.team.color.lighten(0.5f))
                 .append(affectedBp.name)
                 .append(Component.text(" took a bath in "))
                 .append(bp.name)
@@ -135,7 +136,7 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         }
 
         fun giveRandomEffect(thrownPotion: ThrownPotion) {
-            val randomEffect: PotionEffectType = EFFECTS[BotBows.RANDOM.nextInt(EFFECTS.size)]
+            val randomEffect: PotionEffectType = EFFECTS.random()
             val potionColor = EFFECT_COLORS[randomEffect] ?: Color.GRAY
 
             val potion = thrownPotion.item

@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic.botbowsGames
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.mechanics.*
+import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.Settings
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import org.bukkit.Axis
@@ -330,7 +331,8 @@ class SteamPunkGame(settings: Settings) : BotBowsGame(settings) {
         val p = e.player
         val chunk = p.chunk
 
-        pipeChunks[chunk]?.forEach { it.checkProximity(p) }
+        val bp = BotBows.getBotBowsPlayer(p) ?: return
+        pipeChunks[chunk]?.forEach { it.checkProximity(bp) }
 
         impellerChunks[chunk]?.forEach { it.checkProximity(p) }
     }

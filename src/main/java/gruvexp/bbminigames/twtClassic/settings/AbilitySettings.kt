@@ -87,12 +87,12 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         preset.maxAbilities?.let { maxAbilities = it }
 
         preset.individualMaxAbilities?.forEach { (uuid, max) ->
-            BotBows.getBotBowsPlayer(uuid).settings.maxAbilities = max
+            BotBows.getBotBowsPlayer(uuid)?.settings?.maxAbilities = max
         }
         preset.cooldownMultiplier?.let { cooldownMultiplier = it }
 
         preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
-            BotBows.getBotBowsPlayer(uuid).settings.abilityCooldownMultiplier = cooldown
+            BotBows.getBotBowsPlayer(uuid)?.settings?.abilityCooldownMultiplier = cooldown
         }
         preset.bannedAbilities?.let { banned ->
             val changed = bannedAbilities xor banned

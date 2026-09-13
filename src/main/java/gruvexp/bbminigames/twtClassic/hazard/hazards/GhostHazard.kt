@@ -3,11 +3,11 @@ package gruvexp.bbminigames.twtClassic.hazard.hazards
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.api.damage.DamageContext
 import gruvexp.bbminigames.api.damage.DamageType
-import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame
 import gruvexp.bbminigames.twtClassic.hazard.Hazard
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
+import gruvexp.bbminigames.util.setTimeSmooth
 import io.papermc.paper.entity.LookAnchor
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -53,7 +53,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
                 60L
             ) // its 5 seconds delay, the ghost needs 2 seconds to ascend so it needs to ascend 3 seconds after starting to track the player
         }
-        BotBows.setTimeSmooth(6000, 18000, 5)
+        Main.WORLD.setTimeSmooth(6000, 18000, 5)
     }
 
     override val announceMessage = HazardMessage("HAUNTED ARENA", "Stay in motion!", "HAUNTED ARENA")
@@ -71,7 +71,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
     override fun end() {
         hazardTimers.values.forEach { (it as PlayerGhostMover).descendGhost() }
         super.end()
-        BotBows.setTimeSmooth(18000, 30000, 5)
+        Main.WORLD.setTimeSmooth(18000, 30000, 5)
     }
 
     class PlayerGhostMover(val bp: BotBowsPlayer) : BukkitRunnable() {

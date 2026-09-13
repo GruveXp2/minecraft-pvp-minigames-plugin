@@ -72,7 +72,6 @@ public final class Main extends JavaPlugin {
         statsService = new StatsService(this, new StatsDatabase(dbFolder));
         presetService = new BattlePresetService();
         presetService.loadPresetsFromFile();
-        BotBows.init();
         new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
     }
 

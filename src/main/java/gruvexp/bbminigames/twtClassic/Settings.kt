@@ -134,11 +134,11 @@ class Settings(val lobby: Lobby) {
         mapSettings.currentMap = preset.map
 
         preset.team1
-            .map { id -> BotBows.getBotBowsPlayer(id) }
+            .mapNotNull { id -> BotBows.getBotBowsPlayer(id) }
             .filter { it in players }
             .forEach { team1.join(it) }
         preset.team2
-            .map { id -> BotBows.getBotBowsPlayer(id) }
+            .mapNotNull { id -> BotBows.getBotBowsPlayer(id) }
             .filter { it in players }
             .forEach { team2.join(it) }
 
