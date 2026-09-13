@@ -33,7 +33,7 @@ class ChargePotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBa
 
     override val effectName = "Charge"
 
-    override val effectDuration: Int = (DURATION * 0.75).toInt()
+    override val effectDuration: Int = (DURATION * 3) / 4
 
     companion object {
         const val DURATION: Int = 20

@@ -1,11 +1,12 @@
 package gruvexp.bbminigames.mechanics
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.Util
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
 import gruvexp.bbminigames.util.editData
+import gruvexp.bbminigames.util.getChunksAround
+import gruvexp.bbminigames.util.getOrthogonalLocations
 import org.bukkit.Axis
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
@@ -21,18 +22,18 @@ class SteamPipe(val isDualWay: Boolean, private val nodes: List<Location>, entry
     private val playerEdge = mutableMapOf<BotBowsPlayer, Int>()
 
     private var tick = 0
-    private val firstBulbs: List<Block> = Util.getOrthogonalLocations(nodes.first(), entryAxis)
+    private val firstBulbs: List<Block> = nodes.first().getOrthogonalLocations(entryAxis)
         .map { it.block }
         .filter { it.type.data == CopperBulb::class.java }
-    private val secondBulbs: List<Block> = Util.getOrthogonalLocations(nodes.last(), exitAxis)
+    private val secondBulbs: List<Block> = nodes.last().getOrthogonalLocations(exitAxis)
         .map { it.block }
         .filter { it.type.data == CopperBulb::class.java }
 
     val tickedChunks: Set<Chunk>
         // the chunks that has the entry and exit. only check if players are near entry/exit if theyre in these chunks, to save performance
         get() {
-            val chunks = Util.getChunksAround(nodes.first(), 3)
-            if (isDualWay) chunks.addAll(Util.getChunksAround(nodes.last(), 3))
+            val chunks = nodes.first().getChunksAround(3)
+            if (isDualWay) chunks.addAll(nodes.last().getChunksAround( 3))
             return chunks
         }
 

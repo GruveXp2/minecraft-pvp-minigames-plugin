@@ -2,17 +2,11 @@ package gruvexp.bbminigames;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 import org.joml.Vector3i;
-
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Util {
 
@@ -20,7 +14,7 @@ public class Util {
         try {
             return new Location(world, Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ChatColor.RED + "" + x + " " + y + " " + z + " is not a valid position!");
+            throw new IllegalArgumentException(ChatColor.RED + x + " " + y + " " + z + " is not a valid position!");
         }
     }
 
@@ -46,10 +40,6 @@ public class Util {
         return vec.x + " " + vec.y + " " + vec.z;
     }
 
-    public static String print(Vector vec) {
-        return String.format("%.1f %.1f %.1f", vec.getX(), vec.getY(), vec.getZ());
-    }
-
     public static ItemStack playerHead(String playerName) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
@@ -72,49 +62,6 @@ public class Util {
         profile.setTextures(textures); // Set the textures back to the profile
         return profile;
     }*/
-
-    public static Axis getAxis(BlockFace face) {
-        int x = face.getModX();
-        int y = face.getModY();
-        int z = face.getModZ();
-
-        if (x != 0 && y == 0 && z == 0) return Axis.X;
-        if (y != 0 && x == 0 && z == 0) return Axis.Y;
-        if (z != 0 && x == 0 && y == 0) return Axis.Z;
-
-        return null;
-    }
-
-    public static Set<Location> getOrthogonalLocations(Location center, Axis axis) {
-
-        Set<BlockFace> orthogonals = EnumSet.noneOf(BlockFace.class);
-        for (BlockFace face : BlockFace.values()) {
-            Axis faceAxis = getAxis(face);
-            if (faceAxis != null && faceAxis != axis) {
-                orthogonals.add(face);
-            }
-        }
-        Set<Location> locations = new HashSet<>();
-        orthogonals.forEach(face -> locations.add(center.clone().add(face.getDirection())));
-        return locations;
-    }
-
-    public static Set<Chunk> getChunksAround(Location location, int blockRadius) {
-        Set<Chunk> chunks = new HashSet<>();
-        World world = location.getWorld();
-
-        int minX = (location.getBlockX() - blockRadius) >> 4;
-        int maxX = (location.getBlockX() + blockRadius) >> 4;
-        int minZ = (location.getBlockZ() - blockRadius) >> 4;
-        int maxZ = (location.getBlockZ() + blockRadius) >> 4;
-
-        for (int chunkX = minX; chunkX <= maxX; chunkX++) {
-            for (int chunkZ = minZ; chunkZ <= maxZ; chunkZ++) {
-                chunks.add(world.getChunkAt(chunkX, chunkZ));
-            }
-        }
-        return chunks;
-    }
 
     public static boolean isBlockMiddleTransparent(Material material) {
         return switch (material) {

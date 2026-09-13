@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.mechanics
 
-import gruvexp.bbminigames.Util
+import gruvexp.bbminigames.util.getChunksAround
 import gruvexp.bbminigames.util.loadStructure
 import gruvexp.bbminigames.util.placeSymmetricalStructure
 import org.bukkit.Chunk
@@ -49,7 +49,7 @@ class Impeller(
 
     val tickedChunks: Set<Chunk>
         // the chunks close to this impeller, only check for players if players are in these chunks
-        get() = Util.getChunksAround(centerLocation, 3)
+        get() = centerLocation.getChunksAround(3)
 
     fun checkProximity(p: Player) {
         if (p in players) return
