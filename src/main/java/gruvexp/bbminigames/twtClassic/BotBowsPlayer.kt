@@ -31,7 +31,7 @@ class BotBowsPlayer {
 
     val lobby: Lobby
     val settings: PlayerSettings
-    lateinit var team: BotBowsTeam
+    var team = BotBowsTeam.UNASSIGNED
         private set
     var hp: Int = 3
         private set(value) {
@@ -77,7 +77,7 @@ class BotBowsPlayer {
     val plainName: String
 
     fun onTeamJoin(team: BotBowsTeam) {
-        if (this::team.isInitialized) this.team.leave(this)
+        this.team.leave(this)
         this.team = team
         avatar.equipFullArmor()
     }

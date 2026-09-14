@@ -218,6 +218,10 @@ enum class BotBowsTeam(
             Location(Main.WORLD_END, 130.5, 89.0, 262.0, 150f, 35f)
         ),
         Location(Main.WORLD_END, 149.5, 87.0, 168.5, 0f, 10f)
+    ),
+
+    UNASSIGNED(
+        "Not in a team", NamedTextColor.GRAY, DyeColor.GRAY, TeamSide.TEAM_1, arrayOf(Main.WORLD_SPAWN_LOBBY), Main.WORLD_SPAWN_LOBBY
     );
 
     constructor(

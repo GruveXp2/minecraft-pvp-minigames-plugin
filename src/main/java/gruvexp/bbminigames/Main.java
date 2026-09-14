@@ -11,6 +11,7 @@ import gruvexp.bbminigames.sumo.SumoTabCompleter;
 import gruvexp.bbminigames.twtClassic.BotBows;
 import gruvexp.bbminigames.twtClassic.Lobby;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.Listener;
@@ -27,6 +28,7 @@ public final class Main extends JavaPlugin {
     private static Main PLUGIN;
     public static World WORLD;
     public static World WORLD_END;
+    public static Location WORLD_SPAWN_LOBBY;
     private static final int PORT = 25566; // Port used to communicate with the discord bot
     public static Main getPlugin() {
         return PLUGIN;
@@ -67,6 +69,7 @@ public final class Main extends JavaPlugin {
         getCommand("test").setTabCompleter(new TestTabCompleter());
         WORLD = Bukkit.getWorld("BotBows (S2E1)");
         WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end");
+        WORLD_SPAWN_LOBBY = new Location(WORLD, -129.0, 39.0, -197.0);
 
         File dbFolder = new File(this.getDataFolder(), "db");
         statsService = new StatsService(this, new StatsDatabase(dbFolder));
