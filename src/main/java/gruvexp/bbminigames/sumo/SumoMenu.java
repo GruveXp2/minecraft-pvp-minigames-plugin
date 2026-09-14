@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class SumoMenu extends Menu {
 
     public SumoMenu() {
+        super(Component.text("Select sumo gamemode"), 9);
         inventory.setItem(2, TOURNAMENTS);
         inventory.setItem(6, CROWN);
     }
@@ -22,16 +23,6 @@ public class SumoMenu extends Menu {
 
     ItemStack CROWN = Menu.makeItem(Material.GOLDEN_HELMET, Component.text("Crown"),
             Component.text("The one who survives the"), Component.text("longest with the crown, wins"));
-
-    @Override
-    public Component getMenuName() {
-        return Component.text("Select sumo gamemode");
-    }
-
-    @Override
-    public int getSlots() {
-        return 9;
-    }
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
