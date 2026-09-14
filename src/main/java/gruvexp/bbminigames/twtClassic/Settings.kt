@@ -31,10 +31,10 @@ class Settings(val lobby: Lobby) {
     var team2: BotBowsTeam = BotBowsTeam.SAUCE
     private val players: MutableSet<BotBowsPlayer> = mutableSetOf() // liste med alle players som er i gamet
 
-    val healthSettings: HealthSettings = HealthSettings { this.playerSettings }
+    val healthSettings: HealthSettings = HealthSettings { playerSettings }
     val winConditionSettings: WinConditionSettings = WinConditionSettings()
     val hazardSettings: HazardSettings = HazardSettings()
-    val abilitySettings: AbilitySettings = AbilitySettings { this.playerSettings }
+    val abilitySettings: AbilitySettings = AbilitySettings { playerSettings }
     val mapSettings: MapSettings = MapSettings(
         { map: BotBowsMap -> onMapChange(map) }, // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
         { triggeredByNewVote: Boolean -> updateLeadingMap(triggeredByNewVote) }
