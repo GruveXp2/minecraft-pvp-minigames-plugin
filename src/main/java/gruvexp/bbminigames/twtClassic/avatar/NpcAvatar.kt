@@ -69,13 +69,13 @@ class NpcAvatar : BotBowsAvatar {
         setInvis(false)
     }
 
-    override fun setHP(hp: Int) {
+    override fun setHp(hp: Int) {
         visualHp = hp
         if (hp != 0) updateArmor()
     }
 
-    override fun setMaxHP(maxHP: Int) {
-        setHP(maxHP)
+    override fun setMaxHp(maxHp: Int) {
+        setHp(maxHp)
     }
 
     override val armor: ArmorSet
@@ -191,18 +191,18 @@ class NpcAvatar : BotBowsAvatar {
     }
 
     private fun updateArmor() { // updates the armor pieces of the player
-        val maxHP = bp.settings.maxHealth
-        if (visualHp == maxHP) {
+        val maxHp = bp.settings.maxHealth
+        if (visualHp == maxHp) {
             equipFullArmor()
             return
         }
         val slots: Set<Int>
-        if (maxHP > 5) {
-            val d = maxHP / 5.0
-            val i = ceil((maxHP - visualHp) / d).toInt()
+        if (maxHp > 5) {
+            val d = maxHp / 5.0
+            val i = ceil((maxHp - visualHp) / d).toInt()
             slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR[maxHP - 2][maxHP - visualHp - 1]
+            slots = BotBowsPlayer.HEALTH_ARMOR[maxHp - 2][maxHp - visualHp - 1]
         }
 
         for (slot in slots) {

@@ -36,7 +36,7 @@ class BotBowsPlayer {
     var hp: Int = 3
         private set(value) {
             field = value
-            avatar.setHP(value)
+            avatar.setHp(value)
             if (value == 0) avatar.eliminate()
             lobby.botBowsGame!!.botBowsBoard.updatePlayerScore(this)
         }
@@ -100,7 +100,7 @@ class BotBowsPlayer {
         bot.customName(name)
         bot.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.uuid))
         avatar = NpcAvatar(bot, avatar)
-        avatar.setHP(hp)
+        avatar.setHp(hp)
         avatar.readyBattle(lobby.botBowsGame!!.botBowsBoard.teamManager!!) // this line is kinda ugly, maybe make the teammanager be somewhere else idk
         return bot.uniqueId
     }
@@ -111,8 +111,8 @@ class BotBowsPlayer {
         p.teleport(avatar.location)
         avatar.destroy()
         avatar = PlayerAvatar(p, avatar)
-        avatar.setMaxHP(settings.maxHealth)
-        avatar.setHP(hp)
+        avatar.setMaxHp(settings.maxHealth)
+        avatar.setHp(hp)
     }
 
     fun destroy() {

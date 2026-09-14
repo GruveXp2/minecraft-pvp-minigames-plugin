@@ -63,7 +63,7 @@ class PlayerAvatar : BotBowsAvatar {
         player.gameMode = GameMode.ADVENTURE
     }
 
-    override fun setHP(hp: Int) {
+    override fun setHp(hp: Int) {
         visualHp = hp
         if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
             player.health = 1.0 // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
@@ -73,9 +73,9 @@ class PlayerAvatar : BotBowsAvatar {
         }
     }
 
-    override fun setMaxHP(maxHP: Int) {
-        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = maxHP * 2.0
-        setHP(maxHP)
+    override fun setMaxHp(maxHp: Int) {
+        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = maxHp * 2.0
+        setHp(maxHp)
     }
 
     override val armor: ArmorSet
@@ -242,18 +242,18 @@ class PlayerAvatar : BotBowsAvatar {
     }
 
     private fun updateArmor() { // updates all individual armor pieces of the player
-        val maxHP = bp.settings.maxHealth
-        if (visualHp == maxHP) {
+        val maxHp = bp.settings.maxHealth
+        if (visualHp == maxHp) {
             equipFullArmor()
             return
         }
         val slots: Set<Int>
-        if (maxHP > 5) {
-            val d = maxHP / 5.0
-            val i = ceil((maxHP - visualHp) / d).toInt()
+        if (maxHp > 5) {
+            val d = maxHp / 5.0
+            val i = ceil((maxHp - visualHp) / d).toInt()
             slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR[maxHP - 2][maxHP - visualHp - 1]
+            slots = BotBowsPlayer.HEALTH_ARMOR[maxHp - 2][maxHp - visualHp - 1]
         }
 
         for (slot in slots) {

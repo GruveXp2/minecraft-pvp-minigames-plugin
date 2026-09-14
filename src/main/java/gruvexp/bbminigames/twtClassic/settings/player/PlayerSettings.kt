@@ -9,7 +9,7 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
         set(value) {
             field = value
             notifyMaxHealthChange()
-            bp.avatar.setMaxHP(value)
+            bp.avatar.setMaxHp(value)
         }
     var attackDamage: Int = 1
         set(value) {

@@ -226,10 +226,10 @@ open class BotBowsGame(val settings: Settings) {
         val hpLeft = winningTeam.players.sumOf { it.hp }
         lobby.messagePlayers(Component.text("${hpLeft}p for remaining hp", winningTeam.color))
 
-        val enemyHPTaken = losingTeam.players.sumOf { it.settings.maxHealth }
-        lobby.messagePlayers(Component.text("${enemyHPTaken}p for enemy hp lost", winningTeam.color))
+        val enemyHpTaken = losingTeam.players.sumOf { it.settings.maxHealth }
+        lobby.messagePlayers(Component.text("${enemyHpTaken}p for enemy hp lost", winningTeam.color))
 
-        return hpLeft + enemyHPTaken
+        return hpLeft + enemyHpTaken
     }
 
     open fun postGame(winningTeam: BotBowsTeam?) {
