@@ -27,12 +27,14 @@ import java.util.UUID
 object BotBows {
     val BOTBOW: ItemStack
         get() = botBow.clone()
-    @JvmStatic
-    val lobbies = arrayOf(Lobby(0), Lobby(1), Lobby(2))
-    private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
 
     val gameMenu = GameMenu()
     val lobbyMenu = LobbyMenu()
+
+    @JvmStatic
+    val lobbies = arrayOf(Lobby(0), Lobby(1), Lobby(2))
+
+    private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
 
     val MENU_ITEM = makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
     val SETTINGS_ITEM = makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
