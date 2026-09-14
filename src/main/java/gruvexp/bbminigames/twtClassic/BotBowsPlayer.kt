@@ -38,7 +38,7 @@ class BotBowsPlayer {
             field = value
             avatar.setHp(value)
             if (value == 0) avatar.eliminate()
-            lobby.botBowsGame!!.botBowsBoard.updatePlayerScore(this)
+            lobby.botBowsGame?.botBowsBoard?.updatePlayerScore(this)
         }
     var isDamaged: Boolean = false // cooldown når playeren er hitta
         private set
