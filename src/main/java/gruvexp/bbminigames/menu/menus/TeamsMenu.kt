@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
+class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Teams (2/6)"), 27), PlayerListMenu {
     lateinit var team1: BotBowsTeam
     lateinit var team2: BotBowsTeam
 
@@ -34,10 +34,6 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu {
         team2Row = PlayerMenuRow(inventory, MenuAction.FLIP_PLAYER_TEAM.name, 11, 5).apply { show() }
         rows = mapOf(TeamSide.TEAM_1 to team1Row, TeamSide.TEAM_2 to team2Row)
     }
-
-    override val menuName = Component.text("Teams (2/6)")
-
-    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return

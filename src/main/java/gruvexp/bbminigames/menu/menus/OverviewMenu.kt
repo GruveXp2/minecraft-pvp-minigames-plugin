@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.meta.BannerMeta
 import org.bukkit.inventory.meta.PotionMeta
 
-class OverviewMenu(settings: Settings): SettingsMenu(settings) {
+class OverviewMenu(settings: Settings) : SettingsMenu(settings, Component.text("Settings"), 9) {
 
     init {
         inventory.setItem(1, PRESETS)
@@ -25,9 +25,6 @@ class OverviewMenu(settings: Settings): SettingsMenu(settings) {
         inventory.setItem(6, HAZARDS)
         inventory.setItem(7, ABILITIES)
     }
-
-    override val menuName = Component.text("Settings")
-    override val slots = 9
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return

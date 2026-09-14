@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListener {
+class HazardMenu(settings: Settings) : SettingsMenu(settings, Component.text("Hazards (5/6)"), 36), HazardUpdateListener {
     private val hazardsSorted = ArrayList<HazardType>()
 
     private val hazardSliders = HashMap<HazardType, MenuSlider>()
@@ -25,9 +25,6 @@ class HazardMenu(settings: Settings) : SettingsMenu(settings), HazardUpdateListe
     init {
         setPageButtons(3, prevMenuButton = true, nextMenuButton = true)
     }
-
-    override val menuName = Component.text("Hazards (5/6)")
-    override val slots = 36
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return

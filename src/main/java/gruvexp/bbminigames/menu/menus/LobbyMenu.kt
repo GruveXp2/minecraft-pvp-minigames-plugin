@@ -11,16 +11,13 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class LobbyMenu : Menu() {
+class LobbyMenu : Menu(Component.text("Join Lobby"), 9) {
     init {
         for (i in 0..2) {
             inventory.setItem(i, VOID)
             inventory.setItem(i + 6, VOID)
         }
     }
-
-    override val menuName = Component.text("Join Lobby")
-    override val slots = 9
 
     override fun handleMenu(e: InventoryClickEvent) {
         val clickedItem = e.getCurrentItem() ?: return

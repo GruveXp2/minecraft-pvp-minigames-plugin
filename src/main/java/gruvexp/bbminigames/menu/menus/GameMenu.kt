@@ -8,14 +8,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class GameMenu : Menu() {
+class GameMenu : Menu(Component.text("Game Menu"), 9) {
     init {
         inventory.setItem(3, BOTBOWS)
         inventory.setItem(5, SUMO)
     }
-
-    override val menuName = Component.text("Game Menu")
-    override val slots = 9
 
     override fun handleMenu(e: InventoryClickEvent) {
         val p = e.whoClicked as Player

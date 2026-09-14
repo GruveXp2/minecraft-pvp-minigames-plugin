@@ -9,15 +9,12 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class PresetsMenu(settings: Settings): SettingsMenu(settings) {
+class PresetsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Presets (0/6)"), 18) {
 
     init {
         setPageButtons(1, prevMenuButton = false, nextMenuButton = true)
         displayPresets()
     }
-
-    override val menuName = Component.text("Presets (0/6)")
-    override val slots = 18
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return

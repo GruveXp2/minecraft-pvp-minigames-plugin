@@ -13,20 +13,14 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-abstract class Menu : InventoryHolder {
+abstract class Menu(protected val menuName: Component, protected val slots: Int) : InventoryHolder {
     @JvmField // jvm bc its used in sumo aswell
-    protected var inventory: Inventory
+    protected var inventory: Inventory = Bukkit.createInventory(this, slots, menuName)
 
     // menu is an InventoryHolder, that holds our inventory menu. Since all inventories have an owner, we can get the Menu object from the inventory when handling inventory events
     init {
-        inventory = Bukkit.createInventory(this, slots, menuName)
         setFillerVoid()
     }
-
-    abstract val menuName: Component
-
-    // the amount of slots must be 9n
-    abstract val slots: Int
 
     abstract fun handleMenu(e: InventoryClickEvent)
 

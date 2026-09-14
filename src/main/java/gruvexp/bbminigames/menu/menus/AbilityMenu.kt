@@ -23,7 +23,8 @@ import java.util.Locale
 import java.util.UUID
 import kotlin.math.max
 
-class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsMenu(settings), PlayerListMenu, AbilityUpdateListener,
+class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
+    : SettingsMenu(settings, Component.text("Abilities (6/6)"), 54), PlayerListMenu, AbilityUpdateListener,
     PlayerAbilityUpdateListener {
     private val maxAbilitiesSlider = MenuSlider(
         inventory,
@@ -59,8 +60,6 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer) : SettingsM
         updateUIState()
     }
 
-    override val menuName = Component.text("Abilities (6/6)")
-    override val slots = 54
     override fun handlesEmptySlots(): Boolean = true
 
     override fun handleMenu(e: InventoryClickEvent) {

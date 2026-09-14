@@ -9,7 +9,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditionUpdateListener {
+class WinConditionMenu(settings: Settings)
+    : SettingsMenu(settings, Component.text("Win condition (4/6)"), 27), WinConditionUpdateListener {
     init {
         setPageButtons(2, prevMenuButton = true, nextMenuButton = true)
 
@@ -27,9 +28,6 @@ class WinConditionMenu(settings: Settings) : SettingsMenu(settings), WinConditio
         onRoundDurationChange()
         onDynamicScoreToggle()
     }
-
-    override val menuName = Component.text("Win condition (4/6)")
-    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return

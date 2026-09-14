@@ -16,7 +16,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
 
-class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings), MapUpdateListener {
+class MapMenu(settings: Settings, val bp: BotBowsPlayer)
+    : SettingsMenu(settings, Component.text("Arena map (1/6)"), 18), MapUpdateListener {
     private var isOldMapCategory = false
         set(value) {
             field = value
@@ -33,9 +34,6 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         setPageButtons(1, prevMenuButton = true, nextMenuButton = true)
         updateMenu()
     }
-
-    override val menuName= Component.text("Arena map (1/6)")
-    override val slots = 18
 
     override fun open(p: Player) {
         super.open(p)
@@ -243,7 +241,8 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer) : SettingsMenu(settings
         )
     }
 
-    private enum class UiMode(val menuTitle: TextComponent) { // TODO: gjør at tittelen endres automatisk
+    // TODO: will maybe add in the future, since as of now, the menus titles are const and cant be changed without creating another menu obj or inv
+    private enum class UiMode(val menuTitle: TextComponent) {
         MAIN(Component.text("Arena map (1/6)")),
         VOTE(Component.text("Vote for map")),
         SET(Component.text("Set map"));

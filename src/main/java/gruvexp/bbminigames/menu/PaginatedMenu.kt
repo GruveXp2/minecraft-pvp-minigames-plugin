@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
 
-abstract class PaginatedMenu : Menu() {
+abstract class PaginatedMenu(menuName: Component, slots: Int) : Menu(menuName, slots) {
     enum class PageAction {
         PREV,
         NEXT

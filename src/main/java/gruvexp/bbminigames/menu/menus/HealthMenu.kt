@@ -20,7 +20,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, HealthUpdateListener, PlayerHealthUpdateListener {
+class HealthMenu(settings: Settings)
+    : SettingsMenu(settings, Component.text("Health & Damage (3/6)"), 27), PlayerListMenu, HealthUpdateListener, PlayerHealthUpdateListener {
     private val healthSlider: MenuSlider
     private val healthRow: PlayerMenuRow
     private val damageRow: PlayerMenuRow
@@ -43,9 +44,6 @@ class HealthMenu(settings: Settings) : SettingsMenu(settings), PlayerListMenu, H
         onMaxHealthChange()
         onCustomDamageToggle()
     }
-
-    override val menuName = Component.text("Health & Damage (3/6)")
-    override val slots = 27
 
     override fun handleMenu(e: InventoryClickEvent) {
         if (e.clickedInventory !== inventory) return
