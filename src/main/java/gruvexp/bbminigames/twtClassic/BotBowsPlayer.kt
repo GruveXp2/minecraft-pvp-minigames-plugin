@@ -281,7 +281,7 @@ class BotBowsPlayer {
             abilities.values.forEach { it.hit() } // pauses the cooldowns etc
             isDamaged = true
             Bukkit.getScheduler().runTaskLater(
-                Main.getPlugin(),
+                Main.plugin,
                 Runnable { isDamaged = false },
                 BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
             )
@@ -302,7 +302,7 @@ class BotBowsPlayer {
         settings.isReady = ready // todo, flytt inn i playersettings det med itemindex. det må og med tror jeg
         avatar.setReady(ready, itemIndex) // listener og ikke her. playersettings skal ha full ctrl
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { lobby.handlePlayerReady(this) }, 3L)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { lobby.handlePlayerReady(this) }, 3L)
     }
 
     fun setAbilityCooldownTickRate(abilityCooldownTickRate: Int) {

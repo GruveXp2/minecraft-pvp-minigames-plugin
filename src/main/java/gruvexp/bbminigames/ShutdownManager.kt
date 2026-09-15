@@ -10,7 +10,7 @@ object ShutdownManager {
     fun scheduleShutdown() {
         if (shutdownTask != null) return
 
-        val plugin = Main.getPlugin()
+        val plugin = Main.plugin
         plugin.logger.info("Last player left, auto closing in 10min")
 
         shutdownTask = Bukkit.getScheduler().runTaskLater(plugin, Runnable {
@@ -23,7 +23,7 @@ object ShutdownManager {
         shutdownTask?.let {
             it.cancel()
             shutdownTask = null
-            Main.getPlugin().logger.info("A player joined, auto closing canceled")
+            Main.plugin.logger.info("A player joined, auto closing canceled")
         }
     }
 }

@@ -30,10 +30,10 @@ class StormHazard : Hazard(HazardType.STORM) {
     }
 
     override fun trigger(players: Set<BotBowsPlayer>) {
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             for (bp in players) {
                 val stormTimer = PlayerStormTimer(bp)
-                stormTimer.runTaskTimer(Main.getPlugin(), 0L, 2L)
+                stormTimer.runTaskTimer(Main.plugin, 0L, 2L)
                 hazardTimers[bp] = stormTimer
             }
             Main.WORLD.isThundering = true

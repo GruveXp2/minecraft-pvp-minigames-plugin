@@ -29,10 +29,10 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
     private var emitter: LaserEmitter? = null
 
     override fun onPlace(ctx: BlockPlace) {
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             removeLaser()
             emitter = LaserEmitter(ctx.block, ctx.face).apply {
-                runTaskTimer(Main.getPlugin(), 0, 1)
+                runTaskTimer(Main.plugin, 0, 1)
             }
             use()
         }, 1)

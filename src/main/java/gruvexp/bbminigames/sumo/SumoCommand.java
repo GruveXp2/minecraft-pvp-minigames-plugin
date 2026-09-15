@@ -32,7 +32,7 @@ public class SumoCommand implements CommandExecutor {
                 SumoData.init();
                 p.sendMessage(Component.text("Starting tournament " + players + "v" + players));
                 Bar.CreateBar("Game starting soon!_", BarColor.GREEN, BarStyle.SEGMENTED_12, 0);
-                new PreBattle().runTaskTimer(Main.getPlugin(), 0L, 1L); //period 2T
+                new PreBattle().runTaskTimer(Main.Companion.getPlugin(), 0L, 1L); //period 2T
             }
         } else {
             p.sendMessage(Component.text("invalid operation! Only valid operation at the moment is ")

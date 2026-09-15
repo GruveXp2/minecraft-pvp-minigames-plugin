@@ -13,7 +13,7 @@ class BattlePresetService {
         .setPrettyPrinting()
         .registerTypeAdapterFactory(StrictEnumAdapterFactory())
         .create()
-    private val folder = File(Main.getPlugin().dataFolder, "presets")
+    private val folder = File(Main.plugin.dataFolder, "presets")
 
     fun loadPresetsFromFile() {
         val file = folder.resolve("battlepresets.json")
@@ -40,9 +40,9 @@ class BattlePresetService {
             val json = gson.toJson(battlePresets.values)
             file.writeText(json)
 
-            Main.getPlugin().logger.info("Saved ${battlePresets.size} presets to battlepresets.json")
+            Main.plugin.logger.info("Saved ${battlePresets.size} presets to battlepresets.json")
         } catch (e: Exception) {
-            Main.getPlugin().logger.severe("Error when saving presets: ${e.message}")
+            Main.plugin.logger.severe("Error when saving presets: ${e.message}")
             e.printStackTrace()
         }
     }

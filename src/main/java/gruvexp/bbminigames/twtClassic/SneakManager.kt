@@ -14,7 +14,7 @@ class SneakManager(private val avatar: BotBowsAvatar) {
 
     init {
         sneakCooldown = SneakCooldown()
-        sneakCooldown.runTaskTimer(Main.getPlugin(), 0L, 1L)
+        sneakCooldown.runTaskTimer(Main.plugin, 0L, 1L)
     }
 
     val isSneakingExhausted: Boolean

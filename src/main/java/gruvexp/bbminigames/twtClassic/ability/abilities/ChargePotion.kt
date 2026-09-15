@@ -24,7 +24,7 @@ class ChargePotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBa
         }
         registerSuccess()
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             bp.setAbilityCooldownTickRate(20)
             players.forEach { it.setAbilityCooldownTickRate(20) }
             registerSuccess()

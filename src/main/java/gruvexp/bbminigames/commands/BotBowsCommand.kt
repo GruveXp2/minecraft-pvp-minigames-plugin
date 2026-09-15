@@ -46,7 +46,7 @@ class BotBowsCommand : CommandExecutor {
                     ?: return Component.text("Invalid item \"${args[2]}\"", NamedTextColor.RED)
 
                 val preset = lobby.settings.saveBattlePreset(name, icon)
-                val success = Main.getPlugin().presetService.addPreset(preset)
+                val success = Main.plugin.presetService.addPreset(preset)
                 if (success) {
                     lobby.settings.presetsMenu.displayPresets()
                     p.sendMessage(Component.text("Successfully added preset \"$name\" with icon ${args[2]}"))
@@ -58,7 +58,7 @@ class BotBowsCommand : CommandExecutor {
                 if (args.size == 1) return Component.text("You must specify the preset to load!", NamedTextColor.RED)
 
                 val presetName = args[1]
-                val preset = Main.getPlugin().presetService.getPreset(presetName)
+                val preset = Main.plugin.presetService.getPreset(presetName)
                     ?: return Component.text("Error! No preset with name \"$presetName\" exists")
 
                 if (!lobby.settings.isPlayerMod(bp)) return Component.text("Only mods can load presets")

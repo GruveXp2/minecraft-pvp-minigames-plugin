@@ -50,7 +50,7 @@ class SpaceStationGame(settings: Settings) : BotBowsGame(settings) {
             randomDelay = 45 - randomDelay
         }
         val motor = DoorMotor(door)
-        motor.runTaskLater(Main.getPlugin(), randomDelay * 20)
+        motor.runTaskLater(Main.plugin, randomDelay * 20)
         doorMotors[door] = motor
     }
 

@@ -18,7 +18,7 @@ class PlayerMenuRow(inventory: Inventory, menuActionId: String, startSlot: Int, 
 
     fun getItem(bp: BotBowsPlayer): ItemStack? {
         items.filterNotNull().forEach {
-            val key = NamespacedKey(Main.getPlugin(), "uuid")
+            val key = NamespacedKey(Main.plugin, "uuid")
             val storedUUID = it.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)
             if (storedUUID == bp.avatar.uuid.toString()) {
                 return@getItem it

@@ -43,7 +43,7 @@ open class BotBowsGame(val settings: Settings) {
         val team = bp.team
         settings.leaveGame(bp)
         botBowsBoard.removePlayerScore(bp)
-        if (team.isEmpty) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { endGame() }, 10L)
+        if (team.isEmpty) Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { endGame() }, 10L)
     }
 
     open fun startGame() {
@@ -71,7 +71,7 @@ open class BotBowsGame(val settings: Settings) {
         botBowsBoard.initPlayers() // makes the player join the Team's to get the correct color outline
         botBowsBoard.updateTeamScores()
         players.forEach { it.start() }
-        BotBowsGiver(lobby).runTaskTimer(Main.getPlugin(), 100L, 10L)
+        BotBowsGiver(lobby).runTaskTimer(Main.plugin, 100L, 10L)
     }
 
     open fun startRound() {
@@ -87,13 +87,13 @@ open class BotBowsGame(val settings: Settings) {
         canInteract = false
         activeRound = true
         RoundCountdown(this, round).runTaskTimer(
-            Main.getPlugin(),
+            Main.plugin,
             0L,
             20L
         ) // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         val roundDuration = settings.winConditionSettings.roundDuration
         if (roundDuration != 0) {
-            roundTimer = RoundTimer(this, roundDuration).runTaskTimer(Main.getPlugin(), 200L, 20L)
+            roundTimer = RoundTimer(this, roundDuration).runTaskTimer(Main.plugin, 200L, 20L)
         }
     }
 
@@ -112,7 +112,7 @@ open class BotBowsGame(val settings: Settings) {
         val losingTeam = dedPlayer.team
 
         if (losingTeam.isEliminated) {
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { endRoundEliminated(losingTeam) }, 2L)
+            Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { endRoundEliminated(losingTeam) }, 2L)
         }
     }
 
@@ -132,7 +132,7 @@ open class BotBowsGame(val settings: Settings) {
 
         winningTeam.addPoints(winScore)
         Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
+            Main.plugin,
             Runnable { postRound(winningTeam, winScore) },
             2L
         ) // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
@@ -206,7 +206,7 @@ open class BotBowsGame(val settings: Settings) {
         if (winningTeam == null) {
             lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2)
             canInteract = false
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { startRound() }, 40L)
+            Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
             return
         }
 
@@ -218,7 +218,7 @@ open class BotBowsGame(val settings: Settings) {
             postGame(winningTeam)
         } else {
             canInteract = false
-            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { startRound() }, 40L)
+            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
         }
     }
 
@@ -256,7 +256,7 @@ open class BotBowsGame(val settings: Settings) {
             showPostGameStats(winningTeam)
         }
 
-        if (!TestCommand.debugging) Main.getPlugin().statsService.saveMatchResult(matchResult)
+        if (!TestCommand.debugging) Main.plugin.statsService.saveMatchResult(matchResult)
 
         Main.WORLD.apply {
             isThundering = false
@@ -297,7 +297,7 @@ open class BotBowsGame(val settings: Settings) {
         statsLocation.y = statsLocY + 3.0
 
         val resultDisplay = ResultDisplay(statsLocation, matchResult)
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { resultDisplay.remove() }, 60 * 20L)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { resultDisplay.remove() }, 60 * 20L)
     }
 
     fun endGame(ender: BotBowsPlayer) {

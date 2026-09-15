@@ -125,7 +125,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
     }
 
     fun getPlayerFromHead(item: ItemStack) : BotBowsPlayer? {
-        val key = NamespacedKey(Main.getPlugin(), "uuid")
+        val key = NamespacedKey(Main.plugin, "uuid")
         val playerIdStr = item.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING) ?: return null
         val playerId = UUID.fromString(playerIdStr)
         val bp = settings.lobby.getBotBowsPlayer(playerId)

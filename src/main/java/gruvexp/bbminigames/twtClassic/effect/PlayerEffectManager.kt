@@ -51,7 +51,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         scaleExpiry.remove(source)?.cancel()
         if (durationTicks != null) {
             scaleExpiry[source] = Bukkit.getScheduler()
-                .runTaskLater(Main.getPlugin(), Runnable { clearScale(source) }, durationTicks)
+                .runTaskLater(Main.plugin, Runnable { clearScale(source) }, durationTicks)
         }
         recalculateScale(animationTicks)
     }
@@ -85,7 +85,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
                 if (i >= animationTicks) cancel()
                 i++
             }
-        }.runTaskTimer(Main.getPlugin(), 0L, 1L)
+        }.runTaskTimer(Main.plugin, 0L, 1L)
     }
 
     fun applyGlow(source: GlowSource, durationTicks: Long? = null, color: NamedTextColor? = null, blinkPeriodTicks: Int = 10) {
@@ -93,7 +93,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         glowExpiry.remove(source)?.cancel()
         if (durationTicks != null) {
             glowExpiry[source] = Bukkit.getScheduler()
-                .runTaskLater(Main.getPlugin(), Runnable { clearGlow(source) }, durationTicks)
+                .runTaskLater(Main.plugin, Runnable { clearGlow(source) }, durationTicks)
         }
         if (glowTicker == null) startGlowTicker()
     }
@@ -121,7 +121,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
                 avatar.setColor(if (showColor) winner.color else teamColor())
                 glowElapsedTicks += GLOW_TICK_PERIOD.toInt()
             }
-        }.runTaskTimer(Main.getPlugin(), 0L, GLOW_TICK_PERIOD)
+        }.runTaskTimer(Main.plugin, 0L, GLOW_TICK_PERIOD)
     }
 
     private fun teamColor(): NamedTextColor = avatar.bp.team.color

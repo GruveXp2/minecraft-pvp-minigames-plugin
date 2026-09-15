@@ -45,7 +45,7 @@ class SpaceStationDoor(private val location: Location, private val axis: Axis) {
                 step--
                 if (step < 0) cancel()
             }
-        }.runTaskTimer(Main.getPlugin(), 0, ANIMATION_STEP_TICKS.toLong())
+        }.runTaskTimer(Main.plugin, 0, ANIMATION_STEP_TICKS.toLong())
     }
 
     fun close() {
@@ -59,7 +59,7 @@ class SpaceStationDoor(private val location: Location, private val axis: Axis) {
                 step++
                 if (step == ANIMATION_STEPS) cancel()
             }
-        }.runTaskTimer(Main.getPlugin(), 0, ANIMATION_STEP_TICKS.toLong())
+        }.runTaskTimer(Main.plugin, 0, ANIMATION_STEP_TICKS.toLong())
     }
 
     private fun cloneBlocks(step: Int) {

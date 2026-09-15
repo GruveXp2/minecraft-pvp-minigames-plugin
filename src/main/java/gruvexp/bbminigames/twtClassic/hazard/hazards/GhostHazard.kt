@@ -29,11 +29,11 @@ class GhostHazard : Hazard(HazardType.GHOST) {
     override fun trigger(players: Set<BotBowsPlayer>) {
         for (bp in players) {
             val ghostMover = PlayerGhostMover(bp)
-            ghostMover.runTaskTimer(Main.getPlugin(), 0L, 1L)
+            ghostMover.runTaskTimer(Main.plugin, 0L, 1L)
             hazardTimers[bp] = ghostMover
 
             Bukkit.getScheduler().runTaskLater(
-                Main.getPlugin(),
+                Main.plugin,
                 Runnable {
                     ghostMover.ascendGhost(bp.location)
                     val randomPitch = (0.8 + Random.nextDouble() * 0.4).toFloat()
@@ -172,7 +172,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
                     bp.teleport(oldLocation)
                     ticks++
                 }
-            }.runTaskTimer(Main.getPlugin(), 0L, 1L)
+            }.runTaskTimer(Main.plugin, 0L, 1L)
         }
 
         fun descendGhost() {
@@ -197,7 +197,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
                     ghost.teleport(ghostLoc)
                     ticks++
                 }
-            }.runTaskTimer(Main.getPlugin(), 0L, 1L)
+            }.runTaskTimer(Main.plugin, 0L, 1L)
         }
 
         fun ascendGhost(pLoc: Location) {
@@ -217,7 +217,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
                     ghost.teleport(pLoc)
                     ticks++
                 }
-            }.runTaskTimer(Main.getPlugin(), 0L, 1L)
+            }.runTaskTimer(Main.plugin, 0L, 1L)
         }
     }
 

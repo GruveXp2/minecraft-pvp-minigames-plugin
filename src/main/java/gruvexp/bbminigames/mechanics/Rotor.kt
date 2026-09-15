@@ -46,7 +46,7 @@ class Rotor(id: Int, location: Location, tag: String, speed: Float, teleportDura
                 jaw += rotationStep
                 displays.forEach { it.setRotation(jaw, 0f) }
             }
-        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
+        }.apply { runTaskTimer(Main.plugin, 0, 1) }
     }
 
     fun stop() {

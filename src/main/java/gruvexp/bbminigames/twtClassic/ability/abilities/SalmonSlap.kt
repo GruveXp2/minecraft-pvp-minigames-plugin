@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 class SalmonSlap(bp: BotBowsPlayer, slot: Int) : Ability(bp, slot, AbilityType.SALMON_SLAP), OnMelee {
     override fun use() {
         bp.avatar.setItem(hotBarSlot, SALMON)
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { super.use() }, (20 * DURATION).toLong())
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { super.use() }, (20 * DURATION).toLong())
     }
 
     override fun trigger(ctx: Melee) {

@@ -20,7 +20,7 @@ import static org.bukkit.Bukkit.getServer;
 
 public class SumoData {
     // ---------------- Alltid konstant ----------------
-    private static final Main PLUGIN = Main.getPlugin();
+    private static final Main PLUGIN = Main.Companion.getPlugin();
     private static final Location[] SPAWNPOS = new Location[2]; // de 2 spawnpointsene
     private static final int MAX_ROUNDS = 5;
     // ---------------- Heile turneen ----------------
@@ -149,7 +149,7 @@ public class SumoData {
             }
         }
         for (int i = 0; i < battleList.size(); i++) {
-            Main.getPlugin().getLogger().info("[SUMO]: Battle " + i + ": " + battleList.get(i)[0].getName() + " vs " + battleList.get(i)[1].getName());
+            Main.Companion.getPlugin().getLogger().info("[SUMO]: Battle " + i + ": " + battleList.get(i)[0].getName() + " vs " + battleList.get(i)[1].getName());
         }
     }
 

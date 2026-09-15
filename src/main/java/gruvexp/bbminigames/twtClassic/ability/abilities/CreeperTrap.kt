@@ -73,7 +73,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         }
 
         creeperTicker = CreeperTicker(creeper!!, lampDisplay, glassDisplay, bp).apply {
-            runTaskTimer(Main.getPlugin(), ACTIVATION_DELAY * 20L, 5)
+            runTaskTimer(Main.plugin, ACTIVATION_DELAY * 20L, 5)
         }
     }
 
@@ -184,7 +184,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
                 .toSet()
 
             creepers.forEach { it.isGlowing = true }
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(),
+            Bukkit.getScheduler().runTaskLater(Main.plugin,
                 Runnable { creepers.forEach { it.isGlowing = false } },
                 ticks.toLong()
             )

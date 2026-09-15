@@ -287,7 +287,7 @@ class SteamPunkGame(settings: Settings) : BotBowsGame(settings) {
 
     override fun startRound() {
         super.startRound()
-        val plugin = Main.getPlugin()
+        val plugin = Main.plugin
         steamPipeMotor = SteamPipeMotor(steamPipes)
             .apply { runTaskTimer(plugin, 200, 1) }
         hatches.forEach {
@@ -340,7 +340,7 @@ class SteamPunkGame(settings: Settings) : BotBowsGame(settings) {
     private fun scheduleHatch(hatch: Hatch) {
         val randomDelay = (2..16).random() // they toggle each 2-16 seconds
         val motor = HatchMotor(hatch).apply {
-            runTaskLater(Main.getPlugin(), randomDelay * 20L)
+            runTaskLater(Main.plugin, randomDelay * 20L)
         }
         hatchMotors[hatch] = motor
     }

@@ -24,7 +24,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
             cooldownTimer?.let {
                 it.cancel()
                 cooldownTimer = CooldownTimer(bp, it.currentCooldown).apply {
-                    runTaskTimer(Main.getPlugin(), 0L, value.toLong())
+                    runTaskTimer(Main.plugin, 0L, value.toLong())
                 }
             }
         }
@@ -50,7 +50,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
             bp.avatar.setItem(hotBarSlot, type.cooldownItems[0].clone())
         } else {
             cooldownTimer = CooldownTimer(bp, effectiveCooldown).apply {
-                runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate.toLong())
+                runTaskTimer(Main.plugin, 0L, cooldownTickRate.toLong())
             }
         }
     }
@@ -67,7 +67,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
             bp.loseWeaponAbilities()
         } else {
             cooldownTimer = CooldownTimer(bp, effectiveCooldown).apply {
-                runTaskTimer(Main.getPlugin(), 0L, cooldownTickRate.toLong())
+                runTaskTimer(Main.plugin, 0L, cooldownTickRate.toLong())
             }
         }
     }

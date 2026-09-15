@@ -92,7 +92,7 @@ object BotBows {
         if (!TestCommand.debugging || !showMessage) return
         Bukkit.getOnlinePlayers()
             .forEach { it.sendMessage(Component.text("[DEBUG]: $message", NamedTextColor.GRAY)) }
-        Main.getPlugin().logger.info("[DEBUG]: $message")
+        Main.plugin.logger.info("[DEBUG]: $message")
     }
 
     fun accessSettings(p: Player) {

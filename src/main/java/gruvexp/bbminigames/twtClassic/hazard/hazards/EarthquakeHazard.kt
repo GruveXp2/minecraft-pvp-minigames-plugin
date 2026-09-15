@@ -34,10 +34,10 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
     }
 
     override fun trigger(players: Set<BotBowsPlayer>) {
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             for (bp in players) {
                 val earthQuakeTimer = PlayerEarthQuakeTimer(bp)
-                earthQuakeTimer.runTaskTimer(Main.getPlugin(), 0L, 2L)
+                earthQuakeTimer.runTaskTimer(Main.plugin, 0L, 2L)
                 hazardTimers[bp] = earthQuakeTimer
             }
         }, 5 * 20L)
@@ -99,7 +99,7 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
                     fallingAnvil.dropItem = false
                     time = 0 // resetting
                     bp.avatar.setHazardBarProgress(HazardType.EARTHQUAKE, 0f)
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                    Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
                         bp.damage(DamageContext.Environment(DamageType.Environment.EARTHQUAKE))
                     }, 20L)
                     val anvilLoc = bp.location.toBlockLocation()

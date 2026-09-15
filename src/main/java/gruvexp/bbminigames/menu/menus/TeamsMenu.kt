@@ -47,7 +47,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
         when (action) {
             MenuAction.FLIP_PLAYER_TEAM -> {
-                val key = NamespacedKey(Main.getPlugin(), "uuid")
+                val key = NamespacedKey(Main.plugin, "uuid")
                 val playerId = UUID.fromString(
                     clickedItem.itemMeta.persistentDataContainer
                         .get(key, PersistentDataType.STRING)

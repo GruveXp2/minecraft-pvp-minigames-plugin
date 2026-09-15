@@ -53,7 +53,7 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
         players.forEach {
             val scanner = DungeonProximityScanner(it)
             dungeonScanners[it] = scanner
-            scanner.runTaskTimer(Main.getPlugin(), 140L, 5L)
+            scanner.runTaskTimer(Main.plugin, 140L, 5L)
         }
     }
 
@@ -105,7 +105,7 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
         fun handleMovement() {
             val currentLoc = bp.location
             if (currentLoc == prevLoc) {
-                Main.getPlugin().logger.info("Somehow handleMovement() was called when the player didnt move (bug)")
+                Main.plugin.logger.info("Somehow handleMovement() was called when the player didnt move (bug)")
                 return  // no movement, no need to process
             }
 

@@ -70,7 +70,7 @@ class Gear(
                 rotate()
                 degreesLeft -= stepDegrees
             }
-        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
+        }.apply { runTaskTimer(Main.plugin, 0, 1) }
     }
 
     private fun rotateTo(newPitch: Float) {

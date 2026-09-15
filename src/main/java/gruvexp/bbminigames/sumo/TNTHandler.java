@@ -19,7 +19,7 @@ public class TNTHandler implements Listener{
         Block block = e.getBlock();
         if (block.getType() == Material.TNT) {
             Player p = e.getPlayer();
-            Main.getPlugin().getLogger().info(p.getName() + " tried to place a TNT, but failed miserably");
+            Main.Companion.getPlugin().getLogger().info(p.getName() + " tried to place a TNT, but failed miserably");
             e.setCancelled(true);
         }
     }

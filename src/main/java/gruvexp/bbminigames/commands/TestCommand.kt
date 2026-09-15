@@ -305,9 +305,9 @@ class TestCommand : CommandExecutor {
                     gruveBp!!.equipAbility(1, AbilityType.LASER_TRAP)
                     judithBp!!.equipAbility(1, AbilityType.LASER_TRAP)
                     judithBp.setReady(true, 4)
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { gruveBp.setReady(true, 4) }, 10)
+                    Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { gruveBp.setReady(true, 4) }, 10)
                     Bukkit.getScheduler().runTaskLater(
-                        Main.getPlugin(),
+                        Main.plugin,
                         Runnable { gruveXp.teleport(Location(gruveXp.world, 150.0, 87.0, 208.0)) },
                         20
                     )
@@ -361,7 +361,7 @@ class TestCommand : CommandExecutor {
                     BotBows.debugMessage("Verbose debugging set to: $verboseDebugging")
                 }
 
-                "db" -> Main.getPlugin().statsService.printOutInfo()
+                "db" -> Main.plugin.statsService.printOutInfo()
                 "c" -> {
                     var playerName: String? = args[1]
                     if (playerName == null) playerName = "GruveXp"
@@ -454,7 +454,7 @@ class TestCommand : CommandExecutor {
         settings.hazardSettings.setChance(HazardType.STORM, HazardChance.ALWAYS)
         assertThat(settings.hazardSettings.getChance(HazardType.STORM) == HazardChance.ALWAYS, "setup storm chance", bp)
 
-        val preset = Main.getPlugin().presetService.getPreset("test")
+        val preset = Main.plugin.presetService.getPreset("test")
         assertThat(preset != null, "preset exists", bp)
         checkNotNull(preset)
         assertThat(preset.hazards[HazardType.STORM] == HazardChance.FIFTY, "preset has 50% storm", bp)
@@ -473,7 +473,7 @@ class TestCommand : CommandExecutor {
         abilitySettings.unban(AbilityType.ENDER_PEARL)
         assertThat(!abilitySettings.isBanned(AbilityType.ENDER_PEARL), "enderpearl initially allowed", bp)
 
-        val preset = Main.getPlugin().presetService.getPreset("test")
+        val preset = Main.plugin.presetService.getPreset("test")
         assertThat(preset != null, "preset exists", bp)
         checkNotNull(preset)
         assertThat(preset.abilities.bannedAbilities != null, "some abilities are banned", bp)

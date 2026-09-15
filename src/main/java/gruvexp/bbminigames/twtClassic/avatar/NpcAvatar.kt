@@ -118,7 +118,7 @@ class NpcAvatar : BotBowsAvatar {
         mannequin.isInvulnerable = true
 
         Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
+            Main.plugin,
             Runnable { mannequin.isInvulnerable = false },
             BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
         )
@@ -157,7 +157,7 @@ class NpcAvatar : BotBowsAvatar {
             val item = ItemStack(Material.PLAYER_HEAD)
             item.editMeta(SkullMeta::class.java) {
                 it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
-                val key = NamespacedKey(Main.getPlugin(), "uuid")
+                val key = NamespacedKey(Main.plugin, "uuid")
                 it.persistentDataContainer.set(key, PersistentDataType.STRING, "${mannequin.uniqueId}")
                 it.owningPlayer = Bukkit.getOfflinePlayer("Robotagz")
             }

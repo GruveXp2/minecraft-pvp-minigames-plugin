@@ -118,7 +118,7 @@ class PlayerAvatar : BotBowsAvatar {
         player.inventory.setItem(itemIndex, Lobby.LOADING)
         // venter litt før itemet settes itilfelle noen spammer og bøgger det til
         Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
+            Main.plugin,
             Runnable { player.inventory.setItem(itemIndex, if (ready) Lobby.READY else Lobby.NOT_READY) },
             2L
         )
@@ -151,7 +151,7 @@ class PlayerAvatar : BotBowsAvatar {
             inv.setItem(i, ItemStack(Material.BARRIER))
         }
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             player.isInvulnerable = false
             for (i in 0..8) { // moving items back
                 val item = inv.getItem(i + 27)
@@ -198,7 +198,7 @@ class PlayerAvatar : BotBowsAvatar {
         item.editMeta(SkullMeta::class.java) {
             it.displayName(bp.name.decoration(TextDecoration.ITALIC, false))
             it.persistentDataContainer.set(
-                NamespacedKey(Main.getPlugin(), "uuid"),
+                NamespacedKey(Main.plugin, "uuid"),
                 PersistentDataType.STRING,
                 player.uniqueId.toString()
             )

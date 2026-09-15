@@ -35,7 +35,7 @@ fun World.setTimeSmooth(start: Long, end: Long, seconds: Int) {
             if (count >= ticks) cancel()
             else time = start + (count++ * step)
         }
-    }.runTaskTimer(Main.getPlugin(), 0, 1)
+    }.runTaskTimer(Main.plugin, 0, 1)
 }
 
 fun Location.getChunksAround(blockRadius: Int): MutableSet<Chunk> {

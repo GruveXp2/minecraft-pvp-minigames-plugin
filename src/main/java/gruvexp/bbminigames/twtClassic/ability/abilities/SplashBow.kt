@@ -35,10 +35,10 @@ class SplashBow(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
             val arrow = ctx.projectile
             arrow.color = Color.RED
             val arrowTrail = SplashArrowTrailGenerator(arrow, bp.team.dyeColor.color)
-                .runTaskTimer(Main.getPlugin(), 1L, 1L)
+                .runTaskTimer(Main.plugin, 1L, 1L)
             arrow.velocity.multiply(0.5f)
             activeArrows[arrow] = arrowTrail
-            arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.getPlugin(), this))
+            arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.plugin, this))
         } else {
             throw IllegalArgumentException("Splash bow tried to fire something that wasnt an arrow")
         }

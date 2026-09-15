@@ -137,7 +137,7 @@ class AbilityListener : Listener {
         val attackerBp = BotBows.getBotBowsPlayer(attacker) ?: return
         if (!attackerBp.hasAbilityEquipped(AbilityType.BUBBLE_JET)) return
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             if (!(attackerBp.lobby.botBowsGame!!.stormHazard?.isActive ?: false)) {
                 attacker.setPlayerWeather(WeatherType.CLEAR)
             } else {
@@ -164,7 +164,7 @@ class AbilityListener : Listener {
                 AbilityType.BUBBLE_JET -> {
                     p.resetPlayerWeather()
                     p.inventory.itemInMainHand.addEnchantment(Enchantment.RIPTIDE, 3)
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                    Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
                         if (!(bp.lobby.botBowsGame!!.stormHazard?.isActive ?: false)) {
                             p.setPlayerWeather(WeatherType.CLEAR)
                         } else {

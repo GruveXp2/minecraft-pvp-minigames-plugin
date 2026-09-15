@@ -17,7 +17,7 @@ public class StickSlap {
     public static void handleHit(Player attacker) {
         PlayerInventory atkInv = attacker.getInventory();
         if (atkInv.getItemInMainHand().getType() == Material.BLAZE_ROD) { // hvis man bruker blaze rod
-            Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Consumer<>() { // loop x antall ganger hver tick
+            Bukkit.getScheduler().runTaskTimer(Main.Companion.getPlugin(), new Consumer<>() { // loop x antall ganger hver tick
 
                 int counter = cooldown;
                 @Override

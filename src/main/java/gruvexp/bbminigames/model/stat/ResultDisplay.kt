@@ -135,7 +135,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.forEach { it.init() }
         listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
 
-        playerScanner = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), Runnable {
+        playerScanner = Bukkit.getScheduler().runTaskTimer(Main.plugin, Runnable {
             loc.getNearbyPlayers(10.0).forEach { p ->
                 rayTrace(p.eyeLocation.toVector(), p.eyeLocation.direction, p in clickingPlayers)
                 clickingPlayers.remove(p)

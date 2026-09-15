@@ -21,7 +21,7 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
         onExpandToggle()
 
         expandTask?.cancel()
-        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             if (isExpanded) {
                 hiddenCols.forEach { it.setInvisible(false) }
             }
@@ -34,7 +34,7 @@ class ColTab(tabName: String, loc: Location, layoutY: Float, onExpandToggle: () 
         hiddenCols.forEach { it.setInvisible(true) }
 
         expandTask?.cancel()
-        expandTask = Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        expandTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             if (!isExpanded) {
                 recalculateColumns()
                 onExpandToggle()

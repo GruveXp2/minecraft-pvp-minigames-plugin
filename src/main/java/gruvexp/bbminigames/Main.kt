@@ -1,189 +1,179 @@
-package gruvexp.bbminigames;
+package gruvexp.bbminigames
 
-import gruvexp.bbminigames.commands.*;
-import gruvexp.bbminigames.database.StatsDatabase;
-import gruvexp.bbminigames.listeners.*;
-import gruvexp.bbminigames.service.BattlePresetService;
-import gruvexp.bbminigames.service.StatsService;
-import gruvexp.bbminigames.sumo.FloorListener;
-import gruvexp.bbminigames.sumo.SumoCommand;
-import gruvexp.bbminigames.sumo.SumoTabCompleter;
-import gruvexp.bbminigames.twtClassic.BotBows;
-import gruvexp.bbminigames.twtClassic.Lobby;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import gruvexp.bbminigames.commands.*
+import gruvexp.bbminigames.database.StatsDatabase
+import gruvexp.bbminigames.listeners.*
+import gruvexp.bbminigames.service.BattlePresetService
+import gruvexp.bbminigames.service.StatsService
+import gruvexp.bbminigames.sumo.FloorListener
+import gruvexp.bbminigames.sumo.SumoCommand
+import gruvexp.bbminigames.sumo.SumoTabCompleter
+import gruvexp.bbminigames.twtClassic.BotBows.getLobby
+import gruvexp.bbminigames.twtClassic.BotBows.lobbies
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.plugin.java.JavaPlugin
+import java.io.*
+import java.net.ServerSocket
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+class Main : JavaPlugin() {
+    lateinit var presetService: BattlePresetService
+        private set
+    lateinit var statsService: StatsService
+        private set
 
-public final class Main extends JavaPlugin {
+    override fun onEnable() {
+        plugin = this
+        logger.info("BotBows plugin enabled!")
+        listOf(
+            MenuListener(),
+            DamageListener(),
+            MovementListener(),
+            JoinLeaveListener(),
+            RightClickListener(),
+            ShiftListener(),
+            SwitchSpectator(),
+            AbilityListener(),
+            ItemListener(),
+            FloorListener()
+        ).forEach { server.pluginManager.registerEvents(it, this) }
 
-    private static Main PLUGIN;
-    public static World WORLD;
-    public static World WORLD_END;
-    public static Location WORLD_SPAWN_LOBBY;
-    private static final int PORT = 25566; // Port used to communicate with the discord bot
-    public static Main getPlugin() {
-        return PLUGIN;
-    }
-    private BattlePresetService presetService;
-    private StatsService statsService;
-    public BattlePresetService getPresetService() {
-        return presetService;
-    }
-    public StatsService getStatsService() {
-        return statsService;
-    }
+        getCommand("menu")!!.setExecutor(MenuCommand())
+        getCommand("settings")!!.setExecutor(SettingsCommand())
+        getCommand("botbows")!!.setExecutor(BotBowsCommand())
+        getCommand("botbows")!!.tabCompleter = BotBowsTabCompleter()
+        getCommand("sumo")!!.setExecutor(SumoCommand())
+        getCommand("sumo")!!.tabCompleter = SumoTabCompleter()
+        getCommand("test")!!.setExecutor(TestCommand())
+        getCommand("test")!!.tabCompleter = TestTabCompleter()
+        WORLD = Bukkit.getWorld("BotBows (S2E1)")!!
+        WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end")!!
+        WORLD_SPAWN_LOBBY = Location(WORLD, -129.0, 39.0, -197.0)
 
-    @Override
-    public void onEnable() {
-        PLUGIN = this;
-        getLogger().info("BotBows plugin enabled!");
-        registerListeners(
-                new MenuListener(),
-                new DamageListener(),
-                new MovementListener(),
-                new JoinLeaveListener(),
-                new RightClickListener(),
-                new ShiftListener(),
-                new SwitchSpectator(),
-                new AbilityListener(),
-                new ItemListener(),
-                new FloorListener()
-        );
-
-        getCommand("menu").setExecutor(new MenuCommand());
-        getCommand("settings").setExecutor(new SettingsCommand());
-        getCommand("botbows").setExecutor(new BotBowsCommand());
-        getCommand("botbows").setTabCompleter(new BotBowsTabCompleter());
-        getCommand("sumo").setExecutor(new SumoCommand());
-        getCommand("sumo").setTabCompleter(new SumoTabCompleter());
-        getCommand("test").setExecutor(new TestCommand());
-        getCommand("test").setTabCompleter(new TestTabCompleter());
-        WORLD = Bukkit.getWorld("BotBows (S2E1)");
-        WORLD_END = Bukkit.getWorld("BotBows (S2E1)_the_end");
-        WORLD_SPAWN_LOBBY = new Location(WORLD, -129.0, 39.0, -197.0);
-
-        File dbFolder = new File(this.getDataFolder(), "db");
-        statsService = new StatsService(this, new StatsDatabase(dbFolder));
-        presetService = new BattlePresetService();
-        presetService.loadPresetsFromFile();
-        new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
+        val dbFolder = File(dataFolder, "db")
+        statsService = StatsService(this, StatsDatabase(dbFolder))
+        presetService = BattlePresetService()
+        presetService.loadPresetsFromFile()
+        Thread { startSocketServer() }.start() // Start the server in a new thread to avoid blocking the main thread
     }
 
-    @Override
-    public void onDisable() {
-        getLogger().info("Disabling BotBows plugin");
-        for (Lobby lobby : BotBows.getLobbies()) {
-            if (lobby.isGameActive()) {
-                getLogger().info("Stopping active game...");
-                lobby.botBowsGame.endGame();
+    override fun onDisable() {
+        logger.info("Disabling BotBows plugin")
+        for (lobby in lobbies) {
+            if (lobby.isGameActive) {
+                logger.info("Stopping active game...")
+                lobby.botBowsGame!!.endGame()
             } else {
-                lobby.reset();
+                lobby.reset()
             }
         }
-
     }
 
-    private void registerListeners(Listener... listeners) {
-        var pm = getServer().getPluginManager();
-        for (Listener listener : listeners) {
-            pm.registerEvents(listener, this);
-        }
-    }
+    private fun startSocketServer() { // TODO: use something better than sockets, since were on the same pc, we can just use intra-process comunication
+        try {
+            ServerSocket(DISCORD_BOT_PORT).use { serverSocket ->
+                logger.info("Server listening on port $DISCORD_BOT_PORT")
+                while (true) {
+                    try {
+                        serverSocket.accept().use { clientSocket ->
+                            BufferedReader(InputStreamReader(clientSocket.getInputStream())).use { input ->
+                                BufferedWriter(
+                                    OutputStreamWriter(clientSocket.getOutputStream())
+                                ).use { output ->
+                                    val command = input.readLine()
+                                    //getLogger().info("Received command: " + command);
+                                    if (command == null || command.trim { it <= ' ' }.isEmpty()) return
+                                    if (command.startsWith("@")) {
+                                        if (command == "@ping") {
+                                            if (getLobby(0).isGameActive) { // TODO: shoudnt just check lobby 1, but also the others. either show stats from current battle, or if many, show "x battles ongoing"
+                                                val teamSizes = getLobby(0).settings.let { it.team1.size() to it.team2.size() }
+                                                output.write("BotBows ${teamSizes.first}v${teamSizes.second} match ongoing")
+                                            } else {
+                                                output.write("BotBows: ${Bukkit.getOnlinePlayers().size} online")
+                                            }
+                                            output.newLine()
+                                            output.flush()
+                                        }
+                                    } else { // a minecraft command
+                                        val latch = CountDownLatch(1)
 
-    private void startSocketServer() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            getLogger().info("Server listening on port " + PORT);
+                                        Bukkit.getScheduler().runTask(
+                                            this,
+                                            Runnable { // Schedule the command execution on the main thread
+                                                try {
+                                                    // Execute the command on the server console
+                                                    val console = Bukkit.getServer().consoleSender
+                                                    val result = executeCommand(console, command)
 
-            while (true) {
-                try (Socket clientSocket = serverSocket.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
+                                                    synchronized(output) { // Ensure safe access to the BufferedWriter
+                                                        try {
+                                                            // Send the result back to the client
+                                                            output.write(result)
+                                                            output.newLine()
+                                                            output.flush()
+                                                            //getLogger().info("The result of the command is: \n" + result + "\n======");
+                                                        } catch (e: IOException) {
+                                                            logger.severe("Error sending result to client: ${e.message}")
+                                                        }
+                                                    }
+                                                } finally {
+                                                    latch.countDown() // Signal that the task is complete
+                                                }
+                                            })
 
-                    String command = in.readLine();
-                    //getLogger().info("Received command: " + command);
-                    if (command == null || command.trim().isEmpty()) return;
-                    if (command.startsWith("@")) {
-                        if (command.equals("@ping")) {
-                            if (BotBows.getLobby(0).isGameActive()) {
-                                out.write("BotBows " + BotBows.getLobby(0).settings.team1.size() + "v" + BotBows.getLobby(1).settings.team2.size() + " match ongoing");
-                            } else {
-                                out.write("BotBows: " + Bukkit.getOnlinePlayers().size() + " online");
-                            }
-                            out.newLine();
-                            out.flush();
-                        }
-                    } else { // a minecraft command
-
-                        CountDownLatch latch = new CountDownLatch(1);
-
-                        Bukkit.getScheduler().runTask(this, () -> { // Schedule the command execution on the main thread
-                            try {
-                                // Execute the command on the server console
-                                ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-                                String result = executeCommand(console, command);
-
-                                synchronized (out) { // Ensure safe access to the BufferedWriter
-                                    try {
-                                        // Send the result back to the client
-                                        out.write(result);
-                                        out.newLine();
-                                        out.flush();
-                                        //getLogger().info("The result of the command is: \n" + result + "\n======");
-                                    } catch (IOException e) {
-                                        getLogger().severe("Error sending result to client: " + e.getMessage());
+                                        // Wait for the task to complete before closing the resources
+                                        try {
+                                            latch.await(1, TimeUnit.SECONDS) // if the server lags so much it takes over a second to run the command, then it will quit waiting
+                                        } catch (e: InterruptedException) {
+                                            logger.severe("Waiting for task completion interrupted: ${e.message}")
+                                        }
                                     }
                                 }
-                            } finally {
-                                latch.countDown(); // Signal that the task is complete
                             }
-                        });
-
-                        // Wait for the task to complete before closing the resources
-                        try {
-                            latch.await(1, TimeUnit.SECONDS); // if the server lags so much it takes over a second to run the command, then it will quit waiting
-                        } catch (InterruptedException e) {
-                            getLogger().severe("Waiting for task completion interrupted: " + e.getMessage());
                         }
+                    } catch (e: IOException) {
+                        logger.severe("Error handling client: ${e.message}")
                     }
-                    //getLogger().warning("The socket will close now");
-                } catch (IOException e) {
-                    getLogger().severe("Error handling client: " + e.getMessage());
                 }
             }
-        } catch (IOException e) {
-            getLogger().severe("Could not listen on port " + PORT);
-            e.printStackTrace();
+        } catch (e: IOException) {
+            logger.severe("Could not listen on port $DISCORD_BOT_PORT")
+            e.printStackTrace()
         }
     }
 
-    private String executeCommand(ConsoleCommandSender console, String command) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
+    private fun executeCommand(console: ConsoleCommandSender, command: String): String {
+        val outputByteStream = ByteArrayOutputStream()
+        val originalOut = System.out
 
         try {
             // Redirect system output to capture command output
-            System.setOut(new PrintStream(baos));
+            System.setOut(PrintStream(outputByteStream))
 
             // Execute the command
-            Bukkit.dispatchCommand(console, command);
+            Bukkit.dispatchCommand(console, command)
 
             // Restore original system output
-            System.setOut(originalOut);
+            System.setOut(originalOut)
 
             // Return the captured output
-            return baos.toString().trim();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error capturing command output: " + e.getMessage();
+            return outputByteStream.toString().trim { it <= ' ' }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return "Error capturing command output: ${e.message}"
         }
+    }
+
+    companion object {
+        lateinit var plugin: Main
+            private set
+        lateinit var WORLD: World
+        lateinit var WORLD_END: World
+        lateinit var WORLD_SPAWN_LOBBY: Location
+        private const val DISCORD_BOT_PORT = 25566 // Port used to communicate with the discord bot
     }
 }

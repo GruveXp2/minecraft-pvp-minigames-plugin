@@ -55,7 +55,7 @@ class SteamPipe(val isDualWay: Boolean, private val nodes: List<Location>, entry
             PipeStatus.INACTIVE -> {
                 shuttingDown = true
 
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+                Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
                     if (playerEdge.isNotEmpty()) return@Runnable
                     pipeStatus = status
                     firstBulbs.forEach { it.editData<CopperBulb> { isPowered = false; isLit = false } }

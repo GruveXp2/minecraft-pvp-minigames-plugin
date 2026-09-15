@@ -156,7 +156,7 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
             }
         }
         Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
+            Main.plugin,
             Runnable { openHitbox.forEach { block -> block.type = Material.BARRIER } },
             TOTAL_STEPS / 2L
         )
@@ -172,13 +172,13 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
                     open = true
                 }
             }
-        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
+        }.apply { runTaskTimer(Main.plugin, 0, 1) }
     }
 
     fun close() {
         openHitbox.forEach { block -> block.type = Material.AIR }
         Bukkit.getScheduler().runTaskLater(
-            Main.getPlugin(),
+            Main.plugin,
             Runnable { closedHitbox.forEach { block -> block.type = Material.BARRIER } },
             TOTAL_STEPS / 2L
         )
@@ -193,7 +193,7 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
                     open = false
                 }
             }
-        }.apply { runTaskTimer(Main.getPlugin(), 0, 1) }
+        }.apply { runTaskTimer(Main.plugin, 0, 1) }
     }
 
     companion object {

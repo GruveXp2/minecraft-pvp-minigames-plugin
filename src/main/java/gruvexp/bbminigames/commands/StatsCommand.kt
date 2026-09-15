@@ -41,7 +41,7 @@ class StatsCommand : CommandExecutor { // temporary clanker ai code, just for te
         val playerId = p.uniqueId
 
         ioRunner.launch {
-            val result = Main.getPlugin().statsService.getLastMatchStats(playerId)
+            val result = Main.plugin.statsService.getLastMatchStats(playerId)
 
             if (result == null) {
                 p.sendMessage(Component.text("Du har ikke spilt noen kamper ennå!", NamedTextColor.RED))

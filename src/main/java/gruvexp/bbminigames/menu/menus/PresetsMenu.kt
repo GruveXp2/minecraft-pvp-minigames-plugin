@@ -25,12 +25,12 @@ class PresetsMenu(settings: Settings) : SettingsMenu(settings, Component.text("P
         if (!settings.checkMod(bp)) return
 
         val presetName = getActionId(clickedItem) ?: return
-        val preset: BattlePreset = Main.getPlugin().presetService.getPreset(presetName)!!
+        val preset: BattlePreset = Main.plugin.presetService.getPreset(presetName)!!
         bp.lobby.settings.applyBattlePreset(preset)
     }
 
     fun displayPresets() {
-        val presets = Main.getPlugin().presetService.getPresets()
+        val presets = Main.plugin.presetService.getPresets()
 
         for (i in presets.size..slots - 9) {
             inventory.setItem(i, VOID)

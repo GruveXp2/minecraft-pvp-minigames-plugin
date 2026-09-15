@@ -30,9 +30,9 @@ class Gate(
                 step++
                 if (step == animationSteps) cancel()
             }
-        }.runTaskTimer(Main.getPlugin(), 0, animationStepTicks.toLong())
+        }.runTaskTimer(Main.plugin, 0, animationStepTicks.toLong())
         val delay = (SteamPunkGame.DOOR_TOGGLE_DELAY - ROTATION_ANGLE / gears.first().rotationSpeed).toInt()
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable {
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             gears.forEach { it.rotate(ROTATION_ANGLE.toFloat()) }
         }, delay.toLong())
     }
@@ -45,7 +45,7 @@ class Gate(
                 step--
                 if (step < 0) cancel()
             }
-        }.runTaskTimer(Main.getPlugin(), 0, animationStepTicks.toLong())
+        }.runTaskTimer(Main.plugin, 0, animationStepTicks.toLong())
     }
 
     private fun cloneBlocks(step: Int) {

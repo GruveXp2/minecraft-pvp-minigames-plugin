@@ -33,7 +33,7 @@ class BotBowsTabCompleter : TabCompleter {
         val oper = args[0]
         when (oper) {
             "load_preset" -> {
-                if (args.size == 2) return Main.getPlugin().presetService.getPresetNames().toList()
+                if (args.size == 2) return Main.plugin.presetService.getPresetNames().toList()
             }
 
             "save_preset" -> {

@@ -32,15 +32,15 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
     override fun use() {
         super.use()
         isActive = true
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { isActive = false }, 20L * DURATION)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { isActive = false }, 20L * DURATION)
     }
 
     override fun onLaunch(ctx: Launch) {
         val arrow = ctx.projectile as Arrow
         arrow.color = Color.AQUA
-        val arrowTrail = ThunderArrowTrailGenerator(arrow, bp.team.dyeColor.color).runTaskTimer(Main.getPlugin(), 1L, 1L)
+        val arrowTrail = ThunderArrowTrailGenerator(arrow, bp.team.dyeColor.color).runTaskTimer(Main.plugin, 1L, 1L)
         activeArrows[arrow] = arrowTrail
-        arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.getPlugin(), this))
+        arrow.setMetadata("botbows_ability", FixedMetadataValue(Main.plugin, this))
         BotBows.debugMessage("Spawning a thunder arrow", TestCommand.test2)
     }
 

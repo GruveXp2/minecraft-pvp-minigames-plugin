@@ -11,8 +11,8 @@ class KarmaPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBar
         bp.hasKarmaEffect = true
         players.forEach { it.karmaAura = true }
 
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { bp.karmaAura = false }, 20L * DURATION)
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Runnable { players.forEach { it.karmaAura = false } }, 15L * DURATION)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { bp.karmaAura = false }, 20L * DURATION)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { players.forEach { it.karmaAura = false } }, 15L * DURATION)
     }
 
     override val effectName: String = "Karma"

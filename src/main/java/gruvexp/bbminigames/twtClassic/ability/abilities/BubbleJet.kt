@@ -33,7 +33,7 @@ class BubbleJet(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                         registerSuccess()
                     }
             }
-        }.apply { runTaskTimer(Main.getPlugin(), 0L, 2L) }
+        }.apply { runTaskTimer(Main.plugin, 0L, 2L) }
     }
 
     companion object {

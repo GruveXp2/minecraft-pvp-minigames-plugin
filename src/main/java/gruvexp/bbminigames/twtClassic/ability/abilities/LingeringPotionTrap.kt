@@ -50,7 +50,7 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
                         )
                     }
             }
-        }.runTaskTimer(Main.getPlugin(), 0L, 2L)
+        }.runTaskTimer(Main.plugin, 0L, 2L)
     }
 
     override fun reset() {
