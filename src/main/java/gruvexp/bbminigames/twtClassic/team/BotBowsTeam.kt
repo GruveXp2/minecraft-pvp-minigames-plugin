@@ -255,6 +255,7 @@ enum class BotBowsTeam(
     }
 
     fun join(bp: BotBowsPlayer) {
+        if (bp.team == this) return
         players.add(bp)
         bp.teleport(tribunePos)
         bp.onTeamJoin(this)

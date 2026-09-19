@@ -15,7 +15,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
-import java.util.*
+import java.util.UUID
 
 class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Teams (2/6)"), 27), PlayerListMenu {
     lateinit var team1: BotBowsTeam
@@ -95,7 +95,9 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
     }
 
     override fun updatePlayer(bp: BotBowsPlayer) {
+        rows.getValue(bp.team.teamSide).removeItem(bp)
         rows.getValue(bp.team.oppositeTeam.teamSide).removeItem(bp)
+
         rows.getValue(bp.team.teamSide).addItem(bp.avatar.headItem)
     }
 

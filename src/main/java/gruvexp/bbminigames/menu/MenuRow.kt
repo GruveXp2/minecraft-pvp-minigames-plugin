@@ -116,8 +116,10 @@ open class MenuRow(
     }
 
     fun removeItem(item: ItemStack?) {
-        items.remove(item)
-        if (isVisible) displayRow()
+        item?.let {
+            items.remove(it)
+            if (isVisible) displayRow()
+        }
     }
 
     fun show() {
