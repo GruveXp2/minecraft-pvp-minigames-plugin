@@ -156,6 +156,7 @@ class PlayerAvatar : BotBowsAvatar {
             for (i in 0..8) { // moving items back
                 val item = inv.getItem(i + 27)
                 inv.setItem(i, item)
+                inv.setItem(i + 27, null)
             }
         }, BotBows.HIT_DISABLED_ITEM_TICKS.toLong())
     }
