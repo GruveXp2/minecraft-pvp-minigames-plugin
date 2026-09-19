@@ -295,6 +295,7 @@ open class BotBowsGame(val settings: Settings) {
         val statsLocY = statsLocation.blockY
         statsLocation.add(statsLocation.getDirection().multiply(10))
         statsLocation.y = statsLocY + 3.0
+        statsLocation.pitch = 0f
 
         val resultDisplay = ResultDisplay(statsLocation, matchResult)
         Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { resultDisplay.remove() }, 60 * 20L)

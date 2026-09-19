@@ -216,7 +216,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     }
 
     fun formatPercentage(total: Int, given: Int): TextComponent {
-        val percentage = (given * 100) / total
+        val percentage = given * 100 / total
         val color: Int = when {
             percentage == 100 -> 0x40FF40
             percentage > 90 -> 0x80FF80
