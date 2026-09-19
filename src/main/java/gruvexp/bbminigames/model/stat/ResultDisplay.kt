@@ -105,8 +105,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     private var playerScanner: BukkitTask? = null
 
     init {
-        displays.addAll(listOf(titleBgDisplay, titleDisplay))
-
         val width = recalculateTabs()
         val team1Color = if (matchResult.team1Won == true) matchResult.map.team1.color else matchResult.map.team2.color
         val team1Num = if (matchResult.team1Won == true) matchResult.map.team1.size() else matchResult.map.team2.size()
@@ -131,6 +129,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             }
             billboard = Display.Billboard.VERTICAL
         }
+        displays.addAll(listOf(titleBgDisplay, titleDisplay, team1BgDisplay, team2BgDisplay))
         playerTab.init()
         tabs.forEach { it.init() }
         listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
