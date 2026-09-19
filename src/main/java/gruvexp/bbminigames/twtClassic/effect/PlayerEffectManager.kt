@@ -126,7 +126,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
 
     private fun teamColor(): NamedTextColor = avatar.bp.team.color
 
-    fun clear() {
+    fun clear(leave: Boolean = false) {
         scaleTween?.cancel()
         scaleTween = null
         scaleContributions.clear()
@@ -140,7 +140,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
         glowExpiry.values.forEach { it.cancel() }
         glowExpiry.clear()
         avatar.setGlowing(false)
-        avatar.setColor(teamColor())
+        if (!leave) avatar.setColor(teamColor()) //TODO: its just a workaround for the error that will occur if not. happens when you leave, BotBowsPlayer::onLeave
 
         avatar.entity.clearActivePotionEffects()
     }

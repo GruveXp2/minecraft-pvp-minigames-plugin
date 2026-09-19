@@ -89,7 +89,7 @@ class BotBowsPlayer {
     fun onGameLeave() {
         team.leave(this)
         avatar.destroy()
-        effectManager.clear()
+        effectManager.clear(true)
         abilities.keys.forEach { unequipAbility(it, true) }
     }
 
@@ -117,7 +117,7 @@ class BotBowsPlayer {
 
     fun destroy() {
         avatar.destroy()
-        effectManager.clear()
+        effectManager.clear(true)
         sneakManager?.destroy()
         abilities.values.forEach { it.destroy() }
     }

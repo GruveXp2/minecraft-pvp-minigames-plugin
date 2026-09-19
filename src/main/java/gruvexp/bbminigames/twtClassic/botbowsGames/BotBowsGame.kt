@@ -27,7 +27,7 @@ open class BotBowsGame(val settings: Settings) {
     protected val team2: BotBowsTeam = settings.team2
 
     protected val players: Set<BotBowsPlayer> = settings.getPlayers()
-    val botBowsBoard: BotBowsBoard = BotBowsBoard(lobby)
+    val botBowsBoard: BotBowsBoard = BotBowsBoard(lobby) //TODO move this to Settings instead so game wont crash
     protected val hazards: Collection<Hazard> = settings.hazardSettings.createActiveHazards()
 
     var canMove: Boolean = true
