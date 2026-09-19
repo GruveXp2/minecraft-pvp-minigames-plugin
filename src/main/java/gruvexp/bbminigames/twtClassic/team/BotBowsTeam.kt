@@ -128,7 +128,7 @@ enum class BotBowsTeam(
             Location(Main.WORLD, -380.5, 22.0, -169.5, -90f, 10f),
             Location(Main.WORLD, -385.5, 22.0, -166.0, -90f, 10f)
         ),
-        Location(Main.WORLD, -368.5, 41.0, -166.0, 0f, 20f)
+        Location(Main.WORLD, -368.5, 41.0, -166.0, -90f, 20f)
     ),
 
     HOGLIN(
@@ -140,7 +140,7 @@ enum class BotBowsTeam(
             Location(Main.WORLD, -327.5, 22.0, -169.5, -90f, 10f),
             Location(Main.WORLD, -326.5, 22.0, -166.0, -90f, 10f)
         ),
-        Location(Main.WORLD, -343.5, 41.0, -166.0, 0f, 20f)
+        Location(Main.WORLD, -343.5, 41.0, -166.0, 90f, 20f)
     ),
 
     // --- INSIDE BOTBASE ---
