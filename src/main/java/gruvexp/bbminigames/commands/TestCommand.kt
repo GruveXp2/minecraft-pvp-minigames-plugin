@@ -41,7 +41,7 @@ class TestCommand : CommandExecutor {
         if (args.isNotEmpty()) {
             when (args[0]) {
                 "tde" -> display!!.deathsTab.isExpanded = !display!!.deathsTab.isExpanded
-                "tde2" -> display!!.abilityTab.isExpanded = !display!!.abilityTab.isExpanded
+                "tde2" -> display!!.abilityTab!!.isExpanded = !display!!.abilityTab!!.isExpanded
                 "end_round" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
                     if (bp == null) {

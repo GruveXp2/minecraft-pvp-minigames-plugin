@@ -81,9 +81,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.add(tab)
     }
 
-    val abilityTab = AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
-        tabs.add(tab)
-    }
+    val abilityTab: AbilityTab? = null
 
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -132,6 +130,11 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         displays.addAll(listOf(titleBgDisplay, titleDisplay, team1BgDisplay, team2BgDisplay))
         playerTab.init()
         tabs.forEach { it.init() }
+
+        if (matchResult.playerStats.values.any { it.abilitySuccesses.isNotEmpty() }) AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
+            tabs.add(tab)
+        }
+
         listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
 
         playerScanner = Bukkit.getScheduler().runTaskTimer(Main.plugin, Runnable {
@@ -232,7 +235,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         playerTab.remove()
         hitsTab.remove()
         deathsTab.remove()
-        abilityTab.remove()
+        abilityTab?.remove()
         playerScanner?.cancel()
     }
 
