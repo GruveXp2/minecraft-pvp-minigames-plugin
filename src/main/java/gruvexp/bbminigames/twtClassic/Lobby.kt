@@ -16,7 +16,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import java.time.Duration
-import java.util.*
+import java.util.UUID
 import kotlin.math.max
 
 class Lobby(val id: Int) {
@@ -159,15 +159,9 @@ class Lobby(val id: Int) {
     }
 
     fun reset() {
-        HashSet(players.keys).forEach { id ->
-            players[id]!!.destroy()
-            players.remove(id)
-            BotBows.unRegisterPlayerLobby(id)
-        }
+        players.keys.forEach { id -> players[id]!!.reset() }
 
         botBowsGame = null
-        settings = Settings(this)
-        settings.initMenus()
         BotBows.lobbyMenu.updateLobbyItem(this)
     }
 

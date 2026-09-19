@@ -41,9 +41,9 @@ class TestCommand : CommandExecutor {
             when (args[0]) {
                 "td" -> {
                     val test = ZTesting() // ai test
-                    val result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA);
-                    display = ResultDisplay(p.location.add(p.location.getDirection().multiply(3)).add(0.0, 3.0, 0.0).setRotation(0f, 0f), result);
-                    BotBows.debugMessage("spawned it in");
+                    val result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA)
+                    display = ResultDisplay(p.location.add(p.location.getDirection().multiply(3)).add(0.0, 3.0, 0.0).setRotation(0f, 0f), result)
+                    BotBows.debugMessage("spawned it in")
                 }
                 "tde" -> display!!.deathsTab.isExpanded = !display!!.deathsTab.isExpanded
                 "tde2" -> display!!.abilityTab!!.isExpanded = !display!!.abilityTab!!.isExpanded

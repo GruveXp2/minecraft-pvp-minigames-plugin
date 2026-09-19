@@ -1,6 +1,5 @@
 package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.listeners.AbilityListener.Companion.onAbilityUse
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.Lobby
 import org.bukkit.Material
@@ -40,7 +39,7 @@ class RightClickListener : Listener {
                 val lobby = BotBows.getLobby(p) ?: return
                 if (lobby.isGameActive) e.isCancelled = true
             }
-            else -> onAbilityUse(e)
+            else -> AbilityListener.onAbilityUse(e)
         }
     }
 }

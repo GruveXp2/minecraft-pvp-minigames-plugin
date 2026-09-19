@@ -131,10 +131,11 @@ class BotBowsPlayer {
         isDamaged = false
     }
 
-    fun reset() {
+    fun reset() { // when the battle is done and the player will show up in the lobby again
         sneakManager?.destroy()
         avatar.reset()
         karmaAura = false
+        abilities.values.forEach { it.obtain() }
     }
 
     fun initBattle(teamManager: TeamManager) {

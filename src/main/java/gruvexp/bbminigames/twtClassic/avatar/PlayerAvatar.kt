@@ -94,23 +94,28 @@ class PlayerAvatar : BotBowsAvatar {
     }
 
     override fun destroy() {
-        reset()
+        cleanupBattle()
         player.inventory.setItem(0, BotBows.MENU_ITEM)
+        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = 20.0
     }
 
     override fun reset() {
+        cleanupBattle()
+        player.inventory.setItem(0, BotBows.SETTINGS_ITEM)
+        player.inventory.setItem(4, Lobby.NOT_READY)
+    }
+
+    fun cleanupBattle() {
         player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
         player.inventory.clear()
         player.isGlowing = false
         player.isInvulnerable = false
-        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = 20.0
-        player.gameMode = GameMode.SPECTATOR
         hazardBars.values.forEach { it.removeViewer(player) }
         sneakBar.removeViewer(player)
     }
 
     override fun readyBattle(teamManager: TeamManager) {
-        player.inventory.remove(Lobby.READY.clone()) // removes ready up item
+        player.inventory.remove(Lobby.READY) // removes ready up item
         this.teamManager = teamManager
     }
 

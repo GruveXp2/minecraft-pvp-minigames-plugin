@@ -2,7 +2,7 @@ package gruvexp.bbminigames.twtClassic
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
-import gruvexp.bbminigames.menu.Menu.Companion.makeItem
+import gruvexp.bbminigames.menu.Menu
 import gruvexp.bbminigames.menu.menus.GameMenu
 import gruvexp.bbminigames.menu.menus.LobbyMenu
 import net.kyori.adventure.text.Component
@@ -36,8 +36,8 @@ object BotBows {
 
     private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
 
-    val MENU_ITEM = makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
-    val SETTINGS_ITEM = makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
+    val MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
+    val SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
 
     const val HIT_DISABLED_ITEM_TICKS: Int = 40
 
