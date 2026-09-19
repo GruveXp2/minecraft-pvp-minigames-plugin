@@ -61,7 +61,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
 
     open fun use() {
         val game = bp.lobby.botBowsGame ?: return
-        if (game.canMove) return  // null check used when testing ability outside of match
+        if (!game.canMove) return // cant use abilitis in the game countdown
 
         if (type.category == AbilityCategory.DAMAGING) {
             bp.loseWeaponAbilities()
