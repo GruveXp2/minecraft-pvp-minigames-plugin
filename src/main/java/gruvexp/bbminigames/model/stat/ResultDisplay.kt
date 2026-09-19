@@ -81,7 +81,9 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         tabs.add(tab)
     }
 
-    val abilityTab: AbilityTab? = null
+    val abilityTab: AbilityTab? = if (matchResult.playerStats.values.any { it.abilitySuccesses.isNotEmpty() }) AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
+        tabs.add(tab)
+    } else null
 
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
         text(Component.text(" "))
@@ -130,10 +132,6 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
         displays.addAll(listOf(titleBgDisplay, titleDisplay, team1BgDisplay, team2BgDisplay))
         playerTab.init()
         tabs.forEach { it.init() }
-
-        if (matchResult.playerStats.values.any { it.abilitySuccesses.isNotEmpty() }) AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
-            tabs.add(tab)
-        }
 
         listOf(team1BgDisplay, team2BgDisplay).forEach { it.interpolationDuration = ANIMATION_TICKS }
 

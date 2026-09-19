@@ -32,14 +32,19 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.max
 import kotlin.math.min
 
-//import gruvexp.bbminigames.ZTesting;
-//import gruvexp.bbminigames.model.stat.MatchResult;
+import gruvexp.bbminigames.ZTesting
 class TestCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val p = sender as? Player ?: Bukkit.getPlayer("GruveXp")!!
 
         if (args.isNotEmpty()) {
             when (args[0]) {
+                "td" -> {
+                    val test = ZTesting() // ai test
+                    val result = test.createDummyMatchResult(BotBowsMap.CLASSIC_ARENA);
+                    display = ResultDisplay(p.location.add(p.location.getDirection().multiply(3)).add(0.0, 3.0, 0.0).setRotation(0f, 0f), result);
+                    BotBows.debugMessage("spawned it in");
+                }
                 "tde" -> display!!.deathsTab.isExpanded = !display!!.deathsTab.isExpanded
                 "tde2" -> display!!.abilityTab!!.isExpanded = !display!!.abilityTab!!.isExpanded
                 "end_round" -> {
