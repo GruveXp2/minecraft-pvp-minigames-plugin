@@ -50,7 +50,6 @@ class BotBowsPlayer {
     private val abilities: MutableMap<AbilityType, Ability> = mutableMapOf()
     val equippedAbilities: Set<AbilityType>
         get() = abilities.keys
-    var hasKarmaEffect = false
 
     constructor(player: Player, lobbySettings: Settings) {
         avatar = PlayerAvatar(player, this)
@@ -135,7 +134,7 @@ class BotBowsPlayer {
     fun reset() {
         sneakManager?.destroy()
         avatar.reset()
-        hasKarmaEffect = false
+        karmaAura = false
     }
 
     fun initBattle(teamManager: TeamManager) {
@@ -292,7 +291,7 @@ class BotBowsPlayer {
         hp = 0
         lobby.messagePlayers(deathMessage)
         abilities.values.forEach { it.cooldownTickRate = 20 }
-        hasKarmaEffect = false
+        karmaAura = false
         lobby.check4Elimination(this)
     }
 

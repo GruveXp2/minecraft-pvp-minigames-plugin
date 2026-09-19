@@ -8,7 +8,7 @@ import org.bukkit.Bukkit
 
 class KarmaPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.KARMA_POTION) {
     override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
-        bp.hasKarmaEffect = true
+        bp.karmaAura = true
         players.forEach { it.karmaAura = true }
 
         Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { bp.karmaAura = false }, 20L * DURATION)
