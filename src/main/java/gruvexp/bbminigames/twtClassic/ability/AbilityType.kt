@@ -105,7 +105,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     ),
     LINGERING_POTION(
         makeLingeringPotion(),
-        LingeringPotionTrap.DURATION + 5, "CANDLE", AbilityCategory.TRAP, AbilityEffect.DEBUFF
+        5, "CANDLE", AbilityCategory.TRAP, AbilityEffect.DEBUFF
     );
 
     val displayName: String

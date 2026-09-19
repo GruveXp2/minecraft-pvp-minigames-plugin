@@ -23,6 +23,9 @@ import org.bukkit.scheduler.BukkitRunnable
 
 open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
     : Ability(bp, hotBarSlot, AbilityType.LINGERING_POTION), OnLingeringPotionUse {
+
+    var currentCloud: AreaEffectCloud? = null
+
     fun addSizeIncreaseAreaEffect(loc: Location) {
         val throwerBp = bp
         object : BukkitRunnable() {
@@ -62,9 +65,11 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
     }
 
     override fun onSplash(e: LingeringPotionSplashEvent) {
-        val cloud = e.areaEffectCloud
-        cloud.reapplicationDelay = EFFECT_DURATION * 10
-        cloudOwners[cloud] = bp
+        currentCloud?.duration = 0
+        currentCloud = e.areaEffectCloud.apply {
+            reapplicationDelay = EFFECT_DURATION * 10
+            cloudOwners[this] = bp
+        }
 
         val potion = e.entity
         val hasUnluck = potion.effects.any { it.type == PotionEffectType.UNLUCK }
