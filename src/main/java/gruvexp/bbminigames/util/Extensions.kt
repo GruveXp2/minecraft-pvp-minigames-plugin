@@ -18,10 +18,13 @@ inline fun <reified T : BlockData> Block.editData(action: T.() -> Unit) {
 }
 
 fun TextColor.lighten(factor: Float): TextColor {
+    var r = red()
+    var g = green()
+    var b = blue()
 
-    val r = ((255 - red()) * factor)
-    val g = ((255 - green()) * factor)
-    val b = ((255 - blue()) * factor)
+    r += ((255 - red()) * factor).toInt()
+    g += ((255 - green()) * factor).toInt()
+    b += ((255 - blue()) * factor).toInt()
 
     return TextColor.color(r, g, b)
 }
