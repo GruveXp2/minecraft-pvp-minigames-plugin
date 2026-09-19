@@ -19,13 +19,11 @@ class BotBowsBoard(val lobby: Lobby) {
     var teamManager: TeamManager? = null
         private set
 
-    fun team1(): BotBowsTeam {
-        return lobby.settings.team1
-    }
+    private val team1: BotBowsTeam
+        get() = lobby.settings.team1
 
-    fun team2(): BotBowsTeam {
-        return lobby.settings.team2
-    }
+    private val team2: BotBowsTeam
+        get() = lobby.settings.team1
 
     fun createBoard(): TeamManager {
         val board = Bukkit.getScoreboardManager().newScoreboard
@@ -39,13 +37,13 @@ class BotBowsBoard(val lobby: Lobby) {
         setScore("separator", Component.text("----------", NamedTextColor.GRAY), lobby.totalPlayers + 2)
         setScore(
             "team1_title",
-            Component.text("TEAM ${team1().displayName.uppercase()}", darkenColor(team1().color)),
+            Component.text("TEAM ${team1.displayName.uppercase()}", darkenColor(team1.color)),
             lobby.totalPlayers + 1
         )
         setScore(
             "team2_title",
-            Component.text("TEAM ${team2().displayName.uppercase()}", darkenColor(team2().color)),
-            team2().size()
+            Component.text("TEAM ${team2.displayName.uppercase()}", darkenColor(team2.color)),
+            team2.size()
         )
 
 
@@ -59,21 +57,21 @@ class BotBowsBoard(val lobby: Lobby) {
     }
 
     fun initPlayers() {
-        for (bp in team1().players) {
-            bp.avatar.setColor(team1().color)
+        for (bp in team1.players) {
+            bp.avatar.setColor(team1.color)
         }
-        for (bp in team2().players) {
-            bp.avatar.setColor(team2().color)
+        for (bp in team2.players) {
+            bp.avatar.setColor(team2.color)
         }
     }
 
     fun updatePlayerScore(bp: BotBowsPlayer) {
         val hp = bp.hp
         val maxHp = bp.settings.maxHealth
-        val playerLineIndex: Int = if (team1().hasPlayer(bp)) {
-            team1().getPlayerID(bp) + team2().size() + 1
+        val playerLineIndex: Int = if (team1.hasPlayer(bp)) {
+            team1.getPlayerID(bp) + team2.size() + 1
         } else {
-            team2().getPlayerID(bp)
+            team2.getPlayerID(bp)
         } // which line of the scoreboard the player stats will be shown
         val healthIcon = if (maxHp > 5) "▏" else "❤"
         val healthBar = Component.text(" ${healthIcon.repeat(hp)}", NamedTextColor.RED)
@@ -93,8 +91,8 @@ class BotBowsBoard(val lobby: Lobby) {
     }
 
     fun updateTeamScores() {
-        updateTeamScore(team1(), "team1_score", 4 + lobby.totalPlayers)
-        updateTeamScore(team2(), "team2_score", 3 + lobby.totalPlayers)
+        updateTeamScore(team1, "team1_score", 4 + lobby.totalPlayers)
+        updateTeamScore(team2, "team2_score", 3 + lobby.totalPlayers)
     }
 
     private fun updateTeamScore(team: BotBowsTeam, teamScoreId: String, score: Int) {
@@ -102,9 +100,9 @@ class BotBowsBoard(val lobby: Lobby) {
 
         val component = Component.text("${team.displayName}: ").append(
             if (winThreshold == 0) {
-                Component.text(team1().points, NamedTextColor.WHITE)
+                Component.text(team.points, NamedTextColor.WHITE)
             } else if (winThreshold >= 35) {
-                Component.text("${team1().points} / ", NamedTextColor.WHITE)
+                Component.text("${team.points} / ", NamedTextColor.WHITE)
                     .append(Component.text(winThreshold, NamedTextColor.GRAY))
             } else { // use lines with optimized width
                 val pointsSystem: String = getPointsSymbol(winThreshold)
