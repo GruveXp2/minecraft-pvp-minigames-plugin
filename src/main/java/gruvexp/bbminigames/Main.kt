@@ -162,7 +162,7 @@ class Main : JavaPlugin() {
             System.setOut(originalOut)
 
             // Return the captured output
-            return outputByteStream.toString().trim { it <= ' ' }
+            return "$outputByteStream".trim { it <= ' ' }
         } catch (e: Exception) {
             e.printStackTrace()
             return "Error capturing command output: ${e.message}"

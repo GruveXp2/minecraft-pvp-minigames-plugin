@@ -77,7 +77,7 @@ tasks.register("incrementBuildNumber") {
     doLast {
         val currentBuildNumber = buildNumberFile.readText().trim().toInt()
         val newBuildNumber = currentBuildNumber + 1
-        buildNumberFile.writeText(newBuildNumber.toString())
+        buildNumberFile.writeText("$newBuildNumber")
         println("Build number incremented to $newBuildNumber")
     }
 }
