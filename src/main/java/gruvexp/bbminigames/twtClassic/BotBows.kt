@@ -41,7 +41,7 @@ object BotBows {
 
     const val HIT_DISABLED_ITEM_TICKS: Int = 40
 
-    val GLOBAL_LOBBY_LOCATION = Location(Main.WORLD, -129.0, 39.0, -197.0)
+    val GLOBAL_LOBBY_LOCATION = Location(Main.WORLD, -128.5, 39.00, -196.5, -135f, 8.80f)
 
     private val botBow = ItemStack(Material.CROSSBOW).apply {
         editMeta(CrossbowMeta::class.java) {
