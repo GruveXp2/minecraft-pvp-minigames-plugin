@@ -18,6 +18,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.block.data.Lightable
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Creeper
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -100,9 +101,9 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
                 cancel()
                 explode()
             }
-            for (p in creeper.world.getNearbyEntitiesByType(Player::class.java, creeper.location, BLAST_RADIUS)) {
-                if (!p.hasLineOfSight(creeper)) continue
-                val bp = BotBows.getBotBowsPlayer(p) ?: continue
+            for (entity in creeper.world.getNearbyEntitiesByType(LivingEntity::class.java, creeper.location, BLAST_RADIUS)) {
+                if (!entity.hasLineOfSight(creeper)) continue
+                val bp = BotBows.getBotBowsPlayer(entity.uniqueId) ?: continue
                 if (bp.lobby != owner.lobby) continue
                 if (bp.team == owner.team && bp.avatar.location.distanceSquared(creeper.location) > 1) continue
                 if (!bp.isAlive) continue
