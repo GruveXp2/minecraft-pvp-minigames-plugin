@@ -106,6 +106,8 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
             bannedAbilities.addAll(banned)
             changed.forEach { notifyStatus(it) }
         }
+        isUniqueMode = preset.isUniqueMode
+        isRandomizerMode = preset.isRandomizedMode
     }
 
     fun isEquippedByTeam(bp: BotBowsPlayer, type: AbilityType): Boolean {

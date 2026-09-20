@@ -115,7 +115,9 @@ class Settings(val lobby: Lobby) {
             if (abilitySettings.isIndividualCooldown) {
                 players.associate { bp -> bp.avatar.uuid to bp.settings.abilityCooldownMultiplier }
             } else null,
-            bannedAbilities.ifEmpty { null }
+            bannedAbilities.ifEmpty { null },
+            abilitySettings.isUniqueMode,
+            abilitySettings.isRandomizerMode,
         )
         return BattlePreset(
             presetName,

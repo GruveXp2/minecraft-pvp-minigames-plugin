@@ -9,4 +9,6 @@ data class AbilityPreset(
     val cooldownMultiplier: Float?,
     val individualCooldownMultiplier: Map<UUID, Float>?,
     val bannedAbilities: Set<AbilityType>?,
+    val isUniqueMode: Boolean,
+    val isRandomizedMode: Boolean,
 )
