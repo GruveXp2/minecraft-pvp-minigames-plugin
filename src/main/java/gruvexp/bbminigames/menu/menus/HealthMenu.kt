@@ -171,17 +171,17 @@ class HealthMenu(settings: Settings)
     }
 
     override fun onIndividualSpeedToggle() {
-        if (settings.healthSettings.isIndividualMaxHealth) {
-            inventory.setItem(18, CUSTOM_HEALTH_ENABLED)
+        if (settings.healthSettings.isIndividualSpeed) {
+            inventory.setItem(18, CUSTOM_SPEED_ENABLED)
             inventory.setItem(19, VOID)
-            healthRow.show()
+            speedRow.show()
         } else {
-            inventory.setItem(18, CUSTOM_HEALTH_DISABLED)
+            inventory.setItem(18, CUSTOM_SPEED_DISABLED)
             inventory.setItem(19, VOID)
             inventory.setItem(25, VOID)
             inventory.setItem(26, VOID)
-            healthRow.hide()
-            healthSlider.setProgressSlots(settings.healthSettings.maxHealth)
+            speedRow.hide()
+            speedSlider.setProgressSlots(settings.healthSettings.speed)
         }
     }
 
@@ -201,8 +201,8 @@ class HealthMenu(settings: Settings)
         if (!settings.healthSettings.isIndividualSpeed) return
 
         val headItem = speedRow.getItem(bp) ?: return
-        headItem.amount = bp.settings.attackDamage
-
+        headItem.amount = bp.settings.speed
+        speedRow.displayRow()
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
@@ -211,16 +211,21 @@ class HealthMenu(settings: Settings)
 
         val damageHead = bp.avatar.headItem.apply { amount = bp.settings.attackDamage }
         damageRow.addItem(damageHead)
+
+        val speedHead = bp.avatar.headItem.apply { amount = bp.settings.speed }
+        speedRow.addItem(speedHead)
     }
 
     override fun removePlayer(bp: BotBowsPlayer) {
         healthRow.removeItem(bp)
         damageRow.removeItem(bp)
+        speedRow.removeItem(bp)
     }
 
     override fun updatePlayer(bp: BotBowsPlayer) {
         healthRow.editItem(bp) { displayName(bp.name) }
         damageRow.editItem(bp) { displayName(bp.name) }
+        speedRow.editItem(bp) { displayName(bp.name) }
     }
 
     companion object {

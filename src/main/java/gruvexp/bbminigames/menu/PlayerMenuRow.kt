@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType
 class PlayerMenuRow(inventory: Inventory, menuActionId: String, startSlot: Int, size: Int) :
     MenuRow(inventory, menuActionId, startSlot, size) {
     override fun addItem(item: ItemStack) {
-        require(item.type == Material.PLAYER_HEAD) { "The item must be a player head" }
+        require(item.type == Material.PLAYER_HEAD) { "The item must be a player head (was ${item.type})" }
         super.addItem(item)
     }
 
