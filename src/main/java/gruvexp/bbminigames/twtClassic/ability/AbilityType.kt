@@ -182,12 +182,12 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
 private fun makeBabyPotion(): ItemStack {
     val potion = ItemStack(Material.POTION)
     potion.editMeta(PotionMeta::class.java) {
-        it.addCustomEffect(PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, 4), true)
+        it.addCustomEffect(PotionEffect(PotionEffectType.SPEED, BabyPotion.DURATION * 20, BabyPotion.SPEED_LEVEL), true)
         it.customName(Component.text("Baby Potion").decoration(TextDecoration.ITALIC, false))
         it.lore(listOf(
             Component.text("Makes you small and fast"),
             Component.empty(),
-            getPotionEffectInfo("2x Speed"),
+            getPotionEffectInfo("+40% Speed"),
             getPotionEffectInfo("-30% Size"),
             getDurationInfo(BabyPotion.DURATION),
         ))

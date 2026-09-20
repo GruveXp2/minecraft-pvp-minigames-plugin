@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType
 class BabyPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.BABY_POTION) {
 
     public override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
-        bp.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 20, AMPLIFIER))
+        bp.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_LEVEL))
         bp.effectManager.applyScale(
             PlayerEffectManager.ScaleSource.BABY_POTION,
             0.66,
@@ -19,7 +19,7 @@ class BabyPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarS
         )
         registerSuccess()
         players.forEach {
-            it.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 15, 4))
+            it.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 15, SPEED_LEVEL))
             it.effectManager.applyScale(
                 PlayerEffectManager.ScaleSource.BABY_POTION,
                 0.75,
@@ -36,6 +36,6 @@ class BabyPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarS
 
     companion object {
         var DURATION: Int = 10
-        var AMPLIFIER: Int = 4
+        var SPEED_LEVEL: Int = 1
     }
 }

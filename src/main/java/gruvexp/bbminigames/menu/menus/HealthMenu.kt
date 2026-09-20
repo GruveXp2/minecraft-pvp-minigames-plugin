@@ -21,13 +21,15 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 class HealthMenu(settings: Settings)
-    : SettingsMenu(settings, Component.text("Health & Damage (3/6)"), 27), PlayerListMenu, HealthUpdateListener, PlayerHealthUpdateListener {
+    : SettingsMenu(settings, Component.text("Health, Damage, Speed (3/6)"), 36), PlayerListMenu, HealthUpdateListener, PlayerHealthUpdateListener {
     private val healthSlider: MenuSlider
     private val healthRow: PlayerMenuRow
     private val damageRow: PlayerMenuRow
+    private val speedSlider: MenuSlider
+    private val speedRow: PlayerMenuRow
 
     init {
-        setPageButtons(2, prevMenuButton = true, nextMenuButton = true)
+        setPageButtons(3, prevMenuButton = true, nextMenuButton = true)
         healthSlider = MenuSlider(
             inventory,
             MenuAction.SET_HEALTH.name,
@@ -37,12 +39,24 @@ class HealthMenu(settings: Settings)
             mutableListOf("1", "2", "3", "4", "5"),
             "Health"
         )
+        speedSlider = MenuSlider(
+            inventory,
+            MenuAction.SET_SPEED.name,
+            20,
+            Material.LIGHT_BLUE_STAINED_GLASS_PANE,
+            NamedTextColor.AQUA,
+            mutableListOf("1", "2", "3", "4", "5"),
+            "Speed"
+        )
         healthRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_HEALTH.name, 2, 5)
         damageRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_DAMAGE.name, 11, 7)
+        speedRow = PlayerMenuRow(inventory, MenuAction.SET_INDIVIDUAL_SPEED.name, 20, 5)
 
         onIndividualMaxHealthToggle()
         onMaxHealthChange()
         onCustomDamageToggle()
+        onIndividualSpeedToggle()
+        onSpeedChange()
     }
 
     override fun handleMenu(e: InventoryClickEvent) {
@@ -84,6 +98,21 @@ class HealthMenu(settings: Settings)
                 if (attackDamage > 5) attackDamage = 1
 
                 bp.settings.attackDamage = attackDamage
+            }
+            MenuAction.TOGGLE_INDIVIDUAL_SPEED -> healthSettings.isIndividualSpeed = !healthSettings.isIndividualSpeed
+            MenuAction.SET_SPEED -> {
+                val component = clickedItem.itemMeta.displayName() ?: return
+                val string = PlainTextComponentSerializer.plainText().serialize(component)
+                healthSettings.speed = string.toInt()
+            }
+            MenuAction.SET_INDIVIDUAL_SPEED -> {
+                val bp = getPlayerFromHead(clickedItem) ?: return
+
+                var speed = clickedItem.amount
+                speed += 1
+                if (speed > 5) speed = 1
+
+                bp.settings.speed = speed
             }
         }
     }
@@ -141,12 +170,39 @@ class HealthMenu(settings: Settings)
         }
     }
 
+    override fun onIndividualSpeedToggle() {
+        if (settings.healthSettings.isIndividualMaxHealth) {
+            inventory.setItem(18, CUSTOM_HEALTH_ENABLED)
+            inventory.setItem(19, VOID)
+            healthRow.show()
+        } else {
+            inventory.setItem(18, CUSTOM_HEALTH_DISABLED)
+            inventory.setItem(19, VOID)
+            inventory.setItem(25, VOID)
+            inventory.setItem(26, VOID)
+            healthRow.hide()
+            healthSlider.setProgressSlots(settings.healthSettings.maxHealth)
+        }
+    }
+
     override fun onAttackDamageChange(bp: BotBowsPlayer) {
         if (!settings.healthSettings.isCustomDamage) return
 
         val headItem = damageRow.getItem(bp) ?: return
         headItem.amount = bp.settings.attackDamage
         damageRow.displayRow()
+    }
+
+    override fun onSpeedChange() {
+        speedSlider.setProgressSlots(settings.healthSettings.speed)
+    }
+
+    override fun onSpeedChange(bp: BotBowsPlayer) {
+        if (!settings.healthSettings.isIndividualSpeed) return
+
+        val headItem = speedRow.getItem(bp) ?: return
+        headItem.amount = bp.settings.attackDamage
+
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
@@ -199,13 +255,32 @@ class HealthMenu(settings: Settings)
             Component.text("By enabling this, each player"),
             Component.text("can do different amounts of damage")
         )
+
+        private val CUSTOM_SPEED_DISABLED = makeItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Custom Speed", NamedTextColor.RED),
+            MenuAction.TOGGLE_INDIVIDUAL_SPEED.name,
+            STATUS_DISABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("can move at different speeds")
+        )
+
+        private val CUSTOM_SPEED_ENABLED = makeItem(
+            Material.LIME_STAINED_GLASS_PANE, Component.text("Custom Speed", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_INDIVIDUAL_SPEED.name,
+            STATUS_ENABLED,
+            Component.text("By enabling this, each player"),
+            Component.text("can move at different speeds")
+        )
     }
 
     private enum class MenuAction {
         SET_HEALTH,
+        SET_SPEED,
         SET_INDIVIDUAL_DAMAGE,
         SET_INDIVIDUAL_HEALTH,
+        SET_INDIVIDUAL_SPEED,
         TOGGLE_INDIVIDUAL_HEALTH,
-        TOGGLE_CUSTOM_DAMAGE
+        TOGGLE_CUSTOM_DAMAGE,
+        TOGGLE_INDIVIDUAL_SPEED,
     }
 }

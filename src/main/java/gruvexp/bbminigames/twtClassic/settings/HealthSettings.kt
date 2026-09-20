@@ -15,6 +15,18 @@ class HealthSettings(private val getPlayerSettings: () -> Iterable<PlayerSetting
             listener?.onIndividualMaxHealthToggle()
             getPlayerSettings().forEach { bp -> bp.maxHealth = maxHealth }
         }
+    var speed = 3
+        set(value) {
+            field = value
+            listener?.onSpeedChange()
+            if (!isIndividualSpeed) getPlayerSettings().forEach { bp -> bp.speed = value }
+        }
+    var isIndividualSpeed = false
+        set(value) {
+            field = value
+            listener?.onIndividualSpeedToggle()
+            getPlayerSettings().forEach { bp -> bp.maxHealth = maxHealth }
+        }
     var isCustomDamage = false
         set(value) {
             field = value

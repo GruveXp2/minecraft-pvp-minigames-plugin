@@ -21,6 +21,7 @@ interface BotBowsAvatar {
     fun revive()
     fun setHp(hp: Int)
     fun setMaxHp(maxHp: Int)
+    fun setSpeed(speed: Int)
     val armor: ArmorSet
     fun equipFullArmor()
     fun destroy() // removes the player from the game

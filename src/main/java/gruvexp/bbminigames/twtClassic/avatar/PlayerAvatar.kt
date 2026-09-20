@@ -78,6 +78,10 @@ class PlayerAvatar : BotBowsAvatar {
         setHp(maxHp)
     }
 
+    override fun setSpeed(speed: Int) {
+        player.getAttribute(Attribute.MOVEMENT_SPEED)!!.baseValue = 0.1 + speed * 0.02
+    }
+
     override val armor: ArmorSet
         get() {
         val armor = player.inventory.armorContents
@@ -97,6 +101,7 @@ class PlayerAvatar : BotBowsAvatar {
         cleanupBattle()
         player.inventory.setItem(0, BotBows.MENU_ITEM)
         player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = 20.0
+        player.getAttribute(Attribute.MOVEMENT_SPEED)!!.baseValue = 0.1
     }
 
     override fun reset() {

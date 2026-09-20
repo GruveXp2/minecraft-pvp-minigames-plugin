@@ -339,6 +339,7 @@ class Settings(val lobby: Lobby) {
         players.forEach { abilityMenu.addPlayer(it) }
         players.forEach { it.settings.addListener(bp, healthMenu, abilityMenu) }
         bp.settings.maxHealth = healthSettings.maxHealth
+        bp.settings.speed = healthSettings.speed
     }
 
     fun leaveGame(bp: BotBowsPlayer) {

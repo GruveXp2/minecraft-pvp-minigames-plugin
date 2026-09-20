@@ -78,6 +78,9 @@ class NpcAvatar : BotBowsAvatar {
         setHp(maxHp)
     }
 
+    override fun setSpeed(speed: Int) {
+    }
+
     override val armor: ArmorSet
         get() {
             val armor = mannequin.equipment.armorContents
