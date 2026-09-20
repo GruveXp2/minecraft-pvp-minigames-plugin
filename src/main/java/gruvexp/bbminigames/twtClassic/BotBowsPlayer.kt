@@ -56,7 +56,6 @@ class BotBowsPlayer {
         plainName = player.name
         settings = PlayerSettings(this, lobbySettings)
         lobby = lobbySettings.lobby
-        hp = settings.maxHealth
         effectManager = PlayerEffectManager(this)
     }
 
@@ -65,7 +64,6 @@ class BotBowsPlayer {
         plainName = mannequin.name
         settings = PlayerSettings(this, lobbySettings)
         lobby = lobbySettings.lobby
-        hp = settings.maxHealth
         effectManager = PlayerEffectManager(this)
         setReady(true, 4) // bots are always ready for match
     }
