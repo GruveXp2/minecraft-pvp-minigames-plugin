@@ -38,6 +38,7 @@ open class BotBowsGame(val settings: Settings) {
     private var startRoundTask: BukkitTask? = null
 
     var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
+    var resultDisplay: ResultDisplay? = null
 
     open fun leaveGame(bp: BotBowsPlayer) {
         val team = bp.team
@@ -297,8 +298,8 @@ open class BotBowsGame(val settings: Settings) {
         statsLocation.y = statsLocY + 3.0
         statsLocation.pitch = 0f
 
-        val resultDisplay = ResultDisplay(statsLocation, matchResult)
-        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { resultDisplay.remove() }, 60 * 20L)
+        resultDisplay = ResultDisplay(statsLocation, matchResult)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { cleanupResultDisplay() }, 60 * 20L)
     }
 
     fun endGame(ender: BotBowsPlayer) {
@@ -318,5 +319,10 @@ open class BotBowsGame(val settings: Settings) {
         } else {
             postGame(team2)
         }
+    }
+
+    fun cleanupResultDisplay() {
+        resultDisplay?.remove()
+        resultDisplay = null
     }
 }

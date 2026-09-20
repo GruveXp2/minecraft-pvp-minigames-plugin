@@ -67,6 +67,7 @@ class Main : JavaPlugin() {
             if (lobby.isGameActive) {
                 logger.info("Stopping active game...")
                 lobby.botBowsGame!!.endGame()
+                lobby.botBowsGame!!.cleanupResultDisplay()
             } else {
                 lobby.reset()
             }
