@@ -98,7 +98,7 @@ object BotBows {
     fun accessSettings(p: Player) {
         val lobby = getLobby(p) ?: run {
             p.sendMessage(Component.text("You have to join to access the settings", NamedTextColor.RED))
-            return
+            return@accessSettings
         }
         if (lobby.isGameActive) {
             p.sendMessage(Component.text("Cant change settings, the game is already ongoing!", NamedTextColor.RED))
