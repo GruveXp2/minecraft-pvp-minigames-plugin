@@ -11,5 +11,6 @@ interface AbilityUpdateListener {
     fun onIndividualCooldownToggle()
     fun onUniqueModeToggle()
     fun onUniqueAbilityOccupancyChange(type: AbilityType, bp: BotBowsPlayer, equipped: Boolean)
+    fun onRandomizerModeToggle()
     fun onAbilityStatusChange(type: AbilityType)
 }

@@ -8,6 +8,7 @@ import gruvexp.bbminigames.tasks.BotBowsGiver
 import gruvexp.bbminigames.tasks.RoundCountdown
 import gruvexp.bbminigames.tasks.RoundTimer
 import gruvexp.bbminigames.twtClassic.*
+import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.hazard.Hazard
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
@@ -77,7 +78,17 @@ open class BotBowsGame(val settings: Settings) {
 
     open fun startRound() {
         round++
-        // alle har fullt med liv
+        val abilitySettings = settings.abilitySettings
+        if (abilitySettings.isRandomizerMode) {
+            players.forEach { bp ->
+                bp.unequipAbilities(true)
+                AbilityType.entries
+                    .filter { it !in abilitySettings.getBanned() }
+                    .filter { !abilitySettings.isUniqueMode || !abilitySettings.isEquippedByTeam(bp, it)}
+                    .shuffled().take(bp.settings.maxAbilities)
+                    .forEach { bp.equipAbility(it) }
+            }
+        }
         players.forEach {
             it.revive()
             it.readyAbilities()
@@ -254,7 +265,7 @@ open class BotBowsGame(val settings: Settings) {
                 )
             )
             showPostGameTitle(winningTeam)
-            showPostGameStats(winningTeam)
+            if (Main.plugin.isEnabled) showPostGameStats(winningTeam)
         }
 
         if (!TestCommand.debugging) Main.plugin.statsService.saveMatchResult(matchResult)

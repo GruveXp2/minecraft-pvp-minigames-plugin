@@ -111,7 +111,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             }
             MenuAction.TOGGLE_BAN_HAMMER -> isToggleAbilityMode = !isToggleAbilityMode
             MenuAction.RANDOMIZE_ABILITIES -> {
-                bp.equippedAbilities.forEach { bp.unequipAbility(it, true) }
+                bp.unequipAbilities(true)
 
                 AbilityType.entries.shuffled()
                     .filter { !abilitySettings.isBanned(it) }
@@ -120,6 +120,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             }
             MenuAction.EDIT_PLAYER_ABILITIES -> clicker.sendMessage(Component.text("This feature isnt added yet", NamedTextColor.RED))
             MenuAction.TOGGLE_UNIQUE_MODE -> with(abilitySettings) { isUniqueMode = !isUniqueMode }
+            MenuAction.TOGGLE_RANDOMIZER_MODE -> with(abilitySettings) { isRandomizerMode = !isRandomizerMode }
             MenuAction.CLICK_ABILITY, MenuAction.CLICK_AIR -> handleAbilityClick(e, clicker, bp, clickedItem)
         }
     }
@@ -233,6 +234,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             abilityRow.show()
             inventory.setItem(36, MOD_TOGGLE)
             inventory.setItem(45, RANDOMIZE_ABILITIES)
+            onRandomizerModeToggle()
             inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES)
         } else {
             abilityRow.hide()
@@ -242,6 +244,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             // fyller med gråe glassvinduer der settings var
             updateMaxAbilitiesUIState()
             inventory.setItem(0, DISABLED_SLOT)
+            inventory.setItem(46, DISABLED_SLOT)
             inventory.setItem(53, DISABLED_SLOT)
             inventory.setItem(18, DISABLED_SLOT)
             for (i in 20..26) inventory.setItem(i, DISABLED_SLOT)
@@ -350,6 +353,14 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             else -> VOID
         }
         inventory.setItem(abilitySlot - 9, statusItem)
+    }
+
+    override fun onRandomizerModeToggle() {
+        if (settings.abilitySettings.isRandomizerMode) {
+            inventory.setItem(46, RANDOMIZER_MODE_ENABLED)
+        } else {
+            inventory.setItem(46, RANDOMIZER_MODE_DISABLED)
+        }
     }
 
     fun updateAbilityStatuses() {
@@ -468,6 +479,24 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             Component.text("can can only be equipped by max team member")
         )
 
+        private val RANDOMIZER_MODE_DISABLED = makeItem(
+            Material.RED_STAINED_GLASS_PANE,
+            Component.text("Randomizer mode", NamedTextColor.RED),
+            MenuAction.TOGGLE_RANDOMIZER_MODE.name,
+            STATUS_DISABLED,
+            Component.text("When enabled, each player will get"),
+            Component.text("random abilities each round")
+        )
+
+        private val RANDOMIZER_MODE_ENABLED = makeItem(
+            Material.LIME_STAINED_GLASS_PANE,
+            Component.text("Randomizer mode", NamedTextColor.GREEN),
+            MenuAction.TOGGLE_RANDOMIZER_MODE.name,
+            STATUS_ENABLED,
+            Component.text("When enabled, each player will get"),
+            Component.text("random abilities each round")
+        )
+
         val MOD_TOGGLE = makeItem(
             Material.MACE,
             Component.text("Mod Toggle"),
@@ -512,6 +541,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
         TOGGLE_BAN_HAMMER,
         CLICK_ABILITY,
         RANDOMIZE_ABILITIES,
+        TOGGLE_RANDOMIZER_MODE,
         EDIT_PLAYER_ABILITIES,
         TOGGLE_UNIQUE_MODE,
         CLICK_AIR,

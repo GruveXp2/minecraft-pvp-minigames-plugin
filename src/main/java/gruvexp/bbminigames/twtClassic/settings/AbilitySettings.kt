@@ -46,6 +46,12 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
             notifyUniqueModeToggle()
         }
 
+    var isRandomizerMode = false
+        set(value) {
+            field = value
+            notifyRandomizerModeToggle()
+        }
+
     private val teamAbilities: Map<TeamSide, MutableMap<AbilityType, BotBowsPlayer>> = mapOf(
         TeamSide.TEAM_1 to mutableMapOf(),
         TeamSide.TEAM_2 to mutableMapOf())
@@ -129,6 +135,10 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
 
     private fun notifyUniqueModeToggle() {
         listeners.values.forEach { it.onUniqueModeToggle() }
+    }
+
+    private fun notifyRandomizerModeToggle() {
+        listeners.values.forEach { it.onRandomizerModeToggle() }
     }
 
     private fun notifyStatus(type: AbilityType) {

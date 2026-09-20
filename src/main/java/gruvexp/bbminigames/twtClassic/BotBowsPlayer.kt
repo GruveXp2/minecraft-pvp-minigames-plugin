@@ -49,7 +49,7 @@ class BotBowsPlayer {
 
     private val abilities: MutableMap<AbilityType, Ability> = mutableMapOf()
     val equippedAbilities: Set<AbilityType>
-        get() = abilities.keys
+        get() = abilities.keys.toSet()
 
     constructor(player: Player, lobbySettings: Settings) {
         avatar = PlayerAvatar(player, this)
@@ -87,7 +87,7 @@ class BotBowsPlayer {
         team.leave(this)
         avatar.destroy()
         effectManager.clear(true)
-        abilities.keys.forEach { unequipAbility(it, true) }
+        unequipAbilities(true)
     }
 
     fun turnIntoBot(): UUID {
@@ -232,6 +232,10 @@ class BotBowsPlayer {
             )
         }
         abilityMenu?.onAbilityStatusChange(type)
+    }
+
+    fun unequipAbilities(hideMessage: Boolean = false) {
+        equippedAbilities.forEach { unequipAbility(it, hideMessage) }
     }
 
     fun hasAbilityEquipped(type: AbilityType?): Boolean {
