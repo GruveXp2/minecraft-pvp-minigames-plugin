@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
@@ -47,9 +48,10 @@ class BotBowsBoard(val lobby: Lobby) {
         )
 
 
-        for (p in Bukkit.getOnlinePlayers()) {
-            p.scoreboard = board
-        }
+        (team1.players + team2.players)
+            .map { it.avatar.entity }
+            .filterIsInstance<Player>()
+            .forEach { addViewer(it) }
         objective.displaySlot = DisplaySlot.SIDEBAR
 
         teamManager = TeamManager(board)
@@ -63,6 +65,10 @@ class BotBowsBoard(val lobby: Lobby) {
         for (bp in team2.players) {
             bp.avatar.setColor(team2.color)
         }
+    }
+
+    fun addViewer(p: Player) {
+        p.scoreboard = objective.scoreboard!!
     }
 
     fun updatePlayerScore(bp: BotBowsPlayer) {

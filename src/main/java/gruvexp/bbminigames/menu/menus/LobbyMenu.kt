@@ -24,15 +24,24 @@ class LobbyMenu : Menu(Component.text("Join Lobby"), 9) {
         val p = e.whoClicked as Player
 
         val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
+
+        val displayName = clickedItem.itemMeta.displayName() ?: return
+        val text = PlainTextComponentSerializer.plainText().serialize(displayName)
+        val lobbyId = text.substringAfter('#').trim().toInt() - 1
+        val lobby = BotBows.getLobby(lobbyId)
+
         when (action) {
             MenuAction.JOIN_LOBBY -> {
-                val displayName = clickedItem.itemMeta.displayName() ?: return
-                val text = PlainTextComponentSerializer.plainText().serialize(displayName)
-                val lobbyID = text.substringAfter('#').trim().toInt() - 1
-                BotBows.getLobby(lobbyID).joinGame(p)
+                lobby.joinGame(p)
             }
             MenuAction.FULL_LOBBY -> p.sendMessage(Component.text("Cant join lobby, lobby is full!", NamedTextColor.YELLOW))
-            MenuAction.CLOSED_LOBBY -> p.sendMessage(Component.text("Cant join lobby, game is ongoing!", NamedTextColor.YELLOW))
+            MenuAction.CLOSED_LOBBY -> {
+                if (e.isLeftClick) {
+                    p.sendMessage(Component.text("Cant join lobby, game is ongoing!", NamedTextColor.YELLOW))
+                } else if (e.isRightClick) {
+                    lobby.addSpectator(p)
+                }
+            }
         }
     }
 
@@ -41,7 +50,11 @@ class LobbyMenu : Menu(Component.text("Join Lobby"), 9) {
         val lobbyItem: ItemStack =
         if (lobby.isGameActive) {
             makeItem(
-                Material.RED_CONCRETE, displayName, MenuAction.CLOSED_LOBBY.name, Component.text("Closed: active game")
+                Material.RED_CONCRETE,
+                displayName,
+                MenuAction.CLOSED_LOBBY.name,
+                Component.text("Closed: active game"),
+                Component.text("Right click to spectate game", NamedTextColor.DARK_AQUA)
             )
         } else {
             when (lobby.totalPlayers) {

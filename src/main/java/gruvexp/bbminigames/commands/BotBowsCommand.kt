@@ -36,6 +36,10 @@ class BotBowsCommand : CommandExecutor {
             }
             "leave" -> lobby.leaveGame(p)
             "exit_view_mode" -> bp.exitViewMode()
+            "stop_spectating_game" -> {
+                val spectatingLobby = BotBows.getSpectatingLobby(p) ?: return Component.text("Nothing happened, you dont currently spectate a game", NamedTextColor.YELLOW)
+                spectatingLobby.removeSpectator(p)
+            }
 
             "save_preset" -> {
                 if (args.size == 1) return Component.text("You must specify a name for the preset!", NamedTextColor.RED)

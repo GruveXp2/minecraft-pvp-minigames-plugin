@@ -69,6 +69,7 @@ class JoinLeaveListener : Listener {
     fun onLeave(e: PlayerQuitEvent) {
         if (Bukkit.getOnlinePlayers().size == 1) ShutdownManager.scheduleShutdown()
         val p = e.player
+        BotBows.getSpectatingLobby(p)?.removeSpectator(p)
         val bp = BotBows.getBotBowsPlayer(p) ?: return
         bp.lobby.disconnect(bp)
     }

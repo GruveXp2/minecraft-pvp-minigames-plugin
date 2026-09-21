@@ -34,6 +34,7 @@ object BotBows {
     val lobbies = arrayOf(Lobby(0), Lobby(1), Lobby(2))
 
     private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
+    private val spectatingPlayers = mutableMapOf<Player, Lobby>() // liste med alle players som er i gamet
 
     val MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
     val SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
@@ -68,9 +69,18 @@ object BotBows {
         players.remove(playerId)
     }
 
+    fun registerSpectatorLobby(p: Player, lobby: Lobby) {
+        spectatingPlayers[p] = lobby
+    }
+
+    fun unRegisterSpectatorLobby(p: Player) {
+        spectatingPlayers.remove(p)
+    }
+
     fun getLobby(id: Int): Lobby = lobbies[id]
     fun getLobby(p: Player): Lobby? = getLobby(p.uniqueId)
     fun getLobby(playerId: UUID): Lobby? = players[playerId]
+    fun getSpectatingLobby(p: Player): Lobby? = spectatingPlayers[p]
 
     fun getBotBowsPlayer(p: Player): BotBowsPlayer? = getBotBowsPlayer(p.uniqueId) // gets the BotBowsPlayer that is used by the lobby the player is in
     fun getBotBowsPlayer(playerId: UUID): BotBowsPlayer? = getLobby(playerId)?.getBotBowsPlayer(playerId) // gets the BotBowsPlayer that is used by the lobby the player is in

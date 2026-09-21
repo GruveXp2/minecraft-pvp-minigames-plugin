@@ -9,9 +9,12 @@ import gruvexp.bbminigames.twtClassic.botbowsGames.SteamPunkGame
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
@@ -20,7 +23,8 @@ import java.util.UUID
 import kotlin.math.max
 
 class Lobby(val id: Int) {
-    private val players = HashMap<UUID, BotBowsPlayer>()
+    private val players = mutableMapOf<UUID, BotBowsPlayer>()
+    private val spectators = mutableSetOf<Player>()
     var settings: Settings
     var botBowsGame: BotBowsGame? = null
     val isGameActive: Boolean  // hvis spillet har starta, så kan man ikke gjøre ting som /settings
@@ -32,19 +36,21 @@ class Lobby(val id: Int) {
         settings.initMenus()
     }
 
-
     fun joinGame(p: Player) {
         if (isGameActive) {
             p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED))
+            p.sendMessage(Component.text("If you want to, you can spectate the game by right clicking the lobby"))
             return
         }
         BotBows.getLobby(p)?.let { lobby ->
             if (lobby == this) {
                 p.sendMessage(Component.text("You already joined!", NamedTextColor.RED))
-                return
+                return@joinGame
             }
             lobby.leaveGame(p)
         }
+        BotBows.getSpectatingLobby(p)?.removeSpectator(p)
+
         p.inventory.clear()
         settings.joinGame(p)
         BotBows.lobbyMenu.updateLobbyItem(this)
@@ -158,6 +164,7 @@ class Lobby(val id: Int) {
 
     fun reset() {
         players.keys.forEach { id -> players[id]!!.reset() }
+        spectators.toSet().forEach { removeSpectator(it) }
 
         botBowsGame = null
         BotBows.lobbyMenu.updateLobbyItem(this)
@@ -165,15 +172,16 @@ class Lobby(val id: Int) {
 
     fun messagePlayers(message: Component) {
         settings.getPlayers().forEach { it.avatar.message(message) }
+        spectators.forEach { it.sendMessage(message) }
     }
 
     fun titlePlayers(component: Component, seconds: Long) {
-        for (bp in players.values) {
-            bp.avatar.showTitle(Title.title(
-                component, Component.empty(),
-                Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))
-            ))
-        }
+        val title = Title.title(
+            component, Component.empty(),
+            Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(seconds), Duration.ofMillis(250))
+        )
+        players.values.forEach { it.avatar.showTitle(title) }
+        spectators.forEach { it.showTitle(title) }
     }
 
     fun check4Elimination(dedPlayer: BotBowsPlayer) {
@@ -195,6 +203,56 @@ class Lobby(val id: Int) {
             messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN))
             settings.finishMapSelection()
             startGame()
+        }
+    }
+
+    fun addSpectator(p: Player) {
+        BotBows.getLobby(p)?.let {
+            p.sendMessage(Component.text("You cant spectate a game when you are in a lobby", NamedTextColor.YELLOW))
+            return@addSpectator
+        }
+        val currentSpectatingLobby = BotBows.getSpectatingLobby(p)
+        if (currentSpectatingLobby == this) {
+            p.sendMessage(Component.text("You are already spectating this lobby", NamedTextColor.YELLOW))
+            return
+        }
+        BotBows.getSpectatingLobby(p)?.removeSpectator(p)
+
+        spectators.add(p)
+        p.gameMode = GameMode.SPECTATOR
+        p.teleport(settings.mapSettings.currentMap.viewingLocation)
+        botBowsGame?.botBowsBoard?.addViewer(p)
+        BotBows.registerSpectatorLobby(p, this)
+        p.sendMessage(Component.text("You are now spectating ")
+            .append(Component.text("Lobby $id", NamedTextColor.GREEN))
+        )
+        players.values.forEach {
+            it.avatar.message(p.displayName()
+                .append(Component.text(" is now spectating the game", NamedTextColor.YELLOW))
+            )
+        }
+        p.sendMessage(Component.text("To stop spectating, run ")
+            .append(Component.text("/botbows stop_spectating_game", NamedTextColor.AQUA, TextDecoration.UNDERLINED)
+                .clickEvent(ClickEvent.runCommand("/botbows stop_spectating_game"))
+            )
+        )
+    }
+
+    fun removeSpectator(p: Player) {
+        if (BotBows.getSpectatingLobby(p) != this) return
+
+        spectators.remove(p)
+        p.gameMode = GameMode.ADVENTURE
+        p.teleport(BotBows.GLOBAL_LOBBY_LOCATION)
+        p.scoreboard = Bukkit.getScoreboardManager().newScoreboard
+        BotBows.unRegisterSpectatorLobby(p)
+        p.sendMessage(Component.text("You are lo longer spectating ")
+            .append(Component.text("Lobby $id", NamedTextColor.GREEN))
+        )
+        players.values.forEach {
+            it.avatar.message(p.displayName()
+                .append(Component.text(" is no longer spectating the game", NamedTextColor.YELLOW))
+            )
         }
     }
 
