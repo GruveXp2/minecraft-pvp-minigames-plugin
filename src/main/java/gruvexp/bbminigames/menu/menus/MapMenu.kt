@@ -53,6 +53,18 @@ class MapMenu(settings: Settings, val bp: BotBowsPlayer)
                 bp.avatar.message(Component.text("This map is not added yet", NamedTextColor.RED))
                 return
             }
+            if (e.isRightClick) {
+                bp.viewLocation(map.viewingLocation)
+                bp.avatar.message(
+                    Component.text("Now viewing ")
+                        .append(Component.text(map.prettyName(), NamedTextColor.GREEN))
+                        .append(Component.text(", click "))
+                        .append(Component.text("here", NamedTextColor.AQUA, TextDecoration.UNDERLINED).clickEvent(ClickEvent.runCommand("/botbows exit_view_mode")))
+                        .append(Component.text(" to return"))
+                )
+                e.whoClicked.closeInventory()
+                return
+            }
             if (mapSettings.isVoteMode) {
                 if (uiMode == UiMode.VOTE) mapSettings.mapVotingSession.vote(bp, map)
             } else if (uiMode == UiMode.SET){

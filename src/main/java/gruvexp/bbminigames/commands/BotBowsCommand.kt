@@ -35,6 +35,7 @@ class BotBowsCommand : CommandExecutor {
                 game.endGame(bp)
             }
             "leave" -> lobby.leaveGame(p)
+            "exit_view_mode" -> bp.exitViewMode()
 
             "save_preset" -> {
                 if (args.size == 1) return Component.text("You must specify a name for the preset!", NamedTextColor.RED)

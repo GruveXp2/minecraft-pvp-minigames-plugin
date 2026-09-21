@@ -1,10 +1,12 @@
 package gruvexp.bbminigames.twtClassic.map
 
+import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.Menu
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -15,7 +17,8 @@ enum class BotBowsMap(
     val allowedHazards: Set<HazardType>,
     val team1: BotBowsTeam,
     val team2: BotBowsTeam,
-    private val item: ItemStack
+    private val item: ItemStack,
+    val viewingLocation: Location,
 ) { // TODO: gjør at 2 lobbies ikke kan ha samme map, pga nå er jo mapsane enums, og det ville bøgga te playersa i teamsa
     RANDOM(
         MapType.CLASSIC, setOf(HazardType.STORM, HazardType.EARTHQUAKE, HazardType.GHOST),
@@ -23,7 +26,8 @@ enum class BotBowsMap(
         Menu.makeItem(
             Material.TARGET, Component.text("Random Map", NamedTextColor.WHITE),
             Component.text("Randomly picks one of the classic maps")
-        )
+        ),
+        Main.WORLD_SPAWN_LOBBY,
     ),
 
     CLASSIC_ARENA(
@@ -36,7 +40,8 @@ enum class BotBowsMap(
                 .append(Component.text("Sauce", NamedTextColor.RED)),
             Component.text("A flat arena with modern royal style"),
             Component.text("Has a huge cave room underground")
-        )
+        ),
+        Location(Main.WORLD, -210.5, 39.00, -142.5, 135f, 25f),
     ),
 
     ICY_RAVINE(
@@ -49,7 +54,8 @@ enum class BotBowsMap(
                 .append(Component.text("Wacky", NamedTextColor.GREEN)),
             Component.text("A flat arena in a spruce forest with ice spikes and igloos"),
             Component.text("Has a huge ravine in the middle and many caves underground")
-        )
+        ),
+        Location(Main.WORLD, -210.5, 39.00, -253.5, 135f, 25f),
     ),
 
     ROYAL_CASTLE(
@@ -61,7 +67,8 @@ enum class BotBowsMap(
                 .append(Component.text(" vs ", NamedTextColor.WHITE))
                 .append(Component.text("Goofy", NamedTextColor.DARK_GREEN)),
             Component.text("A castle themed arena")
-        )
+        ),
+        Location(Main.WORLD, -230.5, 32.5, -352.5, 165f, 15f),
     ),
 
     STEAMPUNK(
@@ -73,7 +80,8 @@ enum class BotBowsMap(
                 .append(Component.text(" vs ", NamedTextColor.WHITE))
                 .append(Component.text("Quicc", NamedTextColor.AQUA)),
             Component.text("A steampunk themed arena")
-        )
+        ),
+        Location(Main.WORLD, -356.5, 33.0, -352.50, 180f, 15f),
     ),
 
     PIGLIN_HIDEOUT(
@@ -85,7 +93,8 @@ enum class BotBowsMap(
                 .append(Component.text(" vs ", NamedTextColor.WHITE))
                 .append(Component.text("Hoglin", NamedTextColor.YELLOW)),
             Component.text("A large volcano arena")
-        )
+        ),
+        Location(Main.WORLD, -342.5, 28.5, -173.5, -300f, 30f),
     ),
 
     INSIDE_BOTBASE(
@@ -98,7 +107,8 @@ enum class BotBowsMap(
                 .append(Component.text("Core", NamedTextColor.GREEN)),
             Component.text("Inside the BotBase building, with lots of"),
             Component.text("wires, batteries, and electricity")
-        )
+        ),
+        Location(Main.WORLD, 7.5, 22.0, -262.5, 60f, 15f),
     ),
 
     OUTSIDE_BOTBASE(
@@ -111,7 +121,8 @@ enum class BotBowsMap(
                 .append(Component.text("Mountain", NamedTextColor.AQUA)),
             Component.text("A field outside the BotBase"),
             Component.text("next to a mountain")
-        )
+        ),
+        Location(Main.WORLD, -69.5, 23.0, -210.5, 135f, 15f),
     ),
 
     ROCKET_FOREST(
@@ -124,7 +135,8 @@ enum class BotBowsMap(
                 .append(Component.text("Tunnel", NamedTextColor.DARK_GREEN)),
             Component.text("In the Rocket Forest next to the mountain"),
             Component.text("with a rocket launcher in the middle")
-        )
+        ),
+        Location(Main.WORLD, -70.71, 26.26, -208.68, -7.5f, 15f),
     ),
 
     ROCKET(
@@ -137,7 +149,8 @@ enum class BotBowsMap(
                 .append(Component.text("Engine", NamedTextColor.RED)),
             Component.text("Inside the Rocket, including the engine,"),
             Component.text("control panel, and power supply")
-        )
+        ),
+        Location(Main.WORLD, 16.5, 65.5, 33.0, 800f, 0f),
     ),
 
     SPACE_STATION(
@@ -150,7 +163,8 @@ enum class BotBowsMap(
                 .append(Component.text("Cold", NamedTextColor.AQUA)),
             Component.text("At the space station where you can"),
             Component.text("traverse space tubes in low gravity")
-        )
+        ),
+        Location(Main.WORLD_END, 157.60, 110.22, 160.62, -342.75f, 24.45f),
     ),
 
     MARS_BASE(
@@ -163,7 +177,8 @@ enum class BotBowsMap(
                 .append(Component.text("???", NamedTextColor.GRAY)),
             Component.text("At the mars base. Sadly not finished yet,"),
             Component.text("if it ever will be...")
-        )
+        ),
+        Main.WORLD_SPAWN_LOBBY,
     );
 
     init {
@@ -173,7 +188,10 @@ enum class BotBowsMap(
 
     fun getMenuItem(): ItemStack {
         val item = item.clone()
-        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name) }
+        item.editMeta {
+            it.persistentDataContainer.set(KEY, PersistentDataType.STRING, name)
+            it.lore(it.lore()?.apply { add(Component.text("Right click to view map", NamedTextColor.DARK_AQUA)) })
+        }
         return item
     }
 

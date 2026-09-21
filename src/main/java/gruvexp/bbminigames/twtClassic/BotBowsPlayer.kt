@@ -18,6 +18,7 @@ import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
@@ -369,6 +370,25 @@ class BotBowsPlayer {
     fun teleport(location: Location) {
         avatar.teleport(location)
     }
+
+    fun viewLocation(location: Location) {
+        isViewMode = true
+        teleport(location)
+    }
+
+    fun exitViewMode() {
+        isViewMode = false
+        teleport(team.tribunePos)
+    }
+
+    var isViewMode = false
+        private set(value) {
+            field = value
+            if (avatar !is PlayerAvatar) return
+
+            val p = avatar.entity as Player
+            p.gameMode = if (value) GameMode.SPECTATOR else GameMode.ADVENTURE
+        }
 
     fun setInvulnerable(invulnerable: Boolean) {
         avatar.setInvulnerable(invulnerable)
