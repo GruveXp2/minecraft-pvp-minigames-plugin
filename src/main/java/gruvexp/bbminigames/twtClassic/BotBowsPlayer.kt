@@ -26,7 +26,6 @@ import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 
 class BotBowsPlayer {
-    @JvmField
     var avatar: BotBowsAvatar
 
     val lobby: Lobby

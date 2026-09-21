@@ -31,7 +31,6 @@ object BotBows {
     val gameMenu = GameMenu()
     val lobbyMenu = LobbyMenu()
 
-    @JvmStatic
     val lobbies = arrayOf(Lobby(0), Lobby(1), Lobby(2))
 
     private val players = mutableMapOf<UUID, Lobby>() // liste med alle players som er i gamet
@@ -69,9 +68,7 @@ object BotBows {
         players.remove(playerId)
     }
 
-    @JvmStatic
     fun getLobby(id: Int): Lobby = lobbies[id]
-    @JvmStatic
     fun getLobby(p: Player): Lobby? = getLobby(p.uniqueId)
     fun getLobby(playerId: UUID): Lobby? = players[playerId]
 

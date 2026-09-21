@@ -498,9 +498,7 @@ class TestCommand : CommandExecutor {
 
     companion object {
         var rotation: Boolean = true
-        @JvmField
         var verboseDebugging: Boolean = false
-        @JvmField
         var debugging: Boolean = true
         var test1: Boolean = false
         var test2: Boolean = false

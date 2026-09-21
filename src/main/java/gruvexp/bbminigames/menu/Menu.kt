@@ -87,7 +87,6 @@ abstract class Menu(protected val menuName: Component, protected val slots: Int)
             }
         }
 
-        @JvmStatic
         fun makeItem(customModelData: String, displayName: TextComponent, vararg lore: Component): ItemStack {
             return makeItem(
                 Material.FIREWORK_STAR,

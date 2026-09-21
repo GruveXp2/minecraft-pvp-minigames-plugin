@@ -21,9 +21,7 @@ import kotlin.math.max
 
 class Lobby(val id: Int) {
     private val players = HashMap<UUID, BotBowsPlayer>()
-    @JvmField
     var settings: Settings
-    @JvmField
     var botBowsGame: BotBowsGame? = null
     val isGameActive: Boolean  // hvis spillet har starta, så kan man ikke gjøre ting som /settings
         get() = botBowsGame != null

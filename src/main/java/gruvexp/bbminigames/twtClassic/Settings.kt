@@ -25,9 +25,7 @@ import java.util.UUID
 class Settings(val lobby: Lobby) {
     var usingExperimentalFeatures: Boolean = false
 
-    @JvmField
     var team1: BotBowsTeam = BotBowsTeam.BLAUD
-    @JvmField
     var team2: BotBowsTeam = BotBowsTeam.SAUCE
     private val players: MutableSet<BotBowsPlayer> = mutableSetOf() // liste med alle players som er i gamet
 
