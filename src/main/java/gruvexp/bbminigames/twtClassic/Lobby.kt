@@ -3,6 +3,7 @@ package gruvexp.bbminigames.twtClassic
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.Menu
 import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame
@@ -166,7 +167,10 @@ class Lobby(val id: Int) {
     }
 
     fun reset() {
-        players.keys.forEach { id -> players[id]!!.reset() }
+        players.values.forEach { it.reset() }
+        players.values
+            .filter { it.avatar is PlayerAvatar }
+            .forEach { it.setReady(false, 4) }
         spectators.toSet().forEach { removeSpectator(it) }
 
         botBowsGame = null

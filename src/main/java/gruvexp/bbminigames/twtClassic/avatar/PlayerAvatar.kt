@@ -107,7 +107,6 @@ class PlayerAvatar : BotBowsAvatar {
     override fun reset() {
         cleanupBattle()
         player.inventory.setItem(0, BotBows.SETTINGS_ITEM)
-        player.inventory.setItem(4, Lobby.NOT_READY)
     }
 
     fun cleanupBattle() {
