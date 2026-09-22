@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.Menu
+import gruvexp.bbminigames.model.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame
 import gruvexp.bbminigames.twtClassic.botbowsGames.SpaceStationGame
@@ -29,6 +30,8 @@ class Lobby(val id: Int) {
     var botBowsGame: BotBowsGame? = null
     val isGameActive: Boolean  // hvis spillet har starta, så kan man ikke gjøre ting som /settings
         get() = botBowsGame != null
+
+    var resultDisplay: ResultDisplay? = null
 
     init {
         BotBows.lobbyMenu.updateLobbyItem(this)
@@ -254,6 +257,11 @@ class Lobby(val id: Int) {
                 .append(Component.text(" is no longer spectating the game", NamedTextColor.YELLOW))
             )
         }
+    }
+
+    fun cleanupResultDisplay() {
+        resultDisplay?.remove()
+        resultDisplay = null
     }
 
     companion object {
