@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic.botbowsGames
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
 import gruvexp.bbminigames.model.stat.MatchResult
@@ -39,7 +40,6 @@ open class BotBowsGame(val settings: Settings) {
     private var startRoundTask: BukkitTask? = null
 
     var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
-    var resultDisplay: ResultDisplay? = null
 
     open fun leaveGame(bp: BotBowsPlayer) {
         val team = bp.team
@@ -118,6 +118,10 @@ open class BotBowsGame(val settings: Settings) {
 
     open fun handleMovement(e: PlayerMoveEvent) {
         BotBows.handleMovement(e)
+    }
+
+    fun handleJump(e: PlayerJumpEvent) {
+        BotBows.handleJump(e)
     }
 
     fun check4Elimination(dedPlayer: BotBowsPlayer) {

@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.listeners
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.Lobby
 import org.bukkit.entity.Player
@@ -22,6 +23,21 @@ class MovementListener : Listener {
             lobby.botBowsGame!!.handleMovement(e)
         } else {
             freeze(lobby, p)
+        }
+    }
+
+    @EventHandler
+    fun onJump(e: PlayerJumpEvent) {
+        val p = e.player
+        if (!BotBows.isPlayerJoined(p)) {
+            BotBows.handleJump(e)
+            return
+        }
+        val lobby = BotBows.getLobby(p) ?: return
+        if (!lobby.isGameActive) return
+
+        if (lobby.botBowsGame!!.canMove) {
+            lobby.botBowsGame!!.handleJump(e)
         }
     }
 

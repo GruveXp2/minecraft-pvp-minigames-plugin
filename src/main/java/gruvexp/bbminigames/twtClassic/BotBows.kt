@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.twtClassic
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
 import gruvexp.bbminigames.menu.Menu
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Light
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -114,8 +116,7 @@ object BotBows {
         lobby.settings.overviewMenu.open(p)
     }
 
-    fun handleMovement(e: PlayerMoveEvent) {
-        val p = e.player
+    private fun getMaterialJumpedFrom(p: Player): Material {
         val b = TestCommand.verboseDebugging
         var block = p.location.add(0.0, -0.05, 0.0).block // sjekker rett under, bare 0.05 itilfelle det er teppe
 
@@ -143,25 +144,42 @@ object BotBows {
                 2 -> material = Material.AIR
             }
         }
+        return material
+    }
+
+    fun handleMovement(e: PlayerMoveEvent) {
+        val p = e.player
+        val material = getMaterialJumpedFrom(p)
+
         when (material) {
             Material.YELLOW_CONCRETE, Material.YELLOW_CONCRETE_POWDER, Material.YELLOW_CARPET -> p.addPotionEffect(
                 PotionEffect(PotionEffectType.JUMP_BOOST, 1200, 6, true, false)
             )
+            else -> p.removePotionEffect(PotionEffectType.JUMP_BOOST)
+        }
+    }
 
+    fun handleJump(e: PlayerJumpEvent) {
+        val p = e.player
+        val material = getMaterialJumpedFrom(p)
+
+        when (material) {
             Material.CYAN_CONCRETE, Material.CYAN_CONCRETE_POWDER, Material.CYAN_CARPET -> {
                 val Δy = e.to.y - e.from.y
                 if (Δy <= 0.1) {
                     return
                 } // fortsett bare viss man har hoppa (et visst antall upwards momentum)
 
+                val block = p.location.block.getRelative(BlockFace.UP)
+                val isStrong = block.type == Material.LIGHT && (block.blockData as Light).level == 3
+
                 val vX = p.location.getDirection().getX()
                 val vZ = p.location.getDirection().getZ()
 
-                p.velocity = Vector(vX * 2.5, 0.5, vZ * 2.5)
+                p.velocity = Vector(vX * 2.5, if (isStrong) 0.625 else 0.5, vZ * 2.5)
                 p.playSound(p.location, Sound.ITEM_FIRECHARGE_USE, 10f, 2f)
             }
-
-            else -> p.removePotionEffect(PotionEffectType.JUMP_BOOST)
+            else -> {}
         }
     }
 }
