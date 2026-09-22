@@ -238,7 +238,6 @@ class PlayerAvatar : BotBowsAvatar {
     }
 
     override fun initHazardBar(hazardType: HazardType, bar: BossBar) {
-        check(!hazardBars.containsKey(hazardType)) { "That hazardbar already exists" }
         hazardBars[hazardType] = bar
     }
 
