@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.model.stat.ResultDisplay.Companion.registerPlayerClick
+import gruvexp.bbminigames.model.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component
@@ -16,7 +16,7 @@ class SwitchSpectator : Listener {
     @EventHandler
     fun onMouseClick(e: PlayerInteractEvent) {
         val p = e.getPlayer()
-        registerPlayerClick(p)
+        ResultDisplay.registerPlayerClick(p)
         val bp = BotBows.getBotBowsPlayer(p) ?: return
 
         if (!bp.lobby.isGameActive) return
