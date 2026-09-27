@@ -380,7 +380,7 @@ class Settings(val lobby: Lobby) {
 
     fun setModPlayer(bp: BotBowsPlayer) {
         val first = if (modPlayer == null) "" else " new"
-        if (modPlayer != null) abilityMenus[modPlayer]!!.isToggleAbilityMode = false
+        if (modPlayer != null) abilityMenus[modPlayer]?.isToggleAbilityMode = false
 
         modPlayer = bp
         lobby.messagePlayers(
