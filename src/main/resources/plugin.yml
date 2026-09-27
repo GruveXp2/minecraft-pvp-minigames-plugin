@@ -1,7 +1,7 @@
 name: BotBaseMinigames
 version: '${version}'
 main: gruvexp.bbminigames.Main
-api-version: '1.21'
+api-version: '26.1'
 authors: [ Gruve ]
 description: Plugin for the BotBows Minigames server
 commands:
