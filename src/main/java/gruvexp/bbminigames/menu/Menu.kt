@@ -155,8 +155,8 @@ abstract class Menu(protected val menuName: Component, protected val slots: Int)
                     it.displayName(displayName.decoration(TextDecoration.ITALIC, false))
                     it.lore(listOf(*lore))
 
-                    val customModelDataComponent = it.getCustomModelDataComponent()
-                    customModelDataComponent.setStrings(listOf(customModelData))
+                    val customModelDataComponent = it.customModelDataComponent
+                    customModelDataComponent.strings = listOf(customModelData)
                     it.setCustomModelDataComponent(customModelDataComponent)
 
                     if (actionId != null) {
