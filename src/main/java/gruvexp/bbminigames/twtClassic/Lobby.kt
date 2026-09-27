@@ -20,6 +20,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 import java.util.UUID
 import kotlin.math.max
@@ -33,6 +34,11 @@ class Lobby(val id: Int) {
         get() = botBowsGame != null
 
     var resultDisplay: ResultDisplay? = null
+        set(value) {
+            field = value
+            resultDisplayTimer = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { cleanupResultDisplay() }, 5 * 60 * 20L)
+        }
+    var resultDisplayTimer: BukkitTask? = null
 
     init {
         BotBows.lobbyMenu.updateLobbyItem(this)
@@ -164,6 +170,11 @@ class Lobby(val id: Int) {
             BotBowsMap.SPACE_STATION -> SpaceStationGame(settings)
             else -> BotBowsGame(settings)
         }.apply { startGame() }
+
+        resultDisplayTimer?.let {
+            it.cancel()
+            cleanupResultDisplay()
+        }
     }
 
     fun reset() {
@@ -264,6 +275,7 @@ class Lobby(val id: Int) {
     }
 
     fun cleanupResultDisplay() {
+        resultDisplayTimer = null
         resultDisplay?.remove()
         resultDisplay = null
     }

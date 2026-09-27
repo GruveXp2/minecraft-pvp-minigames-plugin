@@ -287,20 +287,16 @@ open class BotBowsGame(val settings: Settings) {
     private fun showPostGameTitle(winningTeam: BotBowsTeam) {
         val losingTeam = winningTeam.oppositeTeam
         winningTeam.players.forEach {
-            it.avatar.showTitle(
-                Title.title(
-                    Component.text("Victory", winningTeam.color), Component.text(""),
-                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
-                )
-            )
+            it.avatar.showTitle(Title.title(
+                Component.text("Victory", winningTeam.color), Component.text(""),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
+            ))
         }
         losingTeam.players.forEach {
-            it.avatar.showTitle(
-                Title.title(
-                    Component.text("Defeat", losingTeam.color), Component.text(""),
-                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
-                )
-            )
+            it.avatar.showTitle(Title.title(
+                Component.text("Defeat", losingTeam.color), Component.text(""),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
+            ))
         }
     }
 
@@ -314,7 +310,7 @@ open class BotBowsGame(val settings: Settings) {
         statsLocation.pitch = 0f
 
         lobby.resultDisplay = ResultDisplay(statsLocation, matchResult)
-        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { lobby.cleanupResultDisplay() }, 60 * 20L)
+        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { lobby.cleanupResultDisplay() }, 300 * 20L)
     }
 
     fun endGame(ender: BotBowsPlayer) {
