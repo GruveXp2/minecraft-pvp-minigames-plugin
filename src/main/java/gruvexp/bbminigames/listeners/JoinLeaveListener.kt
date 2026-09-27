@@ -59,7 +59,7 @@ class JoinLeaveListener : Listener {
 
         BotBows.getBotBowsPlayer(p)?.let {
             it.lobby.reconnect(it, p)
-        } ?: {
+        } ?: run {
             p.teleport(BotBows.GLOBAL_LOBBY_LOCATION)
             p.gameMode = GameMode.ADVENTURE
         }
