@@ -4,6 +4,7 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.Menu
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
@@ -184,6 +185,11 @@ enum class BotBowsMap(
     init {
         team1.oppositeTeam = team2
         team2.oppositeTeam = team1
+    }
+
+    fun getTeam(side: TeamSide) = when (side) {
+        TeamSide.TEAM_1 -> team1
+        TeamSide.TEAM_2 -> team2
     }
 
     fun getMenuItem(): ItemStack {

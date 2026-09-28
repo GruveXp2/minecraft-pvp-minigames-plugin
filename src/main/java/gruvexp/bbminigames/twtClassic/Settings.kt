@@ -197,10 +197,11 @@ class Settings(val lobby: Lobby) {
         team2.clearPlayers()
 
         val map = mapSettings.currentMap
-        team1 = if (flipped) map.team2 else map.team1
-        team2 = if (flipped) map.team1 else map.team2
-        team1.putPlayers(team1Players)
-        team2.putPlayers(team2Players)
+        team1 = map.getTeam(TeamSide.TEAM_1)
+        team2 = map.getTeam(TeamSide.TEAM_2)
+
+        team1.putPlayers(if (flipped) team2Players else team1Players)
+        team2.putPlayers(if (flipped) team1Players else team2Players)
 
         teamsMenu.registerTeams()
         players.forEach { bp -> playerListMenus.forEach { it.updatePlayer(bp) } }
