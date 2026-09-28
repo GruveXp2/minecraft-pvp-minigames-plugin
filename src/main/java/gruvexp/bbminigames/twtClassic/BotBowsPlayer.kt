@@ -81,6 +81,7 @@ class BotBowsPlayer {
 
     fun updateTeam(team: BotBowsTeam) {
         this.team = team
+        avatar.equipFullArmor()
     }
 
     fun onGameLeave() {
