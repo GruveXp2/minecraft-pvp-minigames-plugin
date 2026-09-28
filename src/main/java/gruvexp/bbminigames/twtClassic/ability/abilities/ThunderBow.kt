@@ -21,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import org.checkerframework.checker.units.qual.s
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -135,9 +136,9 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
                 val nearbyPlayerLoc = nearbyPlayer.location.add(0.0, 1.0, 0.0) // the arc will hit the middle of the player
                 world.strikeLightningEffect(nearbyPlayerLoc)
                 createElectricArc(defender.location.add(0.0, 1.0, 0.0), nearbyPlayerLoc, attackerTeamColor, 1.0, true)
-                nearbyPlayer.damage(DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker))
+                val successful = nearbyPlayer.damage(DamageContext.Player(DamageType.Player.THUNDER_BOW_CHAIN, attacker))
                 handledPlayers.add(nearbyPlayer)
-                ability.registerSuccess()
+                if (successful) ability.registerSuccess()
             }
             for (nearbyPlayer in nearbyPlayers) {
                 handleChain(attacker, nearbyPlayer, handledPlayers)

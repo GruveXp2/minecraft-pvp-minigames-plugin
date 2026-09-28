@@ -29,8 +29,8 @@ class BubbleJet(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                     .filter { it.team != bp.team }
                     .forEach {
                         it.avatar.addPotionEffect(PotionEffect(PotionEffectType.LEVITATION, 60, 1, true, false))
-                        it.damage(DamageContext.Player(DamageType.Player.BUBBLE_JET, bp))
-                        registerSuccess()
+                        val successful = it.damage(DamageContext.Player(DamageType.Player.BUBBLE_JET, bp))
+                        if (successful) registerSuccess()
                     }
             }
         }.apply { runTaskTimer(Main.plugin, 0L, 2L) }

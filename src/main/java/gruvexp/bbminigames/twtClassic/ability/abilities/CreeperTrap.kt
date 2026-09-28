@@ -159,8 +159,10 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
             }
             val ability = owner.getAbility(AbilityType.CREEPER_TRAP)
             hitPlayers.forEach {
-                it.damage(DamageContext.Player(DamageType.Player.CREEPER, owner))
-                if (it !== owner) ability.registerSuccess() else ability.registerFail()
+                val successful = it.damage(DamageContext.Player(DamageType.Player.CREEPER, owner))
+                if (it !== owner) {
+                    if (successful) ability.registerSuccess()
+                } else ability.registerFail()
             }
         }
     }

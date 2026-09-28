@@ -255,8 +255,8 @@ class BotBowsPlayer {
     val totalAbilities: Int
         get() = abilities.size
 
-    fun damage(ctx: DamageContext) {
-        if (isDamaged || !isAlive) return
+    fun damage(ctx: DamageContext): Boolean {
+        if (isDamaged || !isAlive) return false
         avatar.damage()
         var damageMessage = ctx.formatMessage(this)
 
@@ -276,7 +276,7 @@ class BotBowsPlayer {
                     .append(Component.text(" and got"))
                     .append(Component.text(" eliminated", NamedTextColor.DARK_RED))
                 die(damageMessage)
-                return
+                return true
             }
             hp -= ctx.attacker.settings.attackDamage
             lobby.messagePlayers(ctx.formatMessage(this))
@@ -288,6 +288,7 @@ class BotBowsPlayer {
                 BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
             )
         }
+        return true
     }
 
     private fun die(deathMessage: Component) {

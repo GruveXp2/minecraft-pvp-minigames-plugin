@@ -11,7 +11,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType
 class LongArms(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.LONG_ARMS), OnMelee {
     override fun trigger(ctx: Melee) {
         use()
-        ctx.defender.damage(DamageContext.Player(DamageType.Player.COOL_ROD, bp))
-        registerSuccess()
+        val successful =  ctx.defender.damage(DamageContext.Player(DamageType.Player.COOL_ROD, bp))
+        if (successful) registerSuccess()
     }
 }

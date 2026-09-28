@@ -19,8 +19,8 @@ class SalmonSlap(bp: BotBowsPlayer, slot: Int) : Ability(bp, slot, AbilityType.S
     }
 
     override fun trigger(ctx: Melee) {
-        ctx.defender.damage(DamageContext.Player(DamageType.Player.SLAP, bp))
-        registerSuccess()
+        val successful = ctx.defender.damage(DamageContext.Player(DamageType.Player.SLAP, bp))
+        if (successful) registerSuccess()
     }
 
     companion object {

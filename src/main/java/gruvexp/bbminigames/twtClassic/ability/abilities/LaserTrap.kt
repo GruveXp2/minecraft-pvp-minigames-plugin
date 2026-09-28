@@ -98,9 +98,9 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
             offset.setX(abs(offset.getX())).setY(abs(offset.getY())).setZ(abs(offset.getZ())) // Its just abs() for every x y z
 
             this.length = length
-            this.color = bp.team.dyeColor.color
-            this.opponents = bp.team.oppositeTeam.players
-            this.world = center.getWorld()
+            color = bp.team.dyeColor.color
+            opponents = bp.team.oppositeTeam.players
+            world = center.getWorld()
         }
 
         override fun run() {
@@ -110,8 +110,8 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                     && abs(proximity.y) < offset.getY() + 1
                     && abs(proximity.z) < offset.getZ() + 0.5
                 ) {
-                    defender.damage(DamageContext.Player(DamageType.Player.LASER, bp))
-                    registerSuccess()
+                    val successful = defender.damage(DamageContext.Player(DamageType.Player.LASER, bp))
+                    if (successful) registerSuccess()
                 }
             }
             val loc = origin.clone()

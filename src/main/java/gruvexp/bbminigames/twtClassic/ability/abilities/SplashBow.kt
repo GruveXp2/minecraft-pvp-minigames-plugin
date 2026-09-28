@@ -23,6 +23,7 @@ import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import org.checkerframework.checker.units.qual.s
 
 class SplashBow(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.SPLASH_BOW), OnLaunch, OnProjectileHit {
     init {
@@ -115,8 +116,10 @@ class SplashBow(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
                 .mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
                 .filter { it.isAlive }
                 .forEach { defender ->
-                    defender.damage(DamageContext.Player(DamageType.Player.SPLASH_BOW, attacker))
-                    if (defender != attacker) ability.registerSuccess() else ability.registerFail()
+                    val successful = defender.damage(DamageContext.Player(DamageType.Player.SPLASH_BOW, attacker))
+                    if (defender != attacker) {
+                        if (successful) ability.registerSuccess()
+                    } else ability.registerFail()
                 }
         }
     }
