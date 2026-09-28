@@ -7,7 +7,6 @@ import gruvexp.bbminigames.menu.SettingsMenu
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Settings
-import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
 import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -18,8 +17,6 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.UUID
 
 class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Teams (2/6)"), 27), PlayerListMenu {
-    lateinit var team1: BotBowsTeam
-    lateinit var team2: BotBowsTeam
 
     private val team1Row: PlayerMenuRow
     private val team2Row: PlayerMenuRow
@@ -68,12 +65,12 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
     }
 
     fun registerTeams() {
-        team1 = settings.team1
-        team2 = settings.team2
         drawTeamGlassPanes()
     }
 
     private fun drawTeamGlassPanes() { // update the glass pane items that show the team colors and name
+        val team1 = settings.team1
+        val team2 = settings.team2
         val team1Pane = makeItem(team1.glassPane, Component.text("Team ${team1.displayName}", team1.color))
         val team2Pane = makeItem(team2.glassPane, Component.text("Team ${team2.displayName}", team2.color))
         inventory.setItem(0, team1Pane)
