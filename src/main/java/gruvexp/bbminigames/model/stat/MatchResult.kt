@@ -11,7 +11,7 @@ data class MatchResult(
     val startTime: LocalDateTime = LocalDateTime.now(),
     var rounds: Int = 0,
     var team1Won: Boolean? = null, // null = draw
-    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.TEAM_1 else TeamSide.TEAM_2 },
+    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.ONE else TeamSide.TWO },
     val playerStats: MutableMap<BotBowsPlayer, PlayerMatchStats> = mutableMapOf()
 ) {
     private fun getPlayerStats(bp: BotBowsPlayer): PlayerMatchStats {

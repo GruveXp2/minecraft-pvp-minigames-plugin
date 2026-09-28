@@ -53,8 +53,8 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         }
 
     private val teamAbilities: Map<TeamSide, MutableMap<AbilityType, BotBowsPlayer>> = mapOf(
-        TeamSide.TEAM_1 to mutableMapOf(),
-        TeamSide.TEAM_2 to mutableMapOf())
+        TeamSide.ONE to mutableMapOf(),
+        TeamSide.TWO to mutableMapOf())
 
     private val bannedAbilities = mutableSetOf(AbilityType.BUBBLE_JET)
     private val listeners = mutableMapOf<BotBowsPlayer, AbilityUpdateListener>()

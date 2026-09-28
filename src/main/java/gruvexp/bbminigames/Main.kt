@@ -92,7 +92,7 @@ class Main : JavaPlugin() {
                                     if (command.startsWith("@")) {
                                         if (command == "@ping") {
                                             if (getLobby(0).isGameActive) { // TODO: shoudnt just check lobby 1, but also the others. either show stats from current battle, or if many, show "x battles ongoing"
-                                                val teamSizes = getLobby(0).settings.let { it.getTeam(TeamSide.TEAM_1).size() to it.getTeam(TeamSide.TEAM_2).size() }
+                                                val teamSizes = getLobby(0).settings.let { it.getTeam(TeamSide.ONE).size() to it.getTeam(TeamSide.TWO).size() }
                                                 output.write("BotBows ${teamSizes.first}v${teamSizes.second} match ongoing")
                                             } else {
                                                 output.write("BotBows: ${Bukkit.getOnlinePlayers().size} online")

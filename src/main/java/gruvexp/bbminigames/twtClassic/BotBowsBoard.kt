@@ -22,10 +22,10 @@ class BotBowsBoard(val lobby: Lobby) {
         private set
 
     private val team1: BotBowsTeam
-        get() = lobby.settings.getTeam(TeamSide.TEAM_1)
+        get() = lobby.settings.getTeam(TeamSide.ONE)
 
     private val team2: BotBowsTeam
-        get() = lobby.settings.getTeam(TeamSide.TEAM_2)
+        get() = lobby.settings.getTeam(TeamSide.TWO)
 
     fun createBoard(): TeamManager {
         val board = Bukkit.getScoreboardManager().newScoreboard

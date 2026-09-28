@@ -188,8 +188,8 @@ enum class BotBowsMap(
     }
 
     fun getTeam(side: TeamSide) = when (side) {
-        TeamSide.TEAM_1 -> team1
-        TeamSide.TEAM_2 -> team2
+        TeamSide.ONE -> team1
+        TeamSide.TWO -> team2
     }
 
     fun getMenuItem(): ItemStack {

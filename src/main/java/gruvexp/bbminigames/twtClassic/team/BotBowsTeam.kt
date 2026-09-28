@@ -20,7 +20,7 @@ enum class BotBowsTeam(
 ) {
     // --- CLASSIC ARENA ---
     BLAUD(
-        "Blaud", NamedTextColor.BLUE, DyeColor.BLUE, TeamSide.TEAM_1,
+        "Blaud", NamedTextColor.BLUE, DyeColor.BLUE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD, -215.5, 22.0, -167.5, 90f, 10f),
             Location(Main.WORLD, -215.5, 22.0, -164.5, 90f, 10f),
@@ -32,7 +32,7 @@ enum class BotBowsTeam(
     ),
 
     SAUCE(
-        "Sauce", NamedTextColor.RED, DyeColor.RED, TeamSide.TEAM_2,
+        "Sauce", NamedTextColor.RED, DyeColor.RED, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD, -268.5, 22.0, -164.5, -90f, 10f),
             Location(Main.WORLD, -268.5, 22.0, -167.5, -90f, 10f),
@@ -45,7 +45,7 @@ enum class BotBowsTeam(
 
     // --- ICY RAVINE ---
     GRAUT(
-        "Graut", NamedTextColor.LIGHT_PURPLE, DyeColor.PURPLE, TeamSide.TEAM_1,
+        "Graut", NamedTextColor.LIGHT_PURPLE, DyeColor.PURPLE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD, -268.5, 22.0, -274.5, -90f, 10f),
             Location(Main.WORLD, -268.5, 22.0, -277.5, -90f, 10f),
@@ -57,7 +57,7 @@ enum class BotBowsTeam(
     ),
 
     WACKY(
-        "Wacky", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TEAM_2,
+        "Wacky", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD, -215.5, 22.0, -277.5, 90f, 10f),
             Location(Main.WORLD, -215.5, 22.0, -274.5, 90f, 10f),
@@ -70,7 +70,7 @@ enum class BotBowsTeam(
 
     // --- ROYAL CASTLE ---
     KJØDD(
-        "Kjødd", NamedTextColor.DARK_AQUA, DyeColor.ORANGE, TeamSide.TEAM_1,
+        "Kjødd", NamedTextColor.DARK_AQUA, DyeColor.ORANGE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD, -211.5, 22.0, -377.5, 90f, 10f),
             Location(Main.WORLD, -211.5, 22.0, -374.5, 90f, 10f),
@@ -82,7 +82,7 @@ enum class BotBowsTeam(
     ),
 
     GOOFY(
-        "Goofy", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TEAM_2,
+        "Goofy", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD, -268.5, 22.0, -377.5, -90f, 10f),
             Location(Main.WORLD, -268.5, 22.0, -374.5, -90f, 10f),
@@ -95,7 +95,7 @@ enum class BotBowsTeam(
 
     // --- STEAMPUNK ---
     BLOCC(
-        "Blocc", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1,
+        "Blocc", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD, -327.5, 34.0, -377.5, 90f, 10f),
             Location(Main.WORLD, -327.5, 34.0, -374.5, 90f, 10f),
@@ -107,7 +107,7 @@ enum class BotBowsTeam(
     ),
 
     QUICC(
-        "Quicc", NamedTextColor.AQUA, DyeColor.CYAN, TeamSide.TEAM_2,
+        "Quicc", NamedTextColor.AQUA, DyeColor.CYAN, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD, -385.5, 34.0, -377.5, -90f, 10f),
             Location(Main.WORLD, -385.5, 34.0, -374.5, -90f, 10f),
@@ -120,7 +120,7 @@ enum class BotBowsTeam(
 
     // --- PIGLIN HIDEOUT ---
     PIGLIN(
-        "Piglin", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1,
+        "Piglin", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD, -382.5, 22.0, -164.5, -90f, 10f),
             Location(Main.WORLD, -382.5, 22.0, -167.5, -90f, 10f),
@@ -132,7 +132,7 @@ enum class BotBowsTeam(
     ),
 
     HOGLIN(
-        "Hoglin", NamedTextColor.YELLOW, DyeColor.BROWN, TeamSide.TEAM_2,
+        "Hoglin", NamedTextColor.YELLOW, DyeColor.BROWN, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD, -329.5, 22.0, -164.5, -90f, 10f),
             Location(Main.WORLD, -329.5, 22.0, -167.5, -90f, 10f),
@@ -145,59 +145,59 @@ enum class BotBowsTeam(
 
     // --- INSIDE BOTBASE ---
     CORNER(
-        "Corner", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.TEAM_1,
+        "Corner", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.ONE,
         Location(Main.WORLD, -58.5, 30.0, -212.5, 180f, -10f),
         Location(Main.WORLD, -29.5, 27.0, -211.0, 180f, 10f)
     ),
 
     CORE_INSIDE(
-        "Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TEAM_2,
+        "Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TWO,
         Location(Main.WORLD, -6.5, 6.0, -264.5, 45f, 30f),
         Location(Main.WORLD, -29.5, 27.0, -273.0, 0f, -10f)
     ),
 
     // --- OUTSIDE BOTBASE ---
     CORE_OUTSIDE(
-        "Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.TEAM_1,
+        "Core", NamedTextColor.GREEN, DyeColor.LIME, TeamSide.ONE,
         Location(Main.WORLD, -75.5, 26.0, -259.5, 45f, -20f),
         Location(Main.WORLD, -67.5, 24.5, -267.5, -315f, 15f)
     ),
 
     MOUNTAIN(
-        "Mountain", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TEAM_2,
+        "Mountain", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TWO,
         Location(Main.WORLD, -106.0, 15.5, -205.0, 180f, 0f),
         Location(Main.WORLD, -109.5, 28.0, -220.5, -150f, 15f)
     ),
 
     // --- ROCKET FOREST ---
     DOOR(
-        "Door", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.TEAM_1,
+        "Door", NamedTextColor.GRAY, DyeColor.LIGHT_GRAY, TeamSide.ONE,
         Location(Main.WORLD, -75.0, 4.0, -201.5, 0f, 10f),
         Location(Main.WORLD, -70.5, 15.0, -197.0, -25f, 33f)
     ),
 
     TUNNEL(
-        "Tunnel", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TEAM_2,
+        "Tunnel", NamedTextColor.DARK_GREEN, DyeColor.GREEN, TeamSide.TWO,
         Location(Main.WORLD, -34.0, 11.5, -197.0, 33f, 0f),
         Location(Main.WORLD, -18.5, 29.0, -193.5, 55f, 15f)
     ),
 
     // --- ROCKET ---
     DROPPER(
-        "Dropper", NamedTextColor.BLACK, DyeColor.BLACK, TeamSide.TEAM_1,
+        "Dropper", NamedTextColor.BLACK, DyeColor.BLACK, TeamSide.ONE,
         Location(Main.WORLD, 4.5, 74.0, 18.5, 0f, 60f),
         Location(Main.WORLD, 1.5, 58.0, 20.5, -40f, 17f)
     ),
 
     ENGINE(
-        "Engine", NamedTextColor.RED, DyeColor.RED, TeamSide.TEAM_2,
+        "Engine", NamedTextColor.RED, DyeColor.RED, TeamSide.TWO,
         Location(Main.WORLD, 2.5, 47.0, 36.5, 135f, 10f),
         Location(Main.WORLD, -5.5, 50.0, 39.5, -130f, 15f)
     ),
 
     // --- SPACE STATION ---
     WARM(
-        "Warm", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.TEAM_1,
+        "Warm", NamedTextColor.GOLD, DyeColor.ORANGE, TeamSide.ONE,
         arrayOf(
             Location(Main.WORLD_END, 123.5, 75.0, 225.5, 170f, 5f),
             Location(Main.WORLD_END, 186.5, 88.0, 200.5, 85f, 10f),
@@ -209,7 +209,7 @@ enum class BotBowsTeam(
     ),
 
     COLD(
-        "Cold", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TEAM_2,
+        "Cold", NamedTextColor.AQUA, DyeColor.LIGHT_BLUE, TeamSide.TWO,
         arrayOf(
             Location(Main.WORLD_END, 128.5, 88.0, 267.5, 180f, 10f),
             Location(Main.WORLD_END, 165.5, 74.5, 173.5, 90f, -5f),
@@ -221,7 +221,7 @@ enum class BotBowsTeam(
     ),
 
     UNASSIGNED(
-        "Not in a team", NamedTextColor.GRAY, DyeColor.GRAY, TeamSide.TEAM_1, arrayOf(Main.WORLD_SPAWN_LOBBY), Main.WORLD_SPAWN_LOBBY
+        "Not in a team", NamedTextColor.GRAY, DyeColor.GRAY, TeamSide.ONE, arrayOf(Main.WORLD_SPAWN_LOBBY), Main.WORLD_SPAWN_LOBBY
     );
 
     constructor(

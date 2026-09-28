@@ -198,8 +198,8 @@ class Settings(val lobby: Lobby) {
         team2.clearPlayers()
 
         val map = mapSettings.currentMap
-        team1 = map.getTeam(TeamSide.TEAM_1)
-        team2 = map.getTeam(TeamSide.TEAM_2)
+        team1 = map.getTeam(TeamSide.ONE)
+        team2 = map.getTeam(TeamSide.TWO)
 
         team1.putPlayers(if (flipped) team2Players else team1Players)
         team2.putPlayers(if (flipped) team1Players else team2Players)
@@ -377,8 +377,8 @@ class Settings(val lobby: Lobby) {
     }
 
     fun getTeam(side: TeamSide) = when(side) {
-        TeamSide.TEAM_1 -> team1
-        TeamSide.TEAM_2 -> team2
+        TeamSide.ONE -> team1
+        TeamSide.TWO -> team2
     }
 
     fun getPlayers(): Set<BotBowsPlayer> {

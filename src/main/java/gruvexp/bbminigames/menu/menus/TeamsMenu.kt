@@ -29,7 +29,7 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
 
         team1Row = PlayerMenuRow(inventory, MenuAction.FLIP_PLAYER_TEAM.name, 2, 5).apply { show() }
         team2Row = PlayerMenuRow(inventory, MenuAction.FLIP_PLAYER_TEAM.name, 11, 5).apply { show() }
-        rows = mapOf(TeamSide.TEAM_1 to team1Row, TeamSide.TEAM_2 to team2Row)
+        rows = mapOf(TeamSide.ONE to team1Row, TeamSide.TWO to team2Row)
     }
 
     override fun handleMenu(e: InventoryClickEvent) {
@@ -69,8 +69,8 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
     }
 
     private fun drawTeamGlassPanes() { // update the glass pane items that show the team colors and name
-        val team1 = settings.getTeam(TeamSide.TEAM_1)
-        val team2 = settings.getTeam(TeamSide.TEAM_2)
+        val team1 = settings.getTeam(TeamSide.ONE)
+        val team2 = settings.getTeam(TeamSide.TWO)
         val team1Pane = makeItem(team1.glassPane, Component.text("Team ${team1.displayName}", team1.color))
         val team2Pane = makeItem(team2.glassPane, Component.text("Team ${team2.displayName}", team2.color))
         inventory.setItem(0, team1Pane)
