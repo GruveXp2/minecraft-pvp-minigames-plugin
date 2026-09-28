@@ -9,6 +9,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.ability.abilities.CreeperTrap
 import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow
 import org.bukkit.Material
+import org.bukkit.damage.DamageType as BukkitDamageType
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -90,6 +91,10 @@ class DamageListener : Listener {
             DamageCause.SUFFOCATION -> {
                 bp.avatar.teleport(bp.location.add(0.0, 1.0, 0.0))
                 e.isCancelled = true
+            }
+
+            DamageCause.PROJECTILE -> {
+                if (e.damageSource.damageType == BukkitDamageType.ENDER_PEARL) e.isCancelled = true
             }
 
             DamageCause.CAMPFIRE, DamageCause.DROWNING, DamageCause.FALL -> e.isCancelled = true
