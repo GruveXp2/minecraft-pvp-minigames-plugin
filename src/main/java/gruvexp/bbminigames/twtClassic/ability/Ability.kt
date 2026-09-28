@@ -119,7 +119,10 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
     companion object {
         fun create(type: AbilityType, bp: BotBowsPlayer, slot: Int): Ability = when (type) {
             AbilityType.ENDER_PEARL -> object : Ability(bp, slot, AbilityType.ENDER_PEARL) {
-                override fun use() = registerSuccess()
+                override fun use() {
+                    super.use()
+                    registerSuccess()
+                }
             }
             AbilityType.RADAR -> Radar(bp, slot)
             AbilityType.SPLASH_BOW -> SplashBow(bp, slot)
