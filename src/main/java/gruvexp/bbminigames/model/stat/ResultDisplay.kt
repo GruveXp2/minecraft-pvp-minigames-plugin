@@ -35,7 +35,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 tab,
                 -HEIGHT_PX,
                 { Component.text(it.hits, NamedTextColor.GREEN) },
-                matchResult.playerStats.values.toList()
+                matchResult.playerStatsSorted
             ),
             StatCol(
                 "dmg",
@@ -43,7 +43,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 tab,
                 -HEIGHT_PX,
                 { Component.text(it.damage, NamedTextColor.RED) },
-                matchResult.playerStats.values.toList()
+                matchResult.playerStatsSorted
             ),
             StatCol(
                 "h/d",
@@ -51,7 +51,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 tab,
                 -HEIGHT_PX,
                 { formatRatio(it.hits, it.damage) },
-                matchResult.playerStats.values.toList()
+                matchResult.playerStatsSorted
             )
         ))
         tabs.add(tab)
@@ -65,7 +65,7 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 tab,
                 -HEIGHT_PX,
                 { formatPercentage(matchResult.rounds, matchResult.rounds - it.deaths) },
-                matchResult.playerStats.values.toList()
+                matchResult.playerStatsSorted
             )
         ))
         tab.addHiddenColumns(listOf(
@@ -75,14 +75,15 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
                 tab,
                 -HEIGHT_PX,
                 { Component.text(it.deaths, NamedTextColor.RED) },
-                matchResult.playerStats.values.toList()
+                matchResult.playerStatsSorted
             )
         ))
         tabs.add(tab)
     }
 
-    val abilityTab: AbilityTab? = if (matchResult.playerStats.values.any { it.abilitySuccesses.isNotEmpty() }) AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStats.values.toList() ) { recalculateTabs() }.also { tab ->
-        tabs.add(tab)
+    val abilityTab: AbilityTab? = if (matchResult.playerStats.values.any { it.abilitySuccesses.isNotEmpty() }) {
+        AbilityTab("Abilities", loc, -HEIGHT_PX, matchResult.playerStatsSorted ) { recalculateTabs() }
+            .also { tab -> tabs.add(tab) }
     } else null
 
     val titleBgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
