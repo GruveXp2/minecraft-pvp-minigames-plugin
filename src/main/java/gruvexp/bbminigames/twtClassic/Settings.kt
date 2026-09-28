@@ -14,6 +14,7 @@ import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.settings.*
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -25,8 +26,8 @@ import java.util.UUID
 class Settings(val lobby: Lobby) {
     var usingExperimentalFeatures: Boolean = false
 
-    var team1: BotBowsTeam = BotBowsTeam.BLAUD
-    var team2: BotBowsTeam = BotBowsTeam.SAUCE
+    private var team1: BotBowsTeam = BotBowsTeam.BLAUD
+    private var team2: BotBowsTeam = BotBowsTeam.SAUCE
     private val players: MutableSet<BotBowsPlayer> = mutableSetOf() // liste med alle players som er i gamet
 
     val healthSettings: HealthSettings = HealthSettings { playerSettings }
@@ -369,6 +370,15 @@ class Settings(val lobby: Lobby) {
         bp.avatar.message(Component.text("You left BotBows Lobby #${lobby.id + 1}", NamedTextColor.YELLOW))
         lobby.messagePlayers(Component.text("${bp.plainName} has left the lobby (${players.size})", NamedTextColor.YELLOW))
         bp.destroy()
+    }
+
+    fun getTeams(): List<BotBowsTeam> {
+        return listOf(team1, team2)
+    }
+
+    fun getTeam(side: TeamSide) = when(side) {
+        TeamSide.TEAM_1 -> team1
+        TeamSide.TEAM_2 -> team2
     }
 
     fun getPlayers(): Set<BotBowsPlayer> {

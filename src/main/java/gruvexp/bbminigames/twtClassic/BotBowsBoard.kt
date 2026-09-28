@@ -2,6 +2,7 @@ package gruvexp.bbminigames.twtClassic
 
 import gruvexp.bbminigames.twtClassic.avatar.TeamManager
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -21,10 +22,10 @@ class BotBowsBoard(val lobby: Lobby) {
         private set
 
     private val team1: BotBowsTeam
-        get() = lobby.settings.team1
+        get() = lobby.settings.getTeam(TeamSide.TEAM_1)
 
     private val team2: BotBowsTeam
-        get() = lobby.settings.team2
+        get() = lobby.settings.getTeam(TeamSide.TEAM_2)
 
     fun createBoard(): TeamManager {
         val board = Bukkit.getScoreboardManager().newScoreboard

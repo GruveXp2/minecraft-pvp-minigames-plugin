@@ -69,8 +69,8 @@ class TeamsMenu(settings: Settings) : SettingsMenu(settings, Component.text("Tea
     }
 
     private fun drawTeamGlassPanes() { // update the glass pane items that show the team colors and name
-        val team1 = settings.team1
-        val team2 = settings.team2
+        val team1 = settings.getTeam(TeamSide.TEAM_1)
+        val team2 = settings.getTeam(TeamSide.TEAM_2)
         val team1Pane = makeItem(team1.glassPane, Component.text("Team ${team1.displayName}", team1.color))
         val team2Pane = makeItem(team2.glassPane, Component.text("Team ${team2.displayName}", team2.color))
         inventory.setItem(0, team1Pane)

@@ -26,7 +26,6 @@ class TestTabCompleter : TabCompleter {
             "add_spinning",
             "init_wheel",
             "register_blocks",
-            "t",
             "w",
             "a",
             "b",

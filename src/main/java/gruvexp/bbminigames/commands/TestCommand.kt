@@ -380,11 +380,6 @@ class TestCommand : CommandExecutor {
                     BotBows.debugMessage("Debugging set to: $debugging")
                 }
 
-                "t" -> {
-                    BotBows.debugMessage("Team1: ${BotBows.getLobby(0).settings.team1.displayName}")
-                    BotBows.debugMessage("Team2: ${BotBows.getLobby(0).settings.team2.displayName}")
-                }
-
                 "t1" -> {
                     test1 = !test1
                     BotBows.debugMessage("Test1 set to: $test1")

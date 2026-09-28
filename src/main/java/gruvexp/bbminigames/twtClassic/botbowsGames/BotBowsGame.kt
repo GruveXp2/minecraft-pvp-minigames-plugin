@@ -13,6 +13,7 @@ import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.hazard.Hazard
 import gruvexp.bbminigames.twtClassic.hazard.hazards.StormHazard
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -25,8 +26,8 @@ import java.time.Duration
 
 open class BotBowsGame(val settings: Settings) {
     val lobby: Lobby = settings.lobby
-    protected val team1: BotBowsTeam = settings.team1
-    protected val team2: BotBowsTeam = settings.team2
+    protected val team1: BotBowsTeam = settings.getTeam(TeamSide.TEAM_1)
+    protected val team2: BotBowsTeam = settings.getTeam(TeamSide.TEAM_2)
 
     protected val players: Set<BotBowsPlayer> = settings.getPlayers()
     val botBowsBoard: BotBowsBoard = BotBowsBoard(lobby) //TODO move this to Settings instead so game wont crash

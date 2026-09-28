@@ -10,6 +10,7 @@ import gruvexp.bbminigames.sumo.SumoCommand
 import gruvexp.bbminigames.sumo.SumoTabCompleter
 import gruvexp.bbminigames.twtClassic.BotBows.getLobby
 import gruvexp.bbminigames.twtClassic.BotBows.lobbies
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -91,7 +92,7 @@ class Main : JavaPlugin() {
                                     if (command.startsWith("@")) {
                                         if (command == "@ping") {
                                             if (getLobby(0).isGameActive) { // TODO: shoudnt just check lobby 1, but also the others. either show stats from current battle, or if many, show "x battles ongoing"
-                                                val teamSizes = getLobby(0).settings.let { it.team1.size() to it.team2.size() }
+                                                val teamSizes = getLobby(0).settings.let { it.getTeam(TeamSide.TEAM_1).size() to it.getTeam(TeamSide.TEAM_2).size() }
                                                 output.write("BotBows ${teamSizes.first}v${teamSizes.second} match ongoing")
                                             } else {
                                                 output.write("BotBows: ${Bukkit.getOnlinePlayers().size} online")

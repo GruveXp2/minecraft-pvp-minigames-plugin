@@ -145,7 +145,7 @@ class Lobby(val id: Int) {
         if (isGameActive) {
             gameStarter.sendMessage(Component.text("The game has already started!", NamedTextColor.RED))
             return
-        } else if (settings.team1.isEmpty || settings.team2.isEmpty) {
+        } else if (settings.getTeams().any { it.isEmpty }) {
             gameStarter.sendMessage(Component.text("Cant start game, both teams must have at least 1 player each", NamedTextColor.RED))
             return
         }
@@ -217,7 +217,7 @@ class Lobby(val id: Int) {
         messagePlayers(
             Component.text("${bp.plainName} ${if (ready) "has readied up " else "is no longer ready" } ($readyPlayers/$totalPlayers)", NamedTextColor.YELLOW)
         )
-        if (readyPlayers == totalPlayers && !(settings.team1.isEmpty || settings.team2.isEmpty)) {
+        if (readyPlayers == totalPlayers && !settings.getTeams().any { it.isEmpty }) {
             messagePlayers(Component.text("Everybody are ready, starting game in 5 seconds", NamedTextColor.GREEN))
             settings.finishMapSelection()
             startGame()
