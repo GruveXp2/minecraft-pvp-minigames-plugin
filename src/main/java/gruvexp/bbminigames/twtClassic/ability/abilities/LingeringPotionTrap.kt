@@ -43,13 +43,13 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
                     1.0,
                     LINGERING_POTION_RADIUS.toDouble()
                 ).mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
-                    .filter { it.team != throwerBp.team }
+                    .filter { it.isAlive && it.team != throwerBp.team }
                     .forEach {
                         it.effectManager.applyScale(
                             PlayerEffectManager.ScaleSource.GROW_TRAP,
                             1.5,
                             PlayerEffectManager.ScalePriority.NORMAL,
-                            (EFFECT_DURATION * 20).toLong()
+                            EFFECT_DURATION * 20L
                         )
                     }
             }
@@ -81,7 +81,7 @@ open class LingeringPotionTrap(bp: BotBowsPlayer, hotBarSlot: Int)
     override fun onCloudApply(e: AreaEffectCloudApplyEvent) {
         val cloudEffect: PotionEffect = e.entity.customEffects[0]
         val effectType = cloudEffect.type
-        val glowDuration = (cloudEffect.duration / 4).toLong() // only get 25% duration from the area effect cloud
+        val glowDuration = cloudEffect.duration / 4L // only get 25% duration from the area effect cloud
 
         val it = e.affectedEntities.iterator()
         while (it.hasNext()) {
