@@ -36,6 +36,7 @@ class Lobby(val id: Int) {
     var resultDisplay: ResultDisplay? = null
         set(value) {
             field = value
+            if (value == null) return
             resultDisplayTimer = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { cleanupResultDisplay() }, 5 * 60 * 20L)
         }
     var resultDisplayTimer: BukkitTask? = null
