@@ -19,7 +19,6 @@ import org.bukkit.block.data.Lightable
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
@@ -70,7 +69,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         val lampSize: Float = 4 * CREEPER_PX
         val lampDisplay = loc.getWorld().spawn(loc, BlockDisplay::class.java).apply {
             block = Bukkit.createBlockData(Material.WEATHERED_COPPER_BULB)
-            transformation.apply { scale.set(lampSize, lampSize, lampSize) }
+            transformation = transformation.apply { scale.set(lampSize, lampSize, lampSize) }
         }
 
         creeperTicker = CreeperTicker(creeper!!, lampDisplay, glassDisplay, bp).apply {
