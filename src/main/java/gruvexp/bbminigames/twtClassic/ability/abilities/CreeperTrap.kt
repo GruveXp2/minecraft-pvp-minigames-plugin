@@ -153,11 +153,9 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
                 0.4,
                 DustOptions(attackerTeamColor, 5f)
             ) // Red color
-            for (entity in world.getNearbyEntitiesByType(Player::class.java, creeper.location, BLAST_RADIUS)) {
-                val p = entity as Player
-                val lobby = BotBows.getLobby(p) ?: continue
-                if (lobby != owner.lobby) continue
-                val bp = lobby.getBotBowsPlayer(p) ?: continue
+            for (entity in world.getNearbyEntitiesByType(LivingEntity::class.java, creeper.location, BLAST_RADIUS)) {
+                val bp = BotBows.getBotBowsPlayer(entity.uniqueId) ?: continue
+                if (bp.lobby != owner.lobby) continue
                 hitPlayers.add(bp)
             }
             val ability = owner.getAbility(AbilityType.CREEPER_TRAP)
