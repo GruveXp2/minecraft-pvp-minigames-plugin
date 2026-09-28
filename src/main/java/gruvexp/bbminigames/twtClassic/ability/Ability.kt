@@ -8,13 +8,13 @@ import org.bukkit.scheduler.BukkitRunnable
 
 open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val type: AbilityType) {
 
-    protected var baseCooldown: Int = 0 // seconds
+    protected var baseCooldown: Int = -1 // seconds
     var cooldownMultiplier: Float = 1.0f
         set(value) {
             field = value
             effectiveCooldown = (baseCooldown * value).toInt()
         }
-    var effectiveCooldown: Int = 0
+    var effectiveCooldown: Int = -1
         private set
 
     private var cooldownTimer: CooldownTimer? = null

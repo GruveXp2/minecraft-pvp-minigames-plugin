@@ -33,6 +33,7 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
         set(value) {
             field = value
             notifyCooldownMultiplierChange()
+            bp.equippedAbilities.forEach { bp.getAbility(it).cooldownMultiplier = value }
         }
 
     var isReady: Boolean = false

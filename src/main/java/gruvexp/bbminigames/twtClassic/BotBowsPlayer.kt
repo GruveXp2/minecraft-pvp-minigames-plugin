@@ -139,7 +139,6 @@ class BotBowsPlayer {
 
     fun initBattle(teamManager: TeamManager) {
         avatar.readyBattle(teamManager)
-        abilities.values.forEach { it.cooldownMultiplier = settings.abilityCooldownMultiplier }
     }
 
     fun clearEffects() {
@@ -195,7 +194,7 @@ class BotBowsPlayer {
                 return
             }
         }
-        abilities[type] = Ability.create(type, this, slot)
+        abilities[type] = Ability.create(type, this, slot).apply { cooldownMultiplier = settings.abilityCooldownMultiplier }
         if (abilityAlreadyEquipped) return
 
         if (slot > 0 && updateInventory) {
