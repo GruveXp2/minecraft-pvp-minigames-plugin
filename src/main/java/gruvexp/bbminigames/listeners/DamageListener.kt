@@ -50,7 +50,8 @@ class DamageListener : Listener {
             }
             if (hasKarmaAura) {
                 attackerBp.applyKarmaDebuff()
-                defenderBp.getAbility(AbilityType.KARMA_POTION).registerSuccess()
+                if (defenderBp.hasAbilityEquipped(AbilityType.KARMA_POTION))
+                    defenderBp.getAbility(AbilityType.KARMA_POTION).registerSuccess()
             }
         } else {
             val defender = e.entity as? LivingEntity ?: return
