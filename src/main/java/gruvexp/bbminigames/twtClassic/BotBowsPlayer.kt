@@ -92,7 +92,7 @@ class BotBowsPlayer {
     }
 
     fun turnIntoBot(): UUID {
-        check(avatar is NpcAvatar) { "This botbowsplayer is already a bot!" }
+        check(avatar !is NpcAvatar) { "This botbowsplayer is already a bot!" }
 
         val bot = Main.WORLD.spawn(avatar.entity.location, Mannequin::class.java)
         bot.customName(name)
