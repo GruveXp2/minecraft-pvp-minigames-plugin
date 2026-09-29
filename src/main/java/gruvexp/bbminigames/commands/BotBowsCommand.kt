@@ -40,6 +40,11 @@ class BotBowsCommand : CommandExecutor {
                 val spectatingLobby = BotBows.getSpectatingLobby(p) ?: return Component.text("Nothing happened, you dont currently spectate a game", NamedTextColor.YELLOW)
                 spectatingLobby.removeSpectator(p)
             }
+            "toggle_ready" -> {
+                val bp = BotBows.getBotBowsPlayer(p) ?: return Component.text("You arent in a game and cant ready up", NamedTextColor.YELLOW)
+                if (bp.lobby.isGameActive) return Component.text("You can only toggle readyup before the match has started", NamedTextColor.YELLOW)
+                bp.setReady(!bp.settings.isReady, 4)
+            }
 
             "save_preset" -> {
                 if (args.size == 1) return Component.text("You must specify a name for the preset!", NamedTextColor.RED)

@@ -21,6 +21,7 @@ class BotBowsTabCompleter : TabCompleter {
             "finish_vote",
             "load_preset",
             "save_preset",
+            "toggle_ready",
             "start",
             "stop",
             "leave"
