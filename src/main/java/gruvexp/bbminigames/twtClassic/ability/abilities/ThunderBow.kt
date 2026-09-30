@@ -21,7 +21,6 @@ import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
-import org.checkerframework.checker.units.qual.s
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -106,7 +105,7 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
             Component.text("ThunderBow"),
             Component.text("Shoots electric arrows")
         )
-        const val CHAIN_RADIUS: Double = 8.0
+        const val CHAIN_RADIUS: Double = 10.0
         const val DURATION: Int = 10 // seconds
 
         var activeArrows = mutableMapOf<Arrow, BukkitTask>()
