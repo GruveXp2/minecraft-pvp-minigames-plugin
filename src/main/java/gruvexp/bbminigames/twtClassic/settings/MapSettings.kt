@@ -7,6 +7,7 @@ import gruvexp.bbminigames.twtClassic.map.MapVotingSession
 class MapSettings(
     private val onMapSet: () -> Unit,
     private val onVoteUpdate: (triggeredByNewVote: Boolean) -> Unit,
+    private val onVoteToggle: () -> Unit,
 )  {
     val mapVotingSession : MapVotingSession = MapVotingSession { notifyVote() }
 
@@ -15,6 +16,7 @@ class MapSettings(
             field = value
             listeners.values.forEach { it.onVoteToggle() }
             onVoteUpdate(false)
+            onVoteToggle()
         }
     var isWeightedVoting: Boolean = true
         set(value) {

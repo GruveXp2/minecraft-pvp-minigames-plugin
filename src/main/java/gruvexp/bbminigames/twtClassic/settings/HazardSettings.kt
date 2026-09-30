@@ -7,9 +7,15 @@ import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import java.util.EnumMap
 
 class HazardSettings {
-    private val hazards = EnumMap<HazardType, Hazard>(HazardType::class.java)
+    private val hazards = EnumMap<HazardType, Hazard>(HazardType::class.java).apply {
+        HazardType.entries.forEach { put(it, it.createHazard()) }
+    }
 
     var listener: HazardUpdateListener? = null
+        set(value) {
+            field = value
+            listener?.onSchemaUpdate()
+        }
 
     fun setChance(type: HazardType, chance: HazardChance) {
         hazards[type]?.let {

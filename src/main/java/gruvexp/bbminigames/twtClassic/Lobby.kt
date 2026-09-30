@@ -165,6 +165,7 @@ class Lobby(val id: Int) {
                     .append(Component.text(randomMap.prettyName(), NamedTextColor.GREEN))
             )
         }
+        if (settings.mapSettings.isVoteMode) settings.hazardSettings.syncWithMap(settings.mapSettings.currentMap)
         botBowsGame = when (settings.mapSettings.currentMap) {
             BotBowsMap.ICY_RAVINE -> IcyRavineGame(settings)
             BotBowsMap.STEAMPUNK -> SteamPunkGame(settings)
