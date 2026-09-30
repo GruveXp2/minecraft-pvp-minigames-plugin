@@ -57,7 +57,7 @@ open class MenuRow(
         }
         if (page == 1) { // rada fylles med første side bortsett fra en next knapp på slutten
             for (i in 0..<size - 1) {
-                val item = if (i < items.size) items.get(i) else null
+                val item = if (i < items.size) items[i] else null
                 inventory.setItem(startSlot + i, item)
             }
             inventory.setItem(startSlot + size - 1, ROW_NEXT)
@@ -75,6 +75,14 @@ open class MenuRow(
             setItem(size - 1, item)
         } else {
             setItem(size - 1, ROW_NEXT)
+        }
+    }
+
+    fun getPageSize(page: Int): Int { // 1 indexed
+        return when (page) {
+            1 -> if (totalPages == 1) size else size - 1
+            totalPages -> size - 1
+            else -> size - 2
         }
     }
 

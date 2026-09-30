@@ -343,8 +343,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
         }
     }
 
-    override fun onAbilityStatusChange(type: AbilityType) { // TODO: huskelapp, om non andre banner abilitis som ikke er på riktig page, så bøgger det kankjse
-        val relativeAbilitySlot = getRelativeAbilitySlot(type) ?: return
+    override fun onAbilityStatusChange(type: AbilityType) {
+        val relativeAbilitySlot = abilityRow.getAbilitySlot(type) ?: return
         val abilitySlot = abilityRow.startSlot + relativeAbilitySlot
         val statusItem = when {
             bp.hasAbilityEquipped(type) -> ABILITY_EQUIPPED
@@ -370,11 +370,6 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             val abilityType = abilityItem?.let { AbilityType.fromItem(abilityItem) } ?: continue
             onAbilityStatusChange(abilityType)
         }
-    }
-
-    fun getRelativeAbilitySlot(type: AbilityType): Int? { // åssen rad det er, 1-9. negative verdier hvis det er på feil side
-        val slot = abilityRow.getAbilitySlot(type)
-        return if (slot > abilityRow.size) null else slot //TODO: why does it only check upper bound but not lower??
     }
 
     override fun addPlayer(bp: BotBowsPlayer) {
@@ -407,7 +402,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
 
     override fun onUniqueAbilityOccupancyChange(type: AbilityType, bp: BotBowsPlayer, equipped: Boolean) {
         if (bp == this.bp || bp.team != this.bp.team) return
-        val slot = abilityRow.getAbilitySlot(type) + abilityRow.startSlot
+        val relativeSlot = abilityRow.getAbilitySlot(type) ?: return
+        val slot = relativeSlot + abilityRow.startSlot
         inventory.setItem(slot - 9, if (equipped) ABILITY_TAKEN else VOID)
     }
 

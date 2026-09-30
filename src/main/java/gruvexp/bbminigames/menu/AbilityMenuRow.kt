@@ -16,15 +16,15 @@ class AbilityMenuRow(
         AbilityType.entries.forEach { addItem(it.abilityItem.clone()) }
     }
 
-    fun getAbilitySlot(type: AbilityType): Int {
-        for (i in items.indices) {
-            if (AbilityType.fromItem(items[i] ?: continue) == type) {
-                var slot = i - firstVisibleItem
-                if (currentPage > 1) slot++
-                return slot
-            }
+    fun getAbilitySlot(type: AbilityType): Int? { // slot relative to the first visible element (excluding button)
+        for (i in firstVisibleItem..<firstVisibleItem + getPageSize(currentPage)) {
+            if (AbilityType.fromItem(items.getOrNull(i) ?: continue) != type) continue
+
+            var slot = i - firstVisibleItem // index if firstVisibleItem.index = 0
+            if (currentPage > 1) slot++ // ++ if not on first page, since then there will be a back button there and everything gets moved 1 to the right
+            return slot
         }
-        error("missing ability in abilityRow")
+        return null
     }
 
     override fun goTo(page: Int) {
