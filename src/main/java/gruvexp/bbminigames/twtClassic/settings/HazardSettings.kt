@@ -36,7 +36,7 @@ class HazardSettings {
 
     fun createActiveHazards(): Set<Hazard> {
         return hazards.map { (type, config) ->
-            type.createHazard().apply { this.chance = config.chance }
+            type.createHazard().apply { chance = config.chance }
         }.toSet()
     }
 

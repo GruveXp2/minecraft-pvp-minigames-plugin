@@ -13,18 +13,19 @@ class MapSettings(
     var isVoteMode: Boolean = true
         set(value) {
             field = value
-            notifyVoteToggle()
+            listeners.values.forEach { it.onVoteToggle() }
+            onVoteUpdate(false)
         }
     var isWeightedVoting: Boolean = true
         set(value) {
             field = value
-            notifyWeightedVotingToggle()
+            listeners.values.forEach { it.onWeightedVotingToggle() }
         }
     var currentMap: BotBowsMap = BotBowsMap.RANDOM
         set(value) {
             field = value
             onMapSet() // used in Settings to change other menus, like team colors
-            notifyMapSet()
+            listeners.values.forEach { it.onMapSet() }
         }
 
     private val listeners = mutableMapOf<BotBowsPlayer, MapUpdateListener>()
@@ -40,19 +41,6 @@ class MapSettings(
     private fun notifyVote() {
         listeners.values.forEach { it.onVote() }
         onVoteUpdate(true)
-    }
-
-    private fun notifyVoteToggle() {
-        listeners.values.forEach { it.onVoteToggle() }
-        onVoteUpdate(false)
-    }
-
-    private fun notifyWeightedVotingToggle() {
-        listeners.values.forEach { it.onWeightedVotingToggle() }
-    }
-
-    private fun notifyMapSet() {
-        listeners.values.forEach { it.onMapSet() }
     }
 
     fun finalizeMapSelection(): BotBowsMap? {

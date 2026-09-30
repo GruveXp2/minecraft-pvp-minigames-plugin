@@ -12,7 +12,11 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         set(value) {
             val toggle: Boolean = field == 0 || value == 0
             field = value
-            if (toggle) notifyAbilitiesToggle() else notifyMaxAbilities()
+            if (toggle) {
+                listeners.values.forEach { it.onAbilitiesToggle() }
+            } else {
+                listeners.values.forEach { it.onMaxAbilitiesChange() }
+            }
             if (!isIndividualMax) getPlayerSettings().forEach { it.maxAbilities = value }
         }
 
@@ -20,21 +24,21 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         set(value) {
             field = value
             if (!value) getPlayerSettings().forEach { it.maxAbilities = maxAbilities }
-            notifyIndividualMaxToggle()
+            listeners.values.forEach { it.onIndividualMaxToggle() }
         }
 
     var cooldownMultiplier = 1.0f
         set(value) {
             field = value
             if (!isIndividualCooldown) getPlayerSettings().forEach { it.abilityCooldownMultiplier = value }
-            notifyCooldown()
+            listeners.values.forEach { it.onCooldownMultiplierChange() }
         }
 
     var isIndividualCooldown = false
         set(value) {
             field = value
             if (!value) getPlayerSettings().forEach { it.abilityCooldownMultiplier = cooldownMultiplier }
-            notifyIndividualCooldownToggle()
+            listeners.values.forEach { it.onIndividualCooldownToggle() }
         }
 
     var isUniqueMode = false
@@ -43,13 +47,13 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
             if (!value) {
                 teamAbilities.values.forEach { it.clear() }
             }
-            notifyUniqueModeToggle()
+            listeners.values.forEach { it.onUniqueModeToggle() }
         }
 
     var isRandomizerMode = false
         set(value) {
             field = value
-            notifyRandomizerModeToggle()
+            listeners.values.forEach { it.onRandomizerModeToggle() }
         }
 
     private val teamAbilities: Map<TeamSide, MutableMap<AbilityType, BotBowsPlayer>> = mapOf(
@@ -111,36 +115,8 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
     }
 
     fun isEquippedByTeam(bp: BotBowsPlayer, type: AbilityType): Boolean {
-        val equipped = teamAbilities[bp.team.teamSide]!!
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
         return type in equipped && equipped[type] != bp
-    }
-
-    private fun notifyAbilitiesToggle() {
-        listeners.values.forEach { it.onAbilitiesToggle() }
-    }
-
-    private fun notifyMaxAbilities() {
-        listeners.values.forEach { it.onMaxAbilitiesChange() }
-    }
-
-    private fun notifyIndividualMaxToggle() {
-        listeners.values.forEach { it.onIndividualMaxToggle() }
-    }
-
-    private fun notifyCooldown() {
-        listeners.values.forEach { it.onCooldownMultiplierChange() }
-    }
-
-    private fun notifyIndividualCooldownToggle() {
-        listeners.values.forEach { it.onIndividualCooldownToggle() }
-    }
-
-    private fun notifyUniqueModeToggle() {
-        listeners.values.forEach { it.onUniqueModeToggle() }
-    }
-
-    private fun notifyRandomizerModeToggle() {
-        listeners.values.forEach { it.onRandomizerModeToggle() }
     }
 
     private fun notifyStatus(type: AbilityType) {
@@ -149,7 +125,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
 
     fun attemptEquip(bp: BotBowsPlayer, type: AbilityType): Boolean {
         if (!isUniqueMode) return true
-        val equipped = teamAbilities[bp.team.teamSide]!!
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
         val currentBp = equipped[type]
 
         if (currentBp == null || currentBp == bp) {
@@ -164,7 +140,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
 
     fun unequip(bp: BotBowsPlayer, type: AbilityType) {
         if (!isUniqueMode) return
-        val equipped = teamAbilities[bp.team.teamSide]!!
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
         if (equipped[type] != bp) return
         equipped.remove(type)
         listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, false) }
