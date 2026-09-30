@@ -45,10 +45,6 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         ),
         "TERRACOTTA", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
-    BUBBLE_JET(
-        makeRiptideTrident(),
-        "CANDLE", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
-    ),
     LONG_ARMS(
         makeLongHandsItem(),
         "WOOL", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
@@ -106,6 +102,10 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
     LINGERING_POTION(
         makeLingeringPotion(),
         5, "CANDLE", AbilityCategory.TRAP, AbilityEffect.DEBUFF
+    ),
+    BUBBLE_JET(
+    makeRiptideTrident(),
+    "CANDLE", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     );
 
     val displayName: String
