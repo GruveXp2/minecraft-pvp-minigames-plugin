@@ -367,7 +367,10 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
         for (i in 0..<abilityRow.size) {
             val abilitySlot = abilityRow.startSlot + i
             val abilityItem = inventory.getItem(abilitySlot)
-            val abilityType = abilityItem?.let { AbilityType.fromItem(abilityItem) } ?: continue
+            val abilityType = abilityItem?.let { AbilityType.fromItem(abilityItem) } ?: run {
+                inventory.setItem(abilityRow.startSlot + i - 9, VOID) // sets void above non-abilities like page buttons, removing the lingering colored bg from last visited page
+                continue
+            }
             onAbilityStatusChange(abilityType)
         }
     }
