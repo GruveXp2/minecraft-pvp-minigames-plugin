@@ -35,7 +35,7 @@ class Settings(val lobby: Lobby) {
     val hazardSettings: HazardSettings = HazardSettings()
     val abilitySettings: AbilitySettings = AbilitySettings { playerSettings }
     val mapSettings: MapSettings = MapSettings(
-        { map: BotBowsMap -> onMapChange(map) }, // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
+        { onMapChange() }, // TODO: gjør om random map tilat man er på tribunepos er i en faktisk lobby og ikke tribune, der man har masse parkor osv
         { triggeredByNewVote: Boolean -> updateLeadingMap(triggeredByNewVote) }
     )
 
@@ -181,9 +181,9 @@ class Settings(val lobby: Lobby) {
         )
     }
 
-    private fun onMapChange(map: BotBowsMap) {
+    private fun onMapChange() {
         setNewTeams(false)
-        hazardSettings.syncWithMap(map)
+        hazardSettings.syncWithMap(mapSettings.currentMap)
     }
 
     fun switchTeam(bp: BotBowsPlayer) {
