@@ -7,14 +7,11 @@ import gruvexp.bbminigames.api.ability.AbilityTrigger.OnProjectileHit
 import gruvexp.bbminigames.commands.TestCommand
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
-import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility
 import gruvexp.bbminigames.twtClassic.ability.abilities.*
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Particle
 import org.bukkit.WeatherType
 import org.bukkit.block.BlockFace
 import org.bukkit.enchantments.Enchantment
@@ -23,19 +20,9 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.ThrownPotion
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.AreaEffectCloudApplyEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.LingeringPotionSplashEvent
-import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.event.entity.ProjectileLaunchEvent
-import org.bukkit.event.player.PlayerAnimationEvent
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerItemConsumeEvent
-import org.bukkit.event.player.PlayerRiptideEvent
+import org.bukkit.event.entity.*
+import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
-import kotlin.math.cos
-import kotlin.math.sin
 
 class AbilityListener : Listener {
     @EventHandler
@@ -198,33 +185,7 @@ class AbilityListener : Listener {
                     (bp.getAbility(type) as LaserTrap).onPlace(BlockPlace(spawnBlock, face))
                 }
 
-                else -> {
-                    if (type.category == AbilityCategory.POTION) {
-                        val particleCount = 200
-                        val radius = PotionAbility.RADIUS
-                        val loc = p.location.add(0.0, 0.1, 0.0)
-                        val y = loc.y
-                        var i = 0
-                        while (i < particleCount) {
-                            val θ = 2 * Math.PI * i / particleCount
-                            val x = loc.x + radius * cos(θ)
-                            val z = loc.z + radius * sin(θ)
-
-                            val particleLoc = Location(loc.world, x, y, z)
-                            p.world.spawnParticle(
-                                Particle.DUST,
-                                particleLoc,
-                                1,
-                                0.0,
-                                0.0,
-                                0.0,
-                                0.4,
-                                Particle.DustOptions(bp.team.dyeColor.color, 2.5f)
-                            )
-                            i++
-                        }
-                    }
-                }
+                else -> PotionAbility.createPotionRadiusEffect(bp)
             }
         }
 
