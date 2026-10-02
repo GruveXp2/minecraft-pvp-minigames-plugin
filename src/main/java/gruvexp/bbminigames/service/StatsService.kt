@@ -23,7 +23,7 @@ class StatsService(
     private val statsDatabase: StatsDatabase
 ) {
     fun saveMatchResult(matchResult: MatchResult) {
-        // database calls can take noticeable time, so shouldnt run on main thread
+        // database calls can take noticeable time, so shouldnt run on main thread //TODO: unless server is closing since async task are banned then
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             transaction(statsDatabase.db) {
                 val matchId = MatchesTable.insert {
