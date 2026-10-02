@@ -102,7 +102,7 @@ open class BotBowsGame(val settings: Settings) {
         RoundCountdown(this, round).runTaskTimer(
             Main.plugin,
             0L,
-            20L
+            if (TestCommand.debugging) 5L else 20L
         ) // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         val roundDuration = settings.winConditionSettings.roundDuration
         if (roundDuration != 0) {
