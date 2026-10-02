@@ -146,7 +146,8 @@ class AbilityListener : Listener {
                 return
             }
             when (type) {
-                AbilityType.ENDER_PEARL, AbilityType.RADAR, AbilityType.THUNDER_BOW, AbilityType.SALMON_SLAP, AbilityType.LINGERING_POTION -> bp.getAbility(type).use()
+                AbilityType.ENDER_PEARL, AbilityType.RADAR, AbilityType.THUNDER_BOW,
+                AbilityType.SALMON_SLAP, AbilityType.LINGERING_POTION, AbilityType.HEALING -> bp.getAbility(type).use()
 
                 AbilityType.BUBBLE_JET -> {
                     p.resetPlayerWeather()
@@ -185,7 +186,8 @@ class AbilityListener : Listener {
                     (bp.getAbility(type) as LaserTrap).onPlace(BlockPlace(spawnBlock, face))
                 }
 
-                else -> PotionAbility.createPotionRadiusEffect(bp)
+                AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION -> PotionAbility.createPotionRadiusEffect(bp)
+                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS -> {}
             }
         }
 

@@ -72,6 +72,12 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         Menu.makeItem(Material.ENDER_PEARL, Component.text("Ender Pearl")),
         15, "CONCRETE", AbilityCategory.UTILITY, AbilityEffect.BUFF
     ),
+    HEALING(
+        Menu.makeItem(Material.REDSTONE, Component.text("Healing"),
+            Component.text("Heals you when you stand still for x seconds")
+        ),
+        10, "DYE", AbilityCategory.UTILITY, AbilityEffect.BUFF
+    ),
     BABY_POTION(
         makeBabyPotion(),
         25, "CANDLE", AbilityCategory.POTION, AbilityEffect.BUFF

@@ -136,6 +136,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
             AbilityType.CHARGE_POTION -> ChargePotion(bp, slot)
             AbilityType.KARMA_POTION -> KarmaPotion(bp, slot)
             AbilityType.LASER_TRAP -> LaserTrap(bp, slot)
+            AbilityType.HEALING -> HealingAbility(bp, slot)
         }
     }
 }

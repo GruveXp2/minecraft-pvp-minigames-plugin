@@ -42,7 +42,7 @@ val buildNumber: Int = if (buildNumberFile.exists()) {
 }
 
 group = "gruvexp"
-version = "5.1.1-$buildNumber"
+version = "5.2.snapshot-$buildNumber" //TODO: REMOVE THE SNAPSHOT ONCE HEALING ABILITY AND IDK CROSSBOW STUFF, IS DONE!
 description = "The plugin used on the BotBows minigames server"
 
 java {
