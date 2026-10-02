@@ -192,10 +192,9 @@ class AbilityListener : Listener {
         fun onSlap(
             e: EntityDamageByEntityEvent,
             attackerBp: BotBowsPlayer,
-            defenderBp: BotBowsPlayer?,
+            defenderBp: BotBowsPlayer,
             weapon: ItemStack
         ) {
-            if (defenderBp == null) return
             if (attackerBp.team == defenderBp.team) {
                 e.isCancelled = true
                 return

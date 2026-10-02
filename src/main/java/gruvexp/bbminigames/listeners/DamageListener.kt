@@ -70,7 +70,7 @@ class DamageListener : Listener {
             val attackerBp = BotBows.getBotBowsPlayer(attacker)
             val defenderBp = BotBows.getBotBowsPlayer(defender.uniqueId)
 
-            if (attackerBp != null) AbilityListener.onSlap(e, attackerBp, defenderBp, weapon)
+            if (attackerBp != null && defenderBp != null) AbilityListener.onSlap(e, attackerBp, defenderBp, weapon)
             if (defenderBp == null) {
                 if (attackerBp != null) {
                     e.isCancelled = true // cant damage ingame players without bow
