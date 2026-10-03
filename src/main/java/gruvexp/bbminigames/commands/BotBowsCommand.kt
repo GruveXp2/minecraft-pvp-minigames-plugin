@@ -25,7 +25,13 @@ class BotBowsCommand : CommandExecutor {
     private fun runCommandAndMessage(p: Player, args: Array<String>): TextComponent {
         if (args.isEmpty()) return Component.text("You must specify subcommand!", NamedTextColor.RED)
 
-        val bp = BotBows.getBotBowsPlayer(p) ?: return Component.text("You must be in a BotBows lobby to perform this command!", NamedTextColor.RED)
+        val bp = BotBows.getBotBowsPlayer(p) ?: run {
+            return@runCommandAndMessage if (args[0] == "stop_spectating_game") {
+                val spectatingLobby = BotBows.getSpectatingLobby(p) ?: return@runCommandAndMessage Component.text("Nothing happened, you dont currently spectate a game", NamedTextColor.YELLOW)
+                spectatingLobby.removeSpectator(p)
+                Component.empty()
+            } else Component.text("You must be in a BotBows lobby to perform this command!", NamedTextColor.RED)
+        }
         val lobby = bp.lobby
         when (args[0]) {
             "start" -> lobby.startGame(p) // TODO: take in bp instead?
@@ -36,10 +42,6 @@ class BotBowsCommand : CommandExecutor {
             }
             "leave" -> lobby.leaveGame(p)
             "exit_view_mode" -> bp.exitViewMode()
-            "stop_spectating_game" -> {
-                val spectatingLobby = BotBows.getSpectatingLobby(p) ?: return Component.text("Nothing happened, you dont currently spectate a game", NamedTextColor.YELLOW)
-                spectatingLobby.removeSpectator(p)
-            }
             "toggle_ready" -> {
                 val bp = BotBows.getBotBowsPlayer(p) ?: return Component.text("You arent in a game and cant ready up", NamedTextColor.YELLOW)
                 if (bp.lobby.isGameActive) return Component.text("You can only toggle readyup before the match has started", NamedTextColor.YELLOW)
