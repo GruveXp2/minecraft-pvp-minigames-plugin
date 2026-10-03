@@ -259,15 +259,14 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
     companion object {
         const val HEAL_TIME = 20 * 20
-        mu
         // Visual effects
         const val RING_PARTITIONS = 10
         const val RING_RADIUS = 2
-        const val ORB_SPEED = 0.15
+        const val ORB_SPEED = 0.2
 
         // how long distance the orb will cover, since the particles will go out after some time
         // and when they do, it will be seen as the end of the cover, and a new particle will be spawned in
-        const val ORB_COVER = 2.0
+        const val ORB_COVER = 3.0
         const val RADIUS_STEP = RING_RADIUS.toFloat() / RING_PARTITIONS
 
         var orbId = 0
