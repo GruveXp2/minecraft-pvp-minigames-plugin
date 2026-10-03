@@ -38,6 +38,7 @@ class LobbyMenu : Menu(Component.text("Join Lobby"), 9) {
             MenuAction.CLOSED_LOBBY -> {
                 if (e.isLeftClick) {
                     p.sendMessage(Component.text("Cant join lobby, game is ongoing!", NamedTextColor.YELLOW))
+                    p.sendMessage(Component.text("If you want to, you can spectate the game by right clicking the lobby", NamedTextColor.GRAY))
                 } else if (e.isRightClick) {
                     lobby.addSpectator(p)
                 }

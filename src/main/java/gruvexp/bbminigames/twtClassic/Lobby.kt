@@ -49,8 +49,7 @@ class Lobby(val id: Int) {
 
     fun joinGame(p: Player) {
         if (isGameActive) {
-            p.sendMessage(Component.text("A game is already ongoing, wait until it ends before you join", NamedTextColor.RED))
-            p.sendMessage(Component.text("If you want to, you can spectate the game by right clicking the lobby"))
+            p.sendMessage(Component.text("Error! ${p.name} tried to join a lobby whos game is already started", NamedTextColor.RED))
             return
         }
         BotBows.getLobby(p)?.let { lobby ->
