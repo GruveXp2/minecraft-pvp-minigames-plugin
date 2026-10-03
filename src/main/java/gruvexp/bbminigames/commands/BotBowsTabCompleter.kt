@@ -27,8 +27,10 @@ class BotBowsTabCompleter : TabCompleter {
             "leave"
         )
         if (sender is Player) {
-            val bp = BotBows.getBotBowsPlayer(sender)
-            if (bp != null && bp.lobby.settings.isPlayerMod(bp)) operations.add("transfer_mod")
+            BotBows.getBotBowsPlayer(sender)?.let { bp ->
+                if (bp.lobby.settings.isPlayerMod(bp)) operations.add("transfer_mod")
+                if (BotBows.getSpectatingLobby(sender) != null) operations.add("stop_spectating_game")
+            }
         }
         if (args.size == 1) return operations
         val oper = args[0]
