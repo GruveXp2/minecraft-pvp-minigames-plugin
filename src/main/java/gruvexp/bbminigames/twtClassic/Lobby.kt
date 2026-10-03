@@ -177,6 +177,7 @@ class Lobby(val id: Int) {
             it.cancel()
             cleanupResultDisplay()
         }
+        BotBows.lobbyMenu.updateLobbyItem(this)
     }
 
     fun reset() {
