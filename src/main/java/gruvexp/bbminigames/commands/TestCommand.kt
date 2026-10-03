@@ -47,6 +47,14 @@ class TestCommand : CommandExecutor {
                 }
                 "tde" -> display!!.deathsTab.isExpanded = !display!!.deathsTab.isExpanded
                 "tde2" -> display!!.abilityTab!!.isExpanded = !display!!.abilityTab!!.isExpanded
+                "toggle_ready" -> {
+                    val lobbyId = args[1].toInt() - 1
+                    val lobby = BotBows.getLobby(lobbyId)
+                    val playerName = args[2].replace("_", " ")
+                    val bp = lobby.getPlayers().first { it.avatar.entity.name == playerName }
+                    bp.setReady(!bp.settings.isReady, 4)
+                    sender.sendMessage(Component.text("Toggled ready for Lobby${lobbyId + 1}:$playerName -> ${if (bp.settings.isReady) "now ready" else "no longer ready"}"))
+                }
                 "end_round" -> {
                     val bp = BotBows.getBotBowsPlayer(p)
                     if (bp == null) {

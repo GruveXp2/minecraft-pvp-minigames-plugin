@@ -15,7 +15,8 @@ class TestTabCompleter : TabCompleter {
         label: String,
         args: Array<String>
     ): MutableList<String> {
-        if (args.size == 1) return mutableListOf(
+        if (args.size == 1) return listOf(
+            "toggle_ready",
             "end_round",
             "5_bots",
             "vote",
@@ -37,28 +38,44 @@ class TestTabCompleter : TabCompleter {
             "inv",
             "set_blaze_rod_cooldown",
             "test_arc"
-        )
+        ).filter { args[0] in it }.toMutableList()
 
         val p = sender as Player
         val oper = args[0]
-        if (oper == "test_arc") {
-            if (args.size <= 4) {
-                val loc1 = Util.getTargetBlockLoc(p, 10)
-                return mutableListOf(Util.print(loc1))
+        when (oper) {
+            "test_arc" -> {
+                if (args.size <= 4) {
+                    val loc1 = Util.getTargetBlockLoc(p, 10)
+                    return mutableListOf(Util.print(loc1))
+                }
+                if (args.size <= 7) {
+                    val loc2 = Util.getTargetBlockLoc(p, 10)
+                    return mutableListOf(Util.print(loc2))
+                }
             }
-            if (args.size <= 7) {
-                val loc2 = Util.getTargetBlockLoc(p, 10)
-                return mutableListOf(Util.print(loc2))
+            "vote" -> {
+                if (args.size == 2) {
+                    val bp = BotBows.getBotBowsPlayer(p) ?: return mutableListOf("You arent in a lobby")
+                    return bp.lobby.getPlayers()
+                        .map { it.plainName }
+                        .map { name -> name.replace(" ", "_") }
+                        .toMutableList()
+                } else if (args.size == 3) {
+                    return BotBowsMap.entries.map { it.name.lowercase() }.toMutableList()
+                }
             }
-        } else if (oper == "vote") {
-            if (args.size == 2) {
-                val bp = BotBows.getBotBowsPlayer(p) ?: return mutableListOf("You arent in a lobby")
-                return bp.lobby.getPlayers()
-                    .map { it.plainName }
-                    .map { name -> name.replace(" ", "_") }
-                    .toMutableList()
-            } else if (args.size == 3) {
-                return BotBowsMap.entries.map { it.name.lowercase() }.toMutableList()
+            "toggle_ready" -> {
+                if (args.size == 2) {
+                    return mutableListOf("1", "2", "3")
+                }
+                if (args.size == 3) {
+                    val lobbyName = args[1].toIntOrNull() ?: return mutableListOf("Bugged lobby id")
+                    val lobby = BotBows.getLobby(lobbyName - 1)
+                    return lobby.getPlayers()
+                        .map { it.plainName }
+                        .map { name -> name.replace(" ", "_") }
+                        .toMutableList()
+                }
             }
         }
         return mutableListOf("")
