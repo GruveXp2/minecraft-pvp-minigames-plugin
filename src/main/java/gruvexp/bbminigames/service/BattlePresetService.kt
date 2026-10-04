@@ -11,7 +11,7 @@ class BattlePresetService {
     private val battlePresets: MutableMap<String, BattlePreset> = mutableMapOf()// Her definerer vi Gson-objektet (det er dette vi bruker til alt)
     private val gson: Gson = GsonBuilder()
         .setPrettyPrinting()
-        .registerTypeAdapterFactory(StrictEnumAdapterFactory())
+        //.registerTypeAdapterFactory(StrictEnumAdapterFactory())
         .create()
     private val folder = File(Main.plugin.dataFolder, "presets")
 

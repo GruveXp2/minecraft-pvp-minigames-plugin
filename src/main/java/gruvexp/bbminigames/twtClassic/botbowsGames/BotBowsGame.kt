@@ -5,7 +5,6 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
 import gruvexp.bbminigames.model.stat.MatchResult
 import gruvexp.bbminigames.model.stat.ResultDisplay
-import gruvexp.bbminigames.tasks.BotBowsGiver
 import gruvexp.bbminigames.tasks.RoundCountdown
 import gruvexp.bbminigames.twtClassic.*
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
@@ -39,6 +38,7 @@ open class BotBowsGame(val settings: Settings) {
     protected var round: Int = 0
     private var roundTimer: BukkitTask? = null
     private var startRoundTask: BukkitTask? = null
+    private var botBowsGiver: BukkitTask? = null
 
     var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
 
@@ -74,7 +74,11 @@ open class BotBowsGame(val settings: Settings) {
         botBowsBoard.initPlayers() // makes the player join the Team's to get the correct color outline
         botBowsBoard.updateTeamScores()
         players.forEach { it.start() }
-        BotBowsGiver(lobby).runTaskTimer(Main.plugin, 100L, 10L)
+        botBowsGiver = object : BukkitRunnable() {
+            override fun run() {
+                lobby.getPlayers().filter { !it.isDamaged }.forEach { it.reloadBotBow() }
+            }
+        }.runTaskTimer(Main.plugin, 100L, 10L)
     }
 
     open fun startRound() {
@@ -283,6 +287,7 @@ open class BotBowsGame(val settings: Settings) {
         team1.reset()
         team2.reset()
         lobby.reset()
+        botBowsGiver?.cancel()
     }
 
     private fun showPostGameTitle(winningTeam: BotBowsTeam) {
