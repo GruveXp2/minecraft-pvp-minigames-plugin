@@ -7,7 +7,6 @@ import gruvexp.bbminigames.model.stat.MatchResult
 import gruvexp.bbminigames.model.stat.ResultDisplay
 import gruvexp.bbminigames.tasks.BotBowsGiver
 import gruvexp.bbminigames.tasks.RoundCountdown
-import gruvexp.bbminigames.tasks.RoundTimer
 import gruvexp.bbminigames.twtClassic.*
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.hazard.Hazard
@@ -21,6 +20,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 
@@ -106,7 +106,7 @@ open class BotBowsGame(val settings: Settings) {
         ) // mens de er på spawn, kan de ikke bevege seg og det er nedtelling til det begynner
         val roundDuration = settings.winConditionSettings.roundDuration
         if (roundDuration != 0) {
-            roundTimer = RoundTimer(this, roundDuration).runTaskTimer(Main.plugin, 200L, 20L)
+            roundTimer = RoundTimer(roundDuration).runTaskTimer(Main.plugin, 200L, 20L)
         }
     }
 
@@ -330,6 +330,42 @@ open class BotBowsGame(val settings: Settings) {
             postGame(team1)
         } else {
             postGame(team2)
+        }
+    }
+
+    inner class RoundTimer(minutes: Int) : BukkitRunnable() {
+        var time: Int = minutes * 60
+
+        override fun run() {
+            when (time) {
+                300, 180, 120, 60 -> lobby.messagePlayers(
+                    Component.text("Round ends in ")
+                        .append(Component.text(time / 60, NamedTextColor.YELLOW))
+                        .append(Component.text(" minute${if (time == 60) "" else "s"}"))
+                )
+
+                30, 10 -> lobby.messagePlayers(
+                    Component.text("Round ends in ", NamedTextColor.YELLOW)
+                        .append(Component.text(time, NamedTextColor.GOLD))
+                        .append(Component.text(" seconds", NamedTextColor.YELLOW))
+                )
+
+                0 -> {
+                    endRoundTimeout()
+                    cancel() // stopper loopen
+                }
+
+                else -> {
+                    if (time % 300 == 0) {
+                        lobby.messagePlayers(
+                            Component.text("Round ends in ")
+                                .append(Component.text(time / 60))
+                                .append(Component.text(" minutes"))
+                        )
+                    }
+                }
+            }
+            time--
         }
     }
 }
