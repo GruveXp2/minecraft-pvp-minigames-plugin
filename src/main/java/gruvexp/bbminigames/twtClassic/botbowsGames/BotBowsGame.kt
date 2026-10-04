@@ -39,6 +39,7 @@ open class BotBowsGame(val settings: Settings) {
     protected var round: Int = 0
     private var roundTimer: BukkitTask? = null
     private var startRoundTask: BukkitTask? = null
+    private var roundCountdown: BukkitTask? = null
     private var botBowsGiver: BukkitTask? = null
 
     var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
@@ -104,7 +105,7 @@ open class BotBowsGame(val settings: Settings) {
         canMove = false
         canInteract = false
         activeRound = true
-        RoundCountdown().runTaskTimer(
+        roundCountdown = RoundCountdown().runTaskTimer(
             Main.plugin,
             0L,
             if (TestCommand.debugging) 5L else 20L
@@ -328,6 +329,7 @@ open class BotBowsGame(val settings: Settings) {
     fun endGame() { // the game has ended, check who won
         roundTimer?.cancel()
         startRoundTask?.cancel()
+        roundCountdown?.cancel()
         hazards.forEach { if (it.isActive) it.end() }
 
         if (team1.points == team2.points) {
