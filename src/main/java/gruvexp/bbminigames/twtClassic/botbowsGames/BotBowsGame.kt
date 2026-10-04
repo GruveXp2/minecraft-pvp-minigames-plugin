@@ -5,7 +5,6 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
 import gruvexp.bbminigames.model.stat.MatchResult
 import gruvexp.bbminigames.model.stat.ResultDisplay
-import gruvexp.bbminigames.tasks.RoundCountdown
 import gruvexp.bbminigames.twtClassic.*
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.hazard.Hazard
@@ -15,9 +14,11 @@ import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
+import org.bukkit.WeatherType
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
@@ -335,6 +336,38 @@ open class BotBowsGame(val settings: Settings) {
             postGame(team1)
         } else {
             postGame(team2)
+        }
+    }
+
+    class RoundCountdown(val botBowsGame: BotBowsGame, val round: Int) : BukkitRunnable() {
+        var time: Int = 0
+
+        override fun run() {
+            when (time) {
+                0, 1, 2, 3, 4 -> botBowsGame.lobby.messagePlayers(
+                    Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                        .append(Component.text(" is starting in "))
+                        .append(Component.text((5 - time).toString(), NamedTextColor.GOLD))
+                )
+
+                5 -> {
+                    botBowsGame.lobby.messagePlayers(
+                        Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                            .append(Component.text(" has started!"))
+                    )
+                    botBowsGame.canMove = true
+                    botBowsGame.canInteract = true
+
+                    botBowsGame.triggerHazards()
+
+                    if (botBowsGame.settings.rain > 0 && !(botBowsGame.stormHazard?.isActive ?: false)) {
+                        Main.WORLD.setStorm(true)
+                        Bukkit.getOnlinePlayers().forEach { it.setPlayerWeather(WeatherType.CLEAR) }
+                    }
+                    cancel()
+                }
+            }
+            time++
         }
     }
 
