@@ -16,9 +16,11 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.FallingBlock
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
     var anvilLocations = mutableSetOf<Location>()
+    var startTask: BukkitTask? = null
 
     override fun init(players: Set<BotBowsPlayer>) {
         if (chance == HazardChance.DISABLED) return
@@ -34,7 +36,7 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
     }
 
     override fun trigger(players: Set<BotBowsPlayer>) {
-        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
+        startTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             for (bp in players) {
                 val earthQuakeTimer = PlayerEarthQuakeTimer(bp)
                 earthQuakeTimer.runTaskTimer(Main.plugin, 0L, 2L)
@@ -56,6 +58,7 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
     override val actionDescription = "will have storms"
 
     override fun end() {
+        startTask?.cancel()
         super.end()
         for (anvilLocation in anvilLocations) {
             val block = anvilLocation.block

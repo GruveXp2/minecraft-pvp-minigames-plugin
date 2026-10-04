@@ -20,10 +20,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
 class GhostHazard : Hazard(HazardType.GHOST) {
+    var startTask: BukkitTask? = null
+
     override fun init(players: Set<BotBowsPlayer>) {}
 
     override fun trigger(players: Set<BotBowsPlayer>) {
@@ -32,7 +35,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
             ghostMover.runTaskTimer(Main.plugin, 0L, 1L)
             hazardTimers[bp] = ghostMover
 
-            Bukkit.getScheduler().runTaskLater(
+            startTask = Bukkit.getScheduler().runTaskLater(
                 Main.plugin,
                 Runnable {
                     ghostMover.ascendGhost(bp.location)
@@ -69,6 +72,7 @@ class GhostHazard : Hazard(HazardType.GHOST) {
     override val actionDescription = "will be haunted by ghosts"
 
     override fun end() {
+        startTask?.cancel()
         hazardTimers.values.forEach { (it as PlayerGhostMover).descendGhost() }
         super.end()
         Main.WORLD.setTimeSmooth(18000, 30000, 5)

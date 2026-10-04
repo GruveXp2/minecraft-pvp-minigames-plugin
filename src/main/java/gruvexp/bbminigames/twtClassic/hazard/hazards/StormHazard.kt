@@ -14,8 +14,11 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 class StormHazard : Hazard(HazardType.STORM) {
+    var startTask: BukkitTask? = null
+
     override fun init(players: Set<BotBowsPlayer>) {
         if (chance == HazardChance.DISABLED) return
         for (bp in players) {
@@ -30,7 +33,7 @@ class StormHazard : Hazard(HazardType.STORM) {
     }
 
     override fun trigger(players: Set<BotBowsPlayer>) {
-        Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
+        startTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable {
             for (bp in players) {
                 val stormTimer = PlayerStormTimer(bp)
                 stormTimer.runTaskTimer(Main.plugin, 0L, 2L)
@@ -55,6 +58,7 @@ class StormHazard : Hazard(HazardType.STORM) {
     override val actionDescription = "will have storms"
 
     override fun end() {
+        startTask?.cancel()
         super.end()
         Main.WORLD.isThundering = false
         Main.WORLD.setStorm(false)
