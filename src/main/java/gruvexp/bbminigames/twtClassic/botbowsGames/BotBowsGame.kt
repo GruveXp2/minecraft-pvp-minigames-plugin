@@ -104,7 +104,7 @@ open class BotBowsGame(val settings: Settings) {
         canMove = false
         canInteract = false
         activeRound = true
-        RoundCountdown(this, round).runTaskTimer(
+        RoundCountdown().runTaskTimer(
             Main.plugin,
             0L,
             if (TestCommand.debugging) 5L else 20L
@@ -339,35 +339,31 @@ open class BotBowsGame(val settings: Settings) {
         }
     }
 
-    class RoundCountdown(val botBowsGame: BotBowsGame, val round: Int) : BukkitRunnable() {
-        var time: Int = 0
+    inner class RoundCountdown : BukkitRunnable() {
+        var timeUntilStart: Int = 5
 
         override fun run() {
-            when (time) {
-                0, 1, 2, 3, 4 -> botBowsGame.lobby.messagePlayers(
+            if (timeUntilStart > 0) {
+                Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                    .append(Component.text(" is starting in "))
+                    .append(Component.text("$timeUntilStart", NamedTextColor.GOLD))
+            } else {
+                lobby.messagePlayers(
                     Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
-                        .append(Component.text(" is starting in "))
-                        .append(Component.text((5 - time).toString(), NamedTextColor.GOLD))
+                        .append(Component.text(" has started!"))
                 )
+                canMove = true
+                canInteract = true
 
-                5 -> {
-                    botBowsGame.lobby.messagePlayers(
-                        Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
-                            .append(Component.text(" has started!"))
-                    )
-                    botBowsGame.canMove = true
-                    botBowsGame.canInteract = true
+                triggerHazards()
 
-                    botBowsGame.triggerHazards()
-
-                    if (botBowsGame.settings.rain > 0 && !(botBowsGame.stormHazard?.isActive ?: false)) {
-                        Main.WORLD.setStorm(true)
-                        Bukkit.getOnlinePlayers().forEach { it.setPlayerWeather(WeatherType.CLEAR) }
-                    }
-                    cancel()
+                if (settings.rain > 0 && !(stormHazard?.isActive ?: false)) {
+                    Main.WORLD.setStorm(true)
+                    Bukkit.getOnlinePlayers().forEach { it.setPlayerWeather(WeatherType.CLEAR) }
                 }
+                cancel()
             }
-            time++
+            timeUntilStart--
         }
     }
 
