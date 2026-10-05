@@ -328,12 +328,11 @@ class SteamPunkGame(settings: Settings) : BotBowsGame(settings) {
 
     override fun handleMovement(e: PlayerMoveEvent, bp: BotBowsPlayer) {
         super.handleMovement(e, bp)
-        val p = e.player
-        val chunk = p.chunk
+        val chunk = e.player.chunk
 
         pipeChunks[chunk]?.forEach { it.checkProximity(bp) }
 
-        impellerChunks[chunk]?.forEach { it.checkProximity(p) }
+        impellerChunks[chunk]?.forEach { it.checkProximity(bp) }
     }
 
     private fun scheduleHatch(hatch: Hatch) {
