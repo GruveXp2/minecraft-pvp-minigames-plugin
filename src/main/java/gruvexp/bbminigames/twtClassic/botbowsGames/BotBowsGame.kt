@@ -123,12 +123,25 @@ open class BotBowsGame(val settings: Settings) {
     val stormHazard: Hazard?
         get() = hazards.filterIsInstance<StormHazard>().firstOrNull()
 
-    open fun handleMovement(e: PlayerMoveEvent) {
-        BotBows.handleMovement(e)
+    open fun handleMovement(e: PlayerMoveEvent, bp: BotBowsPlayer) {
+        if (canMove) {
+            BotBows.handleMovement(e)
+        } else {
+            freezePlayer(bp)
+        }
     }
 
     fun handleJump(e: PlayerJumpEvent) {
+        if (!canMove) return
         BotBows.handleJump(e)
+    }
+
+    private fun freezePlayer(bp: BotBowsPlayer) {
+        val spawnPos = bp.team.getSpawnPos(bp)
+        if (bp.location.x == spawnPos.x && bp.location.z == spawnPos.z) {
+            return
+        }
+        bp.teleport(spawnPos)
     }
 
     fun check4Elimination(dedPlayer: BotBowsPlayer) {

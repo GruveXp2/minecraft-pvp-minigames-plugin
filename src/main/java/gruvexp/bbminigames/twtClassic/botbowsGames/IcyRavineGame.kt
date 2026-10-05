@@ -29,11 +29,9 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
         startScanners()
     }
 
-    override fun handleMovement(e: PlayerMoveEvent) {
-        super.handleMovement(e)
-        val playerId = e.player.uniqueId
-        val bp = lobby.getBotBowsPlayer(playerId) ?: return
-        if (settings.isPlayerJoined(playerId) && isInDungeon(bp)) {
+    override fun handleMovement(e: PlayerMoveEvent, bp: BotBowsPlayer) {
+        super.handleMovement(e, bp)
+        if (isInDungeon(bp)) {
             handleDungeonMovement(bp)
         }
     }
