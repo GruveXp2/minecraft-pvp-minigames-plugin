@@ -45,13 +45,16 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
         var tick = 0
         val orbs = mutableListOf(Orb(0.0, bp.location)) // ska bare være ei liste og så gjøres sjekk og evt orb creating hver/annehver tiuck
+        var isHealing = true
 
         override fun run() {
             tick++
             spiral()
-            progressSpiral()
+            if (isHealing) progressSpiral()
 
             if (tick == HEAL_TIME) {
+                isHealing = false // healing is complete, only tick finish-animations
+            } else if (tick == HEAL_TIME + EXTRA_ANIMATION_TIME) {
                 cancel()
                 healingProcess = null
             }
@@ -65,9 +68,14 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 val θ = (progress + i) * PI / 2
                 val x = bpLoc.x + radius * cos(θ)
                 val z = bpLoc.z + radius * sin(θ)
+                var y = bpLoc.y
+                if (!isHealing) {
+                    val postProgress = (tick - HEAL_TIME).toDouble() / EXTRA_ANIMATION_TIME // normalized = [0..1]
+                    y += postProgress * postProgress // y will rise quadratic aka accelerating
+                }
                 bp.location.world.spawnParticle(
                     Particle.DUST,
-                    Location(bpLoc.world, x, bpLoc.y, z),
+                    Location(bpLoc.world, x, y, z),
                     1,
                     0.0,
                     0.0,
@@ -259,6 +267,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
     companion object {
         const val HEAL_TIME = 20 * 20
+        private const val EXTRA_ANIMATION_TIME = 20
         // Visual effects
         const val RING_PARTITIONS = 10
         const val RING_RADIUS = 2
