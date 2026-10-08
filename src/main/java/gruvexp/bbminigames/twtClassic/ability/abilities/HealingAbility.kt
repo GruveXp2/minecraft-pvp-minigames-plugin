@@ -69,9 +69,11 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 val x = bpLoc.x + radius * cos(θ)
                 val z = bpLoc.z + radius * sin(θ)
                 var y = bpLoc.y
+                var size = OUTER_ORB_SIZE
                 if (!isHealing) {
                     val postProgress = (tick - HEAL_TIME).toDouble() / EXTRA_ANIMATION_TIME // normalized = [0..1]
-                    y += postProgress * postProgress // y will rise quadratic aka accelerating
+                    y += postProgress * postProgress * 4 // y will rise quadratic aka accelerating
+                    size -= postProgress.toFloat() * OUTER_ORB_SIZE
                 }
                 bp.location.world.spawnParticle(
                     Particle.DUST,
@@ -81,7 +83,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                     0.0,
                     0.0,
                     0.4,
-                    DustOptions(Color.fromRGB(0xff8888), 2f),
+                    DustOptions(Color.fromRGB(0xff8888), size),
                     true
                 )
             }
@@ -267,8 +269,11 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
     companion object {
         const val HEAL_TIME = 20 * 20
-        private const val EXTRA_ANIMATION_TIME = 20
+        private const val EXTRA_ANIMATION_TIME = 4 * 20
+
         // Visual effects
+        const val OUTER_ORB_SIZE = 2f
+        // inner orbs
         const val RING_PARTITIONS = 10
         const val RING_RADIUS = 2
         const val ORB_SPEED = 0.2
