@@ -1,14 +1,9 @@
 package gruvexp.bbminigames.twtClassic.ability.abilities
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -26,8 +21,6 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
     override fun use() {
         super.use()
-        BotBows.debugMessage("Now using healing")
-        //registerSuccess()
         healingProcess = HealingProcess().runTaskTimer(Main.plugin, 10, 1)
     }
 
@@ -38,13 +31,13 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
 
     override fun reset() {
         super.reset()
-        healingProcess?.cancel() // maybe instead just make progress smoothly go to 0
+        healingProcess?.cancel() //TODO: make cooldown instead just fast and smoothly to go 0 like if you moved
     }
 
     inner class HealingProcess() : BukkitRunnable() {
 
         var tick = 0
-        val orbs = mutableListOf(Orb(0.0, bp.location)) // ska bare være ei liste og så gjøres sjekk og evt orb creating hver/annehver tiuck
+        val orbs = mutableListOf(Orb(0.0, bp.location))
         var isHealing = true
 
         override fun run() {
@@ -60,7 +53,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             }
         }
 
-        fun spiral() {
+        fun spiral() { // spiral at the edge that loops around (4 orbs)
             val radius = 2
             val bpLoc = bp.location
             for (i in 0..3) {
@@ -90,40 +83,30 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
         }
 
         fun progressSpiral() {
-            BotBows.debugMessage("TICK =====================================================================")
             val θMax = tick * 2*PI / HEAL_TIME
             orbs.forEach { it.tick(θMax) }
 
-            var i = 0
-
-            val n = RING_PARTITIONS - 1 // number of inner rings
+            // number of inner rings (there wont be a ring at the edge bc theres already one there from the other spiral)
+            val n = RING_PARTITIONS - 1
             val totalDistance = n*(n + 1)/2 * RADIUS_STEP * θMax
-            BotBows.debugMessage("")
-            BotBows.debugMessage("finished ticking the orbs. totalDistance = ${"%.3f".format(totalDistance)}")
 
-            while (i < orbs.size) {
+            var i = 0
+            while (i < orbs.size) { // going thru each orb to check distance to prev orb and spawn a new one if its too big
                 val orb = orbs[i]
 
                 val prevOrb = if (i == 0) orbs.last() else orbs[i - 1]
                 var distanceToPrev = orb.totalDistance - prevOrb.totalDistance
                 if (distanceToPrev <= 0) distanceToPrev += totalDistance
-                BotBows.debugMessage("Orb${orb.id} ∂istToPrev" +
-                        " = Orb${orb.id}.totDist(${"%.3f".format(orb.totalDistance)})" +
-                        " - Orb${prevOrb.id}.totDist(${"%.3f".format(prevOrb.totalDistance)})" +
-                        " = ${"%.3f".format(orb.totalDistance - prevOrb.totalDistance)}" +
-                        if (orb.totalDistance - prevOrb.totalDistance <= 0) "-> ${"%.3f".format(distanceToPrev)}" else ""
-                )
 
-                if (distanceToPrev > ORB_COVER) {
-                    BotBows.debugMessage("Adding new orb. global totalDistance: ${"%.3f".format(totalDistance)}, currentOrb.distanceToPrev: ${"%.3f".format(distanceToPrev)}")
+                if (distanceToPrev > ORB_COVER) { // to big distance to prev orb, make new orb so there wont be a gap
                     val newOrb = orb.createNewOrb(distanceToPrev / 2)
                     orbs.add(i, newOrb)
-                    var newOrbTotDist = orb.totalDistance - distanceToPrev / 2
-                    if (newOrbTotDist < 0) newOrbTotDist += totalDistance
-                    BotBows.debugMessage("new orb totalDistance should be: ${"%.3f".format(newOrbTotDist)}, is actually ${"%.3f".format(newOrb.totalDistance)}")
-                    Bukkit.broadcast(Component.text("The orb is added!", NamedTextColor.YELLOW))
                 } else {
                     val distanceNormalized = distanceToPrev / ORB_COVER
+                    // since the distance was just a bit bigger than the orb cover before this orb got created,
+                    // it might be very short now, about half of orb cover
+                    // therefore the orbs will be closer together and doesnt need to be max size
+                    // they will smoothly increase to max size as they reach the orb cover
                     orb.size = distanceNormalized.toFloat()
                 }
                 i++
@@ -136,7 +119,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             var ring: Int = -1
                 private set(value) {
                     field = value
-                    ringRadius = RADIUS_STEP * ring // bruh, i used the old value!!!
+                    ringRadius = RADIUS_STEP * ring
                     ω = ORB_SPEED/ringRadius
                 }
 
@@ -147,8 +130,6 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 private set(value) {
                     field = min(value, θMax)
                     distance = θ * ringRadius
-                    BotBows.debugMessage(" - Orb$id::θ.-> distance = θ(${"%.3f".format(θ)}) * ringRadius($ringRadius) = ${"%.3f".format(θ * ringRadius)}")
-
                     recalculateTotalDistance()
                 }
 
@@ -168,23 +149,13 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             }
 
             fun recalculateTotalDistance() {
-                BotBows.debugMessage(" - (re)calculating Orb$id::totalDistance")
                 val n = ring - 1
-                val prevDistance = n*(n + 1)/2 * RADIUS_STEP * θMax // bruh why multiplyign with degrees 2 times??!?!?!?!?
-                BotBows.debugMessage(" - - Orb$id::prevDistance = ringSizes(${n*(n + 1)/2} * $RADIUS_STEP) * θMax(${"%.3f".format(θMax)}) = $prevDistance")
+                val prevDistance = n*(n + 1)/2 * RADIUS_STEP * θMax
                 totalDistance = prevDistance + distance
-                BotBows.debugMessage(" - - Orb$id::totalDistance = prev(${"%.3f".format(prevDistance)} + dist(${"%.3f".format(distance)}) = ${"%.3f".format(totalDistance)} (currentRing=$ring)")
             }
 
             fun tick(progressΘ: Double) {
-                BotBows.debugMessage("Now ticking    Orb$id -> " +
-                        "ring: $ring, " +
-                        "θ: ${"%.3f".format(θ)}, " +
-                        "totalDist: ${"%.3f".format(totalDistance)}, " +
-                        "θMax: ${"%.3f".format(θMax)}, " +
-                        "ω: ${"%.3f".format(ω)}")
                 θMax = progressΘ
-                //BotBows.debugMessage("progressΘ: $progressΘ, θ: $θ")
                 θ += ω
 
                 val color = Color.fromRGB(if (θ == θMax) 0xffcc44 else 0xffcccc)
@@ -215,15 +186,12 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                         "totalDist: ${"%.3f".format(totalDistance)}")
             }
 
-            fun createNewOrb(Δdist: Double): Orb { // vi må gå baggover istedet
+            fun createNewOrb(Δdist: Double): Orb { // creates the orb halfway between the prev orb
                 var distLeft = Δdist
                 var currentRing = ring
-
-                var test = 0
                 var currentDist = distance
 
                 while (distLeft >= 0) {
-                    test++
                     if (currentDist > distLeft) {
                         currentDist -= distLeft
                         val currentθ = currentDist / (currentRing * RADIUS_STEP)
@@ -233,35 +201,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                     currentRing --
                     if (currentRing == 0) currentRing = RING_PARTITIONS - 1
                     currentDist = ringDistance(θMax, currentRing)
-                    if (test == 12) {
-                        BotBows.debugMessage("seomthing wrong in the while loop, over 12 loops")
-                        break
-                    }
                 }
-
-                Bukkit.broadcast(Component.text("\\/ \\/ \\/ \\/ \\/", NamedTextColor.RED, TextDecoration.BOLD))
-
-                var distLeft2 = Δdist
-                var currentRing2 = ring
-                BotBows.debugMessage("Start: ")
-
-                var test2 = 0
-                var currentDist2 = distance
-
-                while (distLeft2 >= 0) {
-                    test2++
-                    BotBows.debugMessage("loop $test2: distLeft: ${"%.3f".format(distLeft2)}, currentRing: $currentRing2")
-                    if (currentDist2 > distLeft2) {
-                        currentDist2 -= distLeft2
-                        return Orb(θMax, bpLoc, 0.5f, currentRing2, currentDist2) // bruh whys it using variables from up there?!?!?
-                    }
-                    distLeft2 -= currentDist2
-                    currentRing2 --
-                    if (currentRing2 == 0) currentRing2 = RING_PARTITIONS - 1
-                    currentDist2 = ringDistance(θMax, currentRing2)
-                    if (test2 == 20) BotBows.debugMessage("as you can see, its bugging")
-                }
-                cancel()
                 error("This line will never be reached")
             }
         }
@@ -271,7 +211,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
         const val HEAL_TIME = 20 * 20
         private const val EXTRA_ANIMATION_TIME = 4 * 20
 
-        // Visual effects
+        // visual effects
         const val OUTER_ORB_SIZE = 2f
         // inner orbs
         const val RING_PARTITIONS = 10
