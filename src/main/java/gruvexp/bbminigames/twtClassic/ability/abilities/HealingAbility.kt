@@ -4,6 +4,8 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -20,6 +22,10 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
     var healingProcess: BukkitTask? = null
 
     override fun use() {
+        if (bp.isFullyHealed) {
+            bp.avatar.message(Component.text("You are already fully healed", NamedTextColor.YELLOW))
+            return
+        }
         super.use()
         healingProcess = HealingProcess().runTaskTimer(Main.plugin, 10, 1)
     }
@@ -180,10 +186,6 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                     if (ring >= RING_PARTITIONS) ring = 1
                     θ = 0.0
                 }
-                BotBows.debugMessage("Finish ticking Orb$id -> " +
-                        "ring: $ring, " +
-                        "θ: ${"%.3f".format(θ)}, " +
-                        "totalDist: ${"%.3f".format(totalDistance)}")
             }
 
             fun createNewOrb(Δdist: Double): Orb { // creates the orb halfway between the prev orb

@@ -42,6 +42,10 @@ class BotBowsPlayer {
         }
     var isDamaged: Boolean = false // cooldown når playeren er hitta
         private set
+    val isAlive: Boolean
+        get() = hp > 0
+    val isFullyHealed: Boolean
+        get() = hp == settings.maxHealth
     private var sneakManager: SneakManager? = null
     val effectManager: PlayerEffectManager
 
@@ -152,9 +156,6 @@ class BotBowsPlayer {
     fun resetAbilities() {
         abilities.values.forEach { it.reset() }
     }
-
-    val isAlive: Boolean
-        get() = hp > 0
 
     private val abilityMenu: AbilityMenu?
         get() = lobby.settings.abilityMenus[this]
