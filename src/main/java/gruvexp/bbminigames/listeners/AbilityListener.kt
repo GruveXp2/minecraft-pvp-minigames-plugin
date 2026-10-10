@@ -10,6 +10,8 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.ability.PotionAbility
 import gruvexp.bbminigames.twtClassic.ability.abilities.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.WeatherType
@@ -187,7 +189,13 @@ class AbilityListener : Listener {
                 }
 
                 AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION -> PotionAbility.createPotionRadiusEffect(bp)
-                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS, AbilityType.HEALING -> {}
+                AbilityType.HEALING -> {
+                    if (bp.isFullyHealed) {
+                        e.isCancelled = true
+                        bp.avatar.message(Component.text("You are already fully healed", NamedTextColor.YELLOW))
+                    }
+                }
+                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS -> {}
             }
         }
 
