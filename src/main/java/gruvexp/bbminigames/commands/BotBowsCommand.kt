@@ -57,6 +57,8 @@ class BotBowsCommand : CommandExecutor {
                 val icon = Material.getMaterial(args[2].uppercase(Locale.getDefault()))
                     ?: return Component.text("Invalid item \"${args[2]}\"", NamedTextColor.RED)
 
+                if (!icon.isItem) return Component.text("\"${args[2]}\" is not an item!", NamedTextColor.RED)
+
                 val preset = lobby.settings.saveBattlePreset(name, icon)
                 val success = Main.plugin.presetService.addPreset(preset)
                 if (success) {
