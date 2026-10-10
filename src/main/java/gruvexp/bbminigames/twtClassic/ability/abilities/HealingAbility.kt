@@ -26,7 +26,6 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             bp.avatar.message(Component.text("You are already fully healed", NamedTextColor.YELLOW))
             return
         }
-        super.use()
         healingProcess = HealingProcess().runTaskTimer(Main.plugin, 10, 1)
     }
 
@@ -55,9 +54,12 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 isHealing = false // healing is complete, only tick finish-animations
                 registerSuccess()
                 bp.heal() //TODO: legg t hjertepartikler
+                super@HealingAbility.use() // the countdown will start once the healing is complete
             } else if (tick == HEAL_TIME + EXTRA_ANIMATION_TIME) {
                 cancel()
                 healingProcess = null
+            } else if (tick < 0) {
+                super@HealingAbility.use() // or if you cancel the healing by moving
             }
         }
 
