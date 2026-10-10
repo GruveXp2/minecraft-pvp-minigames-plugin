@@ -73,9 +73,9 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         15, "CONCRETE", AbilityCategory.UTILITY, AbilityEffect.BUFF
     ),
     HEALING(
-        Menu.makeItem(Material.REDSTONE, Component.text("Healing"),
-            Component.text("Heals you when you stand still for x seconds")
-        ),
+        Menu.makeItem(Material.POTION, Component.text("Healing"),
+            Component.text("Heals you when you stand still for ${HealingAbility.HEAL_TIME/20} seconds")
+        ).apply { editMeta(PotionMeta::class.java) { it.color = Color.fromRGB(0xff0000) } },
         10, "DYE", AbilityCategory.UTILITY, AbilityEffect.BUFF
     ),
     BABY_POTION(

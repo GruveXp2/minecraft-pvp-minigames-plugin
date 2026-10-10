@@ -61,7 +61,7 @@ class AbilityListener : Listener {
             return
         }
         when (type) {
-            AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION -> bp.getAbility(type).use()
+            AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION, AbilityType.HEALING -> bp.getAbility(type).use()
             else -> error("not a registered potion")
         }
     }
@@ -147,7 +147,7 @@ class AbilityListener : Listener {
             }
             when (type) {
                 AbilityType.ENDER_PEARL, AbilityType.RADAR, AbilityType.THUNDER_BOW,
-                AbilityType.SALMON_SLAP, AbilityType.LINGERING_POTION, AbilityType.HEALING -> bp.getAbility(type).use()
+                AbilityType.SALMON_SLAP, AbilityType.LINGERING_POTION -> bp.getAbility(type).use()
 
                 AbilityType.BUBBLE_JET -> {
                     p.resetPlayerWeather()
@@ -187,7 +187,7 @@ class AbilityListener : Listener {
                 }
 
                 AbilityType.BABY_POTION, AbilityType.CHARGE_POTION, AbilityType.KARMA_POTION -> PotionAbility.createPotionRadiusEffect(bp)
-                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS -> {}
+                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS, AbilityType.HEALING -> {}
             }
         }
 
