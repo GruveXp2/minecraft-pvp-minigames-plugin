@@ -4,7 +4,6 @@ import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar.ArmorSet
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -114,10 +113,6 @@ class NpcAvatar : BotBowsAvatar {
 
     override fun damage() {
         mannequin.damage(0.001)
-        bp.effectManager.applyGlow(
-            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
-            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
-        )
         mannequin.isInvulnerable = true
 
         Bukkit.getScheduler().runTaskLater(

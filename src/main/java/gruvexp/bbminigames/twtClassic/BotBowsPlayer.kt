@@ -258,6 +258,10 @@ class BotBowsPlayer {
     fun damage(ctx: DamageContext): Boolean {
         if (isDamaged || !isAlive) return false
         avatar.damage()
+        effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
+            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+        )
         var damageMessage = ctx.formatMessage(this)
 
         val isFatal = ctx is DamageContext.Player && hp <= ctx.attacker.settings.attackDamage

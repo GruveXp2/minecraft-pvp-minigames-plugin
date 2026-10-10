@@ -5,7 +5,6 @@ import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.Lobby
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar.ArmorSet
-import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -146,10 +145,6 @@ class PlayerAvatar : BotBowsAvatar {
 
     override fun damage() {
         player.damage(0.001)
-        bp.effectManager.applyGlow(
-            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
-            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
-        )
         player.isInvulnerable = true
 
         val inv = player.inventory
