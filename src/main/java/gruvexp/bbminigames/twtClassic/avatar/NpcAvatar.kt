@@ -118,7 +118,7 @@ class NpcAvatar : BotBowsAvatar {
         Bukkit.getScheduler().runTaskLater(
             Main.plugin,
             Runnable { mannequin.isInvulnerable = false },
-            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+            BotBows.INVULNERABILITY_COOLDOWN.toLong()
         )
     }
 

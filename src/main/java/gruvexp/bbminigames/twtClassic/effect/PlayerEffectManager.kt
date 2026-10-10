@@ -22,7 +22,8 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
     enum class GlowSource(val priority: Int) {
         DEBUFF(1),
         RADAR(2),
-        HIT_COOLDOWN(3)
+        INVULNERABILITY(3), // when getting hit or healing
+        HEALING(4) // blinking effect showing that you got healed
     }
     // represents an effect that is currently on the player
     private data class ScaleContribution(val targetScale: Double, val priority: ScalePriority)
@@ -117,7 +118,7 @@ class PlayerEffectManager(private val bp: BotBowsPlayer) {
                 avatar.setGlowing(true)
                 val winner = glowContributions.entries.maxByOrNull { it.key.priority }?.value
                 val showColor = winner?.color != null &&
-                    (glowElapsedTicks % winner.blinkPeriodTicks) < winner.blinkPeriodTicks / 2
+                    glowElapsedTicks % winner.blinkPeriodTicks < winner.blinkPeriodTicks / 2
                 avatar.setColor(if (showColor) winner.color else teamColor())
                 glowElapsedTicks += GLOW_TICK_PERIOD.toInt()
             }

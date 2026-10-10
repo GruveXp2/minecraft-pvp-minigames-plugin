@@ -78,7 +78,7 @@ open class BotBowsGame(val settings: Settings) {
         players.forEach { it.start() }
         botBowsGiver = object : BukkitRunnable() {
             override fun run() {
-                lobby.getPlayers().filter { !it.isDamaged }.forEach { it.reloadBotBow() }
+                lobby.getPlayers().filter { !it.isInvulnerable }.forEach { it.reloadBotBow() }
             }
         }.runTaskTimer(Main.plugin, 100L, 10L)
     }

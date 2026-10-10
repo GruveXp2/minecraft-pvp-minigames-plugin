@@ -162,7 +162,7 @@ class PlayerAvatar : BotBowsAvatar {
                 inv.setItem(i, item)
                 inv.setItem(i + 27, null)
             }
-        }, BotBows.HIT_DISABLED_ITEM_TICKS.toLong())
+        }, BotBows.INVULNERABILITY_COOLDOWN.toLong())
     }
 
     override var scale: Double

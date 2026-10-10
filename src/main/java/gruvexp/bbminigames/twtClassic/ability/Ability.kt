@@ -112,7 +112,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
         }
 
         fun hit() { // when someone hits you with a bow, the cooldown wont go down until your invulnerability period is over
-            currentCooldown += BotBows.HIT_DISABLED_ITEM_TICKS / 20
+            currentCooldown += BotBows.INVULNERABILITY_COOLDOWN / 20
         }
     }
 

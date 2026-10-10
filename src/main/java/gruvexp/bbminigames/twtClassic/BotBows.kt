@@ -41,7 +41,7 @@ object BotBows {
     val MENU_ITEM = Menu.makeItem(Material.COMPASS, Component.text("Menu", NamedTextColor.LIGHT_PURPLE))
     val SETTINGS_ITEM = Menu.makeItem("gear", Component.text("Settings", NamedTextColor.LIGHT_PURPLE))
 
-    const val HIT_DISABLED_ITEM_TICKS: Int = 40
+    const val INVULNERABILITY_COOLDOWN: Int = 40
 
     val GLOBAL_LOBBY_LOCATION = Location(Main.WORLD, -128.5, 39.00, -196.5, -135f, 8.80f)
 

@@ -14,6 +14,7 @@ import gruvexp.bbminigames.twtClassic.avatar.TeamManager
 import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
 import gruvexp.bbminigames.twtClassic.settings.player.PlayerSettings
 import gruvexp.bbminigames.twtClassic.team.BotBowsTeam
+import gruvexp.bbminigames.util.lighten
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -40,7 +41,7 @@ class BotBowsPlayer {
             if (value == 0) avatar.eliminate()
             lobby.botBowsGame?.botBowsBoard?.updatePlayerScore(this)
         }
-    var isDamaged: Boolean = false // cooldown når playeren er hitta
+    var isInvulnerable: Boolean = false // cooldown når playeren er hitta
         private set
     val isAlive: Boolean
         get() = hp > 0
@@ -131,7 +132,7 @@ class BotBowsPlayer {
     fun revive() { // resetter for å gjør klar til en ny runde
         hp = settings.maxHealth
         avatar.revive()
-        isDamaged = false
+        isInvulnerable = false
     }
 
     fun reset() { // when the battle is done and the player will show up in the lobby again
@@ -257,11 +258,11 @@ class BotBowsPlayer {
         get() = abilities.size
 
     fun damage(ctx: DamageContext): Boolean {
-        if (isDamaged || !isAlive) return false
+        if (isInvulnerable || !isAlive) return false
         avatar.damage()
         effectManager.applyGlow(
-            PlayerEffectManager.GlowSource.HIT_COOLDOWN,
-            BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+            PlayerEffectManager.GlowSource.INVULNERABILITY,
+            BotBows.INVULNERABILITY_COOLDOWN.toLong()
         )
         var damageMessage = ctx.formatMessage(this)
 
@@ -286,14 +287,40 @@ class BotBowsPlayer {
             hp -= ctx.attacker.settings.attackDamage
             lobby.messagePlayers(ctx.formatMessage(this))
             abilities.values.forEach { it.hit() } // pauses the cooldowns etc
-            isDamaged = true
+            isInvulnerable = true
             Bukkit.getScheduler().runTaskLater(
                 Main.plugin,
-                Runnable { isDamaged = false },
-                BotBows.HIT_DISABLED_ITEM_TICKS.toLong()
+                Runnable { isInvulnerable = false },
+                BotBows.INVULNERABILITY_COOLDOWN.toLong()
             )
         }
         return true
+    }
+
+    fun heal() {
+        if (isFullyHealed) return
+        hp++
+
+        effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.INVULNERABILITY,
+            BotBows.INVULNERABILITY_COOLDOWN.toLong()
+        )
+        effectManager.applyGlow(
+            PlayerEffectManager.GlowSource.HEALING,
+            BotBows.INVULNERABILITY_COOLDOWN.toLong(),
+            NamedTextColor.RED,
+            5
+        )
+        lobby.messagePlayers(
+            name.append(Component.text(" drank a healing potion", team.color.lighten(0.5f)))
+        )
+
+        isInvulnerable = true
+        Bukkit.getScheduler().runTaskLater(
+            Main.plugin,
+            Runnable { isInvulnerable = false },
+            BotBows.INVULNERABILITY_COOLDOWN.toLong()
+        )
     }
 
     private fun die(deathMessage: Component) {
