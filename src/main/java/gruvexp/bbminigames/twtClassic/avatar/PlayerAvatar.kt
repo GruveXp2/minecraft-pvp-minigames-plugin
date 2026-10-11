@@ -36,6 +36,7 @@ class PlayerAvatar : BotBowsAvatar {
         _bp = bp
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
         player.gameMode = GameMode.ADVENTURE
+        setItem(18, ItemStack(Material.ARROW, 64))
     }
 
     constructor(player: Player, previousAvatar: BotBowsAvatar) {
@@ -111,6 +112,7 @@ class PlayerAvatar : BotBowsAvatar {
     fun cleanupBattle() {
         player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
         player.inventory.clear()
+        setItem(18, ItemStack(Material.ARROW, 64))
         player.isGlowing = false
         player.isInvulnerable = false
         hazardBars.values.forEach { it.removeViewer(player) }

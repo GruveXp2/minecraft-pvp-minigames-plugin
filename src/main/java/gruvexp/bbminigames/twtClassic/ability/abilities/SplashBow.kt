@@ -12,23 +12,17 @@ import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
-import org.checkerframework.checker.units.qual.s
 
 class SplashBow(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.SPLASH_BOW), OnLaunch, OnProjectileHit {
-    init {
-        bp.avatar.setItem(18, ItemStack(Material.ARROW, 64))
-    }
 
     override fun onLaunch(ctx: Launch) {
         if (ctx.projectile is Arrow) {
