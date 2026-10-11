@@ -102,7 +102,7 @@ class StatsService(
         return transaction(statsDatabase.db) {
             val lastMatchId = MatchPlayersTable
                 .select(MatchPlayersTable.matchId)
-                .where { MatchPlayersTable.playerUuid eq playerUuid.toString() } // must use eq instead of ==
+                .where { MatchPlayersTable.playerUuid eq "$playerUuid" } // must use eq instead of ==
                 .orderBy(MatchPlayersTable.matchId to SortOrder.DESC)
                 .limit(1)
                 .singleOrNull()?.get(MatchPlayersTable.matchId) ?: return@transaction null
@@ -119,7 +119,7 @@ class StatsService(
                 .where { MatchPlayersTable.matchId eq lastMatchId }
                 .toList()
 
-            val ownStats = allPlayersInMatch.first { it[MatchPlayersTable.playerUuid] == playerUuid.toString() }
+            val ownStats = allPlayersInMatch.first { it[MatchPlayersTable.playerUuid] == "$playerUuid" }
 
             val topKiller = allPlayersInMatch.maxBy { it[MatchPlayersTable.kills] }
             val topDeather = allPlayersInMatch.maxBy { it[MatchPlayersTable.deaths] }
@@ -128,8 +128,8 @@ class StatsService(
             val topAbilities = MatchPlayerAbilityUsesTable
                 .select(MatchPlayerAbilityUsesTable.abilityType, MatchPlayerAbilityUsesTable.uses)
                 .where {
-                    (MatchPlayerAbilityUsesTable.matchId eq lastMatchId) and
-                            (MatchPlayerAbilityUsesTable.playerUuid eq playerUuid.toString())
+                    MatchPlayerAbilityUsesTable.matchId eq lastMatchId and
+                            (MatchPlayerAbilityUsesTable.playerUuid eq "$playerUuid")
                 }
                 .orderBy(MatchPlayerAbilityUsesTable.uses to SortOrder.DESC)
                 .limit(3)
