@@ -430,7 +430,7 @@ class TestCommand : CommandExecutor {
                 else -> sender.sendMessage("Wrong arg (${args[0]})")
             }
             return true
-        } else {
+        } //else {
 //            BotBowsPlayer bp = BotBows.getBotBowsPlayer(p);
 //            if (bp == null) {
 //                p.sendMessage(Component.text("You must be in a lobby to test", NamedTextColor.RED));
@@ -438,7 +438,7 @@ class TestCommand : CommandExecutor {
 //            }
 //            testAbilities(bp);
             testYellow()
-        }
+//        }
         //BotBowsManager.debugMessage(STR."\{p.getName()}is \{isInDungeon(p) ? "" : "not"} in a dungeon\{BotBowsManager.isInDungeon(p) ? STR.", section\{BotBowsManager.getSection(p)}" : ""}");
         return true
     }

@@ -140,7 +140,7 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
                 removeArmorStands()
             }
 
-            if (this.isInGreenArea) {
+            if (isInGreenArea) {
                 section = Section.GREEN
                 as1 = spawnArmorStand(bp.location.add(-4.0, 0.0, -11.0))
                 as2 = spawnArmorStand(bp.location.add(-8.0, 0.0, -22.0))

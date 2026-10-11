@@ -88,7 +88,7 @@ class Main : JavaPlugin() {
                                 ).use { output ->
                                     val command = input.readLine()
                                     //getLogger().info("Received command: " + command);
-                                    if (command == null || command.trim { it <= ' ' }.isEmpty()) return
+                                    if (command == null || command.trim { it <= ' ' }.isEmpty()) return@startSocketServer
                                     if (command.startsWith("@")) {
                                         if (command == "@ping") {
                                             if (getLobby(0).isGameActive) { // TODO: shoudnt just check lobby 1, but also the others. either show stats from current battle, or if many, show "x battles ongoing"

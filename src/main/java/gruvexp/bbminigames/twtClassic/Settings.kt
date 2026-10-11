@@ -170,7 +170,7 @@ class Settings(val lobby: Lobby) {
 
         val allowedHazards: Set<HazardType> = mapSettings.currentMap.allowedHazards
         allowedHazards.forEach {type: HazardType ->
-            hazardSettings.setChance(type, preset.hazards[type]!!)
+            hazardSettings.setChance(type, preset.hazards.getValue(type))
         }
 
         val abilityPreset = preset.abilities
@@ -392,10 +392,6 @@ class Settings(val lobby: Lobby) {
 
     fun getPlayers(): Set<BotBowsPlayer> {
         return players.toSet()
-    }
-
-    fun isPlayerJoined(playerId: UUID): Boolean {
-        return lobby.getBotBowsPlayer(playerId) in players
     }
 
     fun setModPlayer(bp: BotBowsPlayer) {

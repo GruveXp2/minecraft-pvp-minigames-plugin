@@ -72,7 +72,7 @@ class Lobby(val id: Int) {
     fun addBot(): UUID {
         val mannequin = Main.WORLD.spawn(Main.WORLD.spawnLocation, Mannequin::class.java)
         mannequin.customName(Component.text("BotBowBot ${botId++}"))
-        mannequin.profile = (ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef"))))
+        mannequin.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(UUID.fromString("b62d350f-6b7e-41c3-9dda-8404730245ef")))
         settings.joinGame(mannequin)
         BotBows.lobbyMenu.updateLobbyItem(this)
         val id = mannequin.uniqueId

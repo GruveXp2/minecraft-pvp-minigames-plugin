@@ -124,7 +124,7 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
 
     init {
         appendCooldownInfo(item, category, baseCooldown)
-        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, this.name) }
+        item.editMeta { it.persistentDataContainer.set(KEY, PersistentDataType.STRING, name) }
 
         abilityItem = item
         this.baseCooldown = baseCooldown

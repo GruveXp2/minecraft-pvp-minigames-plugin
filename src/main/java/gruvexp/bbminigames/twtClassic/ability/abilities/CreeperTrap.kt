@@ -109,7 +109,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
 
                 hitPlayers.add(bp)
             }
-            if (!hitPlayers.isEmpty() && !igniting) {
+            if (hitPlayers.isNotEmpty() && !igniting) {
                 ignite()
             }
         }

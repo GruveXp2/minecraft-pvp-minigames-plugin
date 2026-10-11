@@ -21,7 +21,7 @@ class BubbleJet(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
             override fun run() {
                 if (bp.isOnGround) {
                     bp.setInvulnerable(false)
-                    this.cancel() // if the player is done riptiding and hitting the ground
+                    cancel() // if the player is done riptiding and hitting the ground
                     riptideTask = null
                     return
                 }
