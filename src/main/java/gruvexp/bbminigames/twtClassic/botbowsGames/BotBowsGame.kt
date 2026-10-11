@@ -360,9 +360,11 @@ open class BotBowsGame(val settings: Settings) {
 
         override fun run() {
             if (timeUntilStart > 0) {
-                Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
-                    .append(Component.text(" is starting in "))
-                    .append(Component.text("$timeUntilStart", NamedTextColor.GOLD))
+                lobby.messagePlayers(
+                    Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
+                        .append(Component.text(" is starting in "))
+                        .append(Component.text("$timeUntilStart", NamedTextColor.GOLD))
+                )
             } else {
                 lobby.messagePlayers(
                     Component.text("Round $round", Style.style(NamedTextColor.GREEN, TextDecoration.BOLD))
