@@ -6,6 +6,7 @@ import gruvexp.bbminigames.menu.menus.AbilityMenu
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityCategory
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.ability.abilities.HealingAbility
 import gruvexp.bbminigames.twtClassic.ability.abilities.KarmaPotion
 import gruvexp.bbminigames.twtClassic.avatar.BotBowsAvatar
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar
@@ -329,6 +330,12 @@ class BotBowsPlayer {
         abilities.values.forEach { it.cooldownTickRate = 20 }
         karmaAura = false
         lobby.check4Elimination(this)
+    }
+
+    fun onMovement() {
+        if (hasAbilityEquipped(AbilityType.HEALING)) {
+            (getAbility(AbilityType.HEALING) as HealingAbility).onMovement()
+        }
     }
 
     fun setReady(ready: Boolean, itemIndex: Int) {

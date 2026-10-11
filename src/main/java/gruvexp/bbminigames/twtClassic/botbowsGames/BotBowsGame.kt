@@ -126,6 +126,7 @@ open class BotBowsGame(val settings: Settings) {
     open fun handleMovement(e: PlayerMoveEvent, bp: BotBowsPlayer) {
         if (canMove) {
             BotBows.handleMovement(e)
+            if (e.from.distanceSquared(e.to) > 0.002) bp.onMovement()
         } else {
             freezePlayer(bp)
         }

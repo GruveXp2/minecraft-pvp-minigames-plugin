@@ -11,42 +11,59 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.DustOptions
 import org.bukkit.scheduler.BukkitRunnable
-import org.bukkit.scheduler.BukkitTask
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
 class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlot, AbilityType.HEALING) {
 
-    var healingProcess: BukkitTask? = null
+    var healingProcess: HealingProcess? = null
 
     override fun use() {
         if (bp.isFullyHealed) {
             bp.avatar.message(Component.text("You are already fully healed", NamedTextColor.YELLOW))
             return
         }
-        healingProcess = HealingProcess().runTaskTimer(Main.plugin, 10, 1)
+        healingProcess = HealingProcess().apply { runTaskTimer(Main.plugin, 10, 1) }
     }
 
     override fun destroy() {
         super.destroy()
         healingProcess?.cancel()
+        healingProcess = null
     }
 
     override fun reset() {
         super.reset()
-        healingProcess?.cancel() //TODO: make cooldown instead just fast and smoothly to go 0 like if you moved
+        healingProcess?.cancel()
+        healingProcess = null
     }
 
-    inner class HealingProcess() : BukkitRunnable() {
+    fun onMovement() {
+        healingProcess?.onMovement()
+    }
+
+    inner class HealingProcess : BukkitRunnable() {
 
         var tick = 0
         val orbs = mutableListOf(Orb(0.0, bp.location))
         var isHealing = true
+        var redTicks = 0 // ticks the progress line will red instead of gold, to show that progress got lost bc of movement
 
         override fun run() {
-            tick++
+            if (redTicks == 0) {
+                tick++
+            } else {
+                tick -= 10
+                redTicks--
+            }
+            if (tick <= 0) {
+                super@HealingAbility.use() // healing gets canceled, this will also start ability cooldown
+                cancel()
+                return
+            }
             spiral()
             if (isHealing) progressSpiral()
 
@@ -54,13 +71,16 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 isHealing = false // healing is complete, only tick finish-animations
                 registerSuccess()
                 bp.heal() //TODO: legg t hjertepartikler
-                super@HealingAbility.use() // the countdown will start once the healing is complete
+                super@HealingAbility.use() // ability cooldown will start once the healing is complete
             } else if (tick == HEAL_TIME + EXTRA_ANIMATION_TIME) {
                 cancel()
                 healingProcess = null
-            } else if (tick < 0) {
-                super@HealingAbility.use() // or if you cancel the healing by moving
             }
+        }
+
+        fun onMovement() {
+            redTicks = max(redTicks + 2, 4)
+            orbs.forEach { it.bpLoc = bp.location }
         }
 
         fun spiral() { // spiral at the edge that loops around (4 orbs)
@@ -86,7 +106,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                     0.0,
                     0.0,
                     0.4,
-                    DustOptions(Color.fromRGB(0xff8888), size),
+                    DustOptions(Color.fromRGB(if (redTicks > 0) 0xff4444 else 0xff8888), size),
                     true
                 )
             }
@@ -113,6 +133,9 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                     orbs.add(i, newOrb)
                 } else {
                     val distanceNormalized = distanceToPrev / ORB_COVER
+                    if (distanceNormalized < 0.25 && orbs.size > 1) {
+                        orbs.remove(prevOrb) // if losing progress , the distance between orbs might get very tight, therefore some orbs should get removed
+                    }
                     // since the distance was just a bit bigger than the orb cover before this orb got created,
                     // it might be very short now, about half of orb cover
                     // therefore the orbs will be closer together and doesnt need to be max size
@@ -123,7 +146,7 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             }
         }
 
-        inner class Orb(var θMax: Double, val bpLoc: Location, var size: Float = 1f, ring: Int = 1, θ: Double = 0.0) {
+        inner class Orb(var θMax: Double, var bpLoc: Location, var size: Float = 1f, ring: Int = 1, θ: Double = 0.0) {
             val id = orbId++
 
             var ring: Int = -1
@@ -168,8 +191,10 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
                 θMax = progressΘ
                 θ += ω
 
-                val color = Color.fromRGB(if (θ == θMax) 0xffcc44 else 0xffcccc)
-                val size = if (θ == θMax) 1.5f * size else size
+                val color = Color.fromRGB(if (θ == θMax) {
+                    if (redTicks > 0) 0xff0000 else 0xffcc44
+                } else 0xffcccc)
+                val size = if (θ == θMax) 1.5f * size else if (redTicks > 0) size / 2 else size
 
                 val x = bpLoc.x + ringRadius * cos(θ)
                 val z = bpLoc.z + ringRadius * sin(θ)
