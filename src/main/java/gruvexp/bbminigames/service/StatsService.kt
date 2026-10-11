@@ -1,5 +1,6 @@
 package gruvexp.bbminigames.service
 
+import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.database.MatchPlayerAbilityUsesTable
 import gruvexp.bbminigames.database.MatchPlayersTable
 import gruvexp.bbminigames.database.MatchesTable
@@ -22,39 +23,47 @@ class StatsService(
     private val plugin: JavaPlugin,
     private val statsDatabase: StatsDatabase
 ) {
-    fun saveMatchResult(matchResult: MatchResult) {
-        // database calls can take noticeable time, so shouldnt run on main thread //TODO: unless server is closing since async task are banned then
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-            transaction(statsDatabase.db) {
-                val matchId = MatchesTable.insert {
-                    it[map] = matchResult.map.name
-                    it[startTime] = matchResult.startTime
-                    it[rounds] = matchResult.rounds
-                    it[team1Won] = matchResult.team1Won
-                } get MatchesTable.id
+    fun saveMatchResultBlocking(matchResult: MatchResult) {
+        transaction(statsDatabase.db) {
+            val matchId = MatchesTable.insert {
+                it[map] = matchResult.map.name
+                it[startTime] = matchResult.startTime
+                it[rounds] = matchResult.rounds
+                it[team1Won] = matchResult.team1Won
+            } get MatchesTable.id
 
-                matchResult.playerStats.forEach { (bp, stats) ->
-                    MatchPlayersTable.insert {
+            matchResult.playerStats.forEach { (bp, stats) ->
+                MatchPlayersTable.insert {
+                    it[this.matchId] = matchId
+                    it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName
+                    it[kills] = stats.kills
+                    it[deaths] = stats.deaths
+                    it[hits] = stats.hits
+                    it[damage] = stats.damage
+                }
+                stats.abilitySuccesses.forEach { (type, amount) ->
+                    MatchPlayerAbilityUsesTable.insert {
                         it[this.matchId] = matchId
                         it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName
-                        it[kills] = stats.kills
-                        it[deaths] = stats.deaths
-                        it[hits] = stats.hits
-                        it[damage] = stats.damage
-                    }
-                    stats.abilitySuccesses.forEach { (type, amount) ->
-                        MatchPlayerAbilityUsesTable.insert {
-                            it[this.matchId] = matchId
-                            it[playerUuid] = if (bp.avatar is PlayerAvatar) bp.avatar.uuid.toString() else bp.plainName
-                            it[abilityType] = type.name
-                            it[uses] = amount
-                        }
+                        it[abilityType] = type.name
+                        it[uses] = amount
                     }
                 }
             }
-            BotBows.debugMessage("saved to db!")
-        })
+        }
+        BotBows.debugMessage("saved to db!")
     }
+
+    fun saveMatchResult(matchResult: MatchResult) {
+        if (!Main.plugin.isEnabled) {
+            saveMatchResultBlocking(matchResult)
+        } else {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+                saveMatchResultBlocking(matchResult)
+            })
+        }
+    }
+
     fun printOutInfo() { // chat code to just quickly check if it works
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             transaction(statsDatabase.db) {
