@@ -384,8 +384,9 @@ class TestCommand : CommandExecutor {
                 }
 
                 "toggle_debugging" -> {
+                    BotBows.debugMessage("Debugging disabled")
                     debugging = !debugging
-                    BotBows.debugMessage("Debugging set to: $debugging")
+                    BotBows.debugMessage("Debugging enabled")
                 }
 
                 "t1" -> {
