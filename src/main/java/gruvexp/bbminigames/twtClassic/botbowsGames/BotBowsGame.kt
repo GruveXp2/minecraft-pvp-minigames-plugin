@@ -277,9 +277,9 @@ open class BotBowsGame(val settings: Settings) {
                 Component.text(
                     "================\n" +
                             "The game ended in a tie after $round round${if (round == 1) "" else "s"}\n" +
-                            "================", NamedTextColor.LIGHT_PURPLE
+                            "================", settings.mapSettings.currentMap.tieColor
                 )
-            ) // TODO: make the tie color be defined in the BotBowsMap as "neutralColor". For example, in blaudVwakcy, its purple, bc its between red & blue
+            )
         } else {
             matchResult.team1Won = winningTeam == team1
             lobby.messagePlayers(
