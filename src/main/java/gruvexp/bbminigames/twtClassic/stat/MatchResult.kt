@@ -15,7 +15,7 @@ data class MatchResult(
     val playerStats: MutableMap<BotBowsPlayer, PlayerMatchStats> = mutableMapOf()
 ) {
     val playerStatsSorted: List<PlayerMatchStats>
-        get() = playerStats.values.sortedBy { it.bp.team.teamSide }
+        get() = playerStats.values.sortedByDescending { it.bp.team.teamSide == winningTeam } // {true..., false...}
 
     private fun getPlayerStats(bp: BotBowsPlayer): PlayerMatchStats {
         return playerStats.computeIfAbsent(bp) { PlayerMatchStats(bp) }

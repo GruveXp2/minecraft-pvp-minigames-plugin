@@ -9,13 +9,13 @@ import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.TextDisplay
 import org.joml.AxisAngle4f
 
-class PlayerTab(val loc: Location, layoutY: Float, team1Players: List<BotBowsPlayer>, team2Players: List<BotBowsPlayer>) : StatElement(null, 0f, layoutY) {
+class PlayerTab(val loc: Location, layoutY: Float, winningPlayers: List<BotBowsPlayer>, losingPlayers: List<BotBowsPlayer>) : StatElement(null, 0f, layoutY) {
 
     val textDisplays: MutableList<TextDisplay> = mutableListOf()
     val headDisplays: MutableList<ItemDisplay> = mutableListOf()
 
     init {
-        (team1Players + team2Players).forEachIndexed { index, bp -> createPlayerRow(bp, -(index + 2) * HEIGHT_PX) }
+        (winningPlayers + losingPlayers).forEachIndexed { index, bp -> createPlayerRow(bp, -(index + 2) * HEIGHT_PX) }
     }
 
     override fun initSelf() {
