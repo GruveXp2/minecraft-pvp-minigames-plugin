@@ -98,7 +98,7 @@ class DamageListener : Listener {
                 if (e.damageSource.damageType == BukkitDamageType.ENDER_PEARL) e.isCancelled = true
             }
 
-            DamageCause.CAMPFIRE, DamageCause.DROWNING, DamageCause.FALL -> e.isCancelled = true
+            DamageCause.CAMPFIRE, DamageCause.DROWNING, DamageCause.FALL, DamageCause.ENTITY_EXPLOSION -> e.isCancelled = true
 
             DamageCause.LAVA -> {
                 e.isCancelled = true
