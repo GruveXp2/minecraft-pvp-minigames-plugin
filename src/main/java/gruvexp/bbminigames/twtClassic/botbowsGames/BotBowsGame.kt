@@ -3,8 +3,8 @@ package gruvexp.bbminigames.twtClassic.botbowsGames
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.commands.TestCommand
-import gruvexp.bbminigames.model.stat.MatchResult
-import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.twtClassic.stat.MatchResult
+import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.*
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.hazard.Hazard

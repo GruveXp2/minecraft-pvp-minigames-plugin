@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.model.stat
+package gruvexp.bbminigames.twtClassic.stat
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer

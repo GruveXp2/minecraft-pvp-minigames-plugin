@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.model.preset
+package gruvexp.bbminigames.twtClassic.preset
 
 data class WinConditionPreset(
     val winScoreThreshold: Int,

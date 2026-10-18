@@ -2,7 +2,7 @@ package gruvexp.bbminigames.menu.menus
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.SettingsMenu
-import gruvexp.bbminigames.model.preset.BattlePreset
+import gruvexp.bbminigames.twtClassic.preset.BattlePreset
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.Settings
 import net.kyori.adventure.text.Component

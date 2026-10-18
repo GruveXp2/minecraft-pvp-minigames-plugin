@@ -5,7 +5,7 @@ import gruvexp.bbminigames.database.MatchPlayerAbilityUsesTable
 import gruvexp.bbminigames.database.MatchPlayersTable
 import gruvexp.bbminigames.database.MatchesTable
 import gruvexp.bbminigames.database.StatsDatabase
-import gruvexp.bbminigames.model.stat.MatchResult
+import gruvexp.bbminigames.twtClassic.stat.MatchResult
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.ability.AbilityType

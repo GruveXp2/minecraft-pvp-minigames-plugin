@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.model.preset.BattlePreset
+import gruvexp.bbminigames.twtClassic.preset.BattlePreset
 import java.io.File
 
 class BattlePresetService {

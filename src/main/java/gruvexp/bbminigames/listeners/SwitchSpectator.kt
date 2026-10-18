@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.listeners
 
-import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import net.kyori.adventure.text.Component

@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.model.stat
+package gruvexp.bbminigames.twtClassic.stat
 
 import org.bukkit.entity.Display
 import org.bukkit.util.Transformation

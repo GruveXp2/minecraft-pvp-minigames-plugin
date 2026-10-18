@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.model.preset
+package gruvexp.bbminigames.twtClassic.preset
 
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance

@@ -1,4 +1,4 @@
-package gruvexp.bbminigames.model.stat
+package gruvexp.bbminigames.twtClassic.stat
 
 const val PX = 0.025f
 const val HEIGHT_PX = 10 * PX

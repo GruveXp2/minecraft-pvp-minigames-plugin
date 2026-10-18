@@ -2,10 +2,10 @@ package gruvexp.bbminigames.twtClassic
 
 import gruvexp.bbminigames.menu.PlayerListMenu
 import gruvexp.bbminigames.menu.menus.*
-import gruvexp.bbminigames.model.preset.AbilityPreset
-import gruvexp.bbminigames.model.preset.BattlePreset
-import gruvexp.bbminigames.model.preset.HealthPreset
-import gruvexp.bbminigames.model.preset.WinConditionPreset
+import gruvexp.bbminigames.twtClassic.preset.AbilityPreset
+import gruvexp.bbminigames.twtClassic.preset.BattlePreset
+import gruvexp.bbminigames.twtClassic.preset.HealthPreset
+import gruvexp.bbminigames.twtClassic.preset.WinConditionPreset
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 import gruvexp.bbminigames.twtClassic.avatar.NpcAvatar
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar

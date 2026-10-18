@@ -1,6 +1,6 @@
 package gruvexp.bbminigames.twtClassic.settings
 
-import gruvexp.bbminigames.model.preset.AbilityPreset
+import gruvexp.bbminigames.twtClassic.preset.AbilityPreset
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType

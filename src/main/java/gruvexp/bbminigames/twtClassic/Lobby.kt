@@ -2,7 +2,7 @@ package gruvexp.bbminigames.twtClassic
 
 import gruvexp.bbminigames.Main
 import gruvexp.bbminigames.menu.Menu
-import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.avatar.PlayerAvatar
 import gruvexp.bbminigames.twtClassic.botbowsGames.BotBowsGame
 import gruvexp.bbminigames.twtClassic.botbowsGames.IcyRavineGame

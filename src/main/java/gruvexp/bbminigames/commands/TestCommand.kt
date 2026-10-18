@@ -5,7 +5,7 @@ import gruvexp.bbminigames.Util
 import gruvexp.bbminigames.extras.StickSlap
 import gruvexp.bbminigames.mechanics.Hatch
 import gruvexp.bbminigames.mechanics.RotatingStructure
-import gruvexp.bbminigames.model.stat.ResultDisplay
+import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
