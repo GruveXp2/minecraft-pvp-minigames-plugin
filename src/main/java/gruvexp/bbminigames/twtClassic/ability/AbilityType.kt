@@ -45,8 +45,8 @@ enum class AbilityType(item: ItemStack, baseCooldown: Int, cooldownItemType: Str
         ),
         "TERRACOTTA", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
-    LONG_ARMS(
-        makeLongHandsItem(),
+    COOL_ROD(
+        makeCoolRod(),
         "WOOL", AbilityCategory.DAMAGING, AbilityEffect.DAMAGE
     ),
     SALMON_SLAP(
@@ -269,24 +269,22 @@ private fun makeSplashBow(): ItemStack {
     return splashBow
 }
 
-private fun makeLongHandsItem(): ItemStack {
-    val coolRod = Menu.makeItem(
+private fun makeCoolRod(): ItemStack {
+    return Menu.makeItem(
         Material.FISHING_ROD, Component.text("Cool Rod"),
         Component.text("Punch someone far away, only 1 punch granted"),
         Component.empty(),
         getDamageInfo("punch", 50, 'm')
-    )
-    coolRod.editMeta {
-        val key = NamespacedKey(Main.plugin, "extra_range_${UUID.randomUUID()}")
-
-        val extraRangeModifier = AttributeModifier(
-            key,
-            50.0,
-            AttributeModifier.Operation.ADD_NUMBER
-        )
-        it.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier)
+    ) .apply {
+        editMeta {
+            val extraRangeModifier = AttributeModifier(
+                NamespacedKey(Main.plugin, "extra_range_${UUID.randomUUID()}"),
+                50.0,
+                AttributeModifier.Operation.ADD_NUMBER
+            )
+            it.addAttributeModifier(Attribute.ENTITY_INTERACTION_RANGE, extraRangeModifier)
+        }
     }
-    return coolRod
 }
 
 private fun makeRiptideTrident(): ItemStack {

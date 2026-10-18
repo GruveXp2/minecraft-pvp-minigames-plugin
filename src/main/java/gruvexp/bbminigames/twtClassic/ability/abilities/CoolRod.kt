@@ -8,7 +8,7 @@ import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
 
-class LongArms(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.LONG_ARMS), OnMelee {
+class CoolRod(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, AbilityType.COOL_ROD), OnMelee {
     override fun trigger(ctx: Melee) {
         use()
         val successful =  ctx.defender.damage(DamageContext.Player(DamageType.Player.COOL_ROD, bp))

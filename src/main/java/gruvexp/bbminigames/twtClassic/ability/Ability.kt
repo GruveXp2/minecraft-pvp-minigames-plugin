@@ -127,7 +127,7 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
             AbilityType.RADAR -> Radar(bp, slot)
             AbilityType.SPLASH_BOW -> SplashBow(bp, slot)
             AbilityType.THUNDER_BOW -> ThunderBow(bp, slot)
-            AbilityType.LONG_ARMS -> LongArms(bp, slot)
+            AbilityType.COOL_ROD -> CoolRod(bp, slot)
             AbilityType.SALMON_SLAP -> SalmonSlap(bp, slot)
             AbilityType.BUBBLE_JET -> BubbleJet(bp, slot)
             AbilityType.CREEPER_TRAP -> CreeperTrap(bp, slot)

@@ -115,8 +115,8 @@ class AbilityListener : Listener {
         val p = e.player
         val bp = BotBows.getBotBowsPlayer(p) ?: return
         val type = AbilityType.fromItem(p.inventory.itemInMainHand) ?: return
-        if (bp.lobby.isGameActive && type == AbilityType.LONG_ARMS) {
-            bp.getAbility(AbilityType.LONG_ARMS).use()
+        if (bp.lobby.isGameActive && type == AbilityType.COOL_ROD) {
+            bp.getAbility(AbilityType.COOL_ROD).use()
         }
     }
 
@@ -195,7 +195,7 @@ class AbilityListener : Listener {
                         bp.avatar.message(Component.text("You are already fully healed", NamedTextColor.YELLOW))
                     }
                 }
-                AbilityType.SPLASH_BOW, AbilityType.LONG_ARMS -> {}
+                AbilityType.SPLASH_BOW, AbilityType.COOL_ROD -> {}
             }
         }
 
