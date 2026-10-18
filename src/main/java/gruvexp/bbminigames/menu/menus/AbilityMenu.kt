@@ -293,7 +293,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
     override fun onMaxAbilitiesChange(bp: BotBowsPlayer) {
         if (!settings.abilitySettings.isIndividualMax) return
         val headItem = maxAbilitiesRow.getItem(bp) ?: return
-        headItem.amount = max(bp.settings.maxAbilities, 1) // oppdaterer head count
+        headItem.amount = max(bp.settings.maxAbilities, 1)
         maxAbilitiesRow.displayRow()
     }
 

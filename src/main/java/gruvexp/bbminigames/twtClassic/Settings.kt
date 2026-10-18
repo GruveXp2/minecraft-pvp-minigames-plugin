@@ -345,8 +345,11 @@ class Settings(val lobby: Lobby) {
         val abilityMenu = AbilityMenu(this, bp)
         abilityMenus[bp] = abilityMenu
         abilitySettings.addListener(bp, abilityMenu)
-        players.forEach { abilityMenu.addPlayer(it) }
-        players.forEach { it.settings.addListener(bp, healthMenu, abilityMenu) }
+        players.forEach {
+            abilityMenu.addPlayer(it)
+            bp.settings.addListener(it, healthMenu, abilityMenus.getValue(it))
+            if (it != bp) it.settings.addListener(bp, healthMenu, abilityMenu)
+        }
         bp.settings.maxHealth = healthSettings.maxHealth
         bp.settings.speed = healthSettings.speed
     }
