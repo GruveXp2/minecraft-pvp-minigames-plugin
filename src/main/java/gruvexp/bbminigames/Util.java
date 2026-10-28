@@ -10,14 +10,6 @@ import org.joml.Vector3i;
 
 public class Util {
 
-    public static Location toLocation(World world, String x, String y, String z) {
-        try {
-            return new Location(world, Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ChatColor.RED + x + " " + y + " " + z + " is not a valid position!");
-        }
-    }
-
     public static Vector3i getTargetBlockLoc(Player player, int range) { // modified method by https://www.spigotmc.org/members/clip.1001/ that gets the block the player is looking at
         Block lastBlock = getTargetBlock(player, range);
         return new Vector3i(lastBlock.getX(), lastBlock.getY(), lastBlock.getZ());

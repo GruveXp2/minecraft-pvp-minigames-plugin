@@ -1,11 +1,9 @@
 package gruvexp.bbminigames.commands
 
 import gruvexp.bbminigames.Main
-import gruvexp.bbminigames.Util
 import gruvexp.bbminigames.extras.StickSlap
 import gruvexp.bbminigames.mechanics.Hatch
 import gruvexp.bbminigames.mechanics.RotatingStructure
-import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
@@ -13,6 +11,7 @@ import gruvexp.bbminigames.twtClassic.ability.abilities.ThunderBow
 import gruvexp.bbminigames.twtClassic.hazard.HazardChance
 import gruvexp.bbminigames.twtClassic.hazard.HazardType
 import gruvexp.bbminigames.twtClassic.map.BotBowsMap
+import gruvexp.bbminigames.twtClassic.stat.ResultDisplay
 import io.papermc.paper.block.BlockPredicate
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate
@@ -419,8 +418,8 @@ class TestCommand : CommandExecutor {
                     if (args.size < 7) {
                         sender.sendMessage("Not enough args (need 8)")
                     }
-                    val loc1 = Util.toLocation(Main.WORLD, args[1], args[2], args[3])
-                    val loc2 = Util.toLocation(Main.WORLD, args[4], args[5], args[6])
+                    val loc1 = Location(Main.WORLD, args[1].toDouble(), args[2].toDouble(), args[3].toDouble())
+                    val loc2 = Location(Main.WORLD, args[4].toDouble(), args[5].toDouble(), args[6].toDouble())
                     val strong = args.size > 7 && args[7] == "strong"
                     ThunderBow.createElectricArc(loc1, loc2, Color.RED, 1.0, strong)
                 }
