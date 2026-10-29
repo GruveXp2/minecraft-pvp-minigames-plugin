@@ -57,133 +57,26 @@ public class Util {
 
     public static boolean isBlockMiddleTransparent(Material material) {
         return switch (material) {
-            //<editor-fold defaultstate="collapsed" desc="isTransparent">
-            // Start generate - Material#isTransparent
-            case ACACIA_BUTTON:
-            case ACACIA_SAPLING:
-            case ACTIVATOR_RAIL:
-            case AIR:
-            case ALLIUM:
-            case ATTACHED_MELON_STEM:
-            case ATTACHED_PUMPKIN_STEM:
-            case AZURE_BLUET:
-            case BEETROOTS:
-            case BIRCH_BUTTON:
-            case BIRCH_SAPLING:
-            case BLACK_CARPET:
-            case BLUE_CARPET:
-            case BLUE_ORCHID:
-            case BROWN_CARPET:
-            case BROWN_MUSHROOM:
-            case CARROTS:
-            case CAVE_AIR:
-            case CHORUS_FLOWER:
-            case CHORUS_PLANT:
-            case COCOA:
-            case COMPARATOR:
-            case CREEPER_HEAD:
-            case CREEPER_WALL_HEAD:
-            case CYAN_CARPET:
-            case DANDELION:
-            case DARK_OAK_BUTTON:
-            case DARK_OAK_SAPLING:
-            case DEAD_BUSH:
-            case DETECTOR_RAIL:
-            case END_PORTAL:
-            case FERN:
-            case FIRE:
-            case FLOWER_POT:
-            case GRAY_CARPET:
-            case GREEN_CARPET:
-            case JUNGLE_BUTTON:
-            case JUNGLE_SAPLING:
-            case LADDER:
-            case LARGE_FERN:
-            case LEVER:
-            case LIGHT_BLUE_CARPET:
-            case LIGHT_GRAY_CARPET:
-            case LILAC:
-            case LILY_PAD:
-            case LIME_CARPET:
-            case MAGENTA_CARPET:
-            case MELON_STEM:
-            case NETHER_PORTAL:
-            case NETHER_WART:
-            case OAK_BUTTON:
-            case OAK_SAPLING:
-            case ORANGE_CARPET:
-            case ORANGE_TULIP:
-            case OXEYE_DAISY:
-            case PEONY:
-            case PINK_CARPET:
-            case PINK_TULIP:
-            case PLAYER_HEAD:
-            case PLAYER_WALL_HEAD:
-            case POPPY:
-            case POTATOES:
-            case POTTED_ACACIA_SAPLING:
-            case POTTED_ALLIUM:
-            case POTTED_AZALEA_BUSH:
-            case POTTED_AZURE_BLUET:
-            case POTTED_BIRCH_SAPLING:
-            case POTTED_BLUE_ORCHID:
-            case POTTED_BROWN_MUSHROOM:
-            case POTTED_CACTUS:
-            case POTTED_DANDELION:
-            case POTTED_DARK_OAK_SAPLING:
-            case POTTED_DEAD_BUSH:
-            case POTTED_FERN:
-            case POTTED_FLOWERING_AZALEA_BUSH:
-            case POTTED_JUNGLE_SAPLING:
-            case POTTED_OAK_SAPLING:
-            case POTTED_ORANGE_TULIP:
-            case POTTED_OXEYE_DAISY:
-            case POTTED_PINK_TULIP:
-            case POTTED_POPPY:
-            case POTTED_RED_MUSHROOM:
-            case POTTED_RED_TULIP:
-            case POTTED_SPRUCE_SAPLING:
-            case POTTED_WHITE_TULIP:
-            case POWERED_RAIL:
-            case PUMPKIN_STEM:
-            case PURPLE_CARPET:
-            case RAIL:
-            case REDSTONE_TORCH:
-            case REDSTONE_WALL_TORCH:
-            case REDSTONE_WIRE:
-            case RED_CARPET:
-            case RED_MUSHROOM:
-            case RED_TULIP:
-            case REPEATER:
-            case ROSE_BUSH:
-            case SHORT_GRASS:
-            case SKELETON_SKULL:
-            case SKELETON_WALL_SKULL:
-            case SNOW:
-            case SPRUCE_BUTTON:
-            case SPRUCE_SAPLING:
-            case STONE_BUTTON:
-            case STRUCTURE_VOID:
-            case SUGAR_CANE:
-            case SUNFLOWER:
-            case TALL_GRASS:
-            case TORCH:
-            case TRIPWIRE:
-            case TRIPWIRE_HOOK:
-            case VINE:
-            case VOID_AIR:
-            case WALL_TORCH:
-            case WHEAT:
-            case WHITE_CARPET:
-            case WHITE_TULIP:
-            case WITHER_SKELETON_SKULL:
-            case WITHER_SKELETON_WALL_SKULL:
-            case YELLOW_CARPET:
-            case ZOMBIE_HEAD:
-            case ZOMBIE_WALL_HEAD:
-                yield true;
-            default:
-                yield false;
+            case ACACIA_BUTTON, ACACIA_SAPLING, ACTIVATOR_RAIL, AIR, ALLIUM, ATTACHED_MELON_STEM, ATTACHED_PUMPKIN_STEM,
+                 AZURE_BLUET, BEETROOTS, BIRCH_BUTTON, BIRCH_SAPLING, BLACK_CARPET, BLUE_CARPET, BLUE_ORCHID,
+                 BROWN_CARPET, BROWN_MUSHROOM, CARROTS, CAVE_AIR, CHORUS_FLOWER, CHORUS_PLANT, COCOA, COMPARATOR,
+                 CREEPER_HEAD, CREEPER_WALL_HEAD, CYAN_CARPET, DANDELION, DARK_OAK_BUTTON, DARK_OAK_SAPLING, DEAD_BUSH,
+                 DETECTOR_RAIL, END_PORTAL, FERN, FIRE, FLOWER_POT, GRAY_CARPET, GREEN_CARPET, JUNGLE_BUTTON,
+                 JUNGLE_SAPLING, LADDER, LARGE_FERN, LEVER, LIGHT_BLUE_CARPET, LIGHT_GRAY_CARPET, LILAC, LILY_PAD,
+                 LIME_CARPET, MAGENTA_CARPET, MELON_STEM, NETHER_PORTAL, NETHER_WART, OAK_BUTTON, OAK_SAPLING,
+                 ORANGE_CARPET, ORANGE_TULIP, OXEYE_DAISY, PEONY, PINK_CARPET, PINK_TULIP, PLAYER_HEAD,
+                 PLAYER_WALL_HEAD, POPPY, POTATOES, POTTED_ACACIA_SAPLING, POTTED_ALLIUM, POTTED_AZALEA_BUSH,
+                 POTTED_AZURE_BLUET, POTTED_BIRCH_SAPLING, POTTED_BLUE_ORCHID, POTTED_BROWN_MUSHROOM, POTTED_CACTUS,
+                 POTTED_DANDELION, POTTED_DARK_OAK_SAPLING, POTTED_DEAD_BUSH, POTTED_FERN, POTTED_FLOWERING_AZALEA_BUSH,
+                 POTTED_JUNGLE_SAPLING, POTTED_OAK_SAPLING, POTTED_ORANGE_TULIP, POTTED_OXEYE_DAISY, POTTED_PINK_TULIP,
+                 POTTED_POPPY, POTTED_RED_MUSHROOM, POTTED_RED_TULIP, POTTED_SPRUCE_SAPLING, POTTED_WHITE_TULIP,
+                 POWERED_RAIL, PUMPKIN_STEM, PURPLE_CARPET, RAIL, REDSTONE_TORCH, REDSTONE_WALL_TORCH, REDSTONE_WIRE,
+                 RED_CARPET, RED_MUSHROOM, RED_TULIP, REPEATER, ROSE_BUSH, SHORT_GRASS, SKELETON_SKULL,
+                 SKELETON_WALL_SKULL, SNOW, SPRUCE_BUTTON, SPRUCE_SAPLING, STONE_BUTTON, STRUCTURE_VOID, SUGAR_CANE,
+                 SUNFLOWER, TALL_GRASS, TORCH, TRIPWIRE, TRIPWIRE_HOOK, VINE, VOID_AIR, WALL_TORCH, WHEAT, WHITE_CARPET,
+                 WHITE_TULIP, WITHER_SKELETON_SKULL, WITHER_SKELETON_WALL_SKULL, YELLOW_CARPET, ZOMBIE_HEAD,
+                 ZOMBIE_WALL_HEAD -> true;
+            default -> false;
         };
     }
 }
