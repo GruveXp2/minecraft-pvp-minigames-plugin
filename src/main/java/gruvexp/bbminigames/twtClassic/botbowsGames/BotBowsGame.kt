@@ -280,6 +280,7 @@ open class BotBowsGame(val settings: Settings) {
                             "================", settings.mapSettings.currentMap.tieColor
                 )
             )
+            if (Main.plugin.isEnabled) showPostGameStats(team1)
         } else {
             matchResult.team1Won = winningTeam == team1
             lobby.messagePlayers(
