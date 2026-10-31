@@ -12,6 +12,7 @@ class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettin
         set(value) {
             val toggle: Boolean = field == 0 || value == 0
             field = value
+            isIndividualMax = false
             if (toggle) {
                 listeners.values.forEach { it.onAbilitiesToggle() }
             } else {
