@@ -48,7 +48,8 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         creeper = bp.avatar.location.getWorld().spawn(loc, Creeper::class.java).apply {
             setAI(false)
             getAttribute(Attribute.SCALE)!!.baseValue = 0.75
-        } .also { creeperOwners[it] = bp }
+            maxFuseTicks = FUSE_TIME
+        }.also { creeperOwners[it] = bp }
 
         loc.add(
             (-3 * CREEPER_PX).toDouble(),
@@ -92,9 +93,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
             if (ticks in 1..ACTIVATION_DELAY) return
 
             if (ticks % 10 == 0 || igniting) {
-                val lampData = lampDisplay.block as Lightable
-                lampData.isLit = !lampData.isLit
-                lampDisplay.block = lampData
+                lampDisplay.apply { block = (block as Lightable).apply { isLit = !isLit } }
             }
             if (ticks == 0) {
                 lampDisplay.remove()
@@ -120,7 +119,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
             lampDisplay.block = Bukkit.createBlockData(Material.COPPER_BULB) // normal copper bulb that will give off more light
             creeper.ignite()
             igniting = true
-            ticks = -20
+            ticks = -creeper.maxFuseTicks
             creeperOwners.remove(creeper)
         }
 
@@ -175,6 +174,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         protected const val CREEPER_PX: Float = BLOCK_PX * CREEPER_SCALE
 
         const val ACTIVATION_DELAY = 3 * 20L
+        const val FUSE_TIME = 20
         const val TICKING_PERIOD = 5
         const val BLAST_RADIUS = 4.0
 
