@@ -28,11 +28,11 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
     var creeperTicker: CreeperTicker? = null
 
     override fun reset() {
-        if (creeperTicker != null) creeperTicker!!.ignite()
+        creeperTicker?.ignite()
     }
 
     override fun destroy() {
-        if (creeperTicker != null) creeperTicker!!.destroy()
+        creeperTicker?.destroy()
     }
 
     override fun trigger(ctx: EntityPlace) {
@@ -73,7 +73,7 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         }
 
         creeperTicker = CreeperTicker(creeper!!, lampDisplay, glassDisplay, bp).apply {
-            runTaskTimer(Main.plugin, ACTIVATION_DELAY * 20L, 5)
+            runTaskTimer(Main.plugin, 0, TICKING_PERIOD.toLong())
         }
     }
 
@@ -88,7 +88,9 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         private val hitPlayers: MutableSet<BotBowsPlayer> = mutableSetOf()
 
         override fun run() {
-            ticks += 5
+            ticks += TICKING_PERIOD
+            if (ticks in 1..ACTIVATION_DELAY) return
+
             if (ticks % 10 == 0 || igniting) {
                 val lampData = lampDisplay.block as Lightable
                 lampData.isLit = !lampData.isLit
@@ -172,8 +174,9 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
         protected const val CREEPER_SCALE: Float = 0.75f
         protected const val CREEPER_PX: Float = BLOCK_PX * CREEPER_SCALE
 
-        var ACTIVATION_DELAY: Int = 3
-        var BLAST_RADIUS: Double = 4.0
+        const val ACTIVATION_DELAY = 3 * 20L
+        const val TICKING_PERIOD = 5
+        const val BLAST_RADIUS = 4.0
 
         protected var creeperOwners: MutableMap<Creeper, BotBowsPlayer> = mutableMapOf()
 
@@ -192,11 +195,11 @@ open class CreeperTrap(bp: BotBowsPlayer, hotBarSlot: Int)
 
         fun ignite(creeper: Creeper) {
             if (!creeperOwners.containsKey(creeper)) {
-                creeper.ignite()
+                creeper.remove()
                 return
             }
-            val ability = creeperOwners[creeper]!!.getAbility(AbilityType.CREEPER_TRAP) as CreeperTrap
-            ability.creeperTicker!!.ignite()
+            val ability = creeperOwners[creeper]?.getAbility(AbilityType.CREEPER_TRAP) as? CreeperTrap
+            ability?.creeperTicker?.ignite() ?: creeper.remove()
         }
     }
 }
