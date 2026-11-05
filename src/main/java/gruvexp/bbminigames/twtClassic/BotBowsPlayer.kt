@@ -163,7 +163,10 @@ class BotBowsPlayer {
         get() = lobby.settings.abilityMenus[this]
 
     fun getAbility(type: AbilityType): Ability {
-        return abilities[type]!!
+        return abilities[type] ?: run {
+            Bukkit.broadcast(Component.text("error($plainName): tried to get ability ${type.displayName}, doesnt have it equipped?! whatta? 1+1=3."))
+            error("error($plainName): tried to get ability ${type.displayName}, doesnt have it equipped?! whatta")
+        }
     }
 
     fun onMaxAbilitiesChange() {
