@@ -13,7 +13,8 @@ data class MatchResult(
     val startTime: LocalDateTime = LocalDateTime.now()
     var rounds = 0
     var team1Won: Boolean? = null // null = draw
-    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.ONE else TeamSide.TWO }
+    val winningTeam: TeamSide?
+        get() = team1Won?.let { if (it) TeamSide.ONE else TeamSide.TWO }
     val playerStats = players.associateWith { PlayerMatchStats(it) }
 
     val playerStatsSorted: List<PlayerMatchStats>
