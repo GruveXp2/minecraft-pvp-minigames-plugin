@@ -42,7 +42,7 @@ open class BotBowsGame(val settings: Settings) {
     private var roundCountdown: BukkitTask? = null
     private var botBowsGiver: BukkitTask? = null
 
-    var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap)
+    var matchResult: MatchResult = MatchResult(settings.mapSettings.currentMap, players)
 
     open fun leaveGame(bp: BotBowsPlayer) {
         val team = bp.team

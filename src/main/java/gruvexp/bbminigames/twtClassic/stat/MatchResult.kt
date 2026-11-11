@@ -8,40 +8,38 @@ import java.time.LocalDateTime
 
 data class MatchResult(
     val map: BotBowsMap,
-    val startTime: LocalDateTime = LocalDateTime.now(),
-    var rounds: Int = 0,
-    var team1Won: Boolean? = null, // null = draw
-    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.ONE else TeamSide.TWO },
-    val playerStats: MutableMap<BotBowsPlayer, PlayerMatchStats> = mutableMapOf()
+    val players: Set<BotBowsPlayer>,
 ) {
+    val startTime: LocalDateTime = LocalDateTime.now()
+    var rounds = 0
+    var team1Won: Boolean? = null // null = draw
+    val winningTeam: TeamSide? = team1Won?.let { if (it) TeamSide.ONE else TeamSide.TWO }
+    val playerStats = players.associateWith { PlayerMatchStats(it) }
+
     val playerStatsSorted: List<PlayerMatchStats>
         get() = playerStats.values.sortedByDescending { it.bp.team.teamSide == winningTeam } // {true..., false...}
 
-    private fun getPlayerStats(bp: BotBowsPlayer): PlayerMatchStats {
-        return playerStats.computeIfAbsent(bp) { PlayerMatchStats(bp) }
-    }
-
     fun registerKill(attacker: BotBowsPlayer) {
-        getPlayerStats(attacker).addKill()
+        playerStats.getValue(attacker).addKill()
     }
 
     fun registerDeath(defender: BotBowsPlayer) {
-        getPlayerStats(defender).addDeath()
+        playerStats.getValue(defender).addDeath()
     }
 
     fun registerHit(attacker: BotBowsPlayer) { // hit others
-        getPlayerStats(attacker).addHit()
+        playerStats.getValue(attacker).addHit()
     }
 
     fun registerDamage(defender: BotBowsPlayer) { // got hit by others
-        getPlayerStats(defender).addDamage()
+        playerStats.getValue(defender).addDamage()
     }
 
     fun registerAbilitySuccess(user: BotBowsPlayer, abilityType: AbilityType) {
-        getPlayerStats(user).addAbilitySuccess(abilityType)
+        playerStats.getValue(user).addAbilitySuccess(abilityType)
     }
 
     fun registerAbilityFail(user: BotBowsPlayer, abilityType: AbilityType) {
-        getPlayerStats(user).subtractAbilitySuccess(abilityType)
+        playerStats.getValue(user).subtractAbilitySuccess(abilityType)
     }
 }
