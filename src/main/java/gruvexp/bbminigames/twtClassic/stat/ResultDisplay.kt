@@ -1,6 +1,7 @@
 package gruvexp.bbminigames.twtClassic.stat
 
 import gruvexp.bbminigames.Main
+import gruvexp.bbminigames.twtClassic.team.TeamSide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -23,8 +24,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
     val playerTab = PlayerTab(
         loc,
         -HEIGHT_PX,
-        matchResult.playerStats.values.filter { it.bp.team.teamSide == matchResult.winningTeam }.map { it.bp },
-        matchResult.playerStats.values.filter { it.bp.team.teamSide != matchResult.winningTeam }.map { it.bp }
+        matchResult.playerStats.values.filter { it.bp.team.teamSide == (matchResult.winningTeam ?: TeamSide.ONE) }.map { it.bp },
+        matchResult.playerStats.values.filter { it.bp.team.teamSide != (matchResult.winningTeam ?: TeamSide.ONE) }.map { it.bp }
     )
 
     val hitsTab = ColTab("Hits", loc, -HEIGHT_PX) { recalculateTabs() }.also { tab ->
