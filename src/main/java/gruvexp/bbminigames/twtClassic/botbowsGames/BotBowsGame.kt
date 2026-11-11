@@ -175,7 +175,7 @@ open class BotBowsGame(val settings: Settings) {
         ) // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
     }
 
-    fun endRoundTimeout() {
+    fun endRoundTimeout(alsoEndGame: Boolean = false) {
         val team1Percentage = team1.healthPercentage
         val team2Percentage = team2.healthPercentage
         var winningTeam: BotBowsTeam? = null
@@ -211,14 +211,14 @@ open class BotBowsGame(val settings: Settings) {
             val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
 
             winningTeam.addPoints(winScore)
-            postRound(winningTeam, winScore)
+            postRound(winningTeam, winScore, alsoEndGame)
         } else {
             lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
-            postRound(null, 0)
+            postRound(null, 0, alsoEndGame)
         }
     }
 
-    protected open fun postRound(winningTeam: BotBowsTeam?, winScore: Int) {
+    protected open fun postRound(winningTeam: BotBowsTeam?, winScore: Int, alsoEndGame: Boolean = false) {
         if (!activeRound) return
         activeRound = false
         players.forEach {
@@ -242,6 +242,10 @@ open class BotBowsGame(val settings: Settings) {
 
         if (winningTeam == null) {
             lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2)
+            if (alsoEndGame) {
+                endGame()
+                return
+            }
             canInteract = false
             Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
             return
@@ -253,6 +257,9 @@ open class BotBowsGame(val settings: Settings) {
         val winScoreThreshold = settings.winConditionSettings.winScoreThreshold
         if (winningTeam.points >= winScoreThreshold && winScoreThreshold > 0) {
             postGame(winningTeam)
+        } else if (alsoEndGame) {
+            val gameWinner = if (team1.points > team2.points) team1 else if (team1.points < team2.points) team2 else null
+            postGame(gameWinner)
         } else {
             canInteract = false
             startRoundTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
@@ -338,7 +345,7 @@ open class BotBowsGame(val settings: Settings) {
 
     fun endGame(ender: BotBowsPlayer) {
         lobby.messagePlayers(Component.text("The game was ended by ").append(ender.name))
-        endGame()
+        endRoundTimeout()
     }
 
     fun endGame() { // the game has ended, check who won
