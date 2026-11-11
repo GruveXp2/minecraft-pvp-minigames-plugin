@@ -107,8 +107,9 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
 
     init {
         val width = recalculateTabs()
-        val team1Color = if (matchResult.team1Won == true) matchResult.map.team1.color else matchResult.map.team2.color
-        val team1Num = if (matchResult.team1Won == true) matchResult.map.team1.size() else matchResult.map.team2.size()
+        val team1WonOrDraw = matchResult.team1Won != false
+        val team1Color = if (team1WonOrDraw) matchResult.map.team1.color else matchResult.map.team2.color
+        val team1Num = if (team1WonOrDraw) matchResult.map.team1.size() else matchResult.map.team2.size()
         team1BgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
             text(Component.text(" "))
             backgroundColor = Color.fromARGB(100, team1Color.red(), team1Color.green(), team1Color.blue())
@@ -119,8 +120,8 @@ class ResultDisplay(val loc: Location, matchResult: MatchResult) {
             billboard = Display.Billboard.VERTICAL
         }
 
-        val team2Color = if (matchResult.team1Won == false) matchResult.map.team1.color else matchResult.map.team2.color
-        val team2Num = if (matchResult.team1Won == false) matchResult.map.team1.size() else matchResult.map.team2.size()
+        val team2Color = if (!team1WonOrDraw) matchResult.map.team1.color else matchResult.map.team2.color
+        val team2Num = if (!team1WonOrDraw) matchResult.map.team1.size() else matchResult.map.team2.size()
         team2BgDisplay = Main.WORLD.spawn(loc, TextDisplay::class.java).apply {
             text(Component.text(" "))
             backgroundColor = Color.fromARGB(100, team2Color.red(), team2Color.green(), team2Color.blue())
