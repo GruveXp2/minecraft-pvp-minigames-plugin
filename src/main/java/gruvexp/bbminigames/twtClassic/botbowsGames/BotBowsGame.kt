@@ -153,6 +153,94 @@ open class BotBowsGame(val settings: Settings) {
         }
     }
 
+    fun endRound(alsoEndGame: Boolean = false) { //TODO: hvis den blei enda pga eliminasjon, så ska denne mettheden kalles med litt delay itilfelle folk dauer pålikt
+        if (!activeRound) return
+        activeRound = false
+
+        var winningSide: TeamSide? = null
+        var draw = false
+        if (team1.isEliminated || team2.isEliminated) { // elimination
+            if (team1.isEliminated && team2.isEliminated) draw = true
+            else winningSide =
+                if (team1.isEliminated) TeamSide.TWO else TeamSide.ONE
+        } else { // check who has most hp left
+            val team1Percentage = team1.healthPercentage //TODO make into metthed
+            val team2Percentage = team2.healthPercentage
+            val team1ResultColor: NamedTextColor
+            val team2ResultColor: NamedTextColor
+            if (team1Percentage > team2Percentage) {
+                winningSide = TeamSide.ONE
+                team1ResultColor = NamedTextColor.GREEN
+                team2ResultColor = NamedTextColor.RED
+            } else if (team1Percentage < team2Percentage) {
+                winningSide = TeamSide.TWO
+                team1ResultColor = NamedTextColor.RED
+                team2ResultColor = NamedTextColor.GREEN
+            } else {
+                team1ResultColor = NamedTextColor.YELLOW
+                team2ResultColor = NamedTextColor.YELLOW
+                draw = true
+            }
+
+            lobby.messagePlayers(
+                Component.empty()
+                    .append(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD))
+                    .append(team1.toComponent())
+                    .append(Component.text(": $team1Percentage% hp left\n", team1ResultColor))
+                    .append(team2.toComponent())
+                    .append(Component.text(": $team2Percentage% hp left\n", team2ResultColor))
+            )
+        }
+
+        if (winningSide != null) {
+            val winningTeam = settings.getTeam(winningSide)
+            winningTeam.toComponent()
+                .append(Component.text(" won the round!", NamedTextColor.GREEN))
+
+            val losingTeam = winningTeam.oppositeTeam
+            val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
+            val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
+
+            winningTeam.addPoints(winScore)
+            lobby.titlePlayers(Component.text("${winningTeam.displayName} +$winScore", winningTeam.color), 2)
+            botBowsBoard.updateTeamScores()
+            val winScoreThreshold = settings.winConditionSettings.winScoreThreshold
+            if (winningTeam.points >= winScoreThreshold && winScoreThreshold > 0) {
+                postGame(winningTeam)
+            }
+        } else {
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
+        }
+        // do stuff. maybe actually just have the 2 mettheds, but theyre called from here and felles info can be after here yee
+
+        lobby.messagePlayers( // team1: %d points, team2: %d points
+            team1.toComponent()
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text("${team1.points}\n", NamedTextColor.GREEN))
+                .append(team2.toComponent())
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text(team2.points, NamedTextColor.GREEN))
+        )
+        roundTimer?.cancel()
+        if (settings.rain > 0) {
+            Main.WORLD.setStorm(false)
+            Bukkit.getOnlinePlayers().forEach { it.resetPlayerWeather() }
+        }
+        players.forEach {
+            it.resetAbilities()
+            it.clearEffects()
+        }
+        hazards.forEach { if (it.isActive) it.end() }
+
+        if (alsoEndGame) {
+            val gameWinner = if (team1.points > team2.points) team1 else if (team1.points < team2.points) team2 else null
+            postGame(gameWinner)
+        } else {
+            canInteract = false
+            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
+        }
+    }
+
     private fun endRoundEliminated(losingTeam: BotBowsTeam) {
         val winningTeam = losingTeam.oppositeTeam
         if (winningTeam.isEliminated) { // last players on each team died ≈ at the same time
