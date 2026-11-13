@@ -73,9 +73,9 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
             private set
 
         override fun run() { // checks if a player is near the dungeon, doesn't scan that often to not waste resources
-            if (isInDungeon != isInsideBoundingBox(bp.location, BOUNDING_BOX_MIN, BOUNDING_BOX_MAX)) {
-                //BotBowsManager.debugMessage(STR."\{p.getName()} moved thru the bounding box");
-            }
+//            if (isInDungeon != isInsideBoundingBox(bp.location, BOUNDING_BOX_MIN, BOUNDING_BOX_MAX)) {
+//                BotBowsManager.debugMessage(STR."\{p.getName()} moved thru the bounding box");
+//            }
             isInDungeon = isInsideBoundingBox(bp.location, BOUNDING_BOX_MIN, BOUNDING_BOX_MAX)
         }
 
