@@ -70,7 +70,13 @@ class HealingAbility(bp: BotBowsPlayer, hotbarSlot: Int) : Ability(bp, hotbarSlo
             if (tick == HEAL_TIME) {
                 isHealing = false // healing is complete, only tick finish-animations
                 registerSuccess()
-                bp.heal() //TODO: legg t hjertepartikler
+                bp.heal()
+                bp.location.world.spawnParticle(
+                    Particle.HEART,
+                    bp.location,
+                    32,
+                    1.25, 2.5, 1.5
+                )
                 super@HealingAbility.use() // ability cooldown will start once the healing is complete
             } else if (tick == HEAL_TIME + EXTRA_ANIMATION_TIME) {
                 cancel()
