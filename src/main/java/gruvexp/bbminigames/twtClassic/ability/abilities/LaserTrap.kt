@@ -52,6 +52,7 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
 
     private fun removeLaser() {
         emitter?.remove()
+        emitter = null
     }
 
     inner class LaserEmitter(block: Block, face: BlockFace) : BukkitRunnable() {
