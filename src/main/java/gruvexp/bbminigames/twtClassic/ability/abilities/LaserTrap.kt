@@ -77,7 +77,7 @@ class LaserTrap(bp: BotBowsPlayer, hotBarSlot: Int) : Ability(bp, hotBarSlot, Ab
             for (i in 0..99) {
                 block = block.getRelative(face)
 
-                if (block.type == Material.AIR || !block.isSolid || Util.isBlockMiddleTransparent(block.type)) {
+                if (block.type.isAir || !block.isSolid || Util.isBlockMiddleTransparent(block.type)) {
                     length++
                     continue
                 }

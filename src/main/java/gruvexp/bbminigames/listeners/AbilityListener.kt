@@ -181,7 +181,7 @@ class AbilityListener : Listener {
                     val clickedBlock = e.clickedBlock ?: return
                     val face = e.blockFace
                     val spawnBlock = clickedBlock.getRelative(face)
-                    if (spawnBlock.type != Material.AIR) {
+                    if (!spawnBlock.type.isAir) {
                         e.isCancelled = true
                         return
                     }

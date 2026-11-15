@@ -151,7 +151,7 @@ class Hatch(id: Int, location: Location, rotation: StructureRotation, structureN
 
         closedHitbox.forEach { block -> block.type = Material.AIR }
         players.forEach {
-            if (it.location.block.getRelative(BlockFace.DOWN).type == Material.AIR) {
+            if (it.location.block.getRelative(BlockFace.DOWN).type.isAir) {
                 it.velocity = it.velocity.apply { add(Vector(0, 1, 0)) }
             }
         }

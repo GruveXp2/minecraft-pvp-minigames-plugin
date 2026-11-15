@@ -77,7 +77,7 @@ class StormHazard : Hazard(HazardType.STORM) {
 
                 val pBlock = pLoc.block
                 return (pLoc.blockY + 2..UPPER_BOUND).all { y -> // check all blocks above for air
-                    pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type == Material.AIR
+                    pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type.isAir
                 }
             }
 

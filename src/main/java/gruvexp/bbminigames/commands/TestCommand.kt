@@ -226,7 +226,7 @@ class TestCommand : CommandExecutor {
                             for (z in s0.blockZ..s1.blockZ) {
                                 val block = Main.WORLD.getBlockAt(x, y, z)
                                 //p.sendMessage(Component.text("Block at " + x + " " + y + " " + z + ": " + block.getType()));
-                                if (block.type != Material.AIR) {
+                                if (!block.type.isAir) {
                                     val display = Main.WORLD.spawn(
                                         Location(
                                             Main.WORLD,
@@ -278,7 +278,7 @@ class TestCommand : CommandExecutor {
                             for (z in z0..z1) {
                                 val block = Main.WORLD.getBlockAt(x, y, z)
                                 //p.sendMessage(Component.text("Block at " + x + " " + y + " " + z + ": " + block.getType()));
-                                if (block.type != Material.AIR) {
+                                if (!block.type.isAir) {
                                     val display = Main.WORLD.spawn(
                                         Location(
                                             Main.WORLD,

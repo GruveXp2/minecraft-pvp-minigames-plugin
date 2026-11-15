@@ -35,7 +35,7 @@ fun placeSymmetricalStructure(
                 val y = start.blockY + relY
                 val z = start.blockZ + relZ
                 val block = world.getBlockAt(x, y, z)
-                if (block.type != Material.AIR) {
+                if (!block.type.isAir) {
                     // turn the block into a block display
                     val display = world.spawn(
                         Location(world, x.toDouble(), y.toDouble(), z.toDouble()),

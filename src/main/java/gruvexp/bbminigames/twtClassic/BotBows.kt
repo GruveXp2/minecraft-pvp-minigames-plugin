@@ -121,11 +121,11 @@ object BotBows {
         var block = p.location.add(0.0, -0.05, 0.0).block // sjekker rett under, bare 0.05 itilfelle det er teppe
 
         debugMessage("1: Material: ${block.type.name}", b)
-        if (block.type == Material.AIR) {
+        if (block.type.isAir) {
             block = p.location.add(0.0, -0.9, 0.0).block // hvis man står på kanten av et teppe kan det være en effektblokk under
             debugMessage("2: Material: ${block.type.name}", b)
         }
-        if (block.type == Material.AIR) {
+        if (block.type.isAir) {
             block = p.location.block
             debugMessage("3: Material: ${block.type.name}", b)
         } else {

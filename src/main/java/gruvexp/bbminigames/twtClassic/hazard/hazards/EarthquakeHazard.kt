@@ -80,7 +80,7 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
 
                 val pBlock = pLoc.block
                 return (pLoc.blockY + 2..UPPER_BOUND).all { y ->
-                    pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type != Material.AIR
+                    !pBlock.getRelative(BlockFace.UP, y - pLoc.blockY).type.isAir
                 }
             }
 
@@ -106,7 +106,7 @@ class EarthquakeHazard : Hazard(HazardType.EARTHQUAKE) {
                         bp.damage(DamageContext.Environment(DamageType.Environment.EARTHQUAKE))
                     }, 20L)
                     val anvilLoc = bp.location.toBlockLocation()
-                    while (anvilLoc.block.type == Material.AIR) {
+                    while (anvilLoc.block.type.isAir) {
                         anvilLoc.subtract(0.0, 1.0, 0.0)
                     }
                     anvilLoc.add(0.0, 1.0, 0.0)
