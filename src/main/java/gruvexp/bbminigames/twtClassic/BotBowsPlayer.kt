@@ -22,6 +22,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
@@ -335,6 +336,10 @@ class BotBowsPlayer {
         lobby.check4Elimination(this)
     }
 
+    fun stun(duration: Int) {
+        avatar.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, duration, 3, false, true))
+    }
+
     fun onMovement() {
         if (hasAbilityEquipped(AbilityType.HEALING)) {
             (getAbility(AbilityType.HEALING) as HealingAbility).onMovement()
@@ -439,6 +444,18 @@ class BotBowsPlayer {
 
     val isOnGround: Boolean
         get() = avatar.isOnGround
+
+    val isExposed: Boolean
+        get() {
+            val block = location.block.getRelative(BlockFace.UP)
+            return (-1..1).all { x ->
+                (-1..1).all { y ->
+                    (-1..1).all { z ->
+                        block.getRelative(x, y, z).isEmpty
+                    }
+                }
+            }
+        }
 
     companion object {
         val HEALTH_ARMOR: List<List<Set<Int>>> = listOf(

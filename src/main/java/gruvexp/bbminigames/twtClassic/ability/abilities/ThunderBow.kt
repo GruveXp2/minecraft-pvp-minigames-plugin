@@ -12,10 +12,14 @@ import gruvexp.bbminigames.twtClassic.BotBows
 import gruvexp.bbminigames.twtClassic.BotBowsPlayer
 import gruvexp.bbminigames.twtClassic.ability.Ability
 import gruvexp.bbminigames.twtClassic.ability.AbilityType
+import gruvexp.bbminigames.twtClassic.effect.PlayerEffectManager
+import gruvexp.bbminigames.util.lighten
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.*
 import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Arrow
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.scheduler.BukkitRunnable
@@ -63,7 +67,7 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
         arrow.remove()
     }
 
-    class ThunderArrowTrailGenerator(private val arrow: Arrow, private val color: Color) : BukkitRunnable() {
+    inner class ThunderArrowTrailGenerator(private val arrow: Arrow, private val color: Color) : BukkitRunnable() {
         override fun run() {
             arrow.world.spawnParticle(
                 Particle.DUST,
@@ -95,6 +99,40 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
             if ((0..2).random() == 0 && !sparkLocation.block.type.isAir) {
                 createElectricArc(arrow.location, sparkLocation, Color.AQUA, 2.0, false)
             }
+
+            arrow.location.getNearbyEntitiesByType(LivingEntity::class.java, 1.0)
+                .mapNotNull { BotBows.getBotBowsPlayer(it.uniqueId) }
+                .filter { it.team != bp.team && it.isExposed }.forEach { opponent ->
+                    val arrowBlockLoc = arrow.location.block
+                    val nearbyBlocks = (-1..1).flatMap { x ->
+                        (-1..1).flatMap { y ->
+                            (-1..1).mapNotNull { z ->
+                                arrowBlockLoc.getRelative(x, y, z).takeIf { !it.type.isAir }
+                            }
+                        }
+                    }
+                    if (nearbyBlocks.isNotEmpty()) {
+                        createElectricArc(arrow.location, nearbyBlocks.random().location, Color.AQUA, 2.0, false)
+                    } else {
+                        createElectricArc(arrow.location, opponent.location, color, 2.0, false)
+                        opponent.stun(5)
+                        opponent.effectManager.applyGlow(
+                            PlayerEffectManager.GlowSource.DEBUFF,
+                            5,
+                            NamedTextColor.AQUA,
+                            2
+                        )
+                        opponent.avatar.message(
+                            Component.text("You got stunned by ", bp.team.color.lighten(0.5f))
+                                .append(bp.name)
+                                .append(Component.text("'s thunder arrow!"))
+                        )
+                        bp.avatar.message(
+                            Component.text("Your arrow stunned ", bp.team.color.lighten(0.5f))
+                                .append(opponent.name)
+                        )
+                    }
+                }
         }
     }
 
