@@ -302,9 +302,8 @@ class SteamPunkGame(settings: Settings) : BotBowsGame(settings) {
         }
     }
 
-    override fun postRound(winningTeam: BotBowsTeam?, winScore: Int) {
+    override fun onRoundEnd() {
         stopMotors()
-        super.postRound(winningTeam, winScore)
     }
 
     override fun postGame(winningTeam: BotBowsTeam?) {

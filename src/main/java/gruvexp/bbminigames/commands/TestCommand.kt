@@ -70,7 +70,7 @@ class TestCommand : CommandExecutor {
                         p.sendMessage(Component.text("No ongoing round to end", NamedTextColor.RED))
                         return true
                     }
-                    game.endRoundTimeout()
+                    game.endRound()
                 }
 
                 "tb" -> {

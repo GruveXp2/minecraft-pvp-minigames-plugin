@@ -37,11 +37,10 @@ class SpaceStationGame(settings: Settings) : BotBowsGame(settings) {
         }
     }
 
-    override fun postRound(winningTeam: BotBowsTeam?, winScore: Int) {
+    override fun onRoundEnd() {
         doorMotors.values.forEach { it.cancel() }
         doorMotors.clear()
         doors.forEach { it.open() }
-        super.postRound(winningTeam, winScore)
     }
 
     private fun scheduleDoor(door: SpaceStationDoor) {

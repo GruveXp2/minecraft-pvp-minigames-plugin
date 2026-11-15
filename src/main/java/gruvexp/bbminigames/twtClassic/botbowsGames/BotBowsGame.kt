@@ -149,25 +149,24 @@ open class BotBowsGame(val settings: Settings) {
         val losingTeam = dedPlayer.team
 
         if (losingTeam.isEliminated) {
-            Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { endRoundEliminated(losingTeam) }, 2L)
+            Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { endRound() }, 2L)
         }
     }
 
-    fun endRound(alsoEndGame: Boolean = false) { //TODO: hvis den blei enda pga eliminasjon, så ska denne mettheden kalles med litt delay itilfelle folk dauer pålikt
+    fun endRound(alsoEndGame: Boolean = false) {
         if (!activeRound) return
         activeRound = false
+        onRoundEnd()
 
         var winningSide: TeamSide? = null
-        var draw = false
-        if (team1.isEliminated || team2.isEliminated) { // elimination
-            if (team1.isEliminated && team2.isEliminated) draw = true
-            else winningSide =
-                if (team1.isEliminated) TeamSide.TWO else TeamSide.ONE
+        if ((team1.isEliminated || team2.isEliminated) && team1.isEliminated != team2.isEliminated) {
+            winningSide = if (team1.isEliminated && !team2.isEliminated) TeamSide.TWO else TeamSide.ONE
         } else { // check who has most hp left
-            val team1Percentage = team1.healthPercentage //TODO make into metthed
+            val team1Percentage = team1.healthPercentage
             val team2Percentage = team2.healthPercentage
             val team1ResultColor: NamedTextColor
             val team2ResultColor: NamedTextColor
+
             if (team1Percentage > team2Percentage) {
                 winningSide = TeamSide.ONE
                 team1ResultColor = NamedTextColor.GREEN
@@ -179,9 +178,7 @@ open class BotBowsGame(val settings: Settings) {
             } else {
                 team1ResultColor = NamedTextColor.YELLOW
                 team2ResultColor = NamedTextColor.YELLOW
-                draw = true
             }
-
             lobby.messagePlayers(
                 Component.empty()
                     .append(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD))
@@ -194,8 +191,10 @@ open class BotBowsGame(val settings: Settings) {
 
         if (winningSide != null) {
             val winningTeam = settings.getTeam(winningSide)
-            winningTeam.toComponent()
+            lobby.messagePlayers(
+                winningTeam.toComponent()
                 .append(Component.text(" won the round!", NamedTextColor.GREEN))
+            )
 
             val losingTeam = winningTeam.oppositeTeam
             val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
@@ -204,36 +203,44 @@ open class BotBowsGame(val settings: Settings) {
             winningTeam.addPoints(winScore)
             lobby.titlePlayers(Component.text("${winningTeam.displayName} +$winScore", winningTeam.color), 2)
             botBowsBoard.updateTeamScores()
+        } else {
+            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
+            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2)
+        }
+
+        lobby.messagePlayers( // team1: %d points, team2: %d points
+            team1.toComponent()
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text("${team1.points}\n", NamedTextColor.GREEN))
+                .append(team2.toComponent())
+                .append(Component.text(": ", NamedTextColor.WHITE))
+                .append(Component.text(team2.points, NamedTextColor.GREEN))
+        )
+        roundTimer?.cancel()
+        if (settings.rain > 0) {
+            Main.WORLD.setStorm(false)
+            Bukkit.getOnlinePlayers().forEach { it.resetPlayerWeather() }
+        }
+        players.forEach {
+            it.resetAbilities()
+            it.clearEffects()
+        }
+        hazards.forEach { if (it.isActive) it.end() }
+
+        var gameWinner: BotBowsTeam? = null
+
+
+        if (winningSide != null) {
+            val winningTeam = settings.getTeam(winningSide)
             val winScoreThreshold = settings.winConditionSettings.winScoreThreshold
             if (winningTeam.points >= winScoreThreshold && winScoreThreshold > 0) {
-                postGame(winningTeam)
+                gameWinner = winningTeam
             }
-        } else {
-            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
         }
-        // do stuff. maybe actually just have the 2 mettheds, but theyre called from here and felles info can be after here yee
-
-        lobby.messagePlayers( // team1: %d points, team2: %d points
-            team1.toComponent()
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text("${team1.points}\n", NamedTextColor.GREEN))
-                .append(team2.toComponent())
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text(team2.points, NamedTextColor.GREEN))
-        )
-        roundTimer?.cancel()
-        if (settings.rain > 0) {
-            Main.WORLD.setStorm(false)
-            Bukkit.getOnlinePlayers().forEach { it.resetPlayerWeather() }
-        }
-        players.forEach {
-            it.resetAbilities()
-            it.clearEffects()
-        }
-        hazards.forEach { if (it.isActive) it.end() }
-
         if (alsoEndGame) {
-            val gameWinner = if (team1.points > team2.points) team1 else if (team1.points < team2.points) team2 else null
+            gameWinner = if (team1.points > team2.points) team1 else if (team1.points < team2.points) team2 else null
+        }
+        if (gameWinner != null || alsoEndGame) {
             postGame(gameWinner)
         } else {
             canInteract = false
@@ -241,118 +248,7 @@ open class BotBowsGame(val settings: Settings) {
         }
     }
 
-    private fun endRoundEliminated(losingTeam: BotBowsTeam) {
-        val winningTeam = losingTeam.oppositeTeam
-        if (winningTeam.isEliminated) { // last players on each team died ≈ at the same time
-            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
-            postRound(null, 0)
-            return
-        }
-        lobby.messagePlayers(
-            winningTeam.toComponent()
-                .append(Component.text(" won the round!", NamedTextColor.GREEN))
-        )
-        val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
-        val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
-
-        winningTeam.addPoints(winScore)
-        Bukkit.getScheduler().runTaskLater(
-            Main.plugin,
-            Runnable { postRound(winningTeam, winScore) },
-            2L
-        ) // 2 ticks delay i tilfelle alle dauer rett etterpå, da skal det bli draw isteden
-    }
-
-    fun endRoundTimeout(alsoEndGame: Boolean = false) {
-        val team1Percentage = team1.healthPercentage
-        val team2Percentage = team2.healthPercentage
-        var winningTeam: BotBowsTeam? = null
-        val team1ResultColor: NamedTextColor
-        val team2ResultColor: NamedTextColor
-        if (team1Percentage > team2Percentage) {
-            winningTeam = team1
-            team1ResultColor = NamedTextColor.GREEN
-            team2ResultColor = NamedTextColor.RED
-        } else if (team1Percentage < team2Percentage) {
-            winningTeam = team2
-            team1ResultColor = NamedTextColor.RED
-            team2ResultColor = NamedTextColor.GREEN
-        } else {
-            team2ResultColor = NamedTextColor.YELLOW
-            team1ResultColor = team2ResultColor
-        }
-        lobby.messagePlayers(
-            Component.empty()
-                .append(Component.text("Round over!\n", NamedTextColor.RED, TextDecoration.BOLD))
-                .append(team1.toComponent())
-                .append(Component.text(": $team1Percentage% hp left\n", team1ResultColor))
-                .append(team2.toComponent())
-                .append(Component.text(": $team2Percentage% hp left\n", team2ResultColor))
-        )
-        if (winningTeam != null) {
-            lobby.messagePlayers(
-                winningTeam.toComponent()
-                    .append(Component.text(" won the round!", NamedTextColor.GREEN))
-            )
-            val losingTeam = winningTeam.oppositeTeam
-            val isDynamicScoring = settings.winConditionSettings.isDynamicScoring
-            val winScore = if (isDynamicScoring) calculateDynamicScore(winningTeam, losingTeam) else 1
-
-            winningTeam.addPoints(winScore)
-            postRound(winningTeam, winScore, alsoEndGame)
-        } else {
-            lobby.messagePlayers(Component.text("The round ended in a tie!", NamedTextColor.YELLOW))
-            postRound(null, 0, alsoEndGame)
-        }
-    }
-
-    protected open fun postRound(winningTeam: BotBowsTeam?, winScore: Int, alsoEndGame: Boolean = false) {
-        if (!activeRound) return
-        activeRound = false
-        players.forEach {
-            it.resetAbilities()
-            it.clearEffects()
-        }
-        lobby.messagePlayers( // team1: %d points, team2: %d points
-            team1.toComponent()
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text("${team1.points}\n", NamedTextColor.GREEN))
-                .append(team2.toComponent())
-                .append(Component.text(": ", NamedTextColor.WHITE))
-                .append(Component.text(team2.points, NamedTextColor.GREEN))
-        )
-        roundTimer?.cancel()
-        if (settings.rain > 0) {
-            Main.WORLD.setStorm(false)
-            Bukkit.getOnlinePlayers().forEach { it.resetPlayerWeather() }
-        }
-        hazards.forEach { if (it.isActive) it.end() }
-
-        if (winningTeam == null) {
-            lobby.titlePlayers(Component.text("DRAW", NamedTextColor.YELLOW), 2)
-            if (alsoEndGame) {
-                endGame()
-                return
-            }
-            canInteract = false
-            Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
-            return
-        }
-
-        lobby.titlePlayers(Component.text("${winningTeam.displayName} +$winScore", winningTeam.color), 2)
-        botBowsBoard.updateTeamScores()
-
-        val winScoreThreshold = settings.winConditionSettings.winScoreThreshold
-        if (winningTeam.points >= winScoreThreshold && winScoreThreshold > 0) {
-            postGame(winningTeam)
-        } else if (alsoEndGame) {
-            val gameWinner = if (team1.points > team2.points) team1 else if (team1.points < team2.points) team2 else null
-            postGame(gameWinner)
-        } else {
-            canInteract = false
-            startRoundTask = Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { startRound() }, 40L)
-        }
-    }
+    open fun onRoundEnd() {}
 
     private fun calculateDynamicScore(winningTeam: BotBowsTeam, losingTeam: BotBowsTeam): Int {
         val hpLeft = winningTeam.players.sumOf { it.hp }
@@ -433,7 +329,7 @@ open class BotBowsGame(val settings: Settings) {
 
     fun endGame(ender: BotBowsPlayer) {
         lobby.messagePlayers(Component.text("The game was ended by ").append(ender.name))
-        endRoundTimeout()
+        endRound(true)
     }
 
     fun endGame() { // the game has ended, check who won
@@ -499,8 +395,8 @@ open class BotBowsGame(val settings: Settings) {
                 )
 
                 0 -> {
-                    endRoundTimeout()
-                    cancel() // stopper loopen
+                    endRound()
+                    cancel()
                 }
 
                 else -> {
