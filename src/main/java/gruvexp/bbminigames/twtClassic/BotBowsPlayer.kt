@@ -27,6 +27,8 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
 
 class BotBowsPlayer {
@@ -57,6 +59,10 @@ class BotBowsPlayer {
     private val abilities: MutableMap<AbilityType, Ability> = mutableMapOf()
     val equippedAbilities: Set<AbilityType>
         get() = abilities.keys.toSet()
+
+    var hasIncreasedShootingSpeed = false;
+
+    var fastBotBowsGiver: BukkitTask? = null
 
     constructor(player: Player, lobbySettings: Settings) {
         avatar = PlayerAvatar(player, this)
@@ -403,6 +409,21 @@ class BotBowsPlayer {
 
     fun reloadBotBow() {
         avatar.setItem(0, BotBows.BOTBOW)
+    }
+
+    fun increaseShootingSpeed() {
+        hasIncreasedShootingSpeed = true
+        fastBotBowsGiver = object : BukkitRunnable() {
+            override fun run() {
+                reloadBotBow()
+            }
+        }.runTaskTimer(Main.plugin, 0L, 7L)
+    }
+
+    fun resetShootingSpeed() {
+        hasIncreasedShootingSpeed = false
+        fastBotBowsGiver?.cancel()
+        fastBotBowsGiver = null
     }
 
     fun getNearbyPlayers(radius: Double): Set<BotBowsPlayer> {

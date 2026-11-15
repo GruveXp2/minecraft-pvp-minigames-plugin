@@ -31,7 +31,14 @@ import kotlin.random.Random
 class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
     : Ability(bp, hotBarSlot, AbilityType.THUNDER_BOW), OnLaunch, OnProjectileHit {
     var isActive: Boolean = false
-        private set
+        private set(value) {
+            field = value
+            if (value) {
+                bp.increaseShootingSpeed()
+            } else {
+                bp.resetShootingSpeed()
+            }
+        }
 
     override fun use() {
         super.use()
