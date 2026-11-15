@@ -20,7 +20,7 @@ class RightClickListener : Listener {
                 BotBows.getBotBowsPlayer(p)?.let {
                     val type = e.clickedBlock!!.type
                     if (type == Material.CHEST || type == Material.TRAPPED_CHEST || type == Material.BARREL) { // stop accidentally opening containers mid-game
-                        e.setCancelled(true)
+                        e.isCancelled = true
                         return@onPlayerRightClick
                     }
                 }
