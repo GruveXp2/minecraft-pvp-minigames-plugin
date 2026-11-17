@@ -4,7 +4,7 @@ import dev.gruve.minigames.Main
 import dev.gruve.minigames.api.damage.DamageContext
 import dev.gruve.minigames.api.damage.DamageType
 import dev.gruve.minigames.botbows.BotBowsPlayer
-import dev.gruve.minigames.botbows.botbowsGames.BotBowsGame
+import dev.gruve.minigames.botbows.games.BotBowsGame
 import dev.gruve.minigames.botbows.hazard.Hazard
 import dev.gruve.minigames.botbows.hazard.HazardType
 import dev.gruve.minigames.util.setTimeSmooth

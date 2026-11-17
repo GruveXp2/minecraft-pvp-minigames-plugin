@@ -4,10 +4,10 @@ import dev.gruve.minigames.Main
 import dev.gruve.minigames.menu.Menu
 import dev.gruve.minigames.botbows.stat.ResultDisplay
 import dev.gruve.minigames.botbows.avatar.PlayerAvatar
-import dev.gruve.minigames.botbows.botbowsGames.BotBowsGame
-import dev.gruve.minigames.botbows.botbowsGames.IcyRavineGame
-import dev.gruve.minigames.botbows.botbowsGames.SpaceStationGame
-import dev.gruve.minigames.botbows.botbowsGames.SteamPunkGame
+import dev.gruve.minigames.botbows.games.BotBowsGame
+import dev.gruve.minigames.botbows.games.IcyRavineGame
+import dev.gruve.minigames.botbows.games.SpaceStationGame
+import dev.gruve.minigames.botbows.games.SteamPunkGame
 import dev.gruve.minigames.botbows.map.BotBowsMap
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component

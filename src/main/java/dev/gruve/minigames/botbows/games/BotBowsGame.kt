@@ -1,4 +1,4 @@
-package dev.gruve.minigames.botbows.botbowsGames
+package dev.gruve.minigames.botbows.games
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import dev.gruve.minigames.Main

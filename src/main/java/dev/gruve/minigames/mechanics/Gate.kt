@@ -1,7 +1,7 @@
 package dev.gruve.minigames.mechanics
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.botbows.botbowsGames.SteamPunkGame
+import dev.gruve.minigames.botbows.games.SteamPunkGame
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable

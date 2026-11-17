@@ -1,4 +1,4 @@
-package dev.gruve.minigames.botbows.botbowsGames
+package dev.gruve.minigames.botbows.games
 
 import dev.gruve.minigames.Main
 import dev.gruve.minigames.mechanics.*
