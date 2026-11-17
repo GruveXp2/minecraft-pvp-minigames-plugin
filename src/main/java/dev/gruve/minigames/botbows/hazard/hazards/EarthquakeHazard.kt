@@ -1,8 +1,8 @@
 package dev.gruve.minigames.botbows.hazard.hazards
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.api.damage.DamageContext
-import dev.gruve.minigames.api.damage.DamageType
+import dev.gruve.minigames.botbows.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageType
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.hazard.Hazard
 import dev.gruve.minigames.botbows.hazard.HazardChance

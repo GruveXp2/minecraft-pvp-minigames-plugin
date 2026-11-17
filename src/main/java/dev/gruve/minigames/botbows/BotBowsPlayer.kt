@@ -1,7 +1,7 @@
 package dev.gruve.minigames.botbows
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.api.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageContext
 import dev.gruve.minigames.menu.menus.AbilityMenu
 import dev.gruve.minigames.botbows.ability.Ability
 import dev.gruve.minigames.botbows.ability.AbilityCategory

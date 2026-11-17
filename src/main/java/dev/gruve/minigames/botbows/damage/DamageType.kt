@@ -1,4 +1,4 @@
-package dev.gruve.minigames.api.damage
+package dev.gruve.minigames.botbows.damage
 
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor

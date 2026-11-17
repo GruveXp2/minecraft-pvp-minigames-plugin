@@ -1,7 +1,7 @@
 package dev.gruve.minigames.listeners
 
-import dev.gruve.minigames.api.damage.DamageContext
-import dev.gruve.minigames.api.damage.DamageType
+import dev.gruve.minigames.botbows.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageType
 import dev.gruve.minigames.extras.StickSlap
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer

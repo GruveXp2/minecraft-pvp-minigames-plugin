@@ -1,7 +1,7 @@
 package dev.gruve.minigames.botbows.ability.abilities
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnLingeringPotionUse
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnLingeringPotionUse
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.Ability

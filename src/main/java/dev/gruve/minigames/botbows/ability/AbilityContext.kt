@@ -1,4 +1,4 @@
-package dev.gruve.minigames.api.ability
+package dev.gruve.minigames.botbows.ability
 
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import org.bukkit.Location

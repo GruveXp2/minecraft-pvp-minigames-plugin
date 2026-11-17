@@ -1,6 +1,6 @@
-package dev.gruve.minigames.api.ability
+package dev.gruve.minigames.botbows.ability
 
-import dev.gruve.minigames.api.ability.AbilityContext.*
+import dev.gruve.minigames.botbows.ability.AbilityContext.*
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent
 import org.bukkit.event.entity.LingeringPotionSplashEvent
 import org.bukkit.event.entity.ProjectileHitEvent

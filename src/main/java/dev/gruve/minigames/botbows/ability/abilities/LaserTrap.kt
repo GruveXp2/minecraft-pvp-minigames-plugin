@@ -2,10 +2,10 @@ package dev.gruve.minigames.botbows.ability.abilities
 
 import dev.gruve.minigames.Main
 import dev.gruve.minigames.Util
-import dev.gruve.minigames.api.ability.AbilityContext.BlockPlace
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnBlockPlace
-import dev.gruve.minigames.api.damage.DamageContext
-import dev.gruve.minigames.api.damage.DamageType
+import dev.gruve.minigames.botbows.ability.AbilityContext.BlockPlace
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnBlockPlace
+import dev.gruve.minigames.botbows.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageType
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.Ability
 import dev.gruve.minigames.botbows.ability.AbilityType

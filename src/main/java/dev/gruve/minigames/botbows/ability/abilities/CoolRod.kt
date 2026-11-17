@@ -1,9 +1,9 @@
 package dev.gruve.minigames.botbows.ability.abilities
 
-import dev.gruve.minigames.api.ability.AbilityContext.Melee
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnMelee
-import dev.gruve.minigames.api.damage.DamageContext
-import dev.gruve.minigames.api.damage.DamageType
+import dev.gruve.minigames.botbows.ability.AbilityContext.Melee
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnMelee
+import dev.gruve.minigames.botbows.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageType
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.Ability
 import dev.gruve.minigames.botbows.ability.AbilityType

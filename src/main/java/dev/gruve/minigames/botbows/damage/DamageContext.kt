@@ -1,4 +1,4 @@
-package dev.gruve.minigames.api.damage
+package dev.gruve.minigames.botbows.damage
 
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.util.lighten

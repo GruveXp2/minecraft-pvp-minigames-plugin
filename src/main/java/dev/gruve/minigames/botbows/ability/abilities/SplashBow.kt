@@ -1,11 +1,11 @@
 package dev.gruve.minigames.botbows.ability.abilities
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.api.ability.AbilityContext.Launch
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnLaunch
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnProjectileHit
-import dev.gruve.minigames.api.damage.DamageContext
-import dev.gruve.minigames.api.damage.DamageType
+import dev.gruve.minigames.botbows.ability.AbilityContext.Launch
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnLaunch
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnProjectileHit
+import dev.gruve.minigames.botbows.damage.DamageContext
+import dev.gruve.minigames.botbows.damage.DamageType
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.Ability

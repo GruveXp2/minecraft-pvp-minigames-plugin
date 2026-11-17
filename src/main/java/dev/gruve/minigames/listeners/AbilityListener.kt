@@ -1,9 +1,9 @@
 package dev.gruve.minigames.listeners
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.api.ability.AbilityContext.*
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnMelee
-import dev.gruve.minigames.api.ability.AbilityTrigger.OnProjectileHit
+import dev.gruve.minigames.botbows.ability.AbilityContext.*
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnMelee
+import dev.gruve.minigames.botbows.ability.AbilityTrigger.OnProjectileHit
 import dev.gruve.minigames.commands.TestCommand
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
