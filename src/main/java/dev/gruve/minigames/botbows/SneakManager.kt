@@ -1,0 +1,54 @@
+package dev.gruve.minigames.botbows
+
+import dev.gruve.minigames.Main
+import dev.gruve.minigames.botbows.avatar.BotBowsAvatar
+import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.min
+
+class SneakManager(private val avatar: BotBowsAvatar) {
+    companion object {
+        const val CROUCH_LIMIT: Int = 10 // sec
+    }
+
+    private var sneakCooldown: SneakCooldown
+
+    init {
+        sneakCooldown = SneakCooldown()
+        sneakCooldown.runTaskTimer(Main.plugin, 0L, 1L)
+    }
+
+    val isSneakingExhausted: Boolean
+        get() = sneakCooldown.isExhausted
+
+    fun destroy() {
+        sneakCooldown.cancel()
+    }
+
+    private inner class SneakCooldown : BukkitRunnable() {
+        var time: Int = 20
+        var isExhausted: Boolean = false
+
+        override fun run() {
+            val isAlive = avatar.bp.isAlive
+            if (!isAlive) {
+                time -= min(time, 10)
+            } else if (avatar.isSneaking) {
+                if (time < CROUCH_LIMIT * 20 - 1) {
+                    time += 2
+                } else {
+                    isExhausted = true
+                }
+            } else if (time == 0) {
+                isExhausted = false
+            } else {
+                time -= 1
+            }
+            val progress = when {
+                time == 0 -> 0f
+                time >= CROUCH_LIMIT * 20 - 1 -> 1f
+                else -> time.toFloat() / (CROUCH_LIMIT * 20)
+            }
+            avatar.updateSneakStamina(progress)
+        }
+    }
+}

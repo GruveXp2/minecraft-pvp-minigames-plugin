@@ -1,0 +1,41 @@
+package dev.gruve.minigames.botbows.ability.abilities
+
+import dev.gruve.minigames.botbows.BotBowsPlayer
+import dev.gruve.minigames.botbows.ability.AbilityType
+import dev.gruve.minigames.botbows.ability.PotionAbility
+import dev.gruve.minigames.botbows.effect.PlayerEffectManager
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+
+class BabyPotion(bp: BotBowsPlayer, hotBarSlot: Int) : PotionAbility(bp, hotBarSlot, AbilityType.BABY_POTION) {
+
+    public override fun applyPotionEffect(players: Set<BotBowsPlayer>) {
+        bp.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_LEVEL))
+        bp.effectManager.applyScale(
+            PlayerEffectManager.ScaleSource.BABY_POTION,
+            0.66,
+            PlayerEffectManager.ScalePriority.NORMAL,
+            DURATION * 20L
+        )
+        registerSuccess()
+        players.forEach {
+            it.avatar.addPotionEffect(PotionEffect(PotionEffectType.SPEED, DURATION * 15, SPEED_LEVEL))
+            it.effectManager.applyScale(
+                PlayerEffectManager.ScaleSource.BABY_POTION,
+                0.75,
+                PlayerEffectManager.ScalePriority.NORMAL,
+                DURATION * 15L
+            )
+            registerSuccess()
+        } // 75% of the effect will be given to other players on the team
+    }
+
+    override val effectName = "Baby"
+
+    override val effectDuration: Int = (DURATION * 0.75).toInt()
+
+    companion object {
+        var DURATION: Int = 10
+        var SPEED_LEVEL: Int = 1
+    }
+}

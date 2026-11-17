@@ -1,0 +1,38 @@
+package dev.gruve.minigames.api.damage
+
+import dev.gruve.minigames.botbows.BotBowsPlayer
+import dev.gruve.minigames.util.lighten
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+
+sealed interface DamageContext {
+    val type: DamageType
+
+    fun getMessageColor(): TextColor
+
+    data class Player(override val type: DamageType.Player, val attacker: BotBowsPlayer) : DamageContext {
+        override fun getMessageColor(): TextColor = attacker.team.color.lighten(0.5f)
+
+    }
+
+    data class Environment(override val type: DamageType.Environment) : DamageContext {
+        override fun getMessageColor(): TextColor = type.messageColor
+    }
+
+    fun formatMessage(defender: BotBowsPlayer): Component {
+        val baseColor = getMessageColor()
+
+        val tokens = type.template.split(Regex("(?=%d|%a)|(?<=%d|%a)")) // the regex gets the indices of where to split (right before and after %d or %a), so it basically splits but keeps the %a and %d
+        var component = Component.text("", baseColor)
+
+        for (part in tokens) {
+            component = when (part) { // replaces %d and %a with defender and attacker name
+                "%d" -> component.append(defender.name)
+                "%a" -> component.append(if (this is Player) attacker.name else Component.text("<error: no attacker>", NamedTextColor.RED))
+                else -> component.append(Component.text(part))
+            }
+        }
+        return component
+    }
+}

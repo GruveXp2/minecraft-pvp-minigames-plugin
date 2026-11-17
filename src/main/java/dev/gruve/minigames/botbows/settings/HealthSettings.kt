@@ -1,0 +1,38 @@
+package dev.gruve.minigames.botbows.settings
+
+import dev.gruve.minigames.botbows.settings.player.PlayerSettings
+
+class HealthSettings(private val getPlayerSettings: () -> Iterable<PlayerSettings>) {
+    var maxHealth = 3
+        set(value) {
+            field = value
+            listener?.onMaxHealthChange()
+            if (!isIndividualMaxHealth) getPlayerSettings().forEach { bp -> bp.maxHealth = value }
+        }
+    var isIndividualMaxHealth = false
+        set(value) {
+            field = value
+            listener?.onIndividualMaxHealthToggle()
+            getPlayerSettings().forEach { bp -> bp.maxHealth = maxHealth }
+        }
+    var speed = 3
+        set(value) {
+            field = value
+            listener?.onSpeedChange()
+            if (!isIndividualSpeed) getPlayerSettings().forEach { bp -> bp.speed = value }
+        }
+    var isIndividualSpeed = false
+        set(value) {
+            field = value
+            listener?.onIndividualSpeedToggle()
+            getPlayerSettings().forEach { bp -> bp.speed = speed }
+        }
+    var isCustomDamage = false
+        set(value) {
+            field = value
+            listener?.onCustomDamageToggle()
+            getPlayerSettings().forEach { bp -> bp.attackDamage = 1 }
+        }
+
+    var listener: HealthUpdateListener? = null
+}

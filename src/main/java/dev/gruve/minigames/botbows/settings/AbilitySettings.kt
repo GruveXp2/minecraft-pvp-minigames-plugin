@@ -1,0 +1,155 @@
+package dev.gruve.minigames.botbows.settings
+
+import dev.gruve.minigames.botbows.preset.AbilityPreset
+import dev.gruve.minigames.botbows.BotBows
+import dev.gruve.minigames.botbows.BotBowsPlayer
+import dev.gruve.minigames.botbows.ability.AbilityType
+import dev.gruve.minigames.botbows.team.TeamSide
+import dev.gruve.minigames.botbows.settings.player.PlayerSettings
+
+class AbilitySettings(private val getPlayerSettings: () -> Iterable<PlayerSettings>) {
+    var maxAbilities = 0
+        set(value) {
+            val toggle: Boolean = field == 0 || value == 0
+            field = value
+            isIndividualMax = false
+            if (toggle) {
+                listeners.values.forEach { it.onAbilitiesToggle() }
+            } else {
+                listeners.values.forEach { it.onMaxAbilitiesChange() }
+            }
+            if (!isIndividualMax) getPlayerSettings().forEach { it.maxAbilities = value }
+        }
+
+    var isIndividualMax = false
+        set(value) {
+            field = value
+            if (!value) getPlayerSettings().forEach { it.maxAbilities = maxAbilities }
+            listeners.values.forEach { it.onIndividualMaxToggle() }
+        }
+
+    var cooldownMultiplier = 1.0f
+        set(value) {
+            field = value
+            if (!isIndividualCooldown) getPlayerSettings().forEach { it.abilityCooldownMultiplier = value }
+            listeners.values.forEach { it.onCooldownMultiplierChange() }
+        }
+
+    var isIndividualCooldown = false
+        set(value) {
+            field = value
+            if (!value) getPlayerSettings().forEach { it.abilityCooldownMultiplier = cooldownMultiplier }
+            listeners.values.forEach { it.onIndividualCooldownToggle() }
+        }
+
+    var isUniqueMode = false
+        set(value) {
+            field = value
+            if (!value) {
+                teamAbilities.values.forEach { it.clear() }
+            }
+            listeners.values.forEach { it.onUniqueModeToggle() }
+        }
+
+    var isRandomizerMode = false
+        set(value) {
+            field = value
+            listeners.values.forEach { it.onRandomizerModeToggle() }
+        }
+
+    private val teamAbilities: Map<TeamSide, MutableMap<AbilityType, BotBowsPlayer>> = mapOf(
+        TeamSide.ONE to mutableMapOf(),
+        TeamSide.TWO to mutableMapOf())
+
+    private val bannedAbilities = mutableSetOf(AbilityType.BUBBLE_JET)
+    private val listeners = mutableMapOf<BotBowsPlayer, AbilityUpdateListener>()
+
+    fun addListener(bp: BotBowsPlayer, listener: AbilityUpdateListener) {
+        listeners[bp] = listener
+    }
+
+    fun removeListener(bp: BotBowsPlayer) {
+        listeners.remove(bp)
+    }
+
+    fun ban(type: AbilityType) {
+        bannedAbilities.add(type)
+        notifyStatus(type)
+    }
+
+    fun unban(type: AbilityType) {
+        bannedAbilities.remove(type)
+        notifyStatus(type)
+    }
+
+    fun toggle(type: AbilityType) {
+        if (isBanned(type)) unban(type) else ban(type)
+    }
+
+    fun isBanned(type: AbilityType): Boolean {
+        return type in bannedAbilities
+    }
+
+    fun getBanned(): Set<AbilityType> {
+        return bannedAbilities
+    }
+
+    fun applyPreset(preset: AbilityPreset) {
+        preset.maxAbilities?.let { maxAbilities = it }
+
+        preset.individualMaxAbilities?.forEach { (uuid, max) ->
+            BotBows.getBotBowsPlayer(uuid)?.settings?.maxAbilities = max
+        }
+        preset.cooldownMultiplier?.let { cooldownMultiplier = it }
+
+        preset.individualCooldownMultiplier?.forEach { (uuid, cooldown) ->
+            BotBows.getBotBowsPlayer(uuid)?.settings?.abilityCooldownMultiplier = cooldown
+        }
+        preset.bannedAbilities?.let { banned ->
+            val changed = bannedAbilities xor banned
+            bannedAbilities.clear()
+            bannedAbilities.addAll(banned)
+            changed.forEach { notifyStatus(it) }
+        }
+        isUniqueMode = preset.isUniqueMode
+        isRandomizerMode = preset.isRandomizedMode
+    }
+
+    fun isEquippedByTeam(bp: BotBowsPlayer, type: AbilityType): Boolean {
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
+        return type in equipped && equipped[type] != bp
+    }
+
+    private fun notifyStatus(type: AbilityType) {
+        listeners.values.forEach { it.onAbilityStatusChange(type) }
+    }
+
+    fun attemptEquip(bp: BotBowsPlayer, type: AbilityType): Boolean {
+        if (!isUniqueMode) return true
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
+        val currentBp = equipped[type]
+
+        if (currentBp == null || currentBp == bp) {
+            if (currentBp == null) {
+                equipped[type] = bp
+                listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, true) }
+            }
+            return true
+        }
+        return false
+    }
+
+    fun unequip(bp: BotBowsPlayer, type: AbilityType) {
+        if (!isUniqueMode) return
+        val equipped = teamAbilities.getValue(bp.team.teamSide)
+        if (equipped[type] != bp) return
+        equipped.remove(type)
+        listeners.values.forEach { it.onUniqueAbilityOccupancyChange(type, bp, false) }
+    }
+
+
+    private infix fun <T> Set<T>.xor(other: Set<T>): Set<T> {
+        val intersect = intersect(other)
+        return this + other - intersect
+    }
+}

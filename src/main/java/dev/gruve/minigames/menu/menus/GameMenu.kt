@@ -1,0 +1,47 @@
+package dev.gruve.minigames.menu.menus
+
+import dev.gruve.minigames.menu.Menu
+import dev.gruve.minigames.sumo.SumoManager
+import dev.gruve.minigames.botbows.BotBows
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+
+class GameMenu : Menu(Component.text("Game Menu"), 9) {
+    init {
+        inventory.setItem(3, BOTBOWS)
+        inventory.setItem(5, SUMO)
+    }
+
+    override fun handleMenu(e: InventoryClickEvent) {
+        val p = e.whoClicked as Player
+        val clickedItem = e.currentItem ?: return
+
+        val action = MenuAction.valueOf(getActionId(clickedItem) ?: return)
+        when (action) {
+            MenuAction.JOIN_BOTBOWS -> BotBows.lobbyMenu.open(p)
+            MenuAction.JOIN_SUMO -> SumoManager.sumoMenu.open(p)
+        }
+    }
+
+    companion object {
+        val BOTBOWS = makeItem(
+            Material.BOW,
+            Component.text("BotBows Classic"),
+            MenuAction.JOIN_BOTBOWS.name,
+            Component.text("The classic game of BotBows")
+        )
+        val SUMO = makeItem(
+            Material.STICK,
+            Component.text("Sumo"),
+            MenuAction.JOIN_SUMO.name,
+            Component.text("Knockback pvp with sticks")
+        )
+    }
+
+    private enum class MenuAction {
+        JOIN_BOTBOWS,
+        JOIN_SUMO,
+    }
+}

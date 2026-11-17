@@ -41,7 +41,7 @@ val buildNumber: Int = if (buildNumberFile.exists()) {
     1
 }
 
-group = "gruvexp"
+group = "dev.gruve"
 version = "5.2-$buildNumber"
 description = "The plugin used on the BotBows minigames server"
 
@@ -84,7 +84,7 @@ tasks.register("incrementBuildNumber") {
 
 tasks.named<ShadowJar>("shadowJar") {
     manifest {
-        attributes["Main-Class"] = "gruvexp.bbminigames.Main"
+        attributes["Main-Class"] = "dev.gruve.minigames.Main"
     }
     archiveVersion.set("")
     archiveClassifier.set("")
