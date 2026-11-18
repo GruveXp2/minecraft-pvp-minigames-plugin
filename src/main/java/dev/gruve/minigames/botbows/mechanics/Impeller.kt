@@ -1,4 +1,4 @@
-package dev.gruve.minigames.mechanics
+package dev.gruve.minigames.botbows.mechanics
 
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.util.getChunksAround

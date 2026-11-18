@@ -2,8 +2,8 @@ package dev.gruve.minigames.commands
 
 import dev.gruve.minigames.Main
 import dev.gruve.minigames.extras.StickSlap
-import dev.gruve.minigames.mechanics.Hatch
-import dev.gruve.minigames.mechanics.RotatingStructure
+import dev.gruve.minigames.botbows.mechanics.Hatch
+import dev.gruve.minigames.botbows.mechanics.RotatingStructure
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.AbilityType

@@ -1,7 +1,7 @@
 package dev.gruve.minigames.botbows.games
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.mechanics.SpaceStationDoor
+import dev.gruve.minigames.botbows.mechanics.SpaceStationDoor
 import dev.gruve.minigames.botbows.Settings
 import org.bukkit.Axis
 import org.bukkit.Location

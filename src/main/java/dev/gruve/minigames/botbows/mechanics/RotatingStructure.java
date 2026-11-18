@@ -1,4 +1,4 @@
-package dev.gruve.minigames.mechanics;
+package dev.gruve.minigames.botbows.mechanics;
 
 import io.papermc.paper.entity.LookAnchor;
 import org.bukkit.Location;

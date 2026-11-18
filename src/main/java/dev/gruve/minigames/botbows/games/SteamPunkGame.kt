@@ -1,7 +1,7 @@
 package dev.gruve.minigames.botbows.games
 
 import dev.gruve.minigames.Main
-import dev.gruve.minigames.mechanics.*
+import dev.gruve.minigames.botbows.mechanics.*
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.Settings
 import dev.gruve.minigames.botbows.team.BotBowsTeam
