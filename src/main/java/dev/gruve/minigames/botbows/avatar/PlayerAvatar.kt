@@ -42,6 +42,8 @@ class PlayerAvatar : BotBowsAvatar {
     constructor(player: Player, previousAvatar: BotBowsAvatar) {
         this.player = player
         _bp = previousAvatar.bp
+        setMaxHp(bp.settings.maxHealth)
+        setSpeed(bp.settings.speed)
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
         teamManager = previousAvatar.teamManager
     }

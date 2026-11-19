@@ -122,8 +122,6 @@ class BotBowsPlayer {
         p.teleport(avatar.location)
         avatar.destroy()
         avatar = PlayerAvatar(p, avatar)
-        avatar.setMaxHp(settings.maxHealth)
-        avatar.setHp(hp)
     }
 
     fun destroy() {

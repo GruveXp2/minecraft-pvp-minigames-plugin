@@ -28,7 +28,6 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
             abilityListeners.values.forEach { it.onMaxAbilitiesChange(bp) }
             bp.onMaxAbilitiesChange()
         }
-
     var abilityCooldownMultiplier: Float = settings.abilitySettings.cooldownMultiplier
         set(value) {
             field = value
@@ -40,6 +39,11 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
 
     private val abilityListeners = mutableMapOf<BotBowsPlayer, PlayerAbilityUpdateListener>()
     private val healthListeners = mutableMapOf<BotBowsPlayer, PlayerHealthUpdateListener>()
+
+    init {
+        bp.avatar.setMaxHp(maxHealth)
+        bp.avatar.setSpeed(speed)
+    }
 
     fun addListener(bp: BotBowsPlayer, healthListener: PlayerHealthUpdateListener, abilityListener: PlayerAbilityUpdateListener) {
         healthListeners[bp] = healthListener
