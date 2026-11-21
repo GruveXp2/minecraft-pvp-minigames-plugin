@@ -29,6 +29,7 @@ class PlayerAvatar : BotBowsAvatar {
     private val sneakBar: BossBar
     private val hazardBars  = mutableMapOf<HazardType, BossBar>()
     private var visualHp = 0
+    private var visualMaxHp = 0
     override lateinit var teamManager: TeamManager
 
     constructor(player: Player, bp: BotBowsPlayer) {
@@ -77,6 +78,7 @@ class PlayerAvatar : BotBowsAvatar {
 
     override fun setMaxHp(maxHp: Int) {
         player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = maxHp * 2.0
+        visualMaxHp = maxHp
         setHp(maxHp)
     }
 
@@ -250,18 +252,17 @@ class PlayerAvatar : BotBowsAvatar {
     }
 
     private fun updateArmor() { // updates all individual armor pieces of the player
-        val maxHp = bp.settings.maxHealth
-        if (visualHp == maxHp) {
+        if (visualHp == visualMaxHp) {
             equipFullArmor()
             return
         }
         val slots: Set<Int>
-        if (maxHp > 5) {
-            val d = maxHp / 5.0
-            val i = ceil((maxHp - visualHp) / d).toInt()
+        if (visualMaxHp > 5) {
+            val d = visualMaxHp / 5.0
+            val i = ceil((visualMaxHp - visualHp) / d).toInt()
             slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR[maxHp - 2][maxHp - visualHp - 1]
+            slots = BotBowsPlayer.HEALTH_ARMOR[visualMaxHp - 2][visualMaxHp - visualHp - 1]
         }
 
         for (slot in slots) {
