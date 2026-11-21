@@ -60,7 +60,7 @@ class BotBowsPlayer {
     val equippedAbilities: Set<AbilityType>
         get() = abilities.keys.toSet()
 
-    var hasIncreasedShootingSpeed = false;
+    var hasIncreasedShootingSpeed = false
 
     var fastBotBowsGiver: BukkitTask? = null
 
