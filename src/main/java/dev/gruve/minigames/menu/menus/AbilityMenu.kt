@@ -194,7 +194,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
                     }
                 }
             }
-        } else { // clicked in player inventory
+        } else if (e.clickedInventory == p.inventory) {
             if (cursorItem.type == Material.AIR) {
                 if (bp.hasAbilityEquipped(clickedAbility)) { // picks up ability to move it around
                     bp.equipAbility(-1, clickedAbility!!)
@@ -220,6 +220,8 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
 
                 clickedAbility?.let { bp.equipAbility(-1, it) }
             }
+        } else { // clicked outside of inventory
+            e.isCancelled = true
         }
     }
 
