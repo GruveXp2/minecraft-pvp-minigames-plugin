@@ -241,9 +241,9 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             onUniqueModeToggle()
             abilityRow.show()
             inventory.setItem(36, MOD_TOGGLE)
-            inventory.setItem(45, RANDOMIZE_ABILITIES)
             onRandomizerModeToggle()
-            inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES)
+            inventory.setItem(49, RANDOMIZE_ABILITIES)
+            //inventory.setItem(49, INDIVIDUAL_PLAYER_ABILITIES) // currently unused
         } else {
             abilityRow.hide()
             maxAbilitiesRow.hide()
@@ -252,9 +252,10 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
             // fyller med gråe glassvinduer der settings var
             updateMaxAbilitiesUIState()
             inventory.setItem(0, DISABLED_SLOT)
-            inventory.setItem(46, DISABLED_SLOT)
-            inventory.setItem(53, DISABLED_SLOT)
             inventory.setItem(18, DISABLED_SLOT)
+            inventory.setItem(45, DISABLED_SLOT)
+            inventory.setItem(49, DISABLED_SLOT)
+            inventory.setItem(53, DISABLED_SLOT)
             for (i in 20..26) inventory.setItem(i, DISABLED_SLOT)
             for (i in 27..35) inventory.setItem(i, VOID)
             for (i in 36..44) inventory.setItem(i, DISABLED_SLOT)
@@ -365,9 +366,9 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
 
     override fun onRandomizerModeToggle() {
         if (settings.abilitySettings.isRandomizerMode) {
-            inventory.setItem(46, RANDOMIZER_MODE_ENABLED)
+            inventory.setItem(45, RANDOMIZER_MODE_ENABLED)
         } else {
-            inventory.setItem(46, RANDOMIZER_MODE_DISABLED)
+            inventory.setItem(45, RANDOMIZER_MODE_DISABLED)
         }
     }
 
