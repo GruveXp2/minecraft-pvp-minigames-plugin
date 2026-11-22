@@ -6,7 +6,10 @@ import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.ability.abilities.*
 import org.bukkit.scheduler.BukkitRunnable
 
-open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val type: AbilityType) {
+open class Ability(protected val bp: BotBowsPlayer, hotBarSlot: Int, val type: AbilityType) {
+
+    var hotBarSlot: Int = hotBarSlot
+        private set
 
     protected var baseCooldown: Int = -1 // seconds
     var cooldownMultiplier: Float = 1.0f
@@ -80,6 +83,10 @@ open class Ability(protected val bp: BotBowsPlayer, val hotBarSlot: Int, val typ
         cooldown > 5 ->  type.cooldownItems[1].clone()
         cooldown > 2 ->  type.cooldownItems[2].clone()
         else ->          type.cooldownItems[3].clone()
+    }
+
+    fun onSlotChange(newSlot: Int) {
+        hotBarSlot = newSlot
     }
 
     open fun unequip() {

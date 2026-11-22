@@ -189,10 +189,10 @@ class BotBowsPlayer {
 
     fun equipAbility(type: AbilityType) {
         val slot = avatar.nextFreeSlot
-        equipAbility(slot, type)
+        equipAbility(type, slot)
     }
 
-    fun equipAbility(slot: Int, type: AbilityType, updateInventory: Boolean = true) {
+    fun equipAbility(type: AbilityType, slot: Int, updateInventory: Boolean = true) {
         if (lobby.settings.abilitySettings.maxAbilities == 0) return
         val abilityAlreadyEquipped = hasAbilityEquipped(type)
         if (!abilityAlreadyEquipped) {
@@ -219,6 +219,10 @@ class BotBowsPlayer {
                 .append(Component.text(type.displayName, NamedTextColor.LIGHT_PURPLE))
         )
         abilityMenu?.onAbilityStatusChange(type)
+    }
+
+    fun onAbilitySlotChange(type: AbilityType, newSlot: Int) {
+        abilities.getValue(type).onSlotChange(newSlot)
     }
 
     fun unequipAbility(type: AbilityType, hideMessage: Boolean = false) {

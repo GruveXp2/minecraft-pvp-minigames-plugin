@@ -197,7 +197,7 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
         } else if (e.clickedInventory == p.inventory) {
             if (cursorItem.type == Material.AIR) {
                 if (bp.hasAbilityEquipped(clickedAbility)) { // picks up ability to move it around
-                    bp.equipAbility(-1, clickedAbility!!)
+                    bp.onAbilitySlotChange(clickedAbility!!, -1)
                 }
             } else { // places ability down in that slot
                 if (e.action == InventoryAction.COLLECT_TO_CURSOR) { // otherwise, players could collect menu items by double clicking similar items in their inventory
@@ -216,9 +216,15 @@ class AbilityMenu(settings: Settings, private val bp: BotBowsPlayer)
                     }
                     return
                 }
-                cursorAbility?.let { bp.equipAbility(e.slot, cursorAbility, false) }
+                cursorAbility?.let {
+                    if (bp.hasAbilityEquipped(it)) {
+                        bp.onAbilitySlotChange(it, e.slot)
+                    } else {
+                        bp.equipAbility(it, e.slot, false)
+                    }
+                }
 
-                clickedAbility?.let { bp.equipAbility(-1, it) }
+                clickedAbility?.let { bp.onAbilitySlotChange(it, -1) }
             }
         } else { // clicked outside of inventory
             e.isCancelled = true
