@@ -181,7 +181,6 @@ class Lobby(val id: Int) {
 
     fun reset() {
         players.values.forEach { it.reset() }
-        if (!Main.plugin.isEnabled) return
         players.values
             .filter { it.avatar is PlayerAvatar }
             .forEach { it.setReady(false, 4) }
@@ -189,6 +188,10 @@ class Lobby(val id: Int) {
 
         botBowsGame = null
         BotBows.lobbyMenu.updateLobbyItem(this)
+    }
+
+    fun destroy() {
+        players.values.forEach { it.destroy() }
     }
 
     fun messagePlayers(message: Component) {

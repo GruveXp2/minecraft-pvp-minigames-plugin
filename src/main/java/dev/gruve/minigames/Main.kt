@@ -70,7 +70,7 @@ class Main : JavaPlugin() {
                 lobby.botBowsGame!!.endGame()
                 lobby.cleanupResultDisplay()
             } else {
-                lobby.reset()
+                lobby.destroy()
             }
         }
     }
