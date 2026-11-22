@@ -314,8 +314,8 @@ class TestCommand : CommandExecutor {
                     //lobby.settings.getHazards().values().forEach(h -> h.setChance(HazardChance.DISABLED));
                     val gruveBp = lobby.getBotBowsPlayer(gruveXp)
                     val judithBp = lobby.getBotBowsPlayer(judith)
-                    gruveBp!!.equipAbility(1, AbilityType.LASER_TRAP)
-                    judithBp!!.equipAbility(1, AbilityType.LASER_TRAP)
+                    gruveBp!!.equipAbility(AbilityType.LASER_TRAP, 1)
+                    judithBp!!.equipAbility(AbilityType.LASER_TRAP, 1)
                     judithBp.setReady(true, 4)
                     Bukkit.getScheduler().runTaskLater(Main.plugin, Runnable { gruveBp.setReady(true, 4) }, 10)
                     Bukkit.getScheduler().runTaskLater(
