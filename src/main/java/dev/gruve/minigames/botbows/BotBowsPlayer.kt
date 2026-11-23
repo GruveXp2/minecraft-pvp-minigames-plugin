@@ -116,7 +116,7 @@ class BotBowsPlayer {
     }
 
     fun turnIntoPlayer(p: Player) {
-        check(avatar is PlayerAvatar) { "This botbowsplayer is already a player!" }
+        check(avatar !is PlayerAvatar) { "This botbowsplayer is already a player!" }
 
         p.teleport(avatar.location)
         avatar.destroy()
