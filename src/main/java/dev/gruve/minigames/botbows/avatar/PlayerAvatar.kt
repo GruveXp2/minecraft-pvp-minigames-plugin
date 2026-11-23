@@ -4,7 +4,6 @@ import dev.gruve.minigames.Main
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
 import dev.gruve.minigames.botbows.Lobby
-import dev.gruve.minigames.botbows.avatar.BotBowsAvatar.ArmorSet
 import dev.gruve.minigames.botbows.hazard.HazardType
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -25,25 +24,20 @@ import kotlin.math.ceil
 
 class PlayerAvatar : BotBowsAvatar {
     private val player: Player
-    private val _bp: BotBowsPlayer
     private val sneakBar: BossBar
     private val hazardBars  = mutableMapOf<HazardType, BossBar>()
-    private var visualHp = 0
-    private var visualMaxHp = 0
-    override lateinit var teamManager: TeamManager
 
-    constructor(player: Player, bp: BotBowsPlayer) {
+    constructor(player: Player, bp: BotBowsPlayer): super(bp) {
         this.player = player
-        _bp = bp
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
         player.gameMode = GameMode.ADVENTURE
         setItem(18, ItemStack(Material.ARROW, 64))
     }
 
-    constructor(player: Player, previousAvatar: BotBowsAvatar) {
+    constructor(player: Player, previousAvatar: BotBowsAvatar): super(previousAvatar.bp) {
         this.player = player
-        _bp = previousAvatar.bp
         setMaxHp(bp.settings.maxHealth)
+        setHp(bp.hp)
         setSpeed(bp.settings.speed)
         sneakBar = BossBar.bossBar(Component.text("Sneaking cooldown"), 0f, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10)
         teamManager = previousAvatar.teamManager
@@ -55,8 +49,6 @@ class PlayerAvatar : BotBowsAvatar {
 
     override val entity: LivingEntity
         get() = player
-    override val bp
-        get() = _bp
 
     override fun eliminate() {
         player.gameMode = GameMode.SPECTATOR
@@ -66,20 +58,16 @@ class PlayerAvatar : BotBowsAvatar {
         player.gameMode = GameMode.ADVENTURE
     }
 
-    override fun setHp(hp: Int) {
-        visualHp = hp
-        if (hp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
+    override fun onHpChange() {
+        if (visualHp == 0) { // spilleren dauer(går i spectator) og livene disses resettes
             player.health = 1.0 // kan ikke sette til 0 for da dauer spilleren på ekte og respawner med en gang, spilleren skal isteden settes i spectator mode der spilleren daua
         } else {
-            player.health = hp * 2.0 // halve hjerter
-            updateArmor()
+            player.health = visualHp * 2.0 // halve hjerter
         }
     }
 
-    override fun setMaxHp(maxHp: Int) {
-        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = maxHp * 2.0
-        visualMaxHp = maxHp
-        setHp(maxHp)
+    override fun onMaxHpChange() {
+        player.getAttribute(Attribute.MAX_HEALTH)!!.baseValue = visualMaxHp * 2.0
     }
 
     override fun setSpeed(speed: Int) {
@@ -171,12 +159,6 @@ class PlayerAvatar : BotBowsAvatar {
         }, BotBows.INVULNERABILITY_COOLDOWN.toLong())
     }
 
-    override var scale: Double
-        get() = player.getAttribute(Attribute.SCALE)!!.baseValue
-        set(value) {
-            player.getAttribute(Attribute.SCALE)!!.baseValue = value
-        }
-
     override fun setGlowing(flag: Boolean) {
         player.isGlowing = flag
     }
@@ -188,11 +170,6 @@ class PlayerAvatar : BotBowsAvatar {
     override fun setColor(color: NamedTextColor) {
         teamManager.setColor(player, color)
     }
-
-    override val uuid
-        get() = player.uniqueId
-    override val isSneaking
-        get() = player.isSneaking
 
     override fun updateSneakStamina(progress: Float) {
         val isExhausted = bp.isSneakingExhausted
@@ -251,7 +228,7 @@ class PlayerAvatar : BotBowsAvatar {
         bar.progress(progress)
     }
 
-    private fun updateArmor() { // updates all individual armor pieces of the player
+    override fun updateArmor() { // updates all individual armor pieces of the player
         if (visualHp == visualMaxHp) {
             equipFullArmor()
             return

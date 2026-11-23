@@ -3,7 +3,6 @@ package dev.gruve.minigames.botbows.avatar
 import dev.gruve.minigames.Main
 import dev.gruve.minigames.botbows.BotBows
 import dev.gruve.minigames.botbows.BotBowsPlayer
-import dev.gruve.minigames.botbows.avatar.BotBowsAvatar.ArmorSet
 import dev.gruve.minigames.botbows.hazard.HazardType
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -14,7 +13,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mannequin
 import org.bukkit.inventory.ItemStack
@@ -22,23 +20,19 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
-import java.util.UUID
 import kotlin.math.ceil
 
 class NpcAvatar : BotBowsAvatar {
     private var mannequin: Mannequin
-    private val _bp: BotBowsPlayer
-    private var visualHp = -1
-    override lateinit var teamManager: TeamManager
 
-    constructor(mannequin: Mannequin, bp: BotBowsPlayer) {
+    constructor(mannequin: Mannequin, bp: BotBowsPlayer): super(bp) {
         this.mannequin = mannequin
-        _bp = bp
     }
 
-    constructor(mannequin: Mannequin, previousAvatar: BotBowsAvatar) {
+    constructor(mannequin: Mannequin, previousAvatar: BotBowsAvatar): super(previousAvatar.bp) {
         this.mannequin = mannequin
-        _bp = previousAvatar.bp
+        setMaxHp(bp.settings.maxHealth)
+        setHp(bp.hp)
         teamManager = previousAvatar.teamManager
     }
 
@@ -46,9 +40,7 @@ class NpcAvatar : BotBowsAvatar {
     }
 
     override val entity: LivingEntity
-        get() =  mannequin
-    override val bp: BotBowsPlayer
-        get() = _bp
+        get() = mannequin
 
     override fun eliminate() {
         val newMannequin = Main.WORLD.spawn(bp.team.tribunePos, Mannequin::class.java).apply {
@@ -66,15 +58,6 @@ class NpcAvatar : BotBowsAvatar {
 
     override fun revive() {
         setInvis(false)
-    }
-
-    override fun setHp(hp: Int) {
-        visualHp = hp
-        if (hp != 0) updateArmor()
-    }
-
-    override fun setMaxHp(maxHp: Int) {
-        setHp(maxHp)
     }
 
     override fun setSpeed(speed: Int) {
@@ -122,12 +105,6 @@ class NpcAvatar : BotBowsAvatar {
         )
     }
 
-    override var scale: Double
-        get() = mannequin.getAttribute(Attribute.SCALE)!!.baseValue
-        set(value) {
-            mannequin.getAttribute(Attribute.SCALE)!!.baseValue = value
-        }
-
     override fun setGlowing(flag: Boolean) {
         mannequin.isGlowing = flag
     }
@@ -139,12 +116,6 @@ class NpcAvatar : BotBowsAvatar {
     override fun setColor(color: NamedTextColor) {
         teamManager.setColor(mannequin, color)
     }
-
-    override val uuid: UUID
-        get() = mannequin.uniqueId
-
-    override val isSneaking
-        get() = mannequin.isSneaking
 
     override fun updateSneakStamina(progress: Float) {
         if (progress >= 1) mannequin.isSneaking = false
@@ -188,19 +159,18 @@ class NpcAvatar : BotBowsAvatar {
     override fun setHazardBarProgress(hazardType: HazardType, progress: Float) {
     }
 
-    private fun updateArmor() { // updates the armor pieces of the player
-        val maxHp = bp.settings.maxHealth
-        if (visualHp == maxHp) {
+    override fun updateArmor() { // updates the armor pieces of the player
+        if (visualHp == visualMaxHp) {
             equipFullArmor()
             return
         }
         val slots: Set<Int>
-        if (maxHp > 5) {
-            val d = maxHp / 5.0
-            val i = ceil((maxHp - visualHp) / d).toInt()
+        if (visualMaxHp > 5) {
+            val d = visualMaxHp / 5.0
+            val i = ceil((visualMaxHp - visualHp) / d).toInt()
             slots = BotBowsPlayer.HEALTH_ARMOR[3][i - 1]
         } else {
-            slots = BotBowsPlayer.HEALTH_ARMOR[maxHp - 2][maxHp - visualHp - 1]
+            slots = BotBowsPlayer.HEALTH_ARMOR[visualMaxHp - 2][visualMaxHp - visualHp - 1]
         }
 
         for (slot in slots) {

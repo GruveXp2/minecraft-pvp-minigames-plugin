@@ -10,6 +10,7 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
             field = value
             healthListeners.values.forEach { it.onMaxHealthChange(bp) }
             bp.avatar.setMaxHp(value)
+            bp.avatar.setHp(value)
         }
     var attackDamage: Int = 1
         set(value) {
@@ -42,6 +43,7 @@ class PlayerSettings(val bp: BotBowsPlayer, settings: Settings) {
 
     init {
         bp.avatar.setMaxHp(maxHealth)
+        bp.avatar.setHp(maxHealth)
         bp.avatar.setSpeed(speed)
     }
 

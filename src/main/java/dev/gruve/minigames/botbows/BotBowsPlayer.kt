@@ -111,7 +111,6 @@ class BotBowsPlayer {
         bot.customName(name)
         bot.profile = ResolvableProfile.resolvableProfile(Bukkit.createProfile(avatar.uuid))
         avatar = NpcAvatar(bot, avatar)
-        avatar.setHp(hp)
         avatar.readyBattle(lobby.botBowsGame!!.botBowsBoard.teamManager!!) // this line is kinda ugly, maybe make the teammanager be somewhere else idk
         return bot.uniqueId
     }
