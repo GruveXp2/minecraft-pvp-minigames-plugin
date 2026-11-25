@@ -114,7 +114,7 @@ class ThunderBow(bp: BotBowsPlayer, hotBarSlot: Int)
                     val nearbyBlocks = (-1..1).flatMap { x ->
                         (-1..1).flatMap { y ->
                             (-1..1).mapNotNull { z ->
-                                arrowBlockLoc.getRelative(x, y, z).takeIf { !it.type.isAir }
+                                arrowBlockLoc.getRelative(x, y, z).takeIf { !it.type.isAir && it.type != Material.BARRIER }
                             }
                         }
                     }
