@@ -23,10 +23,6 @@ class JoinLeaveListener : Listener {
         if (p.name !in listOf("ColinStorm", "GruveXp")) { // only admins stay op
             p.isOp = false
         }
-        if (p.inventory.itemInMainHand.type != Material.AIR) { // dropper itemet de hadde fra før av så det ikke blir sletta
-            Main.WORLD.dropItem(p.location, p.inventory.itemInMainHand)
-        }
-        p.inventory.setItem(0, BotBows.MENU_ITEM)
         p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD))
         p.sendMessage(
             Component.text("To join a game, run ")
@@ -62,6 +58,7 @@ class JoinLeaveListener : Listener {
         } ?: run {
             p.teleport(BotBows.GLOBAL_LOBBY_LOCATION)
             p.gameMode = GameMode.ADVENTURE
+            p.inventory.setItem(0, BotBows.MENU_ITEM)
         }
     }
 
