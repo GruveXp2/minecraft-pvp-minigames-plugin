@@ -1,6 +1,5 @@
 package dev.gruve.minigames.listeners
 
-import dev.gruve.minigames.Main
 import dev.gruve.minigames.ShutdownManager
 import dev.gruve.minigames.botbows.BotBows
 import net.kyori.adventure.text.Component
@@ -9,7 +8,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -23,6 +21,12 @@ class JoinLeaveListener : Listener {
         if (p.name !in listOf("ColinStorm", "GruveXp")) { // only admins stay op
             p.isOp = false
         }
+
+        BotBows.getBotBowsPlayer(p)?.let {
+            it.lobby.reconnect(it, p)
+            return@onJoin
+        }
+
         p.sendMessage(Component.text("Welcome to BotBows!", NamedTextColor.GREEN, TextDecoration.BOLD))
         p.sendMessage(
             Component.text("To join a game, run ")
@@ -52,14 +56,9 @@ class JoinLeaveListener : Listener {
                     ClickEvent.Payload.string("/botbows stop")
                 )))
         )
-
-        BotBows.getBotBowsPlayer(p)?.let {
-            it.lobby.reconnect(it, p)
-        } ?: run {
-            p.teleport(BotBows.GLOBAL_LOBBY_LOCATION)
-            p.gameMode = GameMode.ADVENTURE
-            p.inventory.setItem(0, BotBows.MENU_ITEM)
-        }
+        p.teleport(BotBows.GLOBAL_LOBBY_LOCATION)
+        p.gameMode = GameMode.ADVENTURE
+        p.inventory.setItem(0, BotBows.MENU_ITEM)
     }
 
     @EventHandler
