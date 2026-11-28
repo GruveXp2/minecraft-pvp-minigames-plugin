@@ -29,6 +29,12 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
         startScanners()
     }
 
+    override fun onRoundEnd() {
+        dungeonScanners.values.forEach { it.cancel() }
+        dungeonScanners.clear()
+        dungeonGhosters.values.forEach { it.removeArmorStands() }
+    }
+
     override fun handleMovement(e: PlayerMoveEvent, bp: BotBowsPlayer) {
         super.handleMovement(e, bp)
         if (isInDungeon(bp)) {
@@ -38,8 +44,6 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
 
     override fun postGame(winningTeam: BotBowsTeam?) {
         super.postGame(winningTeam)
-        dungeonScanners.values.forEach { it.cancel() }
-        dungeonScanners.clear()
         dungeonGhosters.clear()
     }
 
@@ -121,11 +125,11 @@ class IcyRavineGame(settings: Settings) : BotBowsGame(settings) {
             val movement = currentLoc.clone().subtract(prevLoc)
             if (section != Section.OUTSIDE) {
                 //BotBowsManager.debugMessage(STR."\{PLAYER.getName()}s armorstands moved Δ(\{movement.getX()}, \{movement.getY()}, \{movement.getZ()})");
-                as1!!.teleport(as1!!.location.add(movement))
-                as2!!.teleport(as2!!.location.add(movement))
+                as1?.teleport(as1!!.location.add(movement))
+                as2?.teleport(as2!!.location.add(movement))
                 if (TestCommand.rotation) {
-                    as1!!.setRotation(currentLoc.yaw, currentLoc.pitch)
-                    as2!!.setRotation(currentLoc.yaw, currentLoc.pitch)
+                    as1?.setRotation(currentLoc.yaw, currentLoc.pitch)
+                    as2?.setRotation(currentLoc.yaw, currentLoc.pitch)
                 }
             }
         }
