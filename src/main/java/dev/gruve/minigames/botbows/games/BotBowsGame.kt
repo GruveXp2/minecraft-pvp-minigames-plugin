@@ -316,8 +316,10 @@ open class BotBowsGame(val settings: Settings) {
 
     private fun showPostGameStats(winningTeam: BotBowsTeam?) {
         val statsLocation = winningTeam?.tribunePos?.clone() ?: BotBows.GLOBAL_LOBBY_LOCATION.clone()
-        players.forEach { it.teleport(statsLocation) }
-
+        players.forEach {
+            it.teleport(statsLocation)
+            it.revive()
+        }
         val statsLocY = statsLocation.blockY
         statsLocation.add(statsLocation.getDirection().multiply(10))
         statsLocation.y = statsLocY + 3.0
